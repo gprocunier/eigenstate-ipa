@@ -1,11 +1,11 @@
-# Vault Plugin
+# IdM Vault Plugin
 
 Nearby docs:
 
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;IDM VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
 
@@ -344,13 +344,13 @@ Common failure classes are:
 - missing symmetric password or asymmetric private key for the vault type
 
 > [!NOTE]
-> A vault lookup failure is often an ownership-scope mismatch rather than a
+> An IdM vault lookup failure is often an ownership-scope mismatch rather than a
 > missing object. If a vault is present in IdM but the lookup says not found,
 > recheck `username`, `service`, and `shared` first.
 
 ## When To Read The Scenario Guide
 
-Use <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>VAULT CAPABILITIES</kbd></a> when
+Use <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>IDM VAULT CAPABILITIES</kbd></a> when
 you need operator patterns rather than option-by-option reference:
 
 - password injection

@@ -1,22 +1,23 @@
-# Vault Use Cases
+# IdM Vault Use Cases
 
 Nearby docs:
 
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;IDM VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
 
-This page gives worked operator examples for `eigenstate.ipa.vault`.
+This page gives worked operator examples for `eigenstate.ipa.vault` against
+IdM vaults.
 
 The capability page explains which vault ownership and retrieval pattern fits a
 problem. This page shows what that looks like in playbooks and controller-style
 usage.
 
 Not every caller is a global IdM administrator. A delegated operator can use
-vault lookups inside their own jurisdiction if the vault ownership and IdM
+IdM vault lookups inside their own jurisdiction if the vault ownership and IdM
 permissions line up with the scope they are responsible for.
 
 ## Contents
@@ -222,7 +223,7 @@ can hold a team keytab rather than a reusable admin password.
 
 ```mermaid
 flowchart LR
-    C["AAP job"] --> L["vault lookup in task or injector"]
+    C["AAP job"] --> L["IdM vault lookup in task or injector"]
     L --> I["IdM vault"]
     I --> R["latest rotated value at runtime"]
 ```
@@ -542,4 +543,4 @@ Use password auth when you are bootstrapping an environment, but prefer
 Kerberos for steady-state secret retrieval.
 
 For the decision model behind these scenarios, return to
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>VAULT CAPABILITIES</kbd></a>.
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>IDM VAULT CAPABILITIES</kbd></a>.

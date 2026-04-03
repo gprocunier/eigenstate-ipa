@@ -1,18 +1,18 @@
-# Vault Capabilities
+# IdM Vault Capabilities
 
 Nearby docs:
 
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
 
-This page explains when and why an operator would use each major vault retrieval
-pattern exposed by `eigenstate.ipa.vault`.
+This page explains when and why an operator would use each major IdM vault
+retrieval pattern exposed by `eigenstate.ipa.vault`.
 
-It is the vault-side companion to the inventory capabilities guide.
+It is the IdM-vault-side companion to the inventory capabilities guide.
 
 ## Contents
 
@@ -376,9 +376,9 @@ Why this pattern fits:
 - Ansible can deliver the artifact without turning it into plaintext logic
 - metadata can travel with the payload so the playbook can route it safely
 
-This is not a Vault-style sealing controller. The collection retrieves and
-brokers the artifact. The downstream system is still responsible for final
-consumption or unseal.
+This is not a HashiCorp Vault-style sealing controller or an Ansible Vault
+replacement. The collection retrieves and brokers the artifact. The downstream
+system is still responsible for final consumption or unseal.
 
 ## 11. Structured Text Payloads
 
@@ -418,4 +418,4 @@ Why this pattern fits:
 | Parsed JSON or trimmed text | `decode_json=true` or `strip_trailing_newline=true` |
 
 For option-level behavior, failure modes, and exact lookup syntax, return to
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>VAULT PLUGIN</kbd></a>.
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>IDM VAULT PLUGIN</kbd></a>.

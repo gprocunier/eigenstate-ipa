@@ -1,19 +1,19 @@
 # eigenstate.ipa
 
-**An Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory and vault lookup plugins for Kerberos-friendly automation, AAP, and secure secret retrieval.**
+**An Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory and IdM vault lookup plugins for Kerberos-friendly automation, AAP, and secure secret retrieval.**
 
 [![License: GPL-3.0](https://img.shields.io/github/license/gprocunier/eigenstate-ipa)](COPYING)
 ![Ansible 2.14+](https://img.shields.io/badge/Ansible-2.14%2B-blue)
 ![FreeIPA 4.6+](https://img.shields.io/badge/FreeIPA-4.6%2B-blue)
 ![RHEL](https://img.shields.io/badge/RHEL-9%20%7C%2010-red)
 
-<a href="./docs/README.md"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="./docs/documentation-map.md"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 <a href="./docs/inventory-plugin.md"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="./docs/vault-plugin.md"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="./docs/vault-plugin.md"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="./docs/inventory-capabilities.md"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./docs/vault-capabilities.md"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="./docs/vault-capabilities.md"><kbd>&nbsp;&nbsp;IDM VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="./docs/inventory-use-cases.md"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
-<a href="./docs/vault-use-cases.md"><kbd>&nbsp;&nbsp;VAULT USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="./docs/vault-use-cases.md"><kbd>&nbsp;&nbsp;IDM VAULT USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="./docs/aap-integration.md"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;WEBSITE&nbsp;&nbsp;</kbd></a>
 
@@ -82,19 +82,19 @@ flowchart TD
 ## Start Here
 
 If you want the project map and reading order, open
-<a href="./docs/README.md"><kbd>DOCS MAP</kbd></a>.
+<a href="./docs/documentation-map.md"><kbd>DOCS MAP</kbd></a>.
 
 If you are deciding whether the collection fits your use case, start with:
 
 - <a href="./docs/inventory-capabilities.md"><kbd>INVENTORY CAPABILITIES</kbd></a>
-- <a href="./docs/vault-capabilities.md"><kbd>VAULT CAPABILITIES</kbd></a>
+- <a href="./docs/vault-capabilities.md"><kbd>IDM VAULT CAPABILITIES</kbd></a>
 - <a href="./docs/inventory-use-cases.md"><kbd>INVENTORY USE CASES</kbd></a>
-- <a href="./docs/vault-use-cases.md"><kbd>VAULT USE CASES</kbd></a>
+- <a href="./docs/vault-use-cases.md"><kbd>IDM VAULT USE CASES</kbd></a>
 
 If you are wiring the plugins into actual automation, start with:
 
 - <a href="./docs/inventory-plugin.md"><kbd>INVENTORY PLUGIN</kbd></a>
-- <a href="./docs/vault-plugin.md"><kbd>VAULT PLUGIN</kbd></a>
+- <a href="./docs/vault-plugin.md"><kbd>IDM VAULT PLUGIN</kbd></a>
 - <a href="./docs/aap-integration.md"><kbd>AAP INTEGRATION</kbd></a>
 
 ## Quick Install

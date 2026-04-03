@@ -1,3 +1,11 @@
+---
+layout: default
+title: Documentation Map
+description: >-
+  Navigation map for the eigenstate.ipa documentation set, including
+  inventory, IdM vault, use cases, and AAP integration guidance.
+---
+
 # Documentation Map
 
 Start with the navigation buttons below. They are the quickest way to get to
@@ -68,14 +76,14 @@ repo-level layout.
 
 | Document | Purpose |
 | --- | --- |
-| [Top README](../README.md) | Collection overview, install, project framing |
-| [Inventory Plugin](./inventory-plugin.md) | Formal reference for `eigenstate.ipa.idm` |
-| [Vault Plugin](./vault-plugin.md) | Formal reference for `eigenstate.ipa.vault` |
-| [Inventory Capabilities](./inventory-capabilities.md) | Scenario-driven guidance for inventory use cases |
-| [Vault Capabilities](./vault-capabilities.md) | Scenario-driven guidance for vault retrieval use cases |
-| [Inventory Use Cases](./inventory-use-cases.md) | Detailed worked examples for inventory-backed automation |
-| [Vault Use Cases](./vault-use-cases.md) | Detailed worked examples for vault-backed secret retrieval |
-| [AAP Integration](./aap-integration.md) | Execution environment and controller integration patterns |
+| [Top README](https://github.com/gprocunier/eigenstate-ipa) | Collection overview, install, project framing |
+| [Inventory Plugin](https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html) | Formal reference for `eigenstate.ipa.idm` |
+| [Vault Plugin](https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html) | Formal reference for `eigenstate.ipa.vault` |
+| [Inventory Capabilities](https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html) | Scenario-driven guidance for inventory use cases |
+| [Vault Capabilities](https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html) | Scenario-driven guidance for vault retrieval use cases |
+| [Inventory Use Cases](https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html) | Detailed worked examples for inventory-backed automation |
+| [Vault Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html) | Detailed worked examples for vault-backed secret retrieval |
+| [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) | Execution environment and controller integration patterns |
 
 ## Recommended Reading Order
 

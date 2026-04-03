@@ -3,8 +3,8 @@
 Nearby docs:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
 
@@ -15,7 +15,7 @@ It answers:
 
 - what must exist in the execution environment
 - how to authenticate non-interactively
-- how to wire the inventory plugin and vault lookup into controller objects
+- how to wire the inventory plugin and IdM vault lookup into controller objects
 
 ## Contents
 
@@ -23,7 +23,7 @@ It answers:
 - [Execution Environment Requirements](#execution-environment-requirements)
 - [Authentication Guidance](#authentication-guidance)
 - [Inventory Source Pattern](#inventory-source-pattern)
-- [Vault Lookup Pattern](#vault-lookup-pattern)
+- [IdM Vault Lookup Pattern](#idm-vault-lookup-pattern)
 - [Credential-Source Pattern](#credential-source-pattern)
 - [Operational Guardrails](#operational-guardrails)
 
@@ -58,7 +58,7 @@ For the inventory plugin:
 - `python3-gssapi`
 - `krb5-workstation` when keytab-driven `kinit` is needed
 
-For the vault lookup:
+For the IdM vault lookup:
 
 - `python3-ipalib`
 - `python3-ipaclient`
@@ -66,7 +66,8 @@ For the vault lookup:
   needed
 
 > [!IMPORTANT]
-> The vault lookup is not just a pure Python helper. If the EE does not contain
+> The IdM vault lookup is not just a pure Python helper. If the EE does not
+> contain
 > the IdM client libraries, vault retrieval will fail even if network access and
 > credentials are otherwise correct.
 
@@ -87,8 +88,8 @@ Recommended pattern:
 - point `kerberos_keytab` at that mounted path
 - provide `verify` with the IdM CA path
 
-Password auth still works for the inventory plugin and for the vault lookup's
-ticket acquisition path, but it is the weaker controller posture.
+Password auth still works for the inventory plugin and for the IdM vault
+lookup's ticket acquisition path, but it is the weaker controller posture.
 
 ## Inventory Source Pattern
 
@@ -112,7 +113,7 @@ compose:
   ansible_host: idm_fqdn
 ```
 
-## Vault Lookup Pattern
+## IdM Vault Lookup Pattern
 
 Example task usage from a controller job template:
 
@@ -129,7 +130,7 @@ Example task usage from a controller job template:
 
 ## Credential-Source Pattern
 
-A practical AAP pattern is to use the vault lookup inside a custom credential
+A practical AAP pattern is to use the IdM vault lookup inside a custom credential
 type injector or job vars resolution path.
 
 That works well when:
@@ -148,6 +149,6 @@ That works well when:
 - keep vault ownership scope explicit when ambiguity is possible
 
 > [!NOTE]
-> If an inventory sync works but vault lookups fail inside the same EE, suspect
+> If an inventory sync works but IdM vault lookups fail inside the same EE, suspect
 > missing `ipalib`/`ipaclient` content first. The two plugins do not share the
 > same client dependency stack.

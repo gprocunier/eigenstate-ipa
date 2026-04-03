@@ -3,7 +3,7 @@ layout: default
 title: eigenstate.ipa
 description: >-
   Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory,
-  vault lookup, Kerberos automation, AAP integration, and secure secret
+  IdM vault lookup, Kerberos automation, AAP integration, and secure secret
   retrieval.
 ---
 
@@ -13,7 +13,8 @@ description: >-
 focuses on two high-value operator paths:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
-- vault lookup for Kerberos-authenticated secret retrieval in Ansible and AAP
+- IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and
+  AAP
 
 That makes the project discoverable for the search terms people actually use:
 Ansible FreeIPA inventory, Red Hat IdM Ansible, FreeIPA vault Ansible,
@@ -22,7 +23,7 @@ Kerberos automation, and AAP secret retrieval.
 ## Start Here
 
 - [Collection Overview](https://github.com/gprocunier/eigenstate-ipa)
-- [Documentation Map](https://gprocunier.github.io/eigenstate-ipa/)
+- [Documentation Map](https://gprocunier.github.io/eigenstate-ipa/documentation-map.html)
 - [Inventory Plugin](./inventory-plugin.md)
 - [Vault Plugin](./vault-plugin.md)
 - [Inventory Use Cases](./inventory-use-cases.md)
@@ -34,7 +35,8 @@ Kerberos automation, and AAP secret retrieval.
 - `eigenstate.ipa.idm`
   Dynamic inventory for live IdM-backed infrastructure targeting.
 - `eigenstate.ipa.vault`
-  Vault retrieval, metadata inspection, scoped search, and binary-safe secret lookup.
+  IdM vault retrieval, metadata inspection, scoped search, and binary-safe
+  secret lookup.
 
 ## Best Fit
 
