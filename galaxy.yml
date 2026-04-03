@@ -3,15 +3,16 @@ namespace: "eigenstate"
 name: "ipa"
 version: "1.0.0"
 description: >-
-  An Ansible collection for Red Hat IdM/FreeIPA that provides live
-  inventory and vault lookup plugins for Kerberos-friendly automation.
+  An Ansible collection for Red Hat IdM / FreeIPA with dynamic
+  inventory and vault lookup plugins for Kerberos-friendly automation,
+  AAP, and secure secret retrieval.
 
 authors:
   - "Greg Procunier"
 
 repository: "https://github.com/gprocunier/eigenstate-ipa"
-documentation: "https://github.com/gprocunier/eigenstate-ipa"
-homepage: "https://github.com/gprocunier/eigenstate-ipa"
+documentation: "https://gprocunier.github.io/eigenstate-ipa/"
+homepage: "https://gprocunier.github.io/eigenstate-ipa/"
 issues: "https://github.com/gprocunier/eigenstate-ipa/issues"
 
 readme: "README.md"

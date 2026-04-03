@@ -1,0 +1,12 @@
+title: "eigenstate.ipa"
+description: >-
+  An Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory
+  and vault lookup plugins for Kerberos-friendly automation, AAP, and
+  secure secret retrieval.
+url: "https://gprocunier.github.io"
+baseurl: "/eigenstate-ipa"
+theme: minima
+markdown: kramdown
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap

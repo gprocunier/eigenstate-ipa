@@ -24,6 +24,9 @@ dist/
 *.tar.gz
 *.egg-info/
 *.retry
+_site/
+.jekyll-cache/
+.sass-cache/
 
 # Local environment files
 .env
