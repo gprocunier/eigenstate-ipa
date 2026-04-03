@@ -9,10 +9,10 @@ Nearby docs:
 
 ## Purpose
 
-This page explains when an operator should use each IdM-backed inventory source
-exposed by `eigenstate.ipa.idm`.
+Use this guide to choose the IdM-backed inventory source exposed by
+`eigenstate.ipa.idm`.
 
-It is intentionally scenario-driven rather than option-driven.
+The focus here is operational boundary selection, not option reference.
 
 ## Contents
 
@@ -43,7 +43,7 @@ flowchart TD
     plugin --> inv
 ```
 
-The operating idea is simple:
+The model is:
 
 - hosts describe what exists
 - hostgroups describe role or service membership

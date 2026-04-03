@@ -9,8 +9,8 @@ Nearby docs:
 
 ## Purpose
 
-This page explains when and why an operator would use each major IdM vault
-retrieval pattern exposed by `eigenstate.ipa.vault`.
+Use this guide to choose the major IdM vault retrieval pattern exposed by
+`eigenstate.ipa.vault`.
 
 It is the IdM-vault-side companion to the inventory capabilities guide.
 
@@ -46,7 +46,7 @@ flowchart TD
     lookup --> tasks
 ```
 
-Use the vault pattern that matches both:
+Choose the vault pattern that matches both:
 
 - the ownership boundary of the secret
 - the runtime form the consuming automation actually needs

@@ -9,19 +9,17 @@ Nearby docs:
 
 ## Purpose
 
-This page defines the behavior of the `eigenstate.ipa.idm` inventory plugin
-formally.
+`eigenstate.ipa.idm` reads IdM data and turns it into Ansible inventory.
 
-It answers:
+This reference covers:
 
 - what the plugin reads from IdM
 - how IdM objects are converted into Ansible groups and host vars
 - how password auth and Kerberos auth differ operationally
 - when filters remove hosts from inventory versus only pruning groups
 
-The principal does not have to be a global IdM administrator. It does have to
-have whatever read and auth rights are required for the specific IdM objects
-you want to expose.
+The principal does not need to be a global IdM administrator. It does need the
+read and auth rights required for the specific IdM objects you want to expose.
 
 ## Contents
 
@@ -56,7 +54,7 @@ flowchart LR
     plugin --> inv
 ```
 
-The plugin uses the IdM JSON-RPC API and can consume four object classes:
+The inventory plugin reads the IdM JSON-RPC API and consumes four object classes:
 
 - `hosts`
 - `hostgroups`
@@ -68,7 +66,7 @@ names created from IdM objects are sanitized into Ansible-safe names.
 
 ## Authentication Model
 
-Two modes are supported:
+The plugin supports two auth modes:
 
 - password auth:
   - uses `session/login_password`

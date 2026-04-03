@@ -9,10 +9,10 @@ Nearby docs:
 
 ## Purpose
 
-This page defines the behavior of the `eigenstate.ipa.vault` lookup plugin
-formally.
+`eigenstate.ipa.vault` retrieves, inspects, and searches IdM vaults from
+Ansible.
 
-It answers:
+This reference covers:
 
 - how the plugin authenticates to IdM
 - which vault ownership scopes it supports
@@ -20,7 +20,7 @@ It answers:
 - how standard, symmetric, and asymmetric vaults differ at lookup time
 - how to return text-safe versus binary-safe values
 
-The principal does not have to be a global IdM administrator. It only needs the
+The principal does not need to be a global IdM administrator. It only needs the
 rights required to retrieve the specific vaults in its jurisdiction.
 
 ## Contents
@@ -55,14 +55,13 @@ flowchart LR
     vaults --> out
 ```
 
-The plugin uses the IdM Python client libraries directly through `ipalib`.
-That matters because vault retrieval is not just a REST fetch. The client stack
-also handles the transport and vault-specific decryption workflow expected by
-IdM.
+The lookup uses the IdM Python client libraries directly through `ipalib`.
+Vault retrieval is not just a REST fetch. The client stack also handles the
+transport and vault-specific decryption workflow expected by IdM.
 
 ## Authentication Model
 
-The plugin always ends up operating with a Kerberos credential cache.
+The lookup always operates with a Kerberos credential cache.
 
 It can get there in three ways:
 
@@ -92,7 +91,7 @@ respecting `ipalib`'s own controller-side defaults.
 
 ## Ownership Scope
 
-Exactly one vault scope may be selected:
+Select exactly one vault scope:
 
 - `username`
 - `service`
@@ -101,7 +100,7 @@ Exactly one vault scope may be selected:
 If none is selected, the plugin uses the default scope behavior of the IdM API
 for the authenticated principal.
 
-Practical guidance:
+In practice:
 
 - use `shared: true` for estate-wide automation secrets
 - use `service` when a service principal owns the vault
