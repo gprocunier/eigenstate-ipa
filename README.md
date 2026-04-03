@@ -58,21 +58,12 @@ This collection closes that gap with one inventory plugin and one lookup plugin.
 
 ## What The Collection Contains
 
-```mermaid
-flowchart TD
-    idm["IdM / FreeIPA"]
+At a high level:
 
-    subgraph collection["eigenstate.ipa"]
-        inv["eigenstate.ipa.idm\ninventory plugin"]
-        vault["eigenstate.ipa.vault\nlookup plugin"]
-    end
-
-    idm -->|"JSON-RPC\nhosts, hostgroups,\nnetgroups, HBAC rules"| inv
-    idm -->|"ipalib vault APIs\nKerberos-authenticated retrieval"| vault
-
-    inv --> invout["Ansible inventory\nhosts, groups, host vars"]
-    vault --> secout["Ansible lookups\npasswords, PEM, keytabs,\nopaque binary material"]
-```
+- `eigenstate.ipa.idm` reads IdM hosts, hostgroups, netgroups, and HBAC rules
+  and turns them into Ansible inventory
+- `eigenstate.ipa.vault` uses `ipalib` to retrieve, inspect, and search IdM
+  vault content for playbooks and AAP jobs
 
 | Plugin | Type | FQCN | Purpose |
 | --- | --- | --- | --- |
@@ -100,7 +91,7 @@ If you are wiring the plugins into actual automation, start with:
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.0.2.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.0.3.tar.gz
 ```
 
 Verify:

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+- removed Mermaid from the packaged root README so Galaxy renders the overview cleanly
+
 ## 1.0.2
 
 - tightened documentation tone in the reference and capability guides
