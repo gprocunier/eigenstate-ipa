@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- fixed Galaxy README links by switching packaged documentation links to absolute GitHub Pages URLs
+
 ## 1.0.0
 
 - initial `eigenstate.ipa` collection release

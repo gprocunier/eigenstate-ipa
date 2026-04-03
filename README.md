@@ -7,14 +7,14 @@
 ![FreeIPA 4.6+](https://img.shields.io/badge/FreeIPA-4.6%2B-blue)
 ![RHEL](https://img.shields.io/badge/RHEL-9%20%7C%2010-red)
 
-<a href="./docs/documentation-map.md"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
-<a href="./docs/inventory-plugin.md"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="./docs/vault-plugin.md"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="./docs/inventory-capabilities.md"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./docs/vault-capabilities.md"><kbd>&nbsp;&nbsp;IDM VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./docs/inventory-use-cases.md"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
-<a href="./docs/vault-use-cases.md"><kbd>&nbsp;&nbsp;IDM VAULT USE CASES&nbsp;&nbsp;</kbd></a>
-<a href="./docs/aap-integration.md"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;IDM VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>&nbsp;&nbsp;IDM VAULT USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;WEBSITE&nbsp;&nbsp;</kbd></a>
 
 ---
@@ -82,25 +82,25 @@ flowchart TD
 ## Start Here
 
 If you want the project map and reading order, open
-<a href="./docs/documentation-map.md"><kbd>DOCS MAP</kbd></a>.
+<a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>DOCS MAP</kbd></a>.
 
 If you are deciding whether the collection fits your use case, start with:
 
-- <a href="./docs/inventory-capabilities.md"><kbd>INVENTORY CAPABILITIES</kbd></a>
-- <a href="./docs/vault-capabilities.md"><kbd>IDM VAULT CAPABILITIES</kbd></a>
-- <a href="./docs/inventory-use-cases.md"><kbd>INVENTORY USE CASES</kbd></a>
-- <a href="./docs/vault-use-cases.md"><kbd>IDM VAULT USE CASES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>IDM VAULT CAPABILITIES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>INVENTORY USE CASES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>IDM VAULT USE CASES</kbd></a>
 
 If you are wiring the plugins into actual automation, start with:
 
-- <a href="./docs/inventory-plugin.md"><kbd>INVENTORY PLUGIN</kbd></a>
-- <a href="./docs/vault-plugin.md"><kbd>IDM VAULT PLUGIN</kbd></a>
-- <a href="./docs/aap-integration.md"><kbd>AAP INTEGRATION</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>INVENTORY PLUGIN</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>IDM VAULT PLUGIN</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
 
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.0.0.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.0.1.tar.gz
 ```
 
 Verify:
@@ -136,4 +136,4 @@ Greg Procunier
 
 ## License
 
-GPL-3.0-or-later. See [COPYING](COPYING).
+GPL-3.0-or-later. See [COPYING](https://github.com/gprocunier/eigenstate-ipa/blob/main/COPYING).
