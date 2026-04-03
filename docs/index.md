@@ -9,15 +9,15 @@ description: >-
 
 # eigenstate.ipa
 
-`eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It
-focuses on two high-value operator paths:
+`eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It has
+two main jobs:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
 - IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and
   AAP
 
-It is built for environments that want IdM to remain the source of truth for
-hosts, policy context, and runtime secret retrieval.
+It fits environments that already use IdM for host data, policy context, and
+runtime secret retrieval.
 
 ## Start Here
 
@@ -42,7 +42,7 @@ hosts, policy context, and runtime secret retrieval.
 - Red Hat IdM / FreeIPA environments
 - Kerberos-first automation
 - Ansible Automation Platform execution environments
-- teams that want to consume IdM as inventory and secret source of truth
+- teams that want to use IdM as inventory and runtime secret source
 
 ## Repository
 

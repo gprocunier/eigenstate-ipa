@@ -8,10 +8,10 @@ Nearby docs:
 
 ## Purpose
 
-This page describes the practical integration model for using `eigenstate.ipa`
-inside Ansible Automation Platform / Automation Controller.
+This page describes how to run `eigenstate.ipa` inside Ansible Automation
+Platform / Automation Controller.
 
-It answers:
+It covers:
 
 - what must exist in the execution environment
 - how to authenticate non-interactively
@@ -130,8 +130,8 @@ Example task usage from a controller job template:
 
 ## Credential-Source Pattern
 
-A practical AAP pattern is to use the IdM vault lookup inside a custom credential
-type injector or job vars resolution path.
+One AAP pattern is to use the IdM vault lookup inside a custom credential type
+injector or job vars resolution path.
 
 That works well when:
 

@@ -9,11 +9,10 @@ Nearby docs:
 
 ## Purpose
 
-This page gives worked operator examples for `eigenstate.ipa.idm`.
+This page contains worked examples for `eigenstate.ipa.idm`.
 
-The capability page explains which IdM object class matches which automation
-boundary. This page shows what those choices look like in actual inventory files
-and playbook targeting.
+Use the capability guide to choose the IdM object class. Use this page when you
+need the corresponding inventory files and playbook targets.
 
 Not every caller is an IdM administrator. A delegated operator can use this
 collection inside their own jurisdiction as long as the principal they run

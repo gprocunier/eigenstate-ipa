@@ -9,12 +9,11 @@ Nearby docs:
 
 ## Purpose
 
-This page gives worked operator examples for `eigenstate.ipa.vault` against
-IdM vaults.
+This page contains worked examples for `eigenstate.ipa.vault` against IdM
+vaults.
 
-The capability page explains which vault ownership and retrieval pattern fits a
-problem. This page shows what that looks like in playbooks and controller-style
-usage.
+Use the capability guide to choose vault ownership and retrieval patterns. Use
+this page when you need the corresponding playbook or controller pattern.
 
 Not every caller is a global IdM administrator. A delegated operator can use
 IdM vault lookups inside their own jurisdiction if the vault ownership and IdM

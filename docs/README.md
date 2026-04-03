@@ -12,11 +12,12 @@ the part of the collection you actually need.
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>&nbsp;&nbsp;TOP README&nbsp;&nbsp;</kbd></a>
 
-The root `README.md` explains what the collection is. This page answers:
+Use this page as the entry point to the docs set:
 
-- where to start for a specific automation goal
-- which docs explain operator usage versus plugin behavior versus AAP wiring
-- how the collection documentation is intentionally split
+- start with the plugin reference when you need option or auth behavior
+- use the capability guides when you are choosing an IdM boundary or vault scope
+- use the use-case guides when you want concrete inventory or playbook patterns
+- use the AAP guide when the job runs inside Controller or an execution environment
 
 ## Choose Your Path
 
@@ -26,12 +27,12 @@ The root `README.md` explains what the collection is. This page answers:
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
 
-Pick these when you need:
+Use these when you need:
 
 - option reference and authentication behavior
 - conceptual explanation of which IdM object type matches which automation boundary
 - group-building rules for hosts, hostgroups, netgroups, and HBAC rules
-- real operator scenarios such as compliance scans, role targeting, and policy audits
+- worked scenarios such as compliance scans, role targeting, and policy audits
 
 ### I Want To Retrieve Secrets From IdM Vaults
 
@@ -39,7 +40,7 @@ Pick these when you need:
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;IDM VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>&nbsp;&nbsp;IDM VAULT USE CASES&nbsp;&nbsp;</kbd></a>
 
-Pick these when you need:
+Use these when you need:
 
 - vault type behavior and lookup options
 - conceptual explanation of vault scope and retrieval form
@@ -51,7 +52,7 @@ Pick these when you need:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 
-Pick this when you need:
+Use this when you need:
 
 - execution environment dependencies
 - password versus keytab auth guidance
@@ -61,8 +62,7 @@ Pick this when you need:
 
 <a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>&nbsp;&nbsp;TOP README&nbsp;&nbsp;</kbd></a>
 
-The top README gives the collection purpose, plugin map, install entrypoint, and
-repo-level layout.
+The top README covers collection scope, installation, and repository layout.
 
 ## Document Intent
 
