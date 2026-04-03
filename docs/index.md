@@ -16,9 +16,8 @@ focuses on two high-value operator paths:
 - IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and
   AAP
 
-That makes the project discoverable for the search terms people actually use:
-Ansible FreeIPA inventory, Red Hat IdM Ansible, FreeIPA vault Ansible,
-Kerberos automation, and AAP secret retrieval.
+It is built for environments that want IdM to remain the source of truth for
+hosts, policy context, and runtime secret retrieval.
 
 ## Start Here
 
