@@ -1,0 +1,4 @@
+# System packages for Kerberos authentication (optional)
+# Uncomment if using use_kerberos/kerberos_keytab
+# krb5-workstation [platform:rhel-9]
+# krb5-devel [platform:rhel-9]

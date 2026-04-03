@@ -1,0 +1,35 @@
+---
+namespace: "eigenstate"
+name: "ipa"
+version: "1.0.0"
+description: >-
+  An Ansible collection for Red Hat IdM/FreeIPA that provides live
+  inventory and vault lookup plugins for Kerberos-friendly automation.
+
+authors:
+  - "Greg Procunier"
+
+repository: "https://github.com/gregp/eigenstate-ipa"
+documentation: "https://github.com/gregp/eigenstate-ipa"
+homepage: "https://github.com/gregp/eigenstate-ipa"
+issues: "https://github.com/gregp/eigenstate-ipa/issues"
+
+readme: "README.md"
+
+license:
+  - "GPL-3.0-or-later"
+
+tags:
+  - "linux"
+  - "identity"
+  - "ipa"
+  - "freeipa"
+  - "idm"
+  - "inventory"
+  - "vault"
+  - "secrets"
+  - "rhel"
+
+build_ignore:
+  - "*.tar.gz"
+  - ".git"

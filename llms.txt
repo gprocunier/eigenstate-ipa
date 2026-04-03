@@ -1,0 +1,77 @@
+# eigenstate.ipa
+
+`eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
+(IdM / FreeIPA). It exposes one inventory plugin and one lookup plugin:
+
+- `eigenstate.ipa.idm`
+- `eigenstate.ipa.vault`
+
+The collection treats IdM as both:
+
+- a source of live infrastructure inventory
+- a source of truth for secret retrieval
+
+## What It Does
+
+- builds dynamic inventory from IdM-managed hosts, hostgroups, netgroups, and
+  HBAC policy
+- retrieves secrets from IdM vaults through Kerberos-authenticated lookups
+- supports user, service, and shared vault scopes
+- supports standard, symmetric, and asymmetric vault retrieval
+- supports metadata inspection, scoped search, and structured return shapes
+- supports text and binary payload handling for Ansible and AAP workflows
+
+## Best Entry Points
+
+- [README.md](README.md)
+- [docs/README.md](docs/README.md)
+- [docs/inventory-plugin.md](docs/inventory-plugin.md)
+- [docs/vault-plugin.md](docs/vault-plugin.md)
+- [docs/inventory-capabilities.md](docs/inventory-capabilities.md)
+- [docs/vault-capabilities.md](docs/vault-capabilities.md)
+- [docs/inventory-use-cases.md](docs/inventory-use-cases.md)
+- [docs/vault-use-cases.md](docs/vault-use-cases.md)
+- [docs/aap-integration.md](docs/aap-integration.md)
+
+## Plugin Summary
+
+### `eigenstate.ipa.idm`
+
+- inventory plugin
+- queries IdM JSON-RPC APIs
+- builds live inventory for enrolled infrastructure
+- supports password auth and Kerberos keytab auth
+
+### `eigenstate.ipa.vault`
+
+- lookup plugin
+- uses `ipalib` for vault transport and retrieval
+- supports `retrieve`, `show`, and `find`
+- supports `value`, `record`, `map`, and `map_record`
+- supports `encoding='utf-8'` and `encoding='base64'`
+- supports `decode_json` and `strip_trailing_newline` for retrieved UTF-8 text
+
+## Runtime Notes
+
+- target Ansible floor: `2.14.0`
+- RHEL 9 compatibility is intentional
+- vault lookups require `python3-ipalib` and `python3-ipaclient`
+- controller or execution-environment usage may also require Kerberos client
+  tooling
+
+## Repository Layout
+
+- `plugins/inventory/idm.py` - dynamic inventory plugin
+- `plugins/lookup/vault.py` - vault lookup plugin
+- `docs/` - operator-facing documentation
+- `tests/` - unit coverage for the vault plugin
+- `scripts/validate-collection.sh` - repo validation path
+- `Makefile` - convenience wrapper for validation
+
+## Publication Notes
+
+- collection name: `eigenstate.ipa`
+- namespace: `eigenstate`
+- author: Greg Procunier
+- license: GPL-3.0-or-later
+- repository: https://github.com/gregp/eigenstate-ipa

@@ -1,0 +1,9 @@
+## Inventory plugin (eigenstate.ipa.idm)
+requests
+# Optional: Kerberos authentication
+# requests-gssapi
+
+## Vault lookup plugin (eigenstate.ipa.vault)
+# Required: ipalib and ipaclient (system packages preferred)
+# RHEL/Fedora: dnf install python3-ipalib python3-ipaclient
+# pip: ipalib ipaclient  (may need krb5-devel headers)
