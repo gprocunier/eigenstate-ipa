@@ -2,7 +2,7 @@
 
 **An Ansible collection for Red Hat IdM/FreeIPA that provides live inventory and vault lookup plugins for Kerberos-friendly automation.**
 
-[![License: GPL-3.0](https://img.shields.io/github/license/gregp/eigenstate-ipa)](COPYING)
+[![License: GPL-3.0](https://img.shields.io/github/license/gprocunier/eigenstate-ipa)](COPYING)
 ![Ansible 2.14+](https://img.shields.io/badge/Ansible-2.14%2B-blue)
 ![FreeIPA 4.6+](https://img.shields.io/badge/FreeIPA-4.6%2B-blue)
 ![RHEL](https://img.shields.io/badge/RHEL-9%20%7C%2010-red)

@@ -74,4 +74,4 @@ The collection treats IdM as both:
 - namespace: `eigenstate`
 - author: Greg Procunier
 - license: GPL-3.0-or-later
-- repository: https://github.com/gregp/eigenstate-ipa
+- repository: https://github.com/gprocunier/eigenstate-ipa

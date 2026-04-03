@@ -9,10 +9,10 @@ description: >-
 authors:
   - "Greg Procunier"
 
-repository: "https://github.com/gregp/eigenstate-ipa"
-documentation: "https://github.com/gregp/eigenstate-ipa"
-homepage: "https://github.com/gregp/eigenstate-ipa"
-issues: "https://github.com/gregp/eigenstate-ipa/issues"
+repository: "https://github.com/gprocunier/eigenstate-ipa"
+documentation: "https://github.com/gprocunier/eigenstate-ipa"
+homepage: "https://github.com/gprocunier/eigenstate-ipa"
+issues: "https://github.com/gprocunier/eigenstate-ipa/issues"
 
 readme: "README.md"
 

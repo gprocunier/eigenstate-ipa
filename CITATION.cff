@@ -21,7 +21,7 @@ keywords:
   - kerberos
   - red hat
   - automation
-repository-code: "https://github.com/gregp/eigenstate-ipa"
+repository-code: "https://github.com/gprocunier/eigenstate-ipa"
 license: "GPL-3.0-or-later"
 preferred-citation:
   type: software
@@ -31,7 +31,7 @@ preferred-citation:
   authors:
     - family-names: Procunier
       given-names: Greg
-  repository-code: "https://github.com/gregp/eigenstate-ipa"
+  repository-code: "https://github.com/gprocunier/eigenstate-ipa"
   license: "GPL-3.0-or-later"
 authors:
   - family-names: Procunier
