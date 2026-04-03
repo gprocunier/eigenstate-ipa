@@ -2,10 +2,10 @@
 
 Nearby docs:
 
-<a href="./vault-plugin.md"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="./vault-capabilities.md"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./inventory-use-cases.md"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
-<a href="./README.md"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
 
@@ -542,4 +542,4 @@ Use password auth when you are bootstrapping an environment, but prefer
 Kerberos for steady-state secret retrieval.
 
 For the decision model behind these scenarios, return to
-<a href="./vault-capabilities.md"><kbd>VAULT CAPABILITIES</kbd></a>.
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>VAULT CAPABILITIES</kbd></a>.

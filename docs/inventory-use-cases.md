@@ -2,10 +2,10 @@
 
 Nearby docs:
 
-<a href="./inventory-plugin.md"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="./inventory-capabilities.md"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./vault-use-cases.md"><kbd>&nbsp;&nbsp;VAULT USE CASES&nbsp;&nbsp;</kbd></a>
-<a href="./README.md"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>&nbsp;&nbsp;VAULT USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
 
@@ -356,4 +356,4 @@ Use password auth only when you do not have a service principal or a keytab
 workflow available.
 
 For the decision model behind these scenarios, return to
-<a href="./inventory-capabilities.md"><kbd>INVENTORY CAPABILITIES</kbd></a>.
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>.

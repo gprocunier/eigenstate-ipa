@@ -3,14 +3,14 @@
 Start with the navigation buttons below. They are the quickest way to get to
 the part of the collection you actually need.
 
-<a href="./inventory-plugin.md"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="./vault-plugin.md"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="./inventory-capabilities.md"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./vault-capabilities.md"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./inventory-use-cases.md"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
-<a href="./vault-use-cases.md"><kbd>&nbsp;&nbsp;VAULT USE CASES&nbsp;&nbsp;</kbd></a>
-<a href="./aap-integration.md"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
-<a href="../README.md"><kbd>&nbsp;&nbsp;TOP README&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>&nbsp;&nbsp;VAULT USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
+<a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>&nbsp;&nbsp;TOP README&nbsp;&nbsp;</kbd></a>
 
 The root `README.md` explains what the collection is. This page answers:
 
@@ -22,9 +22,9 @@ The root `README.md` explains what the collection is. This page answers:
 
 ### I Want To Build Dynamic Inventory From IdM
 
-<a href="./inventory-plugin.md"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="./inventory-capabilities.md"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./inventory-use-cases.md"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
 
 Pick these when you need:
 
@@ -35,9 +35,9 @@ Pick these when you need:
 
 ### I Want To Retrieve Secrets From IdM Vaults
 
-<a href="./vault-plugin.md"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="./vault-capabilities.md"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./vault-use-cases.md"><kbd>&nbsp;&nbsp;VAULT USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>&nbsp;&nbsp;VAULT USE CASES&nbsp;&nbsp;</kbd></a>
 
 Pick these when you need:
 
@@ -49,7 +49,7 @@ Pick these when you need:
 
 ### I Want To Run This In Automation Controller / AAP
 
-<a href="./aap-integration.md"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 
 Pick this when you need:
 
@@ -59,7 +59,7 @@ Pick this when you need:
 
 ### I Want The High-Level Project View
 
-<a href="../README.md"><kbd>&nbsp;&nbsp;TOP README&nbsp;&nbsp;</kbd></a>
+<a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>&nbsp;&nbsp;TOP README&nbsp;&nbsp;</kbd></a>
 
 The top README gives the collection purpose, plugin map, install entrypoint, and
 repo-level layout.
@@ -79,11 +79,11 @@ repo-level layout.
 
 ## Recommended Reading Order
 
-1. <a href="../README.md"><kbd>TOP README</kbd></a>
-1. <a href="./inventory-plugin.md"><kbd>INVENTORY PLUGIN</kbd></a>
-1. <a href="./vault-plugin.md"><kbd>VAULT PLUGIN</kbd></a>
-1. <a href="./inventory-capabilities.md"><kbd>INVENTORY CAPABILITIES</kbd></a>
-1. <a href="./vault-capabilities.md"><kbd>VAULT CAPABILITIES</kbd></a>
-1. <a href="./inventory-use-cases.md"><kbd>INVENTORY USE CASES</kbd></a>
-1. <a href="./vault-use-cases.md"><kbd>VAULT USE CASES</kbd></a>
-1. <a href="./aap-integration.md"><kbd>AAP INTEGRATION</kbd></a>
+1. <a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>TOP README</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>INVENTORY PLUGIN</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>VAULT PLUGIN</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>VAULT CAPABILITIES</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>INVENTORY USE CASES</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>VAULT USE CASES</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>

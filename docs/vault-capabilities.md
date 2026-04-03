@@ -2,10 +2,10 @@
 
 Nearby docs:
 
-<a href="./vault-plugin.md"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="./inventory-capabilities.md"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./aap-integration.md"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
-<a href="./README.md"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
 
@@ -418,4 +418,4 @@ Why this pattern fits:
 | Parsed JSON or trimmed text | `decode_json=true` or `strip_trailing_newline=true` |
 
 For option-level behavior, failure modes, and exact lookup syntax, return to
-<a href="./vault-plugin.md"><kbd>VAULT PLUGIN</kbd></a>.
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>VAULT PLUGIN</kbd></a>.

@@ -1,0 +1,98 @@
+<style>
+  .mermaid {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+  }
+
+  blockquote.admonition {
+    border-left-width: 0.35rem;
+    border-left-style: solid;
+    border-radius: 0.35rem;
+    margin: 1.25rem 0;
+    padding: 0.85rem 1rem;
+  }
+
+  blockquote.admonition p {
+    margin: 0.35rem 0;
+  }
+
+  blockquote.admonition .admonition-title {
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  blockquote.admonition-note,
+  blockquote.admonition-tip {
+    background: #eef6ff;
+    border-left-color: #2f81f7;
+  }
+
+  blockquote.admonition-important {
+    background: #fff8c5;
+    border-left-color: #9a6700;
+  }
+
+  blockquote.admonition-warning,
+  blockquote.admonition-caution {
+    background: #ffebe9;
+    border-left-color: #cf222e;
+  }
+</style>
+
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+  const renderMermaid = async () => {
+    const blocks = document.querySelectorAll("pre > code.language-mermaid");
+    if (!blocks.length) {
+      return;
+    }
+
+    blocks.forEach((code) => {
+      const pre = code.parentElement;
+      const container = document.createElement("div");
+      container.className = "mermaid";
+      container.textContent = code.textContent;
+      pre.replaceWith(container);
+    });
+
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "loose",
+      theme: "neutral",
+    });
+
+    await mermaid.run({
+      querySelector: ".mermaid",
+    });
+  };
+
+  const renderAdmonitions = () => {
+    document.querySelectorAll("blockquote").forEach((blockquote) => {
+      const firstParagraph = blockquote.querySelector("p");
+      if (!firstParagraph) {
+        return;
+      }
+
+      const marker = firstParagraph.textContent.match(/^\s*\[!(IMPORTANT|NOTE|TIP|WARNING|CAUTION)\]\s*/);
+      if (!marker) {
+        return;
+      }
+
+      const kind = marker[1].toLowerCase();
+      firstParagraph.innerHTML = firstParagraph.innerHTML.replace(/^\s*\[![A-Z]+\]\s*/, "");
+
+      const title = document.createElement("p");
+      title.className = "admonition-title";
+      title.textContent = marker[1].charAt(0) + marker[1].slice(1).toLowerCase();
+
+      blockquote.classList.add("admonition", "admonition-" + kind);
+      blockquote.insertBefore(title, firstParagraph);
+    });
+  };
+
+  window.addEventListener("DOMContentLoaded", async () => {
+    renderAdmonitions();
+    await renderMermaid();
+  });
+</script>

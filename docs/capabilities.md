@@ -2,17 +2,17 @@
 
 Nearby docs:
 
-<a href="./inventory-capabilities.md"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./vault-capabilities.md"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="./README.md"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 This page is kept as a compatibility landing page for earlier references to
 `docs/capabilities.md`.
 
 The scenario content now lives in two explicit documents:
 
-- <a href="./inventory-capabilities.md"><kbd>INVENTORY CAPABILITIES</kbd></a>
-- <a href="./vault-capabilities.md"><kbd>VAULT CAPABILITIES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>VAULT CAPABILITIES</kbd></a>
 
 The split is intentional:
 

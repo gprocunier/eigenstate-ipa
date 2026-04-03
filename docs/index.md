@@ -21,8 +21,8 @@ Kerberos automation, and AAP secret retrieval.
 
 ## Start Here
 
-- [Collection Overview](../README.md)
-- [Documentation Map](./README.md)
+- [Collection Overview](https://github.com/gprocunier/eigenstate-ipa)
+- [Documentation Map](https://gprocunier.github.io/eigenstate-ipa/)
 - [Inventory Plugin](./inventory-plugin.md)
 - [Vault Plugin](./vault-plugin.md)
 - [Inventory Use Cases](./inventory-use-cases.md)
