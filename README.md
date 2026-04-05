@@ -10,8 +10,10 @@
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;IDM VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>&nbsp;&nbsp;KEYTAB CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>&nbsp;&nbsp;IDM VAULT USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
@@ -53,8 +55,9 @@ Without those two paths, operators usually end up with:
 - static inventory that drifts from the enrollment reality
 - policy data duplicated outside the identity platform
 - credentials copied into other stores because automation cannot read IdM vaults
+- keytabs staged by hand outside the automation lifecycle
 
-This collection closes that gap with one inventory plugin and one lookup plugin.
+This collection closes that gap with one inventory plugin and two lookup plugins.
 
 ## What The Collection Contains
 
@@ -64,11 +67,15 @@ At a high level:
   and turns them into Ansible inventory
 - `eigenstate.ipa.vault` uses `ipalib` to retrieve, inspect, and search IdM
   vault content for playbooks and AAP jobs
+- `eigenstate.ipa.keytab` uses `ipa-getkeytab` to retrieve Kerberos keytab
+  files for service and host principals, returning base64-encoded content ready
+  to write to disk or inject into an AAP credential type
 
 | Plugin | Type | FQCN | Purpose |
 | --- | --- | --- | --- |
 | IdM inventory | inventory | `eigenstate.ipa.idm` | Builds live inventory from IdM-enrolled hosts and policy-backed group relationships |
 | IdM vault | lookup | `eigenstate.ipa.vault` | Retrieves vault payloads, inspects metadata, and searches vault scopes in IdM |
+| Kerberos keytab | lookup | `eigenstate.ipa.keytab` | Retrieves Kerberos keytab files for service and host principals via `ipa-getkeytab` |
 
 ## Start Here
 
@@ -86,12 +93,13 @@ If you are wiring the plugins into actual automation, start with:
 
 - <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>INVENTORY PLUGIN</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>IDM VAULT PLUGIN</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>KEYTAB PLUGIN</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
 
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.0.3.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.1.0.tar.gz
 ```
 
 Verify:
@@ -99,13 +107,16 @@ Verify:
 ```bash
 ansible-doc -t inventory eigenstate.ipa.idm
 ansible-doc -t lookup eigenstate.ipa.vault
+ansible-doc -t lookup eigenstate.ipa.keytab
 ```
 
 > [!NOTE]
 > The inventory plugin talks to the IdM JSON-RPC API and can use either
 > password authentication or Kerberos with an optional keytab. The vault plugin
 > uses `ipalib` and therefore depends on the local IdM client Python libraries
-> being available on the control node or execution environment.
+> being available on the control node or execution environment. The keytab
+> plugin uses `ipa-getkeytab` from `ipa-client-utils` and does not require
+> `ipalib`; install `ipa-client-utils` on the control node or EE.
 
 ## Repository Layout
 
@@ -113,6 +124,7 @@ ansible-doc -t lookup eigenstate.ipa.vault
 | --- | --- |
 | `plugins/inventory/idm.py` | Dynamic inventory plugin for hosts, hostgroups, netgroups, and HBAC rules |
 | `plugins/lookup/vault.py` | Lookup plugin for IdM vault retrieval |
+| `plugins/lookup/keytab.py` | Lookup plugin for Kerberos keytab retrieval via `ipa-getkeytab` |
 | `docs/` | Operator and maintainer documentation aligned with the collection interface |
 | `scripts/validate-collection.sh` | Lightweight repo validation for YAML, plugin syntax, and collection build hygiene |
 | `Makefile` | Wrapper for repo validation targets |

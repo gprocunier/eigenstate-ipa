@@ -4,6 +4,7 @@ Nearby docs:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
@@ -36,14 +37,17 @@ flowchart LR
     cred["Controller credential\npassword or keytab"]
     inv["eigenstate.ipa.idm"]
     vault["eigenstate.ipa.vault"]
+    keytab["eigenstate.ipa.keytab"]
     idm["IdM / FreeIPA"]
 
     ctrl --> ee
     cred --> ee
     ee --> inv
     ee --> vault
+    ee --> keytab
     inv --> idm
     vault --> idm
+    keytab --> idm
 ```
 
 ## Execution Environment Requirements
@@ -70,6 +74,17 @@ For the IdM vault lookup:
 > contain
 > the IdM client libraries, vault retrieval will fail even if network access and
 > credentials are otherwise correct.
+
+For the Kerberos keytab lookup:
+
+- `ipa-client-utils` (provides the `ipa-getkeytab` binary)
+- `krb5-workstation` when password-driven or keytab-driven ticket acquisition is
+  needed
+
+> [!NOTE]
+> The keytab lookup does not require `python3-ipalib` or `python3-ipaclient`.
+> It shells out to `ipa-getkeytab` directly. If `ipa-client-utils` is not
+> installed, the lookup fails immediately with an actionable error message.
 
 ## Authentication Guidance
 
