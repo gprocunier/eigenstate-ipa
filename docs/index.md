@@ -10,21 +10,22 @@ description: >-
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It has
-two main jobs:
+three main jobs:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
 - IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and
   AAP
+- IdM CA certificate request, retrieval, and expiry search via the Dogtag PKI
+  backend
 
 It fits environments that already use IdM for host data, policy context, and
 runtime secret retrieval.
 
 ## Current Release
 
-- `1.0.4`
-- hardened the vault lookup boundary for safer text handling
-- tightened the sealed-artifact workflow documentation
-- validated the collection retrieval path end to end in the lab
+- `1.1.0`
+- added `eigenstate.ipa.cert` — IdM CA certificate request, retrieval, and
+  find operations without requiring certmonger on the target
 
 ## Start Here
 
@@ -32,8 +33,10 @@ runtime secret retrieval.
 - [Documentation Map](https://gprocunier.github.io/eigenstate-ipa/documentation-map.html)
 - [Inventory Plugin](./inventory-plugin.md)
 - [Vault Plugin](./vault-plugin.md)
+- [Cert Plugin](./cert-plugin.md)
 - [Inventory Use Cases](./inventory-use-cases.md)
 - [Vault Use Cases](./vault-use-cases.md)
+- [Cert Use Cases](./cert-use-cases.md)
 - [AAP Integration](./aap-integration.md)
 
 ## What The Collection Provides
@@ -43,6 +46,10 @@ runtime secret retrieval.
 - `eigenstate.ipa.vault`
   IdM vault retrieval, metadata inspection, scoped search, and binary-safe
   secret lookup.
+- `eigenstate.ipa.cert`
+  IdM CA certificate request and retrieval. Signs CSRs against service
+  principals, retrieves existing certs by serial number, and finds certs by
+  expiry window or principal — all via `ipalib` without certmonger.
 
 ## Best Fit
 
