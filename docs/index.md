@@ -19,6 +19,13 @@ two main jobs:
 It fits environments that already use IdM for host data, policy context, and
 runtime secret retrieval.
 
+## Current Release
+
+- `1.0.4`
+- hardened the vault lookup boundary for safer text handling
+- tightened the sealed-artifact workflow documentation
+- validated the collection retrieval path end to end in the lab
+
 ## Start Here
 
 - [Collection Overview](https://github.com/gprocunier/eigenstate-ipa)
