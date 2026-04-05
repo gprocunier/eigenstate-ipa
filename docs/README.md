@@ -11,6 +11,7 @@ the part of the collection you actually need.
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>&nbsp;&nbsp;KEYTAB CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>&nbsp;&nbsp;IDM VAULT USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>&nbsp;&nbsp;KEYTAB USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>&nbsp;&nbsp;TOP README&nbsp;&nbsp;</kbd></a>
 
@@ -54,6 +55,7 @@ Use these when you need:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>&nbsp;&nbsp;KEYTAB CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>&nbsp;&nbsp;KEYTAB USE CASES&nbsp;&nbsp;</kbd></a>
 
 Use these when you need:
 
@@ -61,6 +63,7 @@ Use these when you need:
 - explanation of retrieve vs generate modes and key rotation risk
 - encryption type selection
 - examples for deploying keytabs to HTTP, NFS, and host principals
+- worked playbook patterns for new service onboarding, fleet deployment, rotation, and vault-gated bootstrap
 
 ### I Want To Run This In Automation Controller / AAP
 
@@ -91,6 +94,7 @@ The top README covers collection scope, installation, and repository layout.
 | [Keytab Capabilities](./keytab-capabilities.md) | Scenario-driven guidance for Kerberos keytab deployment |
 | [Inventory Use Cases](./inventory-use-cases.md) | Detailed worked examples for inventory-backed automation |
 | [Vault Use Cases](./vault-use-cases.md) | Detailed worked examples for vault-backed secret retrieval |
+| [Keytab Use Cases](./keytab-use-cases.md) | Detailed worked examples for keytab retrieval and deployment |
 | [AAP Integration](./aap-integration.md) | Execution environment and controller integration patterns |
 
 ## Recommended Reading Order
@@ -104,4 +108,5 @@ The top README covers collection scope, installation, and repository layout.
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>INVENTORY USE CASES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>IDM VAULT USE CASES</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>KEYTAB USE CASES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
