@@ -659,9 +659,9 @@ class LookupModule(LookupBase):
         """Build scope arguments for IPA commands."""
         scope_args = {}
         if username:
-            scope_args['username'] = username
+            scope_args['username'] = to_text(username, errors='surrogate_or_strict')
         elif service:
-            scope_args['service'] = service
+            scope_args['service'] = to_text(service, errors='surrogate_or_strict')
         elif shared:
             scope_args['shared'] = True
         return scope_args
@@ -974,6 +974,7 @@ class LookupModule(LookupBase):
 
             results = []
             for vault_name in terms:
+                vault_name = to_text(vault_name, errors='surrogate_or_strict')
                 cache_key = (
                     operation,
                     vault_name,

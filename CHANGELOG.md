@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4
+
+- hardened the vault lookup plugin by normalizing lookup terms and scope values to text before IPA calls
+- added regression tests covering normalized term and scope handling in the vault lookup
+- corrected the sealed-artifact workflow documentation to reflect the certmonger prerequisite and the validated collection retrieval pattern
+
 ## 1.0.3
 
 - removed Mermaid from the packaged root README so Galaxy renders the overview cleanly

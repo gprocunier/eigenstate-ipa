@@ -194,6 +194,30 @@ class VaultLookupTests(unittest.TestCase):
         self.assertEqual(result[0]["description"], "sealed bootstrap payload")
         self.assertEqual(result[0]["vault_id"], "vault-42")
 
+    def test_run_normalizes_term_to_text_before_retrieval(self):
+        options = {
+            "server": "idm-01.example.com",
+            "ipaadmin_principal": "admin",
+            "ipaadmin_password": "secret",
+            "verify": "/etc/ipa/ca.crt",
+            "shared": True,
+            "encoding": "utf-8",
+            "result_format": "value",
+        }
+        seen = {}
+
+        def retrieve(name, scope_label, **kwargs):
+            seen["name"] = name
+            return "secret"
+
+        lookup = self._make_lookup(options, retrieve=retrieve)
+
+        result = lookup.run([b"db-pass"], variables={})
+
+        self.assertEqual(result, ["secret"])
+        self.assertEqual(seen["name"], "db-pass")
+        self.assertIsInstance(seen["name"], str)
+
     def test_show_operation_returns_metadata(self):
         options = {
             "server": "idm-01.example.com",
@@ -249,6 +273,17 @@ class VaultLookupTests(unittest.TestCase):
         lookup = self.mod.LookupModule()
         with self.assertRaises(self.mod.AnsibleLookupError):
             lookup._validate_scope("user", "svc", True)
+
+    def test_scope_args_normalize_text_values(self):
+        lookup = self.mod.LookupModule()
+        self.assertEqual(
+            lookup._scope_args(b"appuser", None, False),
+            {"username": "appuser"},
+        )
+        self.assertEqual(
+            lookup._scope_args(None, b"HTTP/app.example.com", False),
+            {"service": "HTTP/app.example.com"},
+        )
 
     def test_decryption_validation_rejects_conflicts(self):
         lookup = self.mod.LookupModule()

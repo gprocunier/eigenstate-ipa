@@ -27,7 +27,10 @@ It is the IdM-vault-side companion to the inventory capabilities guide.
 - [8. Metadata Inspection Before Retrieval](#8-metadata-inspection-before-retrieval)
 - [9. Brokered Sealed Artifact Metadata Convention](#9-brokered-sealed-artifact-metadata-convention)
 - [10. Brokered Sealed Artifact Delivery](#10-brokered-sealed-artifact-delivery)
-- [11. Structured Text Payloads](#11-structured-text-payloads)
+- [11. Sealed Artifact Full Workflow](#11-sealed-artifact-full-workflow)
+  - [IPA Admin Path](#ipa-admin-path)
+  - [Delegated Operator Path](#delegated-operator-path)
+- [12. Structured Text Payloads](#12-structured-text-payloads)
 - [Quick Decision Matrix](#quick-decision-matrix)
 
 ## Retrieval Model
@@ -380,7 +383,353 @@ This is not a HashiCorp Vault-style sealing controller or an Ansible Vault
 replacement. The collection retrieves and brokers the artifact. The downstream
 system is still responsible for final consumption or unseal.
 
-## 11. Structured Text Payloads
+## 11. Sealed Artifact Full Workflow
+
+The sections above describe the brokered delivery pattern conceptually. This
+section covers the full end-to-end workflow with commands, for both the IPA
+admin path and a delegated operator path where admin rights are not required
+after initial vault setup.
+
+### The Key Distribution Problem
+
+A sealed artifact can only be opened by the target host's private key. That
+key never moves. The sealer only needs the target's public certificate — which
+IdM can issue for an enrolled host and which is not sensitive material.
+
+In practice, enrollment and certificate materialization are separate concerns:
+
+- `ipa-client-install` gives the host its enrolled IdM identity
+- a CMS-usable X.509 cert/private-key pair may still need to be requested with
+  certmonger before this workflow will work
+
+Do not assume the target already has a decryptable host cert just because it is
+enrolled. Verify with `getcert list` or `ipa-getcert list` first.
+
+```mermaid
+flowchart LR
+    subgraph prep["Target Preparation"]
+        enroll["Host enrolled in IdM"]
+        certreq["Request host cert with certmonger\nif no cert/key exists yet"]
+        hostpair["Host X.509 cert + private key\nprivate key never leaves target"]
+        enroll --> certreq --> hostpair
+    end
+
+    subgraph seal["Seal"]
+        cert["Target public certificate\nnot sensitive"]
+        blob["Sealed binary blob"]
+        cert -->|"openssl cms -encrypt -recip host-cert.pem"| blob
+    end
+
+    subgraph store["Store"]
+        vault["IdM vault\nKerberos access control"]
+        blob -->|"ipa vault-archive"| vault
+    end
+
+    subgraph broker["Broker"]
+        ansible["eigenstate.ipa.vault\nencoding=base64\nnever sees plaintext"]
+        vault -->|"retrieve sealed blob"| ansible
+    end
+
+    subgraph unseal["Unseal"]
+        deliver["Deliver opaque blob to target"]
+        target["openssl cms -decrypt\nusing target private key"]
+        ansible --> deliver --> target
+    end
+
+    hostpair -. export public cert .-> cert
+
+    style prep fill:#2d2d2d,color:#e0e0e0
+    style seal fill:#533483,color:#e0e0e0
+    style store fill:#1a1a2e,color:#e0e0e0
+    style broker fill:#16213e,color:#e0e0e0
+    style unseal fill:#0f3460,color:#e0e0e0
+```
+
+### Prerequisite — Confirm A Target Cert/Key Pair Exists
+
+Before sealing anything, confirm the target already has a CMS-usable host
+certificate and matching private key. If not, request one explicitly.
+
+Example on the target host:
+
+```bash
+getcert list
+
+getcert request \
+  -I appserv-01-sealed-artifact \
+  -c IPA \
+  -k /etc/pki/tls/private/appserv-01-sealed-artifact.key \
+  -f /etc/pki/tls/certs/appserv-01-sealed-artifact.pem \
+  -K host/appserv-01.idm.corp.lan@IDM.CORP.LAN \
+  -D appserv-01.idm.corp.lan \
+  -w
+```
+
+Use the resulting cert/key paths consistently in both the seal verification and
+the final decrypt step.
+
+### IPA Admin Path
+
+```mermaid
+flowchart LR
+    kinit["kinit admin"]
+    prereq["Verify or request target cert/key"]
+    export["Export target public cert"]
+    verify["openssl x509 -noout -subject -dates"]
+    seal["openssl cms -encrypt"]
+    vaultadd["ipa vault-add --type standard --shared"]
+    archive["ipa vault-archive --shared"]
+    retrieve["eigenstate.ipa.vault lookup\nencoding=base64, include_metadata=true"]
+    copy["copy sealed blob to target"]
+    unseal["openssl cms -decrypt\nusing target cert/key"]
+    cleanup["remove sealed blob"]
+
+    prereq --> export --> verify --> seal --> vaultadd --> archive --> retrieve --> copy --> unseal --> cleanup
+    kinit --> export
+
+    style kinit fill:#2d2d2d,color:#e0e0e0
+    style prereq fill:#2d2d2d,color:#e0e0e0
+    style export fill:#533483,color:#e0e0e0
+    style verify fill:#533483,color:#e0e0e0
+    style seal fill:#533483,color:#e0e0e0
+    style vaultadd fill:#1a1a2e,color:#e0e0e0
+    style archive fill:#1a1a2e,color:#e0e0e0
+    style retrieve fill:#16213e,color:#e0e0e0
+    style copy fill:#0f3460,color:#e0e0e0
+    style unseal fill:#0f3460,color:#e0e0e0
+    style cleanup fill:#0f3460,color:#e0e0e0
+```
+
+Use this when the operator has full IdM admin rights and owns the vault
+directly.
+
+**Step 1 — Ensure the target has a usable host cert/key pair**
+
+```bash
+getcert list
+```
+
+If no suitable cert exists yet, request one on the target host:
+
+```bash
+getcert request \
+  -I appserv-01-sealed-artifact \
+  -c IPA \
+  -k /etc/pki/tls/private/appserv-01-sealed-artifact.key \
+  -f /etc/pki/tls/certs/appserv-01-sealed-artifact.pem \
+  -K host/appserv-01.idm.corp.lan@IDM.CORP.LAN \
+  -D appserv-01.idm.corp.lan \
+  -w
+```
+
+**Step 2 — Export the host certificate**
+
+```bash
+kinit admin
+
+# Use whichever export path your environment supports.
+# Example: copy the cert from the target after certmonger issued it.
+scp root@appserv-01.idm.corp.lan:/etc/pki/tls/certs/appserv-01-sealed-artifact.pem \
+  appserv-01.pem
+
+openssl x509 -in appserv-01.pem -noout -subject -dates
+```
+
+The host certificate is not sensitive. Any authenticated principal can read it.
+
+**Step 3 — Seal the artifact**
+
+```bash
+openssl cms -encrypt \
+  -in artifact.bin \
+  -out sealed.bin \
+  -recip appserv-01.pem \
+  -aes256 \
+  -binary \
+  -outform DER
+```
+
+Only `appserv-01` can decrypt this. The operator cannot unseal what they just
+sealed.
+
+**Step 4 — Create the vault and archive the sealed blob**
+
+```bash
+ipa vault-add appserv-01-bootstrap \
+  --type standard \
+  --shared
+
+ipa vault-archive appserv-01-bootstrap \
+  --in sealed.bin \
+  --shared
+
+ipa vault-show appserv-01-bootstrap --shared
+```
+
+**Step 5 — Retrieve and deliver via Ansible**
+
+```yaml
+- name: Deliver sealed bootstrap artifact
+  hosts: appserv-01.idm.corp.lan
+  gather_facts: false
+
+  tasks:
+    - name: Retrieve sealed blob from IdM vault
+      ansible.builtin.set_fact:
+        sealed_artifact: "{{ lookup('eigenstate.ipa.vault',
+                             'appserv-01-bootstrap',
+                             server='idm-01.idm.corp.lan',
+                             kerberos_keytab='/runner/env/ipa/admin.keytab',
+                             shared=true,
+                             encoding='base64',
+                             result_format='record',
+                             include_metadata=true,
+                             verify='/etc/ipa/ca.crt') }}"
+      delegate_to: localhost
+      run_once: true
+
+    - name: Write sealed blob to target
+      ansible.builtin.copy:
+        content: "{{ sealed_artifact.value | b64decode }}"
+        dest: /var/lib/bootstrap/sealed.bin
+        mode: "0600"
+        owner: root
+        group: root
+
+    - name: Unseal artifact on target
+      ansible.builtin.command:
+        cmd: >
+          openssl cms -decrypt
+          -in /var/lib/bootstrap/sealed.bin
+          -recip /etc/pki/tls/certs/appserv-01-sealed-artifact.pem
+          -inkey /etc/pki/tls/private/appserv-01-sealed-artifact.key
+          -inform DER
+          -out /var/lib/bootstrap/artifact.bin
+
+    - name: Remove sealed blob
+      ansible.builtin.file:
+        path: /var/lib/bootstrap/sealed.bin
+        state: absent
+```
+
+Do not assume a cert at `/etc/pki/tls/certs/` exists automatically just because
+the host is enrolled. Verify the exact cert/key paths with `getcert list` or
+`ipa-getcert list` and use those paths consistently.
+
+If you are validating the decrypt step directly on the automation controller
+instead of on the target host, make sure the play has permission to read the
+certificate and private key. In the lab, controller-side decrypt on
+the example controller required `become: true` because the host key material was
+root-readable only.
+
+### Delegated Operator Path
+
+```mermaid
+flowchart LR
+    admin["Admin one-time setup\nvault-add + vault-add-member"]
+    prereq["Target cert/key exists"]
+    operator["Operator seals artifact"]
+    archive["Operator archives sealed blob"]
+    retrieve["Automation retrieves opaque blob"]
+    decrypt["Target decrypts with host private key"]
+
+    admin --> operator
+    prereq --> operator --> archive --> retrieve --> decrypt
+
+    style admin fill:#2d2d2d,color:#e0e0e0
+    style prereq fill:#2d2d2d,color:#e0e0e0
+    style operator fill:#533483,color:#e0e0e0
+    style archive fill:#1a1a2e,color:#e0e0e0
+    style retrieve fill:#16213e,color:#e0e0e0
+    style decrypt fill:#0f3460,color:#e0e0e0
+```
+
+Use this when the operator does not have IdM admin rights. An admin creates
+the vault and delegates access once. All subsequent operations run under the
+operator's own principal.
+
+| Step | Requires IdM admin? | Who acts |
+| --- | --- | --- |
+| Read host cert | No | Any authenticated principal |
+| Seal artifact | No | Any operator |
+| Create vault | Yes | IdM admin, one time |
+| Delegate vault access | Yes | IdM admin, one time |
+| Archive sealed blob | No | Delegated operator |
+| Retrieve via Ansible | No | Service principal with vault membership |
+| Unseal on host | No | Target host or local process |
+
+**Admin one-time setup**
+
+```bash
+kinit admin
+
+ipa vault-add appserv-01-bootstrap \
+  --type standard \
+  --shared
+
+# Grant the delegated operator write access
+ipa vault-add-member appserv-01-bootstrap \
+  --shared \
+  --users operator-principal
+
+# Grant the automation service principal read access
+ipa vault-add-member appserv-01-bootstrap \
+  --shared \
+  --services "HTTP/automation.idm.corp.lan"
+```
+
+**Operator steps — no admin rights required after this point**
+
+```bash
+# Authenticate as the delegated operator
+kinit operator-principal
+
+# Ensure the target cert/key pair exists first
+getcert list
+
+# Export or copy the host certificate using a method your environment supports
+scp root@appserv-01.idm.corp.lan:/etc/pki/tls/certs/appserv-01-sealed-artifact.pem \
+  appserv-01.pem
+
+# Seal the artifact locally
+openssl cms -encrypt \
+  -in artifact.bin \
+  -out sealed.bin \
+  -recip appserv-01.pem \
+  -aes256 \
+  -binary \
+  -outform DER
+
+# Archive to the vault — operator is a member, no admin ticket required
+ipa vault-archive appserv-01-bootstrap \
+  --in sealed.bin \
+  --shared
+```
+
+The Ansible retrieval and unseal steps are identical to the admin path. The
+only difference is which principal the service keytab belongs to.
+
+In this pattern, the collection returns the sealed artifact as a
+base64-encoded structured record with:
+
+- `encoding='base64'`
+- `result_format='record'`
+- `include_metadata=true`
+
+and the resulting blob is only decryptable by the intended target that holds
+the matching private key.
+
+> [!NOTE]
+> For a tighter ownership boundary, use a service-scoped vault tied to
+> `host/appserv-01.idm.corp.lan` rather than a shared vault. This limits
+> retrieval to principals explicitly granted access to that service scope.
+
+> [!CAUTION]
+> If the host certificate is renewed or replaced after the artifact is sealed,
+> the sealed blob cannot be decrypted with the new key pair. Re-seal against
+> the current cert and re-archive before the next delivery run.
+
+## 12. Structured Text Payloads
 
 Use the text-normalization helpers when the vault payload is text, but the
 consumer really wants structured data or newline-free values.
