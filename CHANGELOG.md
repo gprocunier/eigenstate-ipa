@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.1
+
+- fixed the `eigenstate.ipa.vault_write` module `DOCUMENTATION` block so `ansible-doc` and Ansible Galaxy can parse the module docs cleanly
+
 ## 1.5.0
 
 - added `eigenstate.ipa.vault_write` for IdM vault lifecycle management from Ansible

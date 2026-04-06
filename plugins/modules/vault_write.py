@@ -29,14 +29,19 @@ module: vault_write
 version_added: "1.5.0"
 short_description: Create, archive, modify, and delete FreeIPA/IdM vaults
 description:
-  - Manages FreeIPA/IdM vault lifecycle — create, update, archive secrets,
-    and delete vaults.
-  - Complements the C(eigenstate.ipa.vault) lookup plugin, which handles
+  - >-
+    Manages FreeIPA/IdM vault lifecycle, including creating vaults,
+    archiving secrets, updating membership, and deleting vaults.
+  - >-
+    Complements the C(eigenstate.ipa.vault) lookup plugin, which handles
     secret retrieval.
-  - Supports standard, symmetric, and asymmetric vault types.
-  - Fully idempotent: repeated runs with the same parameters produce no
+  - >-
+    Supports standard, symmetric, and asymmetric vault types.
+  - >-
+    Fully idempotent; repeated runs with the same parameters produce no
     additional changes.
-  - Supports Ansible check mode.
+  - >-
+    Supports Ansible check mode.
 options:
   name:
     description: Name of the vault.
