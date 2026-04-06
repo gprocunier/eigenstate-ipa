@@ -1,6 +1,6 @@
 # eigenstate.ipa
 
-**An Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory and IdM vault lookup plugins for Kerberos-friendly automation, AAP, and secure secret retrieval.**
+**An Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory, IdM vault lookup, and Kerberos keytab retrieval plugins for Kerberos-friendly automation, AAP, and secure secret delivery.**
 
 [![License: GPL-3.0](https://img.shields.io/github/license/gprocunier/eigenstate-ipa)](COPYING)
 ![Ansible 2.14+](https://img.shields.io/badge/Ansible-2.14%2B-blue)

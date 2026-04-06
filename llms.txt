@@ -1,7 +1,8 @@
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
-(IdM / FreeIPA). It exposes one inventory plugin and two lookup plugins:
+(IdM / FreeIPA). It exposes one inventory plugin and two lookup plugins for
+live inventory, vault-backed secret retrieval, and Kerberos keytab delivery:
 
 - `eigenstate.ipa.idm`
 - `eigenstate.ipa.vault`
@@ -59,7 +60,8 @@ The collection treats IdM as both:
 ### `eigenstate.ipa.keytab`
 
 - lookup plugin
-- uses `ipa-getkeytab` (from `ipa-client-utils`) for keytab retrieval
+- uses `ipa-getkeytab` from the platform IPA client tooling for keytab
+  retrieval
 - no ipalib dependency at retrieval time
 - supports `retrieve` mode (safe default, existing keys only) and `generate`
   mode (rotates principal keys; invalidates all existing keytabs)
@@ -71,7 +73,8 @@ The collection treats IdM as both:
 - target Ansible floor: `2.14.0`
 - RHEL 9 compatibility is intentional
 - vault lookups require `python3-ipalib` and `python3-ipaclient`
-- keytab lookups require `ipa-client-utils` (`ipa-getkeytab` binary)
+- keytab lookups require the platform package that provides `ipa-getkeytab`
+  on the control node or execution environment
 - controller or execution-environment usage may also require Kerberos client
   tooling
 
