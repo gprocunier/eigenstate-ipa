@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1
+
+- refreshed release metadata to match the keytab-enabled collection scope
+- updated the packaged README, LLM metadata, Galaxy metadata, and citation file for the 1.1.1 release
+
 ## 1.1.0
 
 - added `eigenstate.ipa.keytab` lookup plugin for retrieving Kerberos keytab
