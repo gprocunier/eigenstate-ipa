@@ -1,11 +1,12 @@
 ---
 namespace: "eigenstate"
 name: "ipa"
-version: "1.1.1"
+version: "1.2.0"
 description: >-
   An Ansible collection for Red Hat IdM / FreeIPA with dynamic
-  inventory, IdM vault lookup, and Kerberos keytab retrieval plugins
-  for Kerberos-friendly automation, AAP, and secure secret delivery.
+  inventory, IdM vault lookup, Kerberos keytab retrieval, and
+  certificate issuance plugins for Kerberos-friendly automation, AAP,
+  and secure secret delivery.
 
 authors:
   - "Greg Procunier"
@@ -28,6 +29,7 @@ tags:
   - "idm"
   - "inventory"
   - "vault"
+  - "cert"
   - "secrets"
   - "keytab"
   - "kerberos"
@@ -36,3 +38,4 @@ tags:
 build_ignore:
   - "*.tar.gz"
   - ".git"
+  - ".ansible"

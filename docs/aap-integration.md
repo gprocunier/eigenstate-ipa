@@ -5,6 +5,7 @@ Nearby docs:
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>&nbsp;&nbsp;IDM CERT PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
@@ -16,7 +17,7 @@ It covers:
 
 - what must exist in the execution environment
 - how to authenticate non-interactively
-- how to wire the inventory plugin and IdM vault lookup into controller objects
+- how to wire the inventory plugin and the lookup plugins into controller objects
 
 ## Contents
 
@@ -86,6 +87,18 @@ For the Kerberos keytab lookup:
 > The keytab lookup does not require `python3-ipalib` or `python3-ipaclient`.
 > It shells out to `ipa-getkeytab` directly. If that binary is not installed,
 > the lookup fails immediately with a release-aware install hint.
+
+For the IdM certificate lookup:
+
+- `python3-ipalib`
+- `python3-ipaclient`
+- `krb5-workstation` when password-driven or keytab-driven ticket acquisition is
+  needed
+
+> [!NOTE]
+> The cert lookup talks to the IdM CA through `ipalib` and does not require
+> `certmonger` in the EE. It does require the IdM client Python libraries to be
+> present, like the vault lookup.
 
 ## Authentication Guidance
 
