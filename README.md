@@ -118,8 +118,9 @@ ansible-doc -t lookup eigenstate.ipa.keytab
 > password authentication or Kerberos with an optional keytab. The vault plugin
 > uses `ipalib` and therefore depends on the local IdM client Python libraries
 > being available on the control node or execution environment. The keytab
-> plugin uses `ipa-getkeytab` from `ipa-client-utils` and does not require
-> `ipalib`; install `ipa-client-utils` on the control node or EE.
+> plugin shells out to `ipa-getkeytab` and does not require `ipalib`; on RHEL
+> 10 install `ipa-client`, and on other releases install the package that
+> provides `ipa-getkeytab` on the control node or EE.
 
 ## Repository Layout
 

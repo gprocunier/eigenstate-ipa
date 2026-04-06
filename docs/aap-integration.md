@@ -77,14 +77,15 @@ For the IdM vault lookup:
 
 For the Kerberos keytab lookup:
 
-- `ipa-client-utils` (provides the `ipa-getkeytab` binary)
+- on RHEL 10, `ipa-client` (provides the `ipa-getkeytab` binary there)
+- on other EE bases, the package that provides `ipa-getkeytab`
 - `krb5-workstation` when password-driven or keytab-driven ticket acquisition is
   needed
 
 > [!NOTE]
 > The keytab lookup does not require `python3-ipalib` or `python3-ipaclient`.
-> It shells out to `ipa-getkeytab` directly. If `ipa-client-utils` is not
-> installed, the lookup fails immediately with an actionable error message.
+> It shells out to `ipa-getkeytab` directly. If that binary is not installed,
+> the lookup fails immediately with a release-aware install hint.
 
 ## Authentication Guidance
 

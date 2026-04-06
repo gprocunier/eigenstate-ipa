@@ -84,15 +84,17 @@ class KeytabLookupTests(unittest.TestCase):
 
         lookup.set_options = set_options
         lookup.get_option = lambda key: options.get(key, defaults.get(key))
-        lookup._ensure_ipa_client_utils = lambda: None
-        lookup._resolve_verify = lambda verify: verify or "/etc/ipa/ca.crt"
+        lookup._ensure_ipa_getkeytab_available = lambda: None
+        lookup._resolve_verify = (
+            lambda verify: "/etc/ipa/ca.crt" if verify is None else verify
+        )
 
         # Default retrieve stub returns _FAKE_KEYTAB
         if retrieve is not None:
             lookup._retrieve_keytab = retrieve
         else:
             lookup._retrieve_keytab = (
-                lambda principal, server, enctypes, retrieve_mode:
+                lambda principal, server, enctypes, retrieve_mode, verify:
                 _FAKE_KEYTAB
             )
 
@@ -124,6 +126,7 @@ class KeytabLookupTests(unittest.TestCase):
                 "idm-01.example.com",
                 [],
                 "retrieve",
+                "/etc/ipa/ca.crt",
             )
 
         self.assertIn("-r", seen_cmd["cmd"])
@@ -145,6 +148,7 @@ class KeytabLookupTests(unittest.TestCase):
                 "idm-01.example.com",
                 [],
                 "generate",
+                "/etc/ipa/ca.crt",
             )
 
         self.assertNotIn("-r", seen_cmd["cmd"])
@@ -170,6 +174,7 @@ class KeytabLookupTests(unittest.TestCase):
                 "idm-01.example.com",
                 ["aes256-cts", "aes128-cts"],
                 "retrieve",
+                "/etc/ipa/ca.crt",
             )
 
         cmd = seen_cmd["cmd"]
@@ -194,9 +199,79 @@ class KeytabLookupTests(unittest.TestCase):
                 "idm-01.example.com",
                 [],
                 "retrieve",
+                False,
             )
 
         self.assertNotIn("-e", seen_cmd["cmd"])
+
+    def test_verify_path_adds_cacert_flag(self):
+        """verify path must be passed via --cacert."""
+        seen_cmd = {}
+
+        def fake_run(cmd, **kwargs):
+            seen_cmd["cmd"] = cmd
+            with open(cmd[cmd.index("-k") + 1], "wb") as fh:
+                fh.write(_FAKE_KEYTAB)
+            return mock.Mock(returncode=0, stderr="")
+
+        lookup = self.mod.LookupModule()
+        with mock.patch.object(self.mod.subprocess, "run", fake_run):
+            lookup._retrieve_keytab(
+                "HTTP/host.example.com",
+                "idm-01.example.com",
+                [],
+                "retrieve",
+                "/etc/ipa/ca.crt",
+            )
+
+        cmd = seen_cmd["cmd"]
+        self.assertIn("--cacert", cmd)
+        self.assertEqual(cmd[cmd.index("--cacert") + 1], "/etc/ipa/ca.crt")
+
+    def test_verify_false_omits_cacert_flag(self):
+        """verify=false should rely on system trust and omit --cacert."""
+        seen_cmd = {}
+
+        def fake_run(cmd, **kwargs):
+            seen_cmd["cmd"] = cmd
+            with open(cmd[cmd.index("-k") + 1], "wb") as fh:
+                fh.write(_FAKE_KEYTAB)
+            return mock.Mock(returncode=0, stderr="")
+
+        lookup = self.mod.LookupModule()
+        with mock.patch.object(self.mod.subprocess, "run", fake_run):
+            lookup._retrieve_keytab(
+                "HTTP/host.example.com",
+                "idm-01.example.com",
+                [],
+                "retrieve",
+                False,
+            )
+
+        self.assertNotIn("--cacert", seen_cmd["cmd"])
+
+    def test_keytab_output_path_is_not_precreated(self):
+        """ipa-getkeytab must receive a path that does not already exist."""
+        seen = {}
+
+        def fake_run(cmd, **kwargs):
+            keytab_path = cmd[cmd.index("-k") + 1]
+            seen["exists_before"] = os.path.exists(keytab_path)
+            with open(keytab_path, "wb") as fh:
+                fh.write(_FAKE_KEYTAB)
+            return mock.Mock(returncode=0, stderr="")
+
+        lookup = self.mod.LookupModule()
+        with mock.patch.object(self.mod.subprocess, "run", fake_run):
+            lookup._retrieve_keytab(
+                "HTTP/host.example.com",
+                "idm-01.example.com",
+                [],
+                "retrieve",
+                "/etc/ipa/ca.crt",
+            )
+
+        self.assertFalse(seen["exists_before"])
 
     # -----------------------------------------------------------------------
     # Result format tests
@@ -241,7 +316,7 @@ class KeytabLookupTests(unittest.TestCase):
         keytab_b = b"\x05\x02" + b"\xbb" * 8
         payloads = iter([keytab_a, keytab_b])
 
-        def retrieve(principal, server, enctypes, retrieve_mode):
+        def retrieve(principal, server, enctypes, retrieve_mode, verify):
             return next(payloads)
 
         options = {"result_format": "value"}
@@ -265,12 +340,24 @@ class KeytabLookupTests(unittest.TestCase):
     # -----------------------------------------------------------------------
 
     def test_ipa_getkeytab_not_found(self):
-        """Missing ipa-getkeytab binary raises AnsibleLookupError with hint."""
+        """Missing ipa-getkeytab binary raises an actionable install hint."""
         lookup = self.mod.LookupModule()
         with mock.patch.object(self.mod.shutil, "which", return_value=None):
-            with self.assertRaises(self.mod.AnsibleLookupError) as ctx:
-                lookup._ensure_ipa_client_utils()
-        self.assertIn("ipa-client-utils", str(ctx.exception))
+            with mock.patch.object(lookup, "_rhel_major_version", return_value=10):
+                with self.assertRaises(self.mod.AnsibleLookupError) as ctx:
+                    lookup._ensure_ipa_getkeytab_available()
+        self.assertIn("dnf install ipa-client", str(ctx.exception))
+
+    def test_resolve_verify_false_returns_false(self):
+        """Boolean false should disable the explicit --cacert override."""
+        lookup = self.mod.LookupModule()
+        self.assertIs(lookup._resolve_verify(False), False)
+
+    def test_resolve_verify_missing_path_raises(self):
+        """A missing CA path should raise an AnsibleLookupError."""
+        lookup = self.mod.LookupModule()
+        with self.assertRaises(self.mod.AnsibleLookupError):
+            lookup._resolve_verify('/tmp/definitely-missing-ca.crt')
 
     def test_nonzero_exit_raises_error(self):
         """Non-zero ipa-getkeytab exit raises AnsibleLookupError with stderr."""
@@ -285,6 +372,7 @@ class KeytabLookupTests(unittest.TestCase):
                     "idm-01.example.com",
                     [],
                     "retrieve",
+                    "/etc/ipa/ca.crt",
                 )
         self.assertIn("Principal not found", str(ctx.exception))
 
@@ -302,6 +390,7 @@ class KeytabLookupTests(unittest.TestCase):
                     "idm-01.example.com",
                     [],
                     "retrieve",
+                    "/etc/ipa/ca.crt",
                 )
         self.assertIn("empty keytab", str(ctx.exception))
 
@@ -318,6 +407,7 @@ class KeytabLookupTests(unittest.TestCase):
                     "idm-01.example.com",
                     [],
                     "retrieve",
+                    "/etc/ipa/ca.crt",
                 )
         self.assertIn("timed out", str(ctx.exception))
 

@@ -402,7 +402,7 @@ The job template never handles the keytab bytes directly.
 ```mermaid
 flowchart TD
     cred["Controller credential\nadmin.keytab mounted at /runner/env/ipa/admin.keytab"]
-    ee["Execution environment\nipa-client-utils + krb5-workstation"]
+    ee["Execution environment\nipa-client + krb5-workstation\n(RHEL 10 validated path)"]
     lookup["eigenstate.ipa.keytab"]
     idm["IdM / FreeIPA"]
     deployed["Service keytab deployed to target"]
@@ -434,13 +434,15 @@ EE package additions required:
 ```yaml
 dependencies:
   system:
-    - ipa-client-utils
+    - ipa-client      # RHEL 10 validated path
     - krb5-workstation
 ```
 
-`ipa-client-utils` provides the `ipa-getkeytab` binary. `krb5-workstation`
-provides `kinit` for the credential cache setup. Neither `python3-ipalib`
-nor `python3-ipaclient` is required for keytab retrieval.
+On the validated RHEL 10 path, `ipa-client` provides the `ipa-getkeytab`
+binary. On other releases, install the package that provides
+`/usr/sbin/ipa-getkeytab`. `krb5-workstation` provides `kinit` for the
+credential cache setup. Neither `python3-ipalib` nor `python3-ipaclient` is
+required for keytab retrieval.
 
 ## Kerberos Is A Good Default Here
 

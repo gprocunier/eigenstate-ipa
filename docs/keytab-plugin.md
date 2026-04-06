@@ -54,11 +54,12 @@ flowchart TD
     idm --> out
 ```
 
-The lookup shells out to `ipa-getkeytab` from the `ipa-client-utils` package.
+The lookup shells out to `ipa-getkeytab` from the local IdM client packages.
 It does not use `ipalib` for the retrieval step. The `ipa-getkeytab` binary
 handles the Kerberos-authenticated LDAP protocol internally. The only Ansible-
 side Python dependency is a working Kerberos credential cache before the
-subprocess runs.
+subprocess runs. On the validated RHEL 10 path, `ipa-getkeytab` is provided by
+`ipa-client`.
 
 ## Authentication Model
 
@@ -84,10 +85,12 @@ warns if those files have permissions broader than `0600`.
 
 TLS verification behavior:
 
-- `verify: /path/to/ca.crt` enables explicit certificate verification
+- `verify: /path/to/ca.crt` adds `--cacert /path/to/ca.crt` to `ipa-getkeytab`
+- `verify: false` skips the explicit `--cacert` override and relies on the
+  local system trust configuration
 - omitting `verify` first tries `/etc/ipa/ca.crt`
-- if no local CA path is found, the plugin warns and falls back to no
-  verification
+- if no local CA path is found, the plugin warns and falls back to the system
+  trust store
 
 ## Retrieve vs Generate
 

@@ -31,7 +31,7 @@ short_description: Retrieve Kerberos keytabs from FreeIPA/IDM
 description:
   - Retrieves Kerberos keytab files for service or host principals
     registered in FreeIPA/IDM.
-  - Uses C(ipa-getkeytab) from the C(ipa-client-utils) package to perform
+  - Uses C(ipa-getkeytab) from the local IdM client packages to perform
     the keytab extraction over an authenticated LDAP connection.
   - Authenticates via password (converted to a Kerberos ticket) or an
     existing Kerberos ticket/keytab.
@@ -81,10 +81,11 @@ options:
       - name: IPA_KEYTAB
   verify:
     description: >-
-      Path to the IPA CA certificate for TLS verification, or C(false) to
-      disable verification. If not set, the plugin tries C(/etc/ipa/ca.crt)
-      and falls back to the system CA bundle with a warning.
-    type: str
+      Path to the IPA CA certificate for an explicit C(--cacert) override, or
+      C(false) to rely on the local system trust configuration instead. If not
+      set, the plugin tries C(/etc/ipa/ca.crt) and otherwise falls back to the
+      system trust store with a warning.
+    type: raw
     env:
       - name: IPA_VERIFY
   retrieve_mode:
@@ -117,9 +118,10 @@ options:
     default: value
     choices: ["value", "record", "map"]
 notes:
-  - C(ipa-getkeytab) from the C(ipa-client-utils) package must be installed
-    on the control node or execution environment. Install with
-    C(dnf install ipa-client-utils).
+  - The package that provides C(ipa-getkeytab) must be installed on the
+    control node or execution environment. On RHEL 10, install
+    C(ipa-client). On other releases, install the package that provides
+    C(/usr/sbin/ipa-getkeytab).
   - The C(generate) retrieve mode rotates the principal's keys. Any service
     or host that holds an existing keytab for the principal will be unable
     to authenticate until it receives the new keytab. Use C(retrieve) unless
@@ -267,13 +269,57 @@ class LookupModule(LookupBase):
     # Dependency checks
     # ------------------------------------------------------------------
 
-    def _ensure_ipa_client_utils(self):
+    def _read_os_release(self):
+        """Read os-release data when available."""
+        for path in ('/etc/os-release', '/usr/lib/os-release'):
+            if not os.path.exists(path):
+                continue
+            data = {}
+            with open(path, 'r', encoding='utf-8') as fh:
+                for line in fh:
+                    line = line.strip()
+                    if not line or line.startswith('#') or '=' not in line:
+                        continue
+                    key, value = line.split('=', 1)
+                    data[key] = value.strip().strip('\"')
+            return data
+        return {}
+
+    def _rhel_major_version(self):
+        """Return the local RHEL major version when it can be detected."""
+        data = self._read_os_release()
+        distro_id = data.get('ID', '').lower()
+        distro_like = data.get('ID_LIKE', '').lower().split()
+        if distro_id not in ('rhel', 'redhat') and 'rhel' not in distro_like:
+            return None
+
+        version_id = data.get('VERSION_ID', '')
+        major = version_id.split('.', 1)[0]
+        if major.isdigit():
+            return int(major)
+        return None
+
+    def _ipa_getkeytab_install_hint(self):
+        """Return a release-aware install hint for ipa-getkeytab."""
+        rhel_major = self._rhel_major_version()
+        if rhel_major == 10:
+            return (
+                "Install ipa-client:\n"
+                "  dnf install ipa-client\n"
+                "On a RHEL 10 AAP Execution Environment, add ipa-client "
+                "to the EE package list.")
+
+        return (
+            "Install the package that provides ipa-getkeytab for this "
+            "release. For example:\n"
+            "  dnf provides '*/ipa-getkeytab'\n"
+            "On RHEL 10, the provider is ipa-client.")
+
+    def _ensure_ipa_getkeytab_available(self):
         if not shutil.which('ipa-getkeytab'):
             raise AnsibleLookupError(
-                "'ipa-getkeytab' not found. Install ipa-client-utils:\n"
-                "  dnf install ipa-client-utils\n"
-                "On an AAP Execution Environment, add ipa-client-utils "
-                "to the EE package list.")
+                "'ipa-getkeytab' not found. %s"
+                % self._ipa_getkeytab_install_hint())
 
     # ------------------------------------------------------------------
     # Kerberos credential acquisition
@@ -406,19 +452,33 @@ class LookupModule(LookupBase):
 
     def _resolve_verify(self, verify):
         """Resolve TLS verification behavior for ipa-getkeytab requests."""
-        if verify is not None:
-            if not os.path.exists(verify):
+        if verify is False:
+            return False
+
+        if isinstance(verify, str):
+            candidate = verify.strip()
+            if candidate.lower() in ('false', 'no', 'off', '0'):
+                return False
+            if not candidate:
                 raise AnsibleLookupError(
-                    "TLS certificate file not found: %s" % verify)
-            return verify
+                    "Invalid verify value ''. Set a CA certificate path or false.")
+            if not os.path.exists(candidate):
+                raise AnsibleLookupError(
+                    "TLS certificate file not found: %s" % candidate)
+            return candidate
+
+        if verify is not None:
+            raise AnsibleLookupError(
+                "Invalid verify value %r. Set a CA certificate path or false."
+                % verify)
 
         default_verify = self._default_verify_path()
         if default_verify is not None:
             return default_verify
 
         display.warning(
-            "TLS verification is disabled for eigenstate.ipa.keytab. "
-            "Set 'verify' to the IPA CA certificate path for production use."
+            "No explicit IPA CA certificate configured for "
+            "eigenstate.ipa.keytab. Falling back to the system trust store."
         )
         return False
 
@@ -457,15 +517,17 @@ class LookupModule(LookupBase):
     # Keytab retrieval
     # ------------------------------------------------------------------
 
-    def _retrieve_keytab(self, principal, server, enctypes, retrieve_mode):
+    def _retrieve_keytab(self, principal, server, enctypes, retrieve_mode, verify):
         """Run ipa-getkeytab and return binary keytab data."""
-        kt_fd, temp_path = tempfile.mkstemp(prefix='krb5_keytab_')
-        os.close(kt_fd)
+        temp_dir = tempfile.mkdtemp(prefix='krb5_keytab_')
+        temp_path = os.path.join(temp_dir, 'retrieved.keytab')
         try:
             cmd = ['ipa-getkeytab',
                    '-s', server,
                    '-p', principal,
                    '-k', temp_path]
+            if verify:
+                cmd.extend(['--cacert', verify])
             for enctype in enctypes:
                 cmd.extend(['-e', enctype])
             if retrieve_mode == 'retrieve':
@@ -477,8 +539,8 @@ class LookupModule(LookupBase):
                     timeout=30, env=os.environ.copy())
             except FileNotFoundError:
                 raise AnsibleLookupError(
-                    "'ipa-getkeytab' not found. Install ipa-client-utils:\n"
-                    "  dnf install ipa-client-utils")
+                    "'ipa-getkeytab' not found. %s"
+                    % self._ipa_getkeytab_install_hint())
             except subprocess.TimeoutExpired:
                 raise AnsibleLookupError(
                     "'ipa-getkeytab' timed out for principal '%s'. "
@@ -486,15 +548,20 @@ class LookupModule(LookupBase):
                     % principal)
 
             if result.returncode != 0:
+                verify_args = ''
+                if verify:
+                    verify_args = ' --cacert %s' % verify
                 raise AnsibleLookupError(
                     "ipa-getkeytab failed for '%s' on server '%s' "
                     "(exit %d): %s\n"
-                    "Verify: ipa-getkeytab -r -s %s -p %s -k /tmp/test.keytab"
+                    "Verify: ipa-getkeytab -r -s %s -p %s%s -k /tmp/test.keytab"
                     % (principal, server, result.returncode,
-                       result.stderr.strip(), server, principal))
+                       result.stderr.strip(), server, principal, verify_args))
 
-            with open(temp_path, 'rb') as fh:
-                data = fh.read()
+            data = b''
+            if os.path.exists(temp_path):
+                with open(temp_path, 'rb') as fh:
+                    data = fh.read()
 
             if not data:
                 raise AnsibleLookupError(
@@ -505,8 +572,7 @@ class LookupModule(LookupBase):
 
             return data
         finally:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
     # ------------------------------------------------------------------
     # Result formatting
@@ -536,7 +602,7 @@ class LookupModule(LookupBase):
 
     def run(self, terms, variables=None, **kwargs):
         try:
-            self._ensure_ipa_client_utils()
+            self._ensure_ipa_getkeytab_available()
             self.set_options(var_options=variables, direct=kwargs)
 
             server = self.get_option('server')
@@ -583,7 +649,8 @@ class LookupModule(LookupBase):
                 target_principal = to_text(
                     target_principal, errors='surrogate_or_strict')
                 data = self._retrieve_keytab(
-                    target_principal, server, enctypes, retrieve_mode)
+                    target_principal, server, enctypes, retrieve_mode,
+                    verify)
                 item = self._format_keytab_result(target_principal, data)
                 results.append(item)
 

@@ -277,12 +277,13 @@ The recommended AAP deployment pattern is:
 - store the admin keytab as a Controller credential type that mounts a file
   into the EE at a known path
 - point `kerberos_keytab` at that mounted path
-- include `ipa-client-utils` in the EE package list
+- include the package that provides `ipa-getkeytab` in the EE package list
+  (on the validated RHEL 10 path, that is `ipa-client`)
 
 ```mermaid
 flowchart TD
     cred["Controller credential\nadmin.keytab — mounted at /runner/env/ipa/admin.keytab"]
-    ee["Execution environment\nipa-client-utils installed"]
+    ee["Execution environment\nipa-client installed\n(RHEL 10 validated path)"]
     lookup["eigenstate.ipa.keytab\nkerberos_keytab='/runner/env/ipa/admin.keytab'"]
     idm["IdM / FreeIPA"]
     target["Service keytab deployed\nto target host"]
@@ -298,12 +299,14 @@ EE package list additions:
 ```yaml
 dependencies:
   system:
-    - ipa-client-utils
+    - ipa-client      # RHEL 10 validated path
     - krb5-workstation
 ```
 
-This gives the EE the `ipa-getkeytab` binary and `kinit` without pulling in
-the full `python3-ipaclient` stack that the vault plugin requires.
+On the validated RHEL 10 path, this gives the EE the `ipa-getkeytab` binary
+and `kinit`. On other releases, install the package that provides
+`/usr/sbin/ipa-getkeytab`. This avoids pulling in the full
+`python3-ipaclient` stack that the vault plugin requires.
 
 ## 8. Service Bootstrap: Keytab-Gated Vault Secret Delivery
 
