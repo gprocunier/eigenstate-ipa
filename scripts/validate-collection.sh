@@ -41,7 +41,8 @@ PY
 echo "==> Checking Python syntax"
 python3 -m py_compile \
   "${PROJECT_ROOT}/plugins/inventory/idm.py" \
-  "${PROJECT_ROOT}/plugins/lookup/vault.py"
+  "${PROJECT_ROOT}/plugins/lookup/vault.py" \
+  "${PROJECT_ROOT}/plugins/lookup/keytab.py"
 
 if command -v yamllint >/dev/null 2>&1; then
   echo "==> Running yamllint"
@@ -70,6 +71,8 @@ if command -v ansible-doc >/dev/null 2>&1; then
     ansible-doc -t inventory -M "${PROJECT_ROOT}/plugins/inventory" idm >/dev/null
   ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}" \
     ansible-doc -t lookup -M "${PROJECT_ROOT}/plugins/lookup" vault >/dev/null
+  ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}" \
+    ansible-doc -t lookup -M "${PROJECT_ROOT}/plugins/lookup" keytab >/dev/null
 else
   echo "==> ansible-doc not installed; skipping"
 fi

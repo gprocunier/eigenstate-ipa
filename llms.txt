@@ -1,10 +1,11 @@
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
-(IdM / FreeIPA). It exposes one inventory plugin and one lookup plugin:
+(IdM / FreeIPA). It exposes one inventory plugin and two lookup plugins:
 
 - `eigenstate.ipa.idm`
 - `eigenstate.ipa.vault`
+- `eigenstate.ipa.keytab`
 
 The collection treats IdM as both:
 
@@ -16,6 +17,7 @@ The collection treats IdM as both:
 - builds dynamic inventory from IdM-managed hosts, hostgroups, netgroups, and
   HBAC policy
 - retrieves secrets from IdM vaults through Kerberos-authenticated lookups
+- retrieves Kerberos keytab files for service and host principals
 - supports user, service, and shared vault scopes
 - supports standard, symmetric, and asymmetric vault retrieval
 - supports metadata inspection, scoped search, and structured return shapes
@@ -27,10 +29,13 @@ The collection treats IdM as both:
 - [docs/README.md](docs/README.md)
 - [docs/inventory-plugin.md](docs/inventory-plugin.md)
 - [docs/vault-plugin.md](docs/vault-plugin.md)
+- [docs/keytab-plugin.md](docs/keytab-plugin.md)
 - [docs/inventory-capabilities.md](docs/inventory-capabilities.md)
 - [docs/vault-capabilities.md](docs/vault-capabilities.md)
+- [docs/keytab-capabilities.md](docs/keytab-capabilities.md)
 - [docs/inventory-use-cases.md](docs/inventory-use-cases.md)
 - [docs/vault-use-cases.md](docs/vault-use-cases.md)
+- [docs/keytab-use-cases.md](docs/keytab-use-cases.md)
 - [docs/aap-integration.md](docs/aap-integration.md)
 
 ## Plugin Summary
@@ -51,11 +56,22 @@ The collection treats IdM as both:
 - supports `encoding='utf-8'` and `encoding='base64'`
 - supports `decode_json` and `strip_trailing_newline` for retrieved UTF-8 text
 
+### `eigenstate.ipa.keytab`
+
+- lookup plugin
+- uses `ipa-getkeytab` (from `ipa-client-utils`) for keytab retrieval
+- no ipalib dependency at retrieval time
+- supports `retrieve` mode (safe default, existing keys only) and `generate`
+  mode (rotates principal keys; invalidates all existing keytabs)
+- supports per-principal encryption-type selection via `enctypes`
+- returns base64-encoded keytab content in `value`, `record`, or `map` format
+
 ## Runtime Notes
 
 - target Ansible floor: `2.14.0`
 - RHEL 9 compatibility is intentional
 - vault lookups require `python3-ipalib` and `python3-ipaclient`
+- keytab lookups require `ipa-client-utils` (`ipa-getkeytab` binary)
 - controller or execution-environment usage may also require Kerberos client
   tooling
 
@@ -63,8 +79,9 @@ The collection treats IdM as both:
 
 - `plugins/inventory/idm.py` - dynamic inventory plugin
 - `plugins/lookup/vault.py` - vault lookup plugin
+- `plugins/lookup/keytab.py` - keytab lookup plugin
 - `docs/` - operator-facing documentation
-- `tests/` - unit coverage for the vault plugin
+- `tests/` - unit coverage for the vault and keytab plugins
 - `scripts/validate-collection.sh` - repo validation path
 - `Makefile` - convenience wrapper for validation
 
@@ -72,7 +89,7 @@ The collection treats IdM as both:
 
 - collection name: `eigenstate.ipa`
 - namespace: `eigenstate`
-- current version: `1.0.3`
+- current version: `1.1.0`
 - author: Greg Procunier
 - license: GPL-3.0-or-later
 - repository: https://github.com/gprocunier/eigenstate-ipa

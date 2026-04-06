@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.1.0
+
+- added `eigenstate.ipa.keytab` lookup plugin for retrieving Kerberos keytab
+  files from FreeIPA/IdM service and host principals
+- keytab retrieval uses `ipa-getkeytab` from `ipa-client-utils` over an
+  authenticated Kerberos session; no ipalib dependency at keytab-retrieval time
+- supports `retrieve` mode (existing keys, safe default) and `generate` mode
+  (rotates principal keys) with an explicit warning on key rotation
+- supports per-principal encryption-type selection via `enctypes`
+- returns base64-encoded keytab content in `value`, `record`, or `map` result
+  formats to match vault plugin conventions
+- added unit tests for flag generation, result formatting, and error paths
+- added keytab plugin reference doc and scenario-based capability guide
+
 ## 1.0.4
 
 - hardened the vault lookup plugin by normalizing lookup terms and scope values to text before IPA calls
