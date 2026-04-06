@@ -1,23 +1,26 @@
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
-(IdM / FreeIPA). It exposes one inventory plugin and one lookup plugin:
+(IdM / FreeIPA). It exposes one inventory plugin, one lookup plugin, and one
+action module:
 
 - `eigenstate.ipa.idm`
 - `eigenstate.ipa.vault`
+- `eigenstate.ipa.vault_write`
 
 The collection treats IdM as both:
 
 - a source of live infrastructure inventory
-- a source of truth for secret retrieval
+- a source of truth for secret retrieval and storage
 
 ## What It Does
 
 - builds dynamic inventory from IdM-managed hosts, hostgroups, netgroups, and
   HBAC policy
 - retrieves secrets from IdM vaults through Kerberos-authenticated lookups
+- manages vault lifecycle — create, archive, rotate, and delete vaults
 - supports user, service, and shared vault scopes
-- supports standard, symmetric, and asymmetric vault retrieval
+- supports standard, symmetric, and asymmetric vault types
 - supports metadata inspection, scoped search, and structured return shapes
 - supports text and binary payload handling for Ansible and AAP workflows
 
@@ -27,10 +30,13 @@ The collection treats IdM as both:
 - [docs/README.md](docs/README.md)
 - [docs/inventory-plugin.md](docs/inventory-plugin.md)
 - [docs/vault-plugin.md](docs/vault-plugin.md)
+- [docs/vault-write-plugin.md](docs/vault-write-plugin.md)
 - [docs/inventory-capabilities.md](docs/inventory-capabilities.md)
 - [docs/vault-capabilities.md](docs/vault-capabilities.md)
+- [docs/vault-write-capabilities.md](docs/vault-write-capabilities.md)
 - [docs/inventory-use-cases.md](docs/inventory-use-cases.md)
 - [docs/vault-use-cases.md](docs/vault-use-cases.md)
+- [docs/vault-write-use-cases.md](docs/vault-write-use-cases.md)
 - [docs/aap-integration.md](docs/aap-integration.md)
 
 ## Plugin Summary
@@ -51,11 +57,21 @@ The collection treats IdM as both:
 - supports `encoding='utf-8'` and `encoding='base64'`
 - supports `decode_json` and `strip_trailing_newline` for retrieved UTF-8 text
 
+### `eigenstate.ipa.vault_write`
+
+- action module
+- uses `ipalib` for vault lifecycle management
+- supports `state: present`, `state: absent`, and `state: archived`
+- creates standard, symmetric, and asymmetric vaults
+- full idempotency for standard vaults; write-always for symmetric/asymmetric
+- delta-only member management via `members` and `members_absent`
+- supports Ansible check mode
+
 ## Runtime Notes
 
 - target Ansible floor: `2.14.0`
 - RHEL 9 compatibility is intentional
-- vault lookups require `python3-ipalib` and `python3-ipaclient`
+- vault operations require `python3-ipalib` and `python3-ipaclient`
 - controller or execution-environment usage may also require Kerberos client
   tooling
 
@@ -63,8 +79,10 @@ The collection treats IdM as both:
 
 - `plugins/inventory/idm.py` - dynamic inventory plugin
 - `plugins/lookup/vault.py` - vault lookup plugin
+- `plugins/modules/vault_write.py` - vault write action module
+- `plugins/module_utils/ipa_client.py` - shared Kerberos auth and ipalib layer
 - `docs/` - operator-facing documentation
-- `tests/` - unit coverage for the vault plugin
+- `tests/` - unit coverage for vault plugins and modules
 - `scripts/validate-collection.sh` - repo validation path
 - `Makefile` - convenience wrapper for validation
 
@@ -72,7 +90,7 @@ The collection treats IdM as both:
 
 - collection name: `eigenstate.ipa`
 - namespace: `eigenstate`
-- current version: `1.0.3`
+- current version: `1.4.0`
 - author: Greg Procunier
 - license: GPL-3.0-or-later
 - repository: https://github.com/gprocunier/eigenstate-ipa

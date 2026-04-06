@@ -21,10 +21,11 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.0.4`
-- hardened the vault lookup boundary for safer text handling
-- tightened the sealed-artifact workflow documentation
-- validated the collection retrieval path end to end in the lab
+- `1.4.0`
+- added `eigenstate.ipa.vault_write` action module for vault lifecycle management
+- create, archive, modify, and delete IdM vaults from Ansible
+- full idempotency for standard vaults; check mode support
+- delta-only member management
 
 ## Start Here
 
@@ -32,8 +33,10 @@ runtime secret retrieval.
 - [Documentation Map](https://gprocunier.github.io/eigenstate-ipa/documentation-map.html)
 - [Inventory Plugin](./inventory-plugin.md)
 - [Vault Plugin](./vault-plugin.md)
+- [Vault Write Module](./vault-write-plugin.md)
 - [Inventory Use Cases](./inventory-use-cases.md)
 - [Vault Use Cases](./vault-use-cases.md)
+- [Vault Write Use Cases](./vault-write-use-cases.md)
 - [AAP Integration](./aap-integration.md)
 
 ## What The Collection Provides
@@ -43,6 +46,9 @@ runtime secret retrieval.
 - `eigenstate.ipa.vault`
   IdM vault retrieval, metadata inspection, scoped search, and binary-safe
   secret lookup.
+- `eigenstate.ipa.vault_write`
+  IdM vault lifecycle management — create, archive, rotate, and delete
+  vaults from Ansible with full idempotency and check mode support.
 
 ## Best Fit
 

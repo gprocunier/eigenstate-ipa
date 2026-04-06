@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.4.0
+
+- added `eigenstate.ipa.vault_write` action module for vault lifecycle management
+- added `plugins/module_utils/ipa_client.py` shared Kerberos auth and ipalib connection layer
+- vault_write supports `state: present`, `state: absent`, and `state: archived`
+- vault_write supports standard, symmetric, and asymmetric vault types
+- vault_write is fully idempotent for standard vaults; symmetric and asymmetric vaults are write-always for `state: archived`
+- vault_write supports delta-only member management via `members` and `members_absent`
+- vault_write supports Ansible check mode
+- added vault-write-plugin.md, vault-write-capabilities.md, and vault-write-use-cases.md documentation
+
 ## 1.0.4
 
 - hardened the vault lookup plugin by normalizing lookup terms and scope values to text before IPA calls
