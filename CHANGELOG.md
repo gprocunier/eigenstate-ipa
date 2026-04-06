@@ -1,5 +1,41 @@
 # Changelog
 
+## 1.3.0
+
+- added `eigenstate.ipa.principal` for Kerberos principal existence, key, lock, and last-auth inspection
+- fixed repeated principal lookups in one Ansible process by disconnecting the managed `ipalib` RPC backend before ccache cleanup
+- aligned `map_record` results with the Ansible lookup return contract
+- added explicit `verify=false` handling for principal lookup TLS behavior
+- refreshed collection metadata and docs to describe the integrated inventory, vault, principal, keytab, and cert feature set
+
+## 1.2.0
+
+- added `eigenstate.ipa.cert` for IdM CA certificate request, retrieve, and find operations
+- fixed repeated cert lookups in one Ansible process by disconnecting the managed `ipalib` RPC backend before ccache cleanup
+- fixed `operation=find` principal filtering to use the supported IdM CA owner arguments
+- fixed structured `map` and `map_record` cert results to satisfy the Ansible lookup return contract
+- excluded transient `.ansible` state from built collection artifacts
+- refreshed collection metadata and docs to describe the integrated inventory, vault, keytab, and cert feature set
+
+## 1.1.1
+
+- refreshed release metadata to match the keytab-enabled collection scope
+- updated the packaged README, LLM metadata, Galaxy metadata, and citation file for the 1.1.1 release
+
+## 1.1.0
+
+- added `eigenstate.ipa.keytab` lookup plugin for retrieving Kerberos keytab
+  files from FreeIPA/IdM service and host principals
+- keytab retrieval uses `ipa-getkeytab` from the platform IPA client tooling over an
+  authenticated Kerberos session; no ipalib dependency at keytab-retrieval time
+- supports `retrieve` mode (existing keys, safe default) and `generate` mode
+  (rotates principal keys) with an explicit warning on key rotation
+- supports per-principal encryption-type selection via `enctypes`
+- returns base64-encoded keytab content in `value`, `record`, or `map` result
+  formats to match vault plugin conventions
+- added unit tests for flag generation, result formatting, and error paths
+- added keytab plugin reference doc and scenario-based capability guide
+
 ## 1.0.4
 
 - hardened the vault lookup plugin by normalizing lookup terms and scope values to text before IPA calls
