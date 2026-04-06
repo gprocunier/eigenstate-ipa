@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0
+
+- added `eigenstate.ipa.principal` for Kerberos principal existence, key, lock, and last-auth inspection
+- fixed repeated principal lookups in one Ansible process by disconnecting the managed `ipalib` RPC backend before ccache cleanup
+- aligned `map_record` results with the Ansible lookup return contract
+- added explicit `verify=false` handling for principal lookup TLS behavior
+- refreshed collection metadata and docs to describe the integrated inventory, vault, principal, keytab, and cert feature set
+
 ## 1.2.0
 
 - added `eigenstate.ipa.cert` for IdM CA certificate request, retrieve, and find operations

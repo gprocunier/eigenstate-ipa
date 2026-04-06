@@ -3,18 +3,19 @@ layout: default
 title: eigenstate.ipa
 description: >-
   Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory,
-  IdM vault lookup, Kerberos keytab delivery, certificate automation,
-  AAP integration, and secure secret retrieval.
+  IdM vault lookup, Kerberos principal state, Kerberos keytab delivery,
+  certificate automation, AAP integration, and secure secret retrieval.
 ---
 
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It has
-four main jobs:
+five main jobs:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
 - IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and
   AAP
+- Kerberos principal state inspection for user, host, and service objects
 - Kerberos keytab retrieval for host and service principals
 - IdM CA certificate request, retrieval, and expiry search via the Dogtag PKI
   backend
@@ -24,9 +25,9 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.2.0`
-- adds `eigenstate.ipa.cert` and preserves the released `eigenstate.ipa.keytab`
-  plugin in the integrated collection
+- `1.3.0`
+- adds `eigenstate.ipa.principal` to the integrated collection alongside the
+  released inventory, vault, keytab, and cert plugins
 
 ## Start Here
 
@@ -34,10 +35,12 @@ runtime secret retrieval.
 - [Documentation Map](https://gprocunier.github.io/eigenstate-ipa/documentation-map.html)
 - [Inventory Plugin](./inventory-plugin.md)
 - [Vault Plugin](./vault-plugin.md)
+- [Principal Plugin](./principal-plugin.md)
 - [Keytab Plugin](./keytab-plugin.md)
 - [Cert Plugin](./cert-plugin.md)
 - [Inventory Use Cases](./inventory-use-cases.md)
 - [Vault Use Cases](./vault-use-cases.md)
+- [Principal Use Cases](./principal-use-cases.md)
 - [Keytab Use Cases](./keytab-use-cases.md)
 - [Cert Use Cases](./cert-use-cases.md)
 - [AAP Integration](./aap-integration.md)
@@ -49,6 +52,9 @@ runtime secret retrieval.
 - `eigenstate.ipa.vault`
   IdM vault retrieval, metadata inspection, scoped search, and binary-safe
   secret lookup.
+- `eigenstate.ipa.principal`
+  Kerberos principal existence, key, lock, and last-auth inspection for user,
+  host, and service principals.
 - `eigenstate.ipa.keytab`
   Kerberos keytab retrieval for host and service principals via
   `ipa-getkeytab`.

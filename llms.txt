@@ -1,12 +1,13 @@
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
-(IdM / FreeIPA). It exposes one inventory plugin and three lookup plugins for
-live inventory, vault-backed secret retrieval, Kerberos keytab delivery, and
-IdM CA certificate automation:
+(IdM / FreeIPA). It exposes one inventory plugin and four lookup plugins for
+live inventory, vault-backed secret retrieval, Kerberos principal state,
+Kerberos keytab delivery, and IdM CA certificate automation:
 
 - `eigenstate.ipa.idm`
 - `eigenstate.ipa.vault`
+- `eigenstate.ipa.principal`
 - `eigenstate.ipa.keytab`
 - `eigenstate.ipa.cert`
 
@@ -20,6 +21,7 @@ The collection treats IdM as both:
 - builds dynamic inventory from IdM-managed hosts, hostgroups, netgroups, and
   HBAC policy
 - retrieves secrets from IdM vaults through Kerberos-authenticated lookups
+- queries user, host, and service principal state before enrollment or secret issuance steps
 - retrieves Kerberos keytab files for service and host principals
 - requests, retrieves, and searches IdM CA certificates for host and service principals
 - supports user, service, and shared vault scopes
@@ -33,14 +35,17 @@ The collection treats IdM as both:
 - [docs/README.md](docs/README.md)
 - [docs/inventory-plugin.md](docs/inventory-plugin.md)
 - [docs/vault-plugin.md](docs/vault-plugin.md)
+- [docs/principal-plugin.md](docs/principal-plugin.md)
 - [docs/keytab-plugin.md](docs/keytab-plugin.md)
 - [docs/cert-plugin.md](docs/cert-plugin.md)
 - [docs/inventory-capabilities.md](docs/inventory-capabilities.md)
 - [docs/vault-capabilities.md](docs/vault-capabilities.md)
+- [docs/principal-capabilities.md](docs/principal-capabilities.md)
 - [docs/keytab-capabilities.md](docs/keytab-capabilities.md)
 - [docs/cert-capabilities.md](docs/cert-capabilities.md)
 - [docs/inventory-use-cases.md](docs/inventory-use-cases.md)
 - [docs/vault-use-cases.md](docs/vault-use-cases.md)
+- [docs/principal-use-cases.md](docs/principal-use-cases.md)
 - [docs/keytab-use-cases.md](docs/keytab-use-cases.md)
 - [docs/cert-use-cases.md](docs/cert-use-cases.md)
 - [docs/aap-integration.md](docs/aap-integration.md)
@@ -62,6 +67,14 @@ The collection treats IdM as both:
 - supports `value`, `record`, `map`, and `map_record`
 - supports `encoding='utf-8'` and `encoding='base64'`
 - supports `decode_json` and `strip_trailing_newline` for retrieved UTF-8 text
+
+### `eigenstate.ipa.principal`
+
+- lookup plugin
+- uses `ipalib` for Kerberos principal state queries
+- supports `show` and `find`
+- returns existence, key, lock, and last-auth state for user, host, and service principals
+- supports `record` and `map_record` result shaping
 
 ### `eigenstate.ipa.keytab`
 
@@ -88,6 +101,7 @@ The collection treats IdM as both:
 - target Ansible floor: `2.14.0`
 - RHEL 9 compatibility is intentional
 - vault lookups require `python3-ipalib` and `python3-ipaclient`
+- principal lookups require `python3-ipalib` and `python3-ipaclient`
 - keytab lookups require the platform package that provides `ipa-getkeytab`
   on the control node or execution environment
 - cert lookups require `python3-ipalib` and `python3-ipaclient`
@@ -98,10 +112,11 @@ The collection treats IdM as both:
 
 - `plugins/inventory/idm.py` - dynamic inventory plugin
 - `plugins/lookup/vault.py` - vault lookup plugin
+- `plugins/lookup/principal.py` - Kerberos principal state lookup plugin
 - `plugins/lookup/keytab.py` - keytab lookup plugin
 - `plugins/lookup/cert.py` - IdM certificate lookup plugin
 - `docs/` - operator-facing documentation
-- `tests/` - unit coverage for the vault, keytab, and cert plugins
+- `tests/` - unit coverage for the vault, principal, keytab, and cert plugins
 - `scripts/validate-collection.sh` - repo validation path
 - `Makefile` - convenience wrapper for validation
 
@@ -109,7 +124,7 @@ The collection treats IdM as both:
 
 - collection name: `eigenstate.ipa`
 - namespace: `eigenstate`
-- current version: `1.2.0`
+- current version: `1.3.0`
 - author: Greg Procunier
 - license: GPL-3.0-or-later
 - repository: https://github.com/gprocunier/eigenstate-ipa
