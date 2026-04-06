@@ -7,6 +7,7 @@ Nearby docs:
 <a href="https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html"><kbd>&nbsp;&nbsp;PRINCIPAL PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>&nbsp;&nbsp;IDM CERT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>&nbsp;&nbsp;OTP PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
@@ -41,6 +42,7 @@ flowchart LR
     vault["eigenstate.ipa.vault"]
     principal["eigenstate.ipa.principal"]
     keytab["eigenstate.ipa.keytab"]
+    otp["eigenstate.ipa.otp"]
     idm["IdM / FreeIPA"]
 
     ctrl --> ee
@@ -53,6 +55,7 @@ flowchart LR
     vault --> idm
     principal --> idm
     keytab --> idm
+    otp --> idm
 ```
 
 ## Execution Environment Requirements
@@ -114,6 +117,18 @@ For the IdM certificate lookup:
 > The cert lookup talks to the IdM CA through `ipalib` and does not require
 > `certmonger` in the EE. It does require the IdM client Python libraries to be
 > present, like the vault lookup.
+
+For the OTP lookup:
+
+- `python3-ipalib`
+- `python3-ipaclient`
+- `krb5-workstation` when password-driven or keytab-driven ticket acquisition is
+  needed
+
+> [!NOTE]
+> The OTP lookup uses `ipalib` to create, inspect, and revoke OTP tokens and to
+> generate one-time host enrollment passwords. Treat returned OTP URIs and host
+> enrollment passwords as secret material in controller logs and credentials.
 
 ## Authentication Guidance
 

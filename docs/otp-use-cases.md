@@ -41,9 +41,9 @@ QR code.
   tasks:
     - name: Create TOTP token
       ansible.builtin.set_fact:
-        totp_record: "{{ lookup('eigenstate.ipa.otp', new_username,
+        totp_record: "{{ query('eigenstate.ipa.otp', new_username,
                           operation='add',
-                          type='totp',
+                          token_type='totp',
                           description='Primary 2FA token',
                           result_format='record',
                           server=ipa_server,
@@ -110,9 +110,9 @@ The existing token must be revoked and a new one issued.
 
     - name: Issue replacement token
       ansible.builtin.set_fact:
-        new_token: "{{ lookup('eigenstate.ipa.otp', username,
+        new_token: "{{ query('eigenstate.ipa.otp', username,
                         operation='add',
-                        type='totp',
+                        token_type='totp',
                         description='Replacement token after device loss',
                         result_format='record',
                         server=ipa_server,
@@ -167,7 +167,7 @@ The play creates the host record, generates an enrollment password, and runs
     - name: Generate enrollment password
       ansible.builtin.set_fact:
         enroll_pass: "{{ lookup('eigenstate.ipa.otp', target_fqdn,
-                          type='host',
+                          token_type='host',
                           server=ipa_server,
                           kerberos_keytab=ipa_keytab,
                           verify=ipa_ca) | first }}"
@@ -194,7 +194,7 @@ The play creates the host record, generates an enrollment password, and runs
 
 Notes:
 
-- the `ipahost` task (play 1) creates the IdM record; `otp add type=host`
+- the `ipahost` task (play 1) creates the IdM record; `otp add token_type=host`
   (also play 1) sets the enrollment password on it
 - `ipaclient` (play 2) uses the password and consumes it; the host is enrolled
   after this task completes
@@ -223,13 +223,13 @@ pass and enroll concurrently.
   tasks:
     - name: Generate enrollment passwords
       ansible.builtin.set_fact:
-        enroll_map: "{{ lookup('eigenstate.ipa.otp',
+        enroll_map: "{{ query('eigenstate.ipa.otp',
                          *groups['new_hosts'],
-                         type='host',
+                         token_type='host',
                          result_format='map',
                          server=ipa_server,
-                         kerberos_keytab=ipa_keytab,
-                         verify=ipa_ca) }}"
+                          kerberos_keytab=ipa_keytab,
+                         verify=ipa_ca) | first }}"
       no_log: true
 
 - name: Enroll all new hosts
@@ -357,9 +357,9 @@ attempting to revoke it, so the play is safely re-entrant.
 
     - name: Issue new token
       ansible.builtin.set_fact:
-        new_token: "{{ lookup('eigenstate.ipa.otp', username,
+        new_token: "{{ query('eigenstate.ipa.otp', username,
                         operation='add',
-                        type='totp',
+                        token_type='totp',
                         result_format='record',
                         server=ipa_server,
                         kerberos_keytab=ipa_keytab,
@@ -434,7 +434,7 @@ extra_vars:
     - name: Generate enrollment password at runtime
       ansible.builtin.set_fact:
         enroll_pass: "{{ lookup('eigenstate.ipa.otp', enroll_target_fqdn,
-                          type='host',
+                          token_type='host',
                           server=ipa_server,
                           kerberos_keytab=ipa_keytab,
                           verify=ipa_ca) | first }}"
@@ -489,12 +489,12 @@ users may have been deprovisioned or never fully enrolled. Use
   tasks:
     - name: Check principal state for all candidates
       ansible.builtin.set_fact:
-        principal_states: "{{ lookup('eigenstate.ipa.principal',
+        principal_states: "{{ query('eigenstate.ipa.principal',
                                *candidate_users,
                                result_format='map_record',
                                server=ipa_server,
                                kerberos_keytab=ipa_keytab,
-                               verify=ipa_ca) }}"
+                               verify=ipa_ca) | first }}"
 
     - name: Build enrolled user list
       ansible.builtin.set_fact:
@@ -521,14 +521,14 @@ users may have been deprovisioned or never fully enrolled. Use
 
     - name: Issue TOTP tokens for enrolled users
       ansible.builtin.set_fact:
-        new_tokens: "{{ lookup('eigenstate.ipa.otp',
+        new_tokens: "{{ query('eigenstate.ipa.otp',
                          *enrolled_users,
                          operation='add',
-                         type='totp',
+                         token_type='totp',
                          result_format='map_record',
                          server=ipa_server,
-                         kerberos_keytab=ipa_keytab,
-                         verify=ipa_ca) }}"
+                          kerberos_keytab=ipa_keytab,
+                         verify=ipa_ca) | first }}"
       no_log: true
       when: enrolled_users | length > 0
 
@@ -550,3 +550,5 @@ Notes:
   is safe
 - `*enrolled_users` unpacks the filtered list as positional terms to the OTP
   lookup
+- when a later task reuses `token_id` from a prior lookup result as an input
+  term, use `| string` to force a plain text token ID in the Jinja layer

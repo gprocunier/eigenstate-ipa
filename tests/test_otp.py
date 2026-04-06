@@ -34,7 +34,7 @@ def _load_otp_module():
                     "ipatokenotpalgorithm": ["sha1"],
                     "ipatokenotpdigits": [6],
                     "ipatokentotptimestep": [30],
-                    "ipatokenotpuri": ["otpauth://totp/default?secret=ABC"],
+                    "uri": ["otpauth://totp/default?secret=ABC"],
                     "ipatokenowner": ["testuser"],
                     "ipatokendisabled": [False],
                     "description": [],
@@ -108,7 +108,7 @@ class OtpLookupTests(unittest.TestCase):
         lookup = self.mod.LookupModule()
         defaults = {
             "operation": "add",
-            "type": "totp",
+            "token_type": "totp",
             "algorithm": "sha1",
             "digits": 6,
             "interval": 30,
@@ -183,6 +183,65 @@ class OtpLookupTests(unittest.TestCase):
         lookup.run(["user2"], variables={})
         self.assertEqual(seen["algorithm"], "sha256")
 
+    def test_add_user_token_uses_otptoken_add_type_option(self):
+        lookup = self.mod.LookupModule()
+        with mock.patch.object(
+            self.mod._ipa_api.Command,
+            "otptoken_add",
+            return_value={
+                "result": {
+                    "ipatokenuniqueid": ["tok-type-001"],
+                    "ipatokentype": ["totp"],
+                    "ipatokenotpalgorithm": ["sha1"],
+                    "ipatokenotpdigits": [6],
+                    "ipatokentotptimestep": [30],
+                    "uri": ["otpauth://totp/check?secret=ABC"],
+                    "ipatokenowner": ["typeuser"],
+                    "ipatokendisabled": [False],
+                    "description": [],
+                }
+            },
+        ) as otptoken_add:
+            lookup._add_user_token("typeuser", "totp", "sha1", 6, 30, None)
+        self.assertEqual(otptoken_add.call_args.kwargs["type"], "totp")
+
+    def test_build_token_record_prefers_live_uri_field(self):
+        lookup = self.mod.LookupModule()
+        record = lookup._build_token_record(
+            "alice",
+            {
+                "ipatokenuniqueid": ["tok-live-uri"],
+                "ipatokentype": ["totp"],
+                "ipatokenotpalgorithm": ["sha1"],
+                "ipatokenotpdigits": [6],
+                "ipatokentotptimestep": [30],
+                "uri": ["otpauth://totp/alice?secret=LIVE"],
+                "ipatokenowner": ["alice"],
+                "ipatokendisabled": [False],
+                "description": [],
+            },
+            include_uri=True,
+        )
+        self.assertEqual(record["uri"], "otpauth://totp/alice?secret=LIVE")
+
+    def test_build_token_record_uses_live_type_field(self):
+        lookup = self.mod.LookupModule()
+        record = lookup._build_token_record(
+            "alice",
+            {
+                "ipatokenuniqueid": ["tok-live-hotp"],
+                "type": ["HOTP"],
+                "ipatokenotpalgorithm": ["sha256"],
+                "ipatokenotpdigits": [8],
+                "uri": ["otpauth://hotp/alice?secret=LIVE"],
+                "ipatokenowner": ["alice"],
+                "ipatokendisabled": [False],
+                "description": [],
+            },
+            include_uri=True,
+        )
+        self.assertEqual(record["type"], "hotp")
+
     def test_add_totp_custom_digits_8(self):
         seen = {}
 
@@ -238,7 +297,7 @@ class OtpLookupTests(unittest.TestCase):
 
     def test_add_hotp_defaults_returns_uri(self):
         lookup = self._make_lookup(
-            options={"type": "hotp"},
+            options={"token_type": "hotp"},
             add_user_token=lambda owner, token_type, algorithm, digits,
             interval, description: {
                 "owner": owner, "token_id": "tok-hotp-001", "type": "hotp",
@@ -252,7 +311,7 @@ class OtpLookupTests(unittest.TestCase):
 
     def test_add_hotp_with_interval_warns_and_ignores(self):
         lookup = self._make_lookup(
-            options={"type": "hotp", "interval": 60},
+            options={"token_type": "hotp", "interval": 60},
             add_user_token=lambda owner, token_type, algorithm, digits,
             interval, description: {
                 "owner": owner, "token_id": "tok-hotp-002", "type": "hotp",
@@ -272,7 +331,7 @@ class OtpLookupTests(unittest.TestCase):
 
     def test_add_host_returns_password_field(self):
         lookup = self._make_lookup(
-            options={"type": "host"},
+            options={"token_type": "host"},
             add_host_enroll=lambda fqdn: {
                 "fqdn": fqdn, "type": "host",
                 "password": "EnrollP@ss1", "exists": True,
@@ -283,7 +342,7 @@ class OtpLookupTests(unittest.TestCase):
 
     def test_add_host_record_format_includes_fqdn(self):
         lookup = self._make_lookup(
-            options={"type": "host", "result_format": "record"},
+            options={"token_type": "host", "result_format": "record"},
             add_host_enroll=lambda fqdn: {
                 "fqdn": fqdn, "type": "host",
                 "password": "EnrollP@ss2", "exists": True,
@@ -418,9 +477,10 @@ class OtpLookupTests(unittest.TestCase):
             }
         )
         result = lookup.run(["mapuser"], variables={})
-        self.assertIsInstance(result, dict)
-        self.assertIn("mapuser", result)
-        self.assertEqual(result["mapuser"], "otpauth://totp/mapuser?secret=ZZZ")
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(result[0], dict)
+        self.assertIn("mapuser", result[0])
+        self.assertEqual(result[0]["mapuser"], "otpauth://totp/mapuser?secret=ZZZ")
 
     def test_add_map_record_format_keys_by_owner_with_full_record(self):
         lookup = self._make_lookup(
@@ -434,10 +494,11 @@ class OtpLookupTests(unittest.TestCase):
             }
         )
         result = lookup.run(["mruser"], variables={})
-        self.assertIsInstance(result, dict)
-        self.assertIn("mruser", result)
-        self.assertEqual(result["mruser"]["token_id"], "tok-mr-1")
-        self.assertEqual(result["mruser"]["uri"], "otpauth://totp/mruser?secret=YYY")
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(result[0], dict)
+        self.assertIn("mruser", result[0])
+        self.assertEqual(result[0]["mruser"]["token_id"], "tok-mr-1")
+        self.assertEqual(result[0]["mruser"]["uri"], "otpauth://totp/mruser?secret=YYY")
 
     def test_find_map_record_format_keys_by_token_id(self):
         tokens = [
@@ -450,9 +511,10 @@ class OtpLookupTests(unittest.TestCase):
             find_tokens=lambda criteria, owner: tokens,
         )
         result = lookup.run([], variables={})
-        self.assertIsInstance(result, dict)
-        self.assertIn("tok-find-1", result)
-        self.assertEqual(result["tok-find-1"]["owner"], "diana")
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(result[0], dict)
+        self.assertIn("tok-find-1", result[0])
+        self.assertEqual(result[0]["tok-find-1"]["owner"], "diana")
 
     def test_show_map_record_format_keys_by_token_id(self):
         lookup = self._make_lookup(
@@ -464,9 +526,10 @@ class OtpLookupTests(unittest.TestCase):
             }
         )
         result = lookup.run(["tok-show-1"], variables={})
-        self.assertIsInstance(result, dict)
-        self.assertIn("tok-show-1", result)
-        self.assertEqual(result["tok-show-1"]["owner"], "eve")
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(result[0], dict)
+        self.assertIn("tok-show-1", result[0])
+        self.assertEqual(result[0]["tok-show-1"]["owner"], "eve")
 
     # ------------------------------------------------------------------
     # validation
@@ -524,6 +587,16 @@ class OtpLookupTests(unittest.TestCase):
                 else:
                     os.environ["KRB5CCNAME"] = original
 
+    def test_cleanup_ccache_disconnects_connected_backend(self):
+        lookup = self.mod.LookupModule()
+        backend = types.SimpleNamespace(
+            isconnected=lambda: True,
+            disconnect=mock.Mock(),
+        )
+        with mock.patch.object(self.mod._ipa_api.Backend, "rpcclient", backend):
+            lookup._cleanup_ccache()
+        backend.disconnect.assert_called_once_with()
+
     def test_warns_when_sensitive_file_is_world_readable(self):
         lookup = self.mod.LookupModule()
         with tempfile.NamedTemporaryFile() as secret_file:
@@ -540,6 +613,18 @@ class OtpLookupTests(unittest.TestCase):
         with mock.patch.object(self.mod.os.path, "exists", return_value=False):
             with mock.patch.object(self.mod.display, "warning") as warning:
                 self.assertFalse(lookup._resolve_verify(None))
+        warning.assert_called_once()
+
+    def test_resolve_verify_false_disables_tls_explicitly(self):
+        lookup = self.mod.LookupModule()
+        with mock.patch.object(self.mod.display, "warning") as warning:
+            self.assertFalse(lookup._resolve_verify(False))
+        warning.assert_called_once()
+
+    def test_resolve_verify_string_false_disables_tls_explicitly(self):
+        lookup = self.mod.LookupModule()
+        with mock.patch.object(self.mod.display, "warning") as warning:
+            self.assertFalse(lookup._resolve_verify("false"))
         warning.assert_called_once()
 
 

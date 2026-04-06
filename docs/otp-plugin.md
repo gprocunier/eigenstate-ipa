@@ -71,13 +71,13 @@ credential. Use `no_log: true` on any task that registers or displays it.
 
 ## Host Enrollment Model
 
-When `type=host`, the plugin calls `host_mod` with `random=True`. IdM sets a
+When `token_type=host`, the plugin calls `host_mod` with `random=True`. IdM sets a
 one-time enrollment password on the host record and returns it in
 `randompassword`. This password is consumed exactly once by
 `ipa-client-install` or by the `freeipa.ansible_freeipa.ipaclient` role.
 
 After the host uses the password to enroll, it is consumed and cannot be
-reused. Calling `type=host` again generates a fresh password.
+reused. Calling `token_type=host` again generates a fresh password.
 
 The host record must already exist in IdM before calling this plugin. To
 create the host record, use the `freeipa.ansible_freeipa.ipahost` module.
@@ -116,8 +116,8 @@ TLS behavior:
 | `show` | Token unique IDs (`ipatokenuniqueid`) | Token metadata record or `exists=false` |
 | `revoke` | Token unique IDs (`ipatokenuniqueid`) | List of revoked token IDs |
 
-**`add`**: Creates a new token for each term. For `type=totp` and `type=hotp`,
-terms are IdM usernames. For `type=host`, terms are host FQDNs. Returns the
+**`add`**: Creates a new token for each term. For `token_type=totp` and `token_type=hotp`,
+terms are IdM usernames. For `token_type=host`, terms are host FQDNs. Returns the
 URI (user tokens) or one-time password (host). Non-idempotent — each call
 creates a new token even if the user already has one.
 
@@ -141,10 +141,10 @@ user, combine `find` with `owner` filter and loop over the result.
 | Option | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `server` | str | — | Required. IPA server FQDN. Env: `IPA_SERVER`. |
-| `ipaadmin_principal` | str | `admin` | Kerberos principal for authentication. Env: `IPA_PRINCIPAL`. |
-| `ipaadmin_password` | str | — | Password for obtaining a Kerberos ticket. Env: `IPA_PASSWORD`. Secret. |
+| `ipaadmin_principal` | str | `admin` | Kerberos principal for authentication. |
+| `ipaadmin_password` | str | — | Password for obtaining a Kerberos ticket. Env: `IPA_ADMIN_PASSWORD`. Secret. |
 | `kerberos_keytab` | str | — | Path to a keytab file for non-interactive authentication. Env: `IPA_KEYTAB`. |
-| `verify` | str | — | Path to the IPA CA certificate for TLS verification. Env: `IPA_VERIFY`. |
+| `verify` | str | — | Path to the IPA CA certificate for TLS verification. Env: `IPA_CERT`. |
 
 ### OTP-specific options
 
@@ -152,10 +152,10 @@ user, combine `find` with `owner` filter and loop over the result.
 | --- | --- | --- | --- | --- |
 | `_terms` | list[str] | — | — | Identifiers. See Operations table for per-operation meaning. |
 | `operation` | str | `add` | `add`, `find`, `show`, `revoke` | Which operation to perform. |
-| `type` | str | `totp` | `totp`, `hotp`, `host` | Token type. Only used by `add`. |
+| `token_type` | str | `totp` | `totp`, `hotp`, `host` | Token type. Only used by `add`. `type` remains an accepted compatibility alias. |
 | `algorithm` | str | `sha1` | `sha1`, `sha256`, `sha384`, `sha512` | HMAC algorithm. Only applies to `totp` and `hotp`. |
 | `digits` | int | `6` | `6`, `8` | OTP length. Only applies to `totp` and `hotp`. |
-| `interval` | int | `30` | — | TOTP time step in seconds. Only meaningful for `type=totp`; ignored with a warning for `hotp` and `host`. |
+| `interval` | int | `30` | — | TOTP time step in seconds. Only meaningful for `token_type=totp`; ignored with a warning for `hotp` and `host`. |
 | `owner` | str | — | — | Filter `find` results to this user. Ignored with a warning for other operations. |
 | `description` | str | — | — | Token description for `add`. |
 | `result_format` | str | `value` (add), `record` (find/show) | `value`, `record`, `map`, `map_record` | Output container shape. |
@@ -177,7 +177,7 @@ user, combine `find` with `owner` filter and loop over the result.
 | `description` | str or null | yes | Token description if set |
 | `exists` | bool | no | `false` only when `show` hits a missing token ID |
 
-### Host enrollment record (add, type=host)
+### Host enrollment record (add, token_type=host)
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -203,8 +203,8 @@ host tokens.
 uris: "{{ lookup('eigenstate.ipa.otp', 'alice', 'bob',
            server='idm-01.example.com',
            kerberos_keytab='/etc/admin.keytab') }}"
-# uris[0] == 'otpauth://totp/EXAMPLE.COM:alice?secret=...'
-# uris[1] == 'otpauth://totp/EXAMPLE.COM:bob?secret=...'
+# uris[0] == 'otpauth://totp/...'
+# uris[1] == 'otpauth://totp/...'
 ```
 
 ### `record` (default for `find` and `show`)
@@ -228,10 +228,10 @@ token adds, `fqdn` for host adds, `token_id` for find/show — with bare
 secret values.
 
 ```yaml
-token_map: "{{ lookup('eigenstate.ipa.otp', 'alice', 'bob',
+token_map: "{{ query('eigenstate.ipa.otp', 'alice', 'bob',
                 server='idm-01.example.com',
                 kerberos_keytab='/etc/admin.keytab',
-                result_format='map') }}"
+                result_format='map') | first }}"
 # token_map['alice'] == 'otpauth://totp/EXAMPLE.COM:alice?secret=...'
 ```
 
@@ -241,10 +241,10 @@ Returns a dictionary keyed by primary identifier with full result
 dictionaries as values.
 
 ```yaml
-token_map: "{{ lookup('eigenstate.ipa.otp', 'alice',
+token_map: "{{ query('eigenstate.ipa.otp', 'alice',
                 server='idm-01.example.com',
                 kerberos_keytab='/etc/admin.keytab',
-                result_format='map_record') }}"
+                result_format='map_record') | first }}"
 # token_map['alice'].token_id == 'tok-abc123'
 # token_map['alice'].uri      == 'otpauth://totp/...'
 ```
@@ -287,7 +287,7 @@ Generate a host enrollment password:
 ```yaml
 - ansible.builtin.set_fact:
     enroll_pass: "{{ lookup('eigenstate.ipa.otp', 'web-01.corp.example.com',
-                     type='host',
+                     token_type='host',
                      server='idm-01.corp.example.com',
                      kerberos_keytab='/runner/env/ipa/admin.keytab',
                      verify='/etc/ipa/ca.crt') | first }}"
@@ -334,7 +334,7 @@ Common failure classes:
 
 - missing `ipalib` or `ipaclient` libraries on the controller or EE
 - no valid Kerberos ticket and no password/keytab supplied
-- `type=host` with any operation other than `add` — host enrollment passwords
+- `token_type=host` with any operation other than `add` — host enrollment passwords
   do not have persistent token records
 - `add` called without terms — at least one username or FQDN is required
 - `show` or `revoke` called without terms — token IDs are required

@@ -26,7 +26,7 @@ __metaclass__ = type
 DOCUMENTATION = """
 ---
 name: otp
-version_added: "1.3.0"
+version_added: "1.4.0"
 short_description: Generate and manage OTP tokens and host enrollment passwords in FreeIPA/IdM
 description:
   - Generates TOTP and HOTP two-factor authentication tokens for IdM users via
@@ -44,10 +44,12 @@ description:
 options:
   _terms:
     description: >-
-      Identifiers to operate on. Meaning varies by C(operation) and C(type).
-      For C(operation=add) with C(type=totp) or C(type=hotp), one or more
+      Identifiers to operate on. Meaning varies by C(operation) and
+      C(token_type).
+      For C(operation=add) with C(token_type=totp) or
+      C(token_type=hotp), one or more
       IdM usernames whose tokens should be created.
-      For C(operation=add) with C(type=host), one or more host FQDNs for
+      For C(operation=add) with C(token_type=host), one or more host FQDNs for
       which enrollment passwords should be generated.
       For C(operation=find), an optional substring search pattern; omit to
       return all tokens accessible to the authenticated principal.
@@ -64,7 +66,7 @@ options:
     type: str
     default: add
     choices: ["add", "find", "show", "revoke"]
-  type:
+  token_type:
     description: >-
       The kind of credential to create. C(totp) generates a time-based
       one-time password token for an IdM user. C(hotp) generates an
@@ -76,21 +78,22 @@ options:
   algorithm:
     description: >-
       HMAC algorithm used to generate the OTP value. Only applies to
-      C(type=totp) and C(type=hotp).
+      C(token_type=totp) and C(token_type=hotp).
     type: str
     default: sha1
     choices: ["sha1", "sha256", "sha384", "sha512"]
   digits:
     description: >-
       Number of digits in the generated OTP value. Only applies to
-      C(type=totp) and C(type=hotp).
+      C(token_type=totp) and C(token_type=hotp).
     type: int
     default: 6
     choices: [6, 8]
   interval:
     description: >-
-      Time step in seconds for TOTP tokens. Only meaningful for C(type=totp).
-      Ignored with a warning for C(type=hotp) and C(type=host).
+      Time step in seconds for TOTP tokens. Only meaningful for
+      C(token_type=totp). Ignored with a warning for C(token_type=hotp) and
+      C(token_type=host).
     type: int
     default: 30
   owner:
@@ -101,7 +104,7 @@ options:
   description:
     description: >-
       Optional description attached to the new token. Only used by
-      C(operation=add) with C(type=totp) or C(type=hotp).
+      C(operation=add) with C(token_type=totp) or C(token_type=hotp).
     type: str
   result_format:
     description: >-
@@ -146,9 +149,11 @@ options:
       - name: IPA_KEYTAB
   verify:
     description: >-
-      Path to the IPA CA certificate for TLS verification.
-      If not set, the system CA bundle is used.
-    type: str
+      Path to the IPA CA certificate for TLS verification. Set C(false) to
+      disable verification explicitly. If omitted, C(/etc/ipa/ca.crt) is used
+      when present; otherwise the plugin falls back to the system trust store
+      with a warning.
+    type: raw
     env:
       - name: IPA_CERT
 notes:
@@ -164,7 +169,7 @@ notes:
     The C(uri) field is only present in C(operation=add) results.
     C(find) and C(show) return token metadata without the shared secret.
   - >-
-    Host enrollment passwords (C(type=host)) are consumed on first use by
+    Host enrollment passwords (C(token_type=host)) are consumed on first use by
     C(ipa-client-install). Pass them to C(freeipa.ansible_freeipa.ipaclient)
     or C(freeipa.ansible_freeipa.ipahost) rather than invoking the CLI
     directly.
@@ -203,7 +208,7 @@ EXAMPLES = """
 - name: Generate enrollment password
   ansible.builtin.set_fact:
     enroll_pass: "{{ lookup('eigenstate.ipa.otp', inventory_hostname,
-                      type='host',
+                      token_type='host',
                       server='idm-01.example.com',
                       kerberos_keytab='/etc/ansible/admin.keytab') }}"
   no_log: true
@@ -220,7 +225,7 @@ EXAMPLES = """
 - name: Provision HOTP token
   ansible.builtin.set_fact:
     token_record: "{{ lookup('eigenstate.ipa.otp', 'svcaccount',
-                       type='hotp',
+                       token_type='hotp',
                        algorithm='sha256',
                        digits=8,
                        result_format='record',
@@ -261,7 +266,7 @@ EXAMPLES = """
                   ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD')) }}"
   no_log: true
   when: >-
-    lookup('eigenstate.ipa.otp', old_token_id,
+    lookup('eigenstate.ipa.otp', (old_token_id | string),
       operation='show',
       server='idm-01.example.com',
       ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD'))[0].exists
@@ -272,7 +277,8 @@ _raw:
   description: >-
     One element per term. When C(operation=add) and C(result_format=value)
     (the default), each element is the C(otpauth://) URI string for user
-    tokens, or the one-time enrollment password string for C(type=host).
+    tokens, or the one-time enrollment password string for
+    C(token_type=host).
     When C(result_format=record), each element is a structured dictionary
     (see below). When C(result_format=map) or C(result_format=map_record),
     the return is a dictionary keyed by owner username, host FQDN, or token
@@ -298,13 +304,13 @@ _raw:
     uri:
       description: >-
         C(otpauth://) URI containing the shared secret. Only present for
-        C(operation=add) with C(type=totp) or C(type=hotp). Absent for
+        C(operation=add) with C(token_type=totp) or C(token_type=hotp). Absent for
         C(find) and C(show) operations. Treat as sensitive.
       type: str
     password:
       description: >-
         One-time enrollment password. Only present for C(operation=add)
-        with C(type=host). Treat as sensitive.
+        with C(token_type=host). Treat as sensitive.
       type: str
     algorithm:
       description: HMAC algorithm (C(sha1), C(sha256), C(sha384), C(sha512)).
@@ -479,6 +485,12 @@ class LookupModule(LookupBase):
 
     def _cleanup_ccache(self):
         """Remove any managed Kerberos credential cache and restore env."""
+        backend = getattr(getattr(_ipa_api, 'Backend', None), 'rpcclient', None)
+        if backend is not None and hasattr(backend, 'isconnected') and backend.isconnected():
+            try:
+                backend.disconnect()
+            except Exception:
+                pass
         if self._ccache_path and os.path.exists(self._ccache_path):
             os.remove(self._ccache_path)
         if self._managing_ccache:
@@ -499,6 +511,21 @@ class LookupModule(LookupBase):
 
     def _resolve_verify(self, verify):
         """Resolve TLS verification behavior for lookup requests."""
+        if isinstance(verify, bool):
+            if not verify:
+                display.warning(
+                    "TLS verification is disabled for eigenstate.ipa.otp. "
+                    "Set 'verify' to the IPA CA certificate path for production use."
+                )
+                return False
+        elif isinstance(verify, str):
+            verify = verify.strip()
+            if verify.lower() in ('false', 'no', 'off', '0'):
+                display.warning(
+                    "TLS verification is disabled for eigenstate.ipa.otp. "
+                    "Set 'verify' to the IPA CA certificate path for production use."
+                )
+                return False
         if verify is not None:
             if not os.path.exists(verify):
                 raise AnsibleLookupError(
@@ -586,6 +613,13 @@ class LookupModule(LookupBase):
             return fallback
         return value
 
+    def _native_text(self, value, fallback=''):
+        """Coerce Ansible/Jinja text wrappers into plain built-in str."""
+        raw = self._unwrap(value, fallback=fallback)
+        if raw is None:
+            return None
+        return str(to_text(raw, errors='surrogate_or_strict'))
+
     def _raw_value(self, record):
         """Return the secret value from a result record (URI or password)."""
         if isinstance(record, dict):
@@ -617,12 +651,12 @@ class LookupModule(LookupBase):
         if token_type == 'hotp' and interval != 30:
             display.warning(
                 "eigenstate.ipa.otp: 'interval' is only meaningful "
-                "for type=totp and will be ignored for type=hotp.")
+                "for token_type=totp and will be ignored for token_type=hotp.")
 
         if token_type == 'host' and interval != 30:
             display.warning(
                 "eigenstate.ipa.otp: 'interval' is only meaningful "
-                "for type=totp and will be ignored for type=host.")
+                "for token_type=totp and will be ignored for token_type=host.")
 
         if owner and operation != 'find':
             display.warning(
@@ -641,7 +675,7 @@ class LookupModule(LookupBase):
         if operation == 'add' and not terms:
             raise AnsibleLookupError(
                 "operation='add' requires at least one term: a username "
-                "for type=totp/hotp, or a host FQDN for type=host.")
+                "for token_type=totp/hotp, or a host FQDN for token_type=host.")
         if operation in ('show', 'revoke') and not terms:
             raise AnsibleLookupError(
                 "operation='%s' requires at least one token unique ID "
@@ -654,8 +688,10 @@ class LookupModule(LookupBase):
     def _build_token_record(self, owner, entry, include_uri=True):
         """Normalize an ipalib OTP token response into an output record."""
         token_type = to_text(
-            self._unwrap(entry.get('ipatokentype'), fallback=u'totp'),
-            errors='surrogate_or_strict')
+            self._unwrap(
+                entry.get('ipatokentype', entry.get('type')),
+                fallback=u'totp'),
+            errors='surrogate_or_strict').lower()
         interval_raw = self._unwrap(entry.get('ipatokentotptimestep'))
         try:
             interval = int(interval_raw) if interval_raw is not None else None
@@ -679,31 +715,27 @@ class LookupModule(LookupBase):
             disabled = False
 
         record = {
-            'owner': to_text(
-                self._unwrap(entry.get('ipatokenowner'),
-                             fallback=owner or u''),
-                errors='surrogate_or_strict'),
-            'token_id': to_text(
-                self._unwrap(entry.get('ipatokenuniqueid'), fallback=u''),
-                errors='surrogate_or_strict'),
+            'owner': self._native_text(
+                entry.get('ipatokenowner'), fallback=owner or u''),
+            'token_id': self._native_text(
+                entry.get('ipatokenuniqueid'), fallback=u''),
             'type': token_type,
-            'algorithm': to_text(
-                self._unwrap(entry.get('ipatokenotpalgorithm'),
-                             fallback=u'sha1'),
-                errors='surrogate_or_strict'),
+            'algorithm': self._native_text(
+                entry.get('ipatokenotpalgorithm'), fallback=u'sha1'),
             'digits': digits,
             'interval': interval if token_type == 'totp' else None,
             'disabled': disabled,
-            'description': to_text(
-                self._unwrap(entry.get('description'), fallback=u''),
-                errors='surrogate_or_strict') or None,
+            'description': (
+                self._native_text(entry.get('description'), fallback=u'') or None
+            ),
             'exists': True,
         }
 
         if include_uri:
-            uri_raw = self._unwrap(entry.get('ipatokenotpuri'))
+            uri_raw = self._unwrap(
+                entry.get('uri', entry.get('ipatokenotpuri')))
             record['uri'] = (
-                to_text(uri_raw, errors='surrogate_or_strict')
+                self._native_text(uri_raw)
                 if uri_raw is not None else None)
 
         return record
@@ -711,16 +743,16 @@ class LookupModule(LookupBase):
     def _build_host_record(self, fqdn, password):
         """Build a result record for a host enrollment password."""
         return {
-            'fqdn': to_text(fqdn, errors='surrogate_or_strict'),
+            'fqdn': self._native_text(fqdn),
             'type': 'host',
-            'password': to_text(password, errors='surrogate_or_strict'),
+            'password': self._native_text(password),
             'exists': True,
         }
 
     def _build_not_found_record(self, token_id):
         """Build a result record for a token ID that was not found."""
         return {
-            'token_id': to_text(token_id, errors='surrogate_or_strict'),
+            'token_id': self._native_text(token_id),
             'owner': None,
             'type': None,
             'uri': None,
@@ -739,17 +771,17 @@ class LookupModule(LookupBase):
     def _finalize_results(self, results, result_format, primary_key=None):
         """Apply the requested top-level result container shape."""
         if result_format == 'map':
-            return {
+            return [{
                 item[primary_key]: self._raw_value(item)
                 for item in results
                 if isinstance(item, dict)
-            }
+            }]
         if result_format == 'map_record':
-            return {
+            return [{
                 item[primary_key]: item
                 for item in results
                 if isinstance(item, dict)
-            }
+            }]
         if result_format == 'value':
             return [self._raw_value(item) for item in results]
         # record (default)
@@ -763,15 +795,13 @@ class LookupModule(LookupBase):
                         interval, description):
         """Create a TOTP or HOTP token for an IdM user."""
         add_kwargs = {
-            'ipatokenowner': to_text(owner, errors='surrogate_or_strict'),
-            'ipatokentype': to_text(token_type, errors='surrogate_or_strict'),
-            'ipatokenotpalgorithm': to_text(
-                algorithm, errors='surrogate_or_strict'),
+            'ipatokenowner': self._native_text(owner),
+            'type': self._native_text(token_type),
+            'ipatokenotpalgorithm': self._native_text(algorithm),
             'ipatokenotpdigits': digits,
         }
         if description:
-            add_kwargs['description'] = to_text(
-                description, errors='surrogate_or_strict')
+            add_kwargs['description'] = self._native_text(description)
         if token_type == 'totp':
             add_kwargs['ipatokentotptimestep'] = interval
 
@@ -798,7 +828,7 @@ class LookupModule(LookupBase):
         """Generate a one-time enrollment password for an IdM host."""
         try:
             result = _ipa_api.Command.host_mod(
-                to_text(fqdn, errors='surrogate_or_strict'),
+                self._native_text(fqdn),
                 random=True)
         except ipalib_errors.NotFound as exc:
             raise AnsibleLookupError(
@@ -830,12 +860,11 @@ class LookupModule(LookupBase):
             'all': True,
         }
         if owner:
-            find_args['ipatokenowner'] = to_text(
-                owner, errors='surrogate_or_strict')
+            find_args['ipatokenowner'] = self._native_text(owner)
 
         find_terms = []
         if criteria:
-            find_terms = [to_text(criteria, errors='surrogate_or_strict')]
+            find_terms = [self._native_text(criteria)]
 
         try:
             result = _ipa_api.Command.otptoken_find(
@@ -863,7 +892,7 @@ class LookupModule(LookupBase):
         """
         try:
             result = _ipa_api.Command.otptoken_show(
-                to_text(token_id, errors='surrogate_or_strict'),
+                self._native_text(token_id),
                 all=True)
         except ipalib_errors.NotFound:
             return None
@@ -883,7 +912,7 @@ class LookupModule(LookupBase):
         """Permanently delete a token by its unique ID."""
         try:
             _ipa_api.Command.otptoken_del(
-                to_text(token_id, errors='surrogate_or_strict'))
+                self._native_text(token_id))
         except ipalib_errors.NotFound as exc:
             raise AnsibleLookupError(
                 "Token '%s' not found. Revocation requires an existing "
@@ -898,7 +927,7 @@ class LookupModule(LookupBase):
                 "Failed to revoke token '%s': %s"
                 % (token_id, to_native(exc)))
 
-        return to_text(token_id, errors='surrogate_or_strict')
+        return self._native_text(token_id)
 
     # ------------------------------------------------------------------
     # Entry point
@@ -909,27 +938,63 @@ class LookupModule(LookupBase):
             self._ensure_ipalib()
             self.set_options(var_options=variables, direct=kwargs)
 
-            operation = self.get_option('operation')
-            token_type = self.get_option('type')
-            algorithm = self.get_option('algorithm')
-            digits = self.get_option('digits')
-            interval = self.get_option('interval')
-            owner = self.get_option('owner')
-            description = self.get_option('description')
+            instance_get_option = self.__dict__.get('get_option')
 
-            server = self.get_option('server')
+            def _option(name, default=None, aliases=(), allow_plugin=False):
+                for key in (name,) + tuple(aliases):
+                    if key in kwargs and kwargs[key] is not None:
+                        return kwargs[key]
+                if callable(instance_get_option):
+                    try:
+                        value = instance_get_option(name)
+                    except Exception:
+                        value = None
+                    if value is not None:
+                        return value
+                    for alias in aliases:
+                        try:
+                            value = instance_get_option(alias)
+                        except Exception:
+                            value = None
+                        if value is not None:
+                            return value
+                if allow_plugin:
+                    try:
+                        value = self.get_option(name)
+                    except KeyError:
+                        value = None
+                    if value is not None:
+                        return value
+                    for alias in aliases:
+                        try:
+                            value = self.get_option(alias)
+                        except KeyError:
+                            value = None
+                        if value is not None:
+                            return value
+                return default
+
+            operation = _option('operation', default='add')
+            token_type = _option('token_type', default='totp', aliases=('type',))
+            algorithm = _option('algorithm', default='sha1')
+            digits = int(_option('digits', default=6))
+            interval = int(_option('interval', default=30))
+            owner = _option('owner')
+            description = _option('description')
+
+            server = _option('server', allow_plugin=True)
             if not server:
                 raise AnsibleLookupError(
                     "'server' is required. Set it directly or via the "
                     "IPA_SERVER environment variable.")
 
-            principal = self.get_option('ipaadmin_principal')
-            password = self.get_option('ipaadmin_password')
-            keytab = self.get_option('kerberos_keytab')
-            verify = self._resolve_verify(self.get_option('verify'))
+            principal = _option('ipaadmin_principal', default='admin', allow_plugin=True)
+            password = _option('ipaadmin_password', allow_plugin=True)
+            keytab = _option('kerberos_keytab', allow_plugin=True)
+            verify = self._resolve_verify(_option('verify', allow_plugin=True))
 
             # result_format: caller may not specify it; apply operation default
-            result_format = self.get_option('result_format')
+            result_format = _option('result_format')
             if result_format is None:
                 result_format = 'value' if operation == 'add' else 'record'
 
@@ -944,6 +1009,7 @@ class LookupModule(LookupBase):
             if operation == 'revoke':
                 deleted = []
                 for token_id in terms:
+                    token_id = self._native_text(token_id)
                     deleted.append(self._revoke_token(token_id))
                 return deleted
 
@@ -959,6 +1025,7 @@ class LookupModule(LookupBase):
             if operation == 'show':
                 records = []
                 for token_id in terms:
+                    token_id = self._native_text(token_id)
                     entry = self._show_token(token_id)
                     if entry is None:
                         records.append(
@@ -972,7 +1039,7 @@ class LookupModule(LookupBase):
             # ---- add -----------------------------------------------------
             records = []
             for term in terms:
-                term = to_text(term, errors='surrogate_or_strict')
+                term = self._native_text(term)
                 if token_type == 'host':
                     record = self._add_host_enroll(term)
                 else:
