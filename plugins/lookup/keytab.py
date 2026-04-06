@@ -67,7 +67,9 @@ options:
     description: >-
       Password for the admin principal. The plugin uses this to obtain a
       Kerberos ticket via C(kinit). Not required if C(kerberos_keytab) is
-      set or a valid ticket already exists.
+      set or a valid ticket already exists. The password must be usable for
+      non-interactive C(kinit); an IPA account that is forced to change its
+      password on first login will fail in this mode.
     type: str
     secret: true
     env:
@@ -122,6 +124,9 @@ notes:
     control node or execution environment. On RHEL 10, install
     C(ipa-client). On other releases, install the package that provides
     C(/usr/sbin/ipa-getkeytab).
+  - C(ipaadmin_password) requires a password that can be used with
+    non-interactive C(kinit). Accounts forced to change password on first
+    login are not suitable for this mode.
   - The C(generate) retrieve mode rotates the principal's keys. Any service
     or host that holds an existing keytab for the principal will be unable
     to authenticate until it receives the new keytab. Use C(retrieve) unless
@@ -176,25 +181,25 @@ EXAMPLES = """
 # Retrieve keytab as a record with principal metadata
 - name: Retrieve keytab with record format
   ansible.builtin.set_fact:
-    keytab_record: "{{ lookup('eigenstate.ipa.keytab',
-                         'HTTP/webserver.idm.corp.lan',
-                         server='idm-01.idm.corp.lan',
-                         kerberos_keytab='/runner/env/ipa/admin.keytab',
-                         result_format='record',
-                         verify='/etc/ipa/ca.crt') }}"
+    keytab_record: "{{ query('eigenstate.ipa.keytab',
+                        'HTTP/webserver.idm.corp.lan',
+                        server='idm-01.idm.corp.lan',
+                        kerberos_keytab='/runner/env/ipa/admin.keytab',
+                        result_format='record',
+                        verify='/etc/ipa/ca.crt') | first }}"
   # keytab_record.principal == 'HTTP/webserver.idm.corp.lan'
   # keytab_record.value     == base64-encoded keytab
 
 # Retrieve keytabs for multiple principals in one lookup
 - name: Retrieve keytabs for all web services
   ansible.builtin.set_fact:
-    web_keytabs: "{{ lookup('eigenstate.ipa.keytab',
-                       'HTTP/web-01.idm.corp.lan',
-                       'HTTP/web-02.idm.corp.lan',
-                       server='idm-01.idm.corp.lan',
-                       kerberos_keytab='/runner/env/ipa/admin.keytab',
-                       result_format='map',
-                       verify='/etc/ipa/ca.crt') }}"
+    web_keytabs: "{{ query('eigenstate.ipa.keytab',
+                      'HTTP/web-01.idm.corp.lan',
+                      'HTTP/web-02.idm.corp.lan',
+                      server='idm-01.idm.corp.lan',
+                      kerberos_keytab='/runner/env/ipa/admin.keytab',
+                      result_format='map',
+                      verify='/etc/ipa/ca.crt') | first }}"
   # web_keytabs['HTTP/web-01.idm.corp.lan'] == base64 keytab
   # web_keytabs['HTTP/web-02.idm.corp.lan'] == base64 keytab
 

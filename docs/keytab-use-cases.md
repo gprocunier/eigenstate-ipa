@@ -120,12 +120,12 @@ keys and invalidating other services.
 ## 3. Fleet Web Service Keytab Deployment
 
 When the same play must deploy keytabs to a group of web servers, retrieve
-all principals in a single lookup using `result_format='map'` and iterate
+all principals in a single query using `result_format='map'` and iterate
 over the inventory group.
 
 ```mermaid
 flowchart TD
-    lookup["Single lookup\nresult_format='map'"]
+    lookup["Single query\nresult_format='map'"]
     web01["HTTP/web-01 → /etc/httpd/conf/httpd.keytab on web-01"]
     web02["HTTP/web-02 → /etc/httpd/conf/httpd.keytab on web-02"]
     web03["HTTP/web-03 → /etc/httpd/conf/httpd.keytab on web-03"]
@@ -138,14 +138,14 @@ flowchart TD
 ```yaml
 - name: Retrieve keytabs for all web servers
   ansible.builtin.set_fact:
-    web_keytabs: "{{ lookup('eigenstate.ipa.keytab',
-                       'HTTP/web-01.idm.corp.lan',
-                       'HTTP/web-02.idm.corp.lan',
-                       'HTTP/web-03.idm.corp.lan',
-                       server='idm-01.idm.corp.lan',
-                       kerberos_keytab='/runner/env/ipa/admin.keytab',
-                       result_format='map',
-                       verify='/etc/ipa/ca.crt') | first }}"
+    web_keytabs: "{{ query('eigenstate.ipa.keytab',
+                      'HTTP/web-01.idm.corp.lan',
+                      'HTTP/web-02.idm.corp.lan',
+                      'HTTP/web-03.idm.corp.lan',
+                      server='idm-01.idm.corp.lan',
+                      kerberos_keytab='/runner/env/ipa/admin.keytab',
+                      result_format='map',
+                      verify='/etc/ipa/ca.crt') | first }}"
 
 - name: Deploy keytab to each web server
   ansible.builtin.copy:
@@ -457,7 +457,8 @@ is by design:
 
 Prefer `kerberos_keytab` pointing to a controller-mounted credential for all
 AAP and non-interactive use. Use `ipaadmin_password` only for one-off local
-testing where keytab-based auth is not yet in place.
+testing where keytab-based auth is not yet in place, and only when the IPA
+account has a non-expired password that does not require a first-login change.
 
 For the decision model behind these scenarios, return to
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>.

@@ -69,10 +69,16 @@ It can get there in three ways:
 
 - `ipaadmin_password`:
   - runs `kinit` to obtain a ticket before calling `ipa-getkeytab`
+  - requires a password that is usable for non-interactive `kinit`
 - `kerberos_keytab`:
   - runs `kinit -kt` to obtain a ticket non-interactively
 - neither password nor keytab:
   - assumes a valid existing ticket is already available in the default cache
+
+> [!NOTE]
+> Password auth is viable for local automation only when the IPA account's
+> password is not forced into a change-on-first-login flow. A newly created
+> IPA user with an expired password will fail non-interactive `kinit`.
 
 > [!IMPORTANT]
 > For AAP use, `kerberos_keytab` is the correct non-interactive path.
@@ -170,7 +176,8 @@ result:
 ```
 
 Use this when the playbook should not depend on positional list ordering or
-when it needs to log or route based on the principal name.
+when it needs to log or route based on the principal name. In Ansible, use
+`query(...) | first` for this structured return shape.
 
 ### `map`
 
@@ -184,7 +191,8 @@ result:
 ```
 
 Use this when a single lookup retrieves keytabs for multiple principals and
-the playbook needs to address them by name rather than by position.
+the playbook needs to address them by name rather than by position. In
+Ansible, use `query(...) | first` for this structured return shape.
 
 ## Minimal Examples
 
@@ -229,15 +237,15 @@ Multiple principals in one lookup with map format:
 
 ```yaml
 - ansible.builtin.set_fact:
-    web_keytabs: "{{ lookup('eigenstate.ipa.keytab',
-                       'HTTP/web-01.idm.corp.lan',
-                       'HTTP/web-02.idm.corp.lan',
-                       server='idm-01.idm.corp.lan',
-                       kerberos_keytab='/runner/env/ipa/admin.keytab',
-                       result_format='map',
-                       verify='/etc/ipa/ca.crt') }}"
-# web_keytabs[0]['HTTP/web-01.idm.corp.lan'] | b64decode
-# web_keytabs[0]['HTTP/web-02.idm.corp.lan'] | b64decode
+    web_keytabs: "{{ query('eigenstate.ipa.keytab',
+                      'HTTP/web-01.idm.corp.lan',
+                      'HTTP/web-02.idm.corp.lan',
+                      server='idm-01.idm.corp.lan',
+                      kerberos_keytab='/runner/env/ipa/admin.keytab',
+                      result_format='map',
+                      verify='/etc/ipa/ca.crt') | first }}"
+# web_keytabs['HTTP/web-01.idm.corp.lan'] | b64decode
+# web_keytabs['HTTP/web-02.idm.corp.lan'] | b64decode
 ```
 
 Restrict to AES-256 only:

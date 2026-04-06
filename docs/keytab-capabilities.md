@@ -159,12 +159,12 @@ service user. A world-readable keytab is a Kerberos impersonation risk.
 ## 4. Fleet Keytab Deployment With Map Format
 
 When the same play must deploy keytabs to multiple services, retrieve them all
-in one lookup call with `result_format='map'` and address each by principal
+in one query call with `result_format='map'` and address each by principal
 name.
 
 ```mermaid
 flowchart TD
-    lookup["Single lookup — multiple principals\nresult_format='map'"]
+    lookup["Single query — multiple principals\nresult_format='map'"]
     web01["web_keytabs['HTTP/web-01'] → /etc/httpd/... on web-01"]
     web02["web_keytabs['HTTP/web-02'] → /etc/httpd/... on web-02"]
 
@@ -177,13 +177,13 @@ Example — retrieve and iterate:
 ```yaml
 - name: Retrieve keytabs for all web services
   ansible.builtin.set_fact:
-    web_keytabs: "{{ lookup('eigenstate.ipa.keytab',
-                       'HTTP/web-01.idm.corp.lan',
-                       'HTTP/web-02.idm.corp.lan',
-                       server='idm-01.idm.corp.lan',
-                       kerberos_keytab='/runner/env/ipa/admin.keytab',
-                       result_format='map',
-                       verify='/etc/ipa/ca.crt') | first }}"
+    web_keytabs: "{{ query('eigenstate.ipa.keytab',
+                      'HTTP/web-01.idm.corp.lan',
+                      'HTTP/web-02.idm.corp.lan',
+                      server='idm-01.idm.corp.lan',
+                      kerberos_keytab='/runner/env/ipa/admin.keytab',
+                      result_format='map',
+                      verify='/etc/ipa/ca.crt') | first }}"
 
 - name: Deploy keytab to each web server
   ansible.builtin.copy:
@@ -199,6 +199,8 @@ Example — retrieve and iterate:
 > [!NOTE]
 > `result_format='map'` returns a one-element list containing the dict. Use
 > `| first` to unwrap it before subscripting by principal name.
+> The validated structured-return path for keytabs is `query(...)`, not bare
+> `lookup(...)`.
 
 ## 5. Keytab Rotation Workflow
 
