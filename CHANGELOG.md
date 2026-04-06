@@ -4,7 +4,7 @@
 
 - added `eigenstate.ipa.keytab` lookup plugin for retrieving Kerberos keytab
   files from FreeIPA/IdM service and host principals
-- keytab retrieval uses `ipa-getkeytab` from `ipa-client-utils` over an
+- keytab retrieval uses `ipa-getkeytab` from the platform IPA client tooling over an
   authenticated Kerberos session; no ipalib dependency at keytab-retrieval time
 - supports `retrieve` mode (existing keys, safe default) and `generate` mode
   (rotates principal keys) with an explicit warning on key rotation
