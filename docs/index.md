@@ -3,18 +3,19 @@ layout: default
 title: eigenstate.ipa
 description: >-
   Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory,
-  IdM vault lookup, Kerberos automation, AAP integration, and secure secret
-  retrieval.
+  IdM vault lookup, Kerberos keytab delivery, certificate automation,
+  AAP integration, and secure secret retrieval.
 ---
 
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It has
-three main jobs:
+four main jobs:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
 - IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and
   AAP
+- Kerberos keytab retrieval for host and service principals
 - IdM CA certificate request, retrieval, and expiry search via the Dogtag PKI
   backend
 
@@ -23,9 +24,9 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.1.0`
-- added `eigenstate.ipa.cert` — IdM CA certificate request, retrieval, and
-  find operations without requiring certmonger on the target
+- `1.2.0`
+- adds `eigenstate.ipa.cert` and preserves the released `eigenstate.ipa.keytab`
+  plugin in the integrated collection
 
 ## Start Here
 
@@ -33,9 +34,11 @@ runtime secret retrieval.
 - [Documentation Map](https://gprocunier.github.io/eigenstate-ipa/documentation-map.html)
 - [Inventory Plugin](./inventory-plugin.md)
 - [Vault Plugin](./vault-plugin.md)
+- [Keytab Plugin](./keytab-plugin.md)
 - [Cert Plugin](./cert-plugin.md)
 - [Inventory Use Cases](./inventory-use-cases.md)
 - [Vault Use Cases](./vault-use-cases.md)
+- [Keytab Use Cases](./keytab-use-cases.md)
 - [Cert Use Cases](./cert-use-cases.md)
 - [AAP Integration](./aap-integration.md)
 
@@ -46,6 +49,9 @@ runtime secret retrieval.
 - `eigenstate.ipa.vault`
   IdM vault retrieval, metadata inspection, scoped search, and binary-safe
   secret lookup.
+- `eigenstate.ipa.keytab`
+  Kerberos keytab retrieval for host and service principals via
+  `ipa-getkeytab`.
 - `eigenstate.ipa.cert`
   IdM CA certificate request and retrieval. Signs CSRs against service
   principals, retrieves existing certs by serial number, and finds certs by

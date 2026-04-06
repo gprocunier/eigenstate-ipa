@@ -28,6 +28,7 @@ def _load_cert_module():
             rpcclient=types.SimpleNamespace(
                 isconnected=lambda: True,
                 connect=lambda ccache=None: None,
+                disconnect=lambda: None,
             )
         ),
         Command=types.SimpleNamespace(
@@ -304,6 +305,27 @@ class CertLookupTests(unittest.TestCase):
         with self.assertRaises(self.mod.AnsibleLookupError):
             lookup._validate_serial("ABCDE")
 
+    def test_principal_find_filter_maps_host_principal_to_hosts(self):
+        lookup = self.mod.LookupModule()
+        self.assertEqual(
+            lookup._principal_find_filter(
+                "host/web.example.com@EXAMPLE.COM"),
+            {"host": ["web.example.com"]},
+        )
+
+    def test_principal_find_filter_maps_service_principal_to_services(self):
+        lookup = self.mod.LookupModule()
+        self.assertEqual(
+            lookup._principal_find_filter(
+                "HTTP/web.example.com@EXAMPLE.COM"),
+            {"service": ["HTTP/web.example.com@EXAMPLE.COM"]},
+        )
+
+    def test_principal_find_filter_rejects_non_host_non_service(self):
+        lookup = self.mod.LookupModule()
+        with self.assertRaises(self.mod.AnsibleLookupError):
+            lookup._principal_find_filter("admin@EXAMPLE.COM")
+
     # -----------------------------------------------------------------------
     # PEM conversion
     # -----------------------------------------------------------------------
@@ -422,11 +444,12 @@ class CertLookupTests(unittest.TestCase):
         lookup = self._make_lookup(options)
         result = lookup.run(
             ["HTTP/web.example.com@EXAMPLE.COM"], variables={})
-        self.assertIsInstance(result, dict)
-        self.assertIn("HTTP/web.example.com@EXAMPLE.COM", result)
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(result[0], dict)
+        self.assertIn("HTTP/web.example.com@EXAMPLE.COM", result[0])
         self.assertIn(
             "-----BEGIN CERTIFICATE-----",
-            result["HTTP/web.example.com@EXAMPLE.COM"])
+            result[0]["HTTP/web.example.com@EXAMPLE.COM"])
 
     def test_map_record_format_returns_dict_of_full_records(self):
         options = {
@@ -441,8 +464,9 @@ class CertLookupTests(unittest.TestCase):
         lookup = self._make_lookup(options)
         result = lookup.run(
             ["HTTP/web.example.com@EXAMPLE.COM"], variables={})
-        self.assertIsInstance(result, dict)
-        record = result["HTTP/web.example.com@EXAMPLE.COM"]
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(result[0], dict)
+        record = result[0]["HTTP/web.example.com@EXAMPLE.COM"]
         self.assertIn("metadata", record)
 
     def test_multiple_terms_return_one_result_each(self):
@@ -604,8 +628,9 @@ class CertLookupTests(unittest.TestCase):
         }
         lookup = self._make_lookup(options)
         result = lookup.run(["12345"], variables={})
-        self.assertIsInstance(result, dict)
-        self.assertIn("12345", result)
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(result[0], dict)
+        self.assertIn("12345", result[0])
 
     def test_retrieve_rejects_invalid_serial(self):
         options = {
@@ -648,7 +673,8 @@ class CertLookupTests(unittest.TestCase):
         }
         lookup = self._make_lookup(options)
         result = lookup.run([], variables={})
-        self.assertIsInstance(result, dict)
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(result[0], dict)
 
     def test_find_returns_empty_list_when_no_matches(self):
         options = {
@@ -675,9 +701,49 @@ class CertLookupTests(unittest.TestCase):
         }
         lookup = self._make_lookup(options)
         result = lookup.run([], variables={})
-        self.assertIsInstance(result, dict)
+        self.assertIsInstance(result, list)
+        self.assertIsInstance(result[0], dict)
         # serial_number from SAMPLE_IPA_CERT is 12345
-        self.assertIn("12345", result)
+        self.assertIn("12345", result[0])
+
+    def test_find_uses_hosts_filter_for_host_principal(self):
+        captured = {}
+
+        def fake_cert_find(**kwargs):
+            captured.update(kwargs)
+            return {"result": []}
+
+        with mock.patch.object(
+            self.mod._ipa_api.Command, "cert_find", side_effect=fake_cert_find
+        ):
+            lookup = self.mod.LookupModule()
+            lookup._find_certs(
+                "host/web.example.com@EXAMPLE.COM",
+                None, None, None, None, False,
+            )
+
+        self.assertEqual(captured["host"], ["web.example.com"])
+        self.assertNotIn("service", captured)
+
+    def test_find_uses_services_filter_for_service_principal(self):
+        captured = {}
+
+        def fake_cert_find(**kwargs):
+            captured.update(kwargs)
+            return {"result": []}
+
+        with mock.patch.object(
+            self.mod._ipa_api.Command, "cert_find", side_effect=fake_cert_find
+        ):
+            lookup = self.mod.LookupModule()
+            lookup._find_certs(
+                "HTTP/web.example.com@EXAMPLE.COM",
+                None, None, None, None, False,
+            )
+
+        self.assertEqual(
+            captured["service"], ["HTTP/web.example.com@EXAMPLE.COM"])
+        self.assertNotIn("host", captured)
 
     def test_find_warns_on_no_filters(self):
         options = {
@@ -750,6 +816,27 @@ class CertLookupTests(unittest.TestCase):
         finally:
             if original is not None:
                 os.environ["KRB5CCNAME"] = original
+
+    def test_cleanup_ccache_disconnects_ipalib_backend_when_managed(self):
+        lookup = self.mod.LookupModule()
+        disconnect = mock.Mock()
+        fake_backend = types.SimpleNamespace(
+            isconnected=lambda: True,
+            disconnect=disconnect,
+        )
+        with tempfile.NamedTemporaryFile() as ccache_file:
+            lookup._activate_ccache(
+                ccache_file.name,
+                "FILE:%s" % ccache_file.name,
+            )
+            with mock.patch.object(
+                self.mod, "_ipa_api",
+                types.SimpleNamespace(
+                    Backend=types.SimpleNamespace(rpcclient=fake_backend)
+                ),
+            ), mock.patch.object(self.mod, "HAS_IPALIB", True):
+                lookup._cleanup_ccache()
+        disconnect.assert_called_once_with()
 
     # -----------------------------------------------------------------------
     # TLS verification

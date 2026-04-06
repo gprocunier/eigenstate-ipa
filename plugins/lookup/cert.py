@@ -479,6 +479,13 @@ class LookupModule(LookupBase):
 
     def _cleanup_ccache(self):
         """Remove any managed Kerberos credential cache and restore env."""
+        if self._managing_ccache and HAS_IPALIB:
+            try:
+                backend = _ipa_api.Backend.rpcclient
+                if backend.isconnected():
+                    backend.disconnect()
+            except Exception:
+                pass
         if self._ccache_path and os.path.exists(self._ccache_path):
             os.remove(self._ccache_path)
         if self._managing_ccache:
@@ -659,6 +666,24 @@ class LookupModule(LookupBase):
                 "Invalid serial number '%s'. Expected a decimal "
                 "integer or hex value prefixed with 0x." % serial)
 
+    def _principal_find_filter(self, principal):
+        """Map a principal filter to the supported cert_find owner filter."""
+        text = to_text(principal, errors='surrogate_or_strict').strip()
+        if text.startswith('host/'):
+            hostname = text[5:].split('@', 1)[0]
+            if not hostname:
+                raise AnsibleLookupError(
+                    "Invalid host principal for operation='find': %s"
+                    % principal)
+            return {'host': [hostname]}
+        if '/' in text:
+            return {'service': [text]}
+        raise AnsibleLookupError(
+            "Unsupported principal filter '%s' for operation='find'. "
+            "Use a host principal like host/node.example.com@REALM or "
+            "a service principal like HTTP/node.example.com@REALM."
+            % principal)
+
     # ---------------------------------------------------------------
     # CSR and PEM helpers
     # ---------------------------------------------------------------
@@ -765,12 +790,12 @@ class LookupModule(LookupBase):
     def _finalize_results(self, results, result_format):
         """Apply the requested top-level result container shape."""
         if result_format == 'map':
-            return {
+            return [{
                 item['name']: item.get('value', item)
                 for item in results
-            }
+            }]
         if result_format == 'map_record':
-            return {item['name']: item for item in results}
+            return [{item['name']: item for item in results}]
         return results
 
     # ---------------------------------------------------------------
@@ -840,7 +865,7 @@ class LookupModule(LookupBase):
             'sizelimit': 0,
         }
         if principal:
-            find_args['principal'] = [principal]
+            find_args.update(self._principal_find_filter(principal))
         if subject:
             find_args['subject'] = subject
         if valid_not_after_from:

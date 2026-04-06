@@ -29,6 +29,7 @@ tags:
   - "idm"
   - "inventory"
   - "vault"
+  - "cert"
   - "secrets"
   - "keytab"
   - "kerberos"
@@ -37,3 +38,4 @@ tags:
 build_ignore:
   - "*.tar.gz"
   - ".git"
+  - ".ansible"

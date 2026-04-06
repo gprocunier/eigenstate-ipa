@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0
+
+- added `eigenstate.ipa.cert` for IdM CA certificate request, retrieve, and find operations
+- fixed repeated cert lookups in one Ansible process by disconnecting the managed `ipalib` RPC backend before ccache cleanup
+- fixed `operation=find` principal filtering to use the supported IdM CA owner arguments
+- fixed structured `map` and `map_record` cert results to satisfy the Ansible lookup return contract
+- excluded transient `.ansible` state from built collection artifacts
+- refreshed collection metadata and docs to describe the integrated inventory, vault, keytab, and cert feature set
+
 ## 1.1.1
 
 - refreshed release metadata to match the keytab-enabled collection scope

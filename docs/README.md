@@ -6,12 +6,15 @@ the part of the collection you actually need.
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>&nbsp;&nbsp;IDM CERT PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;IDM VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>&nbsp;&nbsp;KEYTAB CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>&nbsp;&nbsp;IDM CERT CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>&nbsp;&nbsp;IDM VAULT USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>&nbsp;&nbsp;KEYTAB USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>&nbsp;&nbsp;IDM CERT USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>&nbsp;&nbsp;TOP README&nbsp;&nbsp;</kbd></a>
 
@@ -65,6 +68,21 @@ Use these when you need:
 - examples for deploying keytabs to HTTP, NFS, and host principals
 - worked playbook patterns for new service onboarding, fleet deployment, rotation, and vault-gated bootstrap
 
+### I Want To Request Or Manage Certificates From IdM CA
+
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>&nbsp;&nbsp;IDM CERT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>&nbsp;&nbsp;IDM CERT CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>&nbsp;&nbsp;IDM CERT USE CASES&nbsp;&nbsp;</kbd></a>
+
+Use these when you need:
+
+- cert operations: request, retrieve, or find
+- CSR input formats and per-operation parameters
+- result shapes and cert metadata fields
+- pre-expiry maintenance workflows and expiry window searches
+- cert plus private key bundle delivery patterns
+- worked playbook examples for service cert issuance, renewal, and audit
+
 ### I Want To Run This In Automation Controller / AAP
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
@@ -89,12 +107,15 @@ The top README covers collection scope, installation, and repository layout.
 | [Inventory Plugin](./inventory-plugin.md) | Formal reference for `eigenstate.ipa.idm` |
 | [Vault Plugin](./vault-plugin.md) | Formal reference for `eigenstate.ipa.vault` |
 | [Keytab Plugin](./keytab-plugin.md) | Formal reference for `eigenstate.ipa.keytab` |
+| [Cert Plugin](./cert-plugin.md) | Formal reference for `eigenstate.ipa.cert` |
 | [Inventory Capabilities](./inventory-capabilities.md) | Scenario-driven guidance for inventory use cases |
 | [Vault Capabilities](./vault-capabilities.md) | Scenario-driven guidance for vault retrieval use cases |
 | [Keytab Capabilities](./keytab-capabilities.md) | Scenario-driven guidance for Kerberos keytab deployment |
+| [Cert Capabilities](./cert-capabilities.md) | Scenario-driven guidance for IdM CA certificate workflows |
 | [Inventory Use Cases](./inventory-use-cases.md) | Detailed worked examples for inventory-backed automation |
 | [Vault Use Cases](./vault-use-cases.md) | Detailed worked examples for vault-backed secret retrieval |
 | [Keytab Use Cases](./keytab-use-cases.md) | Detailed worked examples for keytab retrieval and deployment |
+| [Cert Use Cases](./cert-use-cases.md) | Detailed worked examples for certificate issuance, retrieval, and expiry audits |
 | [AAP Integration](./aap-integration.md) | Execution environment and controller integration patterns |
 
 ## Recommended Reading Order
@@ -103,10 +124,13 @@ The top README covers collection scope, installation, and repository layout.
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>INVENTORY PLUGIN</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>IDM VAULT PLUGIN</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>KEYTAB PLUGIN</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>IDM CERT PLUGIN</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>IDM VAULT CAPABILITIES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>IDM CERT CAPABILITIES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>INVENTORY USE CASES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>IDM VAULT USE CASES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>KEYTAB USE CASES</kbd></a>
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>IDM CERT USE CASES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
