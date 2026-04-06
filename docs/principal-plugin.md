@@ -161,8 +161,9 @@ principal_states: "{{ lookup('eigenstate.ipa.principal',
 # principal_states[1].name  == 'ldap/ldap01.example.com'
 ```
 
-For a single principal, the result is still a single-element list unless you
-index it directly with `[0]`.
+For a single principal, `lookup(...)` returns the record directly as a mapping.
+`query(...)` returns a one-element list, so use `| first` there if you want the
+record itself.
 
 ### `map_record`
 
@@ -197,7 +198,7 @@ Single service principal existence check:
                           'HTTP/web01.corp.example.com',
                           server='idm-01.corp.example.com',
                           ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD'),
-                          verify='/etc/ipa/ca.crt') | first }}"
+                          verify='/etc/ipa/ca.crt') }}"
 ```
 
 Host enrollment check before requesting a cert:
@@ -208,7 +209,7 @@ Host enrollment check before requesting a cert:
                     'host/node01.corp.example.com',
                     server='idm-01.corp.example.com',
                     kerberos_keytab='/runner/env/ipa/admin.keytab',
-                    verify='/etc/ipa/ca.crt') | first }}"
+                    verify='/etc/ipa/ca.crt') }}"
 ```
 
 User lock state before automation:
@@ -219,7 +220,7 @@ User lock state before automation:
                     'svc-deploy',
                     server='idm-01.corp.example.com',
                     kerberos_keytab='/runner/env/ipa/admin.keytab',
-                    verify='/etc/ipa/ca.crt') | first }}"
+                    verify='/etc/ipa/ca.crt') }}"
 ```
 
 Multiple principals with named-map output:

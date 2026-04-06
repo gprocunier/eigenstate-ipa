@@ -26,7 +26,7 @@ __metaclass__ = type
 DOCUMENTATION = """
 ---
 name: principal
-version_added: "1.2.0"
+version_added: "1.3.0"
 short_description: Query Kerberos principal state from FreeIPA/IDM
 description:
   - Returns the existence, key state, lock state, and last authentication
@@ -102,9 +102,10 @@ options:
       - name: IPA_KEYTAB
   verify:
     description: >-
-      Path to the IPA CA certificate for TLS verification. Falls back
-      to C(/etc/ipa/ca.crt) when present; disables verification with a
-      warning otherwise.
+      Path to the IPA CA certificate for TLS verification. Set to C(false)
+      to skip an explicit CA override and rely on the system trust behavior
+      from C(ipalib). Falls back to C(/etc/ipa/ca.crt) when present; disables
+      verification with a warning otherwise.
     type: str
     env:
       - name: IPA_CERT
@@ -217,7 +218,7 @@ _raw:
     One state record per principal. Each record is a dictionary with
     the fields below. When C(result_format=record) (default), returns
     a list of records; a single-term lookup is unwrapped by Ansible to
-    a plain dict. When C(result_format=map_record), returns a single
+    a plain dict. When C(result_format=map_record), the lookup returns a
     dictionary keyed by the input principal name.
   type: list
   elements: dict
@@ -407,6 +408,13 @@ class LookupModule(LookupBase):
 
     def _cleanup_ccache(self):
         """Remove any managed Kerberos credential cache and restore env."""
+        if self._managing_ccache and HAS_IPALIB:
+            try:
+                backend = _ipa_api.Backend.rpcclient
+                if backend.isconnected():
+                    backend.disconnect()
+            except Exception:
+                pass
         if self._ccache_path and os.path.exists(self._ccache_path):
             os.remove(self._ccache_path)
         if self._managing_ccache:
@@ -427,11 +435,25 @@ class LookupModule(LookupBase):
 
     def _resolve_verify(self, verify):
         """Resolve TLS verification behavior for lookup requests."""
-        if verify is not None:
-            if not os.path.exists(verify):
+        if verify is False:
+            return False
+
+        if isinstance(verify, str):
+            candidate = verify.strip()
+            if candidate.lower() in ('false', 'no', 'off', '0'):
+                return False
+            if not candidate:
                 raise AnsibleLookupError(
-                    "TLS certificate file not found: %s" % verify)
-            return verify
+                    "Invalid verify value ''. Set a CA certificate path or false.")
+            if not os.path.exists(candidate):
+                raise AnsibleLookupError(
+                    "TLS certificate file not found: %s" % candidate)
+            return candidate
+
+        if verify is not None:
+            raise AnsibleLookupError(
+                "Invalid verify value %r. Set a CA certificate path or false."
+                % verify)
 
         default_verify = self._default_verify_path()
         if default_verify is not None:
@@ -727,7 +749,7 @@ class LookupModule(LookupBase):
     def _finalize_results(self, results, result_format):
         """Apply the requested top-level result container shape."""
         if result_format == 'map_record':
-            return {item['name']: item for item in results}
+            return [{item['name']: item for item in results}]
         return results
 
     def run(self, terms, variables=None, **kwargs):

@@ -25,6 +25,7 @@ def _load_principal_module():
             rpcclient=types.SimpleNamespace(
                 isconnected=lambda: True,
                 connect=lambda ccache=None: None,
+                disconnect=lambda: None,
             )
         ),
         Command=types.SimpleNamespace(
@@ -400,9 +401,37 @@ class PrincipalLookupTests(unittest.TestCase):
 
         result = lookup.run(["HTTP/web01.example.com"], variables={})
 
-        self.assertIsInstance(result, dict)
-        self.assertIn("HTTP/web01.example.com", result)
-        self.assertTrue(result["HTTP/web01.example.com"]["exists"])
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 1)
+        self.assertIn("HTTP/web01.example.com", result[0])
+        self.assertTrue(result[0]["HTTP/web01.example.com"]["exists"])
+
+    def test_cleanup_ccache_disconnects_ipalib_backend_when_managed(self):
+        lookup = self.mod.LookupModule()
+        lookup._managing_ccache = True
+        lookup._ccache_path = None
+        disconnect = mock.Mock()
+        isconnected = mock.Mock(return_value=True)
+        self.mod._ipa_api.Backend.rpcclient.disconnect = disconnect
+        self.mod._ipa_api.Backend.rpcclient.isconnected = isconnected
+
+        lookup._cleanup_ccache()
+
+        isconnected.assert_called_once_with()
+        disconnect.assert_called_once_with()
+
+    def test_resolve_verify_accepts_false_boolean(self):
+        lookup = self.mod.LookupModule()
+        self.assertFalse(lookup._resolve_verify(False))
+
+    def test_resolve_verify_accepts_false_string(self):
+        lookup = self.mod.LookupModule()
+        self.assertFalse(lookup._resolve_verify("false"))
+
+    def test_resolve_verify_rejects_invalid_type(self):
+        lookup = self.mod.LookupModule()
+        with self.assertRaises(Exception):
+            lookup._resolve_verify(123)
 
     # ------------------------------------------------------------------
     # find operation

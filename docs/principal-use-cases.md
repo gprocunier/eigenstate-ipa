@@ -76,7 +76,7 @@ flowchart TD
                               'HTTP/web01.corp.example.com',
                               server='idm-01.corp.example.com',
                               kerberos_keytab='/runner/env/ipa/admin.keytab',
-                              verify='/etc/ipa/ca.crt') | first }}"
+                              verify='/etc/ipa/ca.crt') }}"
 
     - name: Assert principal is ready
       ansible.builtin.assert:
@@ -115,7 +115,7 @@ flowchart TD
                          'host/node01.corp.example.com',
                          server='idm-01.corp.example.com',
                          kerberos_keytab='/runner/env/ipa/admin.keytab',
-                         verify='/etc/ipa/ca.crt') | first }}"
+                         verify='/etc/ipa/ca.crt') }}"
 
     - name: Fail if not enrolled
       ansible.builtin.fail:
@@ -150,7 +150,7 @@ step; catching this earlier produces a clearer error.
                         'svc-deploy',
                         server='idm-01.corp.example.com',
                         kerberos_keytab='/runner/env/ipa/admin.keytab',
-                        verify='/etc/ipa/ca.crt') | first }}"
+                        verify='/etc/ipa/ca.crt') }}"
 
     - name: Fail if account is disabled
       ansible.builtin.fail:
@@ -303,7 +303,7 @@ error when the service is not ready.
                         'HTTP/' + inventory_hostname,
                         server='idm-01.corp.example.com',
                         kerberos_keytab='/runner/env/ipa/admin.keytab',
-                        verify='/etc/ipa/ca.crt') | first }}"
+                        verify='/etc/ipa/ca.crt') }}"
       delegate_to: localhost
 
     - name: Abort if service principal is not ready
@@ -323,7 +323,7 @@ error when the service is not ready.
                       'HTTP/' + inventory_hostname,
                       server='idm-01.corp.example.com',
                       kerberos_keytab='/runner/env/ipa/admin.keytab',
-                      retrieve=true,
+                      retrieve_mode='retrieve',
                       verify='/etc/ipa/ca.crt') | b64decode }}"
         dest: /etc/http.keytab
         mode: "0600"
@@ -331,6 +331,11 @@ error when the service is not ready.
         group: apache
       become: true
 ```
+
+> [!NOTE]
+> The principal pre-flight check only proves the target principal exists and has
+> keys. The caller still needs IdM retrieve-keytab rights for the keytab lookup
+> itself.
 
 ## 8. Cross-Plugin: Principal Check Then Cert Request
 
@@ -350,7 +355,7 @@ submitting a CSR to the CA.
                          'host/' + inventory_hostname,
                          server='idm-01.corp.example.com',
                          kerberos_keytab='/runner/env/ipa/admin.keytab',
-                         verify='/etc/ipa/ca.crt') | first }}"
+                         verify='/etc/ipa/ca.crt') }}"
       delegate_to: localhost
 
     - name: Abort if host is not enrolled
@@ -382,17 +387,17 @@ submitting a CSR to the CA.
     - name: Request certificate from IdM CA
       ansible.builtin.set_fact:
         issued_cert: "{{ lookup('eigenstate.ipa.cert',
+                          'host/' + inventory_hostname,
                           server='idm-01.corp.example.com',
                           kerberos_keytab='/runner/env/ipa/admin.keytab',
                           operation='request',
-                          principal='host/' + inventory_hostname,
                           csr=csr_content.content | b64decode,
-                          verify='/etc/ipa/ca.crt') | first }}"
+                          verify='/etc/ipa/ca.crt') }}"
       delegate_to: localhost
 
     - name: Install certificate
       ansible.builtin.copy:
-        content: "{{ issued_cert.certificate }}"
+        content: "{{ issued_cert }}"
         dest: /etc/pki/tls/certs/{{ inventory_hostname }}.pem
         mode: "0644"
       become: true
@@ -432,7 +437,7 @@ IdM record is in the expected state; verify before moving on.
                          'host/' + inventory_hostname,
                          server='idm-01.corp.example.com',
                          kerberos_keytab='/runner/env/ipa/admin.keytab',
-                         verify='/etc/ipa/ca.crt') | first }}"
+                         verify='/etc/ipa/ca.crt') }}"
       delegate_to: localhost
 
     - name: Fail if host is not in IdM

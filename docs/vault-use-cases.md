@@ -35,6 +35,7 @@ permissions line up with the scope they are responsible for.
 - [11. Brokered Sealed Artifact Metadata Convention](#11-brokered-sealed-artifact-metadata-convention)
 - [12. Brokered Sealed Artifact Delivery](#12-brokered-sealed-artifact-delivery)
 - [13. Structured JSON And Normalized Text Retrieval](#13-structured-json-and-normalized-text-retrieval)
+- [14. Sealed Artifact Delivery Without Certmonger](#14-sealed-artifact-delivery-without-certmonger)
 - [Kerberos Is A Good Default Here](#kerberos-is-a-good-default-here)
 
 ## Use Case Flow
@@ -527,6 +528,53 @@ Example:
                      strip_trailing_newline=true,
                      verify='/etc/ipa/ca.crt') }}"
 ```
+
+## 14. Sealed Artifact Delivery Without Certmonger
+
+The sealed artifact pattern in sections 11 and 12 has one external dependency:
+a CMS-usable X.509 certificate and matching private key must already exist on
+the target before anything can be sealed for it. Traditionally certmonger
+provides that pair on enrolled IdM hosts.
+
+`eigenstate.ipa.cert` removes that dependency. The cert plugin can provision
+the recipient certificate as part of the same Ansible play that seals and
+archives the artifact — no certmonger installation or prior enrollment
+state required on the target.
+
+```mermaid
+flowchart LR
+    A["cert plugin signs CSR on controller"] --> B["host cert used as CMS recipient"]
+    B --> C["sealed blob archived to vault"]
+    C --> D["vault plugin delivers blob and key to target"]
+    D --> E["target unseals with private key"]
+```
+
+This enables two cross-plugin patterns:
+
+- **Certmonger-free sealed provisioning**: the controller generates the key and
+  CSR, the cert plugin signs the cert against IdM CA, the private key is
+  archived to a vault, the sealed artifact is archived to a second vault, and
+  both are retrieved and delivered to the target by the vault plugin in a single
+  play.
+
+- **Coordinated cert and key provisioning**: a new service that has no cert or
+  private key yet can have both generated and vaulted in one play, with the cert
+  plugin handling issuance and the vault plugin handling key storage and
+  delivery.
+
+The key handling difference between this and the traditional certmonger sealed
+artifact path is intentional and worth understanding before choosing. On the
+certmonger path, the private key is generated on the target and never moves —
+the sealed artifact pattern is architecturally strongest there. On the
+cert-plugin path, the private key passes through controller memory at generation
+time before being vaulted. That tradeoff is acceptable for new-host provisioning
+scenarios where the target does not yet have an established key pair.
+
+Full playbooks for both patterns are in:
+
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html#10-certmonger-free-sealed-artifact-provisioning"><kbd>&nbsp;&nbsp;CERT USE CASES — 10. Certmonger-Free Sealed Artifact Provisioning&nbsp;&nbsp;</kbd></a>
+
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html#11-coordinated-cert-and-private-key-provisioning"><kbd>&nbsp;&nbsp;CERT USE CASES — 11. Coordinated Cert And Private Key Provisioning&nbsp;&nbsp;</kbd></a>
 
 ## Kerberos Is A Good Default Here
 
