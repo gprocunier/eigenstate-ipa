@@ -217,6 +217,79 @@ class VaultLookupTests(unittest.TestCase):
         self.assertEqual(result, ["secret"])
         self.assertEqual(seen["name"], "db-pass")
         self.assertIsInstance(seen["name"], str)
+        self.assertEqual(type(seen["name"]), str)
+
+    def test_retrieve_vault_normalizes_name_to_text(self):
+        lookup = self.mod.LookupModule()
+        seen = {}
+
+        def fake_retrieve(name, **kwargs):
+            seen["name"] = name
+            return {"result": {"data": "secret"}}
+
+        self.mod._ipa_api.Command = types.SimpleNamespace(
+            vault_retrieve=fake_retrieve
+        )
+
+        result = lookup._retrieve_vault(
+            b"db-pass",
+            "shared",
+            shared=True,
+        )
+
+        self.assertEqual(result, "secret")
+        self.assertEqual(seen["name"], "db-pass")
+        self.assertIsInstance(seen["name"], str)
+        self.assertEqual(type(seen["name"]), str)
+
+    def test_show_vault_normalizes_name_to_text(self):
+        lookup = self.mod.LookupModule()
+        seen = {}
+
+        def fake_show(name, **kwargs):
+            seen["name"] = name
+            return {"result": {"cn": ["db-pass"], "ipavaulttype": ["standard"]}}
+
+        self.mod._ipa_api.Command = types.SimpleNamespace(
+            vault_show=fake_show
+        )
+
+        result = lookup._show_vault(
+            b"db-pass",
+            "shared",
+            shared=True,
+        )
+
+        self.assertEqual(result["name"], "db-pass")
+        self.assertEqual(seen["name"], "db-pass")
+        self.assertIsInstance(seen["name"], str)
+        self.assertEqual(type(seen["name"]), str)
+
+    def test_run_collapses_string_subclasses_before_retrieval(self):
+        class UnsafeText(str):
+            pass
+
+        options = {
+            "server": "idm-01.example.com",
+            "ipaadmin_principal": "admin",
+            "ipaadmin_password": "secret",
+            "verify": "/etc/ipa/ca.crt",
+            "shared": True,
+            "encoding": "utf-8",
+            "result_format": "value",
+        }
+        seen = {}
+
+        def retrieve(name, scope_label, **kwargs):
+            seen["name"] = name
+            return "secret"
+
+        lookup = self._make_lookup(options, retrieve=retrieve)
+        result = lookup.run([UnsafeText("db-pass")], variables={})
+
+        self.assertEqual(result, ["secret"])
+        self.assertEqual(seen["name"], "db-pass")
+        self.assertEqual(type(seen["name"]), str)
 
     def test_show_operation_returns_metadata(self):
         options = {
@@ -423,6 +496,18 @@ class VaultLookupTests(unittest.TestCase):
                 lookup._resolve_verify("/etc/ipa/custom-ca.crt"),
                 "/etc/ipa/custom-ca.crt",
             )
+
+    def test_resolve_verify_false_disables_tls_explicitly(self):
+        lookup = self.mod.LookupModule()
+        with mock.patch.object(self.mod.display, "warning") as warning:
+            self.assertFalse(lookup._resolve_verify(False))
+        warning.assert_called_once()
+
+    def test_resolve_verify_string_false_disables_tls_explicitly(self):
+        lookup = self.mod.LookupModule()
+        with mock.patch.object(self.mod.display, "warning") as warning:
+            self.assertFalse(lookup._resolve_verify("false"))
+        warning.assert_called_once()
 
     def test_resolve_verify_warns_when_no_local_ca_is_available(self):
         lookup = self.mod.LookupModule()

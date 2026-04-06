@@ -4,13 +4,14 @@ title: eigenstate.ipa
 description: >-
   Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory,
   IdM vault lookup, Kerberos principal state, Kerberos keytab delivery,
-  certificate automation, OTP workflows, AAP integration, and secure secret retrieval.
+  certificate automation, OTP workflows, IdM vault lifecycle automation,
+  AAP integration, and secure secret retrieval.
 ---
 
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It has
-six main jobs:
+seven main jobs:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
 - IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and
@@ -20,15 +21,19 @@ six main jobs:
 - IdM CA certificate request, retrieval, and expiry search via the Dogtag PKI
   backend
 - OTP token issue, lookup, revoke, and host enrollment password generation
+- IdM vault lifecycle management for create, archive, update, and delete flows
 
 It fits environments that already use IdM for host data, policy context, and
 runtime secret retrieval.
 
 ## Current Release
 
-- `1.4.0`
-- adds `eigenstate.ipa.otp` to the integrated collection alongside the
-  released inventory, vault, principal, keytab, and cert plugins
+- `1.5.0`
+- adds `eigenstate.ipa.vault_write` to the integrated collection alongside the
+  released inventory, vault, principal, keytab, cert, and OTP components
+- create, archive, modify, and delete IdM vaults from Ansible
+- full idempotency for standard vaults; check mode support
+- delta-only member management
 
 ## Start Here
 
@@ -36,12 +41,14 @@ runtime secret retrieval.
 - [Documentation Map](https://gprocunier.github.io/eigenstate-ipa/documentation-map.html)
 - [Inventory Plugin](./inventory-plugin.md)
 - [Vault Plugin](./vault-plugin.md)
+- [Vault Write Module](./vault-write-plugin.md)
 - [Principal Plugin](./principal-plugin.md)
 - [Keytab Plugin](./keytab-plugin.md)
 - [Cert Plugin](./cert-plugin.md)
 - [OTP Plugin](./otp-plugin.md)
 - [Inventory Use Cases](./inventory-use-cases.md)
 - [Vault Use Cases](./vault-use-cases.md)
+- [Vault Write Use Cases](./vault-write-use-cases.md)
 - [Principal Use Cases](./principal-use-cases.md)
 - [Keytab Use Cases](./keytab-use-cases.md)
 - [Cert Use Cases](./cert-use-cases.md)
@@ -55,6 +62,10 @@ runtime secret retrieval.
 - `eigenstate.ipa.vault`
   IdM vault retrieval, metadata inspection, scoped search, and binary-safe
   secret lookup.
+- `eigenstate.ipa.vault_write`
+  IdM vault lifecycle management for create, archive, rotate, and delete
+  flows from Ansible with full idempotency for standard vaults and
+  check-mode support.
 - `eigenstate.ipa.principal`
   Kerberos principal existence, key, lock, and last-auth inspection for user,
   host, and service principals.

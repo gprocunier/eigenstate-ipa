@@ -1,0 +1,398 @@
+# -*- coding: utf-8 -*-
+
+# Authors:
+#   Greg Procunier
+#
+# Copyright (C) 2026 Red Hat
+# see file 'COPYING' for use and warranty information
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Shared IPA client infrastructure for eigenstate.ipa modules.
+
+Provides Kerberos authentication, ipalib connection management, and
+common helpers used by action modules in this collection.  Lookup
+plugins embed their own copy of this logic for historical reasons; new
+action modules should import from here.
+"""
+
+from __future__ import (absolute_import, division, print_function)
+
+__metaclass__ = type
+
+import os
+import stat
+import subprocess
+import tempfile
+
+from ansible.module_utils.common.text.converters import to_native, to_text
+
+try:
+    from ipalib import api as _ipa_api
+    from ipalib import errors as ipalib_errors
+    HAS_IPALIB = True
+except ImportError:
+    _ipa_api = None
+    ipalib_errors = None
+    HAS_IPALIB = False
+
+try:
+    from ipalib.install.kinit import kinit_password as _kinit_password
+    HAS_KINIT_PASSWORD = True
+except ImportError:
+    try:
+        from ipalib.kinit import kinit_password as _kinit_password
+        HAS_KINIT_PASSWORD = True
+    except ImportError:
+        HAS_KINIT_PASSWORD = False
+
+
+class IPAClientError(Exception):
+    """Raised by IPAClient when an operation fails."""
+
+
+class IPAClient(object):
+    """Kerberos-authenticated ipalib session for eigenstate.ipa modules.
+
+    Usage::
+
+        client = IPAClient()
+        try:
+            client.connect(
+                server='idm-01.example.com',
+                principal='admin',
+                password=module.params['ipaadmin_password'],
+                keytab=module.params['kerberos_keytab'],
+                verify=module.params['verify'],
+            )
+            result = client.api.Command.vault_find(...)
+        except IPAClientError as exc:
+            module.fail_json(msg=str(exc))
+        finally:
+            client.cleanup()
+    """
+
+    def __init__(self, warn_callback=None):
+        """
+        :param warn_callback: callable(msg) for issuing warnings.
+            Pass ``module.warn`` from an AnsibleModule, or a display
+            function from a lookup plugin.
+        """
+        self._warn = warn_callback or (lambda msg: None)
+        self._ccache_path = None
+        self._previous_ccache = None
+        self._managing_ccache = False
+
+    # ------------------------------------------------------------------
+    # Public interface
+    # ------------------------------------------------------------------
+
+    @property
+    def api(self):
+        """Return the ipalib API object for direct command calls."""
+        if not HAS_IPALIB:
+            raise IPAClientError(
+                "The 'ipalib' Python library is required.\n"
+                "  RHEL/Fedora: dnf install python3-ipalib python3-ipaclient")
+        return _ipa_api
+
+    @property
+    def errors(self):
+        """Return the ipalib errors module for exception handling."""
+        if not HAS_IPALIB:
+            raise IPAClientError(
+                "The 'ipalib' Python library is required.\n"
+                "  RHEL/Fedora: dnf install python3-ipalib python3-ipaclient")
+        return ipalib_errors
+
+    def connect(self, server, principal='admin', password=None,
+                keytab=None, verify=None):
+        """Authenticate and connect to the IPA server.
+
+        Exactly one of *password*, *keytab*, or an existing Kerberos
+        ticket in the environment is required.  When both *password* and
+        *keytab* are provided, *keytab* takes precedence.
+
+        :param server: FQDN of the IPA server.
+        :param principal: Kerberos principal (default: 'admin').
+        :param password: Password for *principal*.  Used to obtain a
+            Kerberos ticket via ``kinit`` when *keytab* is not set.
+        :param keytab: Path to a keytab file.  Takes precedence over
+            *password*.
+        :param verify: Path to the IPA CA certificate for TLS
+            verification.  Auto-detected from ``/etc/ipa/ca.crt`` when
+            not set; disabled with a warning if neither is available.
+        :raises IPAClientError: on authentication or connection failure.
+        """
+        if not HAS_IPALIB:
+            raise IPAClientError(
+                "The 'ipalib' Python library is required for "
+                "eigenstate.ipa modules.\n"
+                "  RHEL/Fedora: dnf install python3-ipalib "
+                "python3-ipaclient")
+
+        resolved_verify = self._resolve_verify(verify)
+
+        if keytab:
+            self._kinit_keytab(keytab, principal)
+        elif password:
+            self._kinit_password(principal, password)
+        else:
+            if 'KRB5CCNAME' not in os.environ:
+                self._warn(
+                    "No password or keytab provided and KRB5CCNAME is "
+                    "not set. Assuming a valid Kerberos ticket exists "
+                    "in the default ccache.")
+
+        if not _ipa_api.isdone('bootstrap'):
+            bootstrap_args = {
+                'context': 'cli',
+                'server': server,
+                'log': None,
+            }
+            if resolved_verify:
+                bootstrap_args['tls_ca_cert'] = resolved_verify
+            try:
+                _ipa_api.bootstrap(**bootstrap_args)
+            except Exception as exc:
+                raise IPAClientError(
+                    "ipalib bootstrap failed: %s" % to_native(exc))
+
+        if not _ipa_api.isdone('finalize'):
+            try:
+                _ipa_api.finalize()
+            except Exception as exc:
+                raise IPAClientError(
+                    "ipalib finalize failed: %s" % to_native(exc))
+
+        backend = _ipa_api.Backend.rpcclient
+        if not backend.isconnected():
+            try:
+                backend.connect(
+                    ccache=os.environ.get('KRB5CCNAME', None))
+            except Exception as exc:
+                raise IPAClientError(
+                    "Failed to connect to IPA server '%s': %s\n"
+                    "Check that a valid Kerberos ticket exists (klist) "
+                    "and the server is reachable." % (server, to_native(exc)))
+
+    def cleanup(self):
+        """Remove any managed ccache and restore the ``KRB5CCNAME`` env var."""
+        if self._ccache_path and os.path.exists(self._ccache_path):
+            os.remove(self._ccache_path)
+        if self._managing_ccache:
+            if self._previous_ccache is None:
+                os.environ.pop('KRB5CCNAME', None)
+            else:
+                os.environ['KRB5CCNAME'] = self._previous_ccache
+        self._ccache_path = None
+        self._previous_ccache = None
+        self._managing_ccache = False
+
+    # ------------------------------------------------------------------
+    # Scope helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def scope_args(username, service, shared):
+        """Build ipalib scope keyword arguments.
+
+        :returns: dict suitable for unpacking into an ipalib Command call.
+        """
+        args = {}
+        if username:
+            args['username'] = to_text(username, errors='surrogate_or_strict')
+        elif service:
+            args['service'] = to_text(service, errors='surrogate_or_strict')
+        elif shared:
+            args['shared'] = True
+        return args
+
+    @staticmethod
+    def scope_label(username, service, shared):
+        """Return a human-readable scope string for messages."""
+        if username:
+            return "username=%s" % username
+        if service:
+            return "service=%s" % service
+        if shared:
+            return "shared"
+        return "default"
+
+    @staticmethod
+    def validate_scope(username, service, shared):
+        """Raise ``IPAClientError`` if more than one scope option is set."""
+        if sum(bool(x) for x in [username, service, shared]) > 1:
+            raise IPAClientError(
+                "'username', 'service', and 'shared' are mutually "
+                "exclusive. Specify at most one.")
+
+    # ------------------------------------------------------------------
+    # File security helpers
+    # ------------------------------------------------------------------
+
+    def warn_if_permissive(self, path, option_name):
+        """Warn when a sensitive file has group- or world-readable bits."""
+        mode = stat.S_IMODE(os.stat(path).st_mode)
+        if mode & 0o077:
+            self._warn(
+                "%s '%s' has permissions %s which are more permissive "
+                "than 0600." % (option_name, path, oct(mode)))
+
+    # ------------------------------------------------------------------
+    # Private: Kerberos credential management
+    # ------------------------------------------------------------------
+
+    def _kinit_keytab(self, keytab, principal):
+        if not os.path.isfile(keytab):
+            raise IPAClientError(
+                "Kerberos keytab file not found: %s" % keytab)
+
+        self.warn_if_permissive(keytab, "kerberos_keytab")
+
+        ccache_fd, ccache_path = tempfile.mkstemp(
+            prefix='krb5cc_ipa_vault_')
+        os.close(ccache_fd)
+        ccache_env = 'FILE:%s' % ccache_path
+
+        env = os.environ.copy()
+        env['KRB5CCNAME'] = ccache_env
+
+        try:
+            result = subprocess.run(
+                ['kinit', '-kt', keytab, principal],
+                capture_output=True, text=True, timeout=30,
+                env=env)
+        except FileNotFoundError:
+            os.remove(ccache_path)
+            raise IPAClientError(
+                "'kinit' not found. Install krb5-workstation:\n"
+                "  dnf install krb5-workstation")
+        except subprocess.TimeoutExpired:
+            os.remove(ccache_path)
+            raise IPAClientError(
+                "'kinit' timed out. Check KDC connectivity and "
+                "/etc/krb5.conf.")
+
+        if result.returncode != 0:
+            os.remove(ccache_path)
+            raise IPAClientError(
+                "kinit with keytab failed (exit %d): %s\n"
+                "  keytab:    %s\n"
+                "  principal: %s\n"
+                "Verify: klist -kt %s"
+                % (result.returncode, result.stderr.strip(),
+                   keytab, principal, keytab))
+
+        self._activate_ccache(ccache_path, ccache_env)
+
+    def _kinit_password(self, principal, password):
+        ccache_fd, ccache_path = tempfile.mkstemp(
+            prefix='krb5cc_ipa_vault_')
+        os.close(ccache_fd)
+        ccache_env = 'FILE:%s' % ccache_path
+
+        if HAS_KINIT_PASSWORD:
+            try:
+                _kinit_password(principal, password, ccache_path)
+            except Exception as exc:
+                os.remove(ccache_path)
+                raise IPAClientError(
+                    "kinit_password failed for '%s': %s"
+                    % (principal, to_native(exc)))
+        else:
+            env = os.environ.copy()
+            env['KRB5CCNAME'] = ccache_env
+            try:
+                result = subprocess.run(
+                    ['kinit', principal],
+                    input=password, capture_output=True, text=True,
+                    timeout=30, env=env)
+            except FileNotFoundError:
+                os.remove(ccache_path)
+                raise IPAClientError(
+                    "'kinit' not found and ipalib.kinit_password is "
+                    "not available. Install one of:\n"
+                    "  dnf install krb5-workstation\n"
+                    "  dnf install python3-ipaclient")
+            except subprocess.TimeoutExpired:
+                os.remove(ccache_path)
+                raise IPAClientError(
+                    "'kinit' timed out. Check KDC connectivity.")
+            if result.returncode != 0:
+                os.remove(ccache_path)
+                raise IPAClientError(
+                    "kinit failed for '%s' (exit %d): %s"
+                    % (principal, result.returncode,
+                       result.stderr.strip()))
+
+        self._activate_ccache(ccache_path, ccache_env)
+
+    def _activate_ccache(self, ccache_path, ccache_env):
+        if not self._managing_ccache:
+            self._previous_ccache = os.environ.get('KRB5CCNAME')
+            self._managing_ccache = True
+        self._ccache_path = ccache_path
+        os.environ['KRB5CCNAME'] = ccache_env
+
+    # ------------------------------------------------------------------
+    # Private: TLS verification
+    # ------------------------------------------------------------------
+
+    def _resolve_verify(self, verify):
+        if isinstance(verify, bool):
+            if not verify:
+                self._warn(
+                    "TLS verification is disabled for eigenstate.ipa. "
+                    "Set 'verify' to the IPA CA certificate path for "
+                    "production use.")
+                return False
+        elif isinstance(verify, str):
+            verify = verify.strip()
+            if verify.lower() in ('false', 'no', 'off', '0'):
+                self._warn(
+                    "TLS verification is disabled for eigenstate.ipa. "
+                    "Set 'verify' to the IPA CA certificate path for "
+                    "production use.")
+                return False
+
+        if verify is not None:
+            if not os.path.exists(verify):
+                raise IPAClientError(
+                    "TLS certificate file not found: %s" % verify)
+            return verify
+
+        default_path = '/etc/ipa/ca.crt'
+        if os.path.exists(default_path):
+            return default_path
+
+        self._warn(
+            "TLS verification is disabled for eigenstate.ipa. "
+            "Set 'verify' to the IPA CA certificate path for "
+            "production use.")
+        return False
+
+    # ------------------------------------------------------------------
+    # Utility: unwrap IPA single-element lists
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def unwrap(value):
+        """Unwrap IPA-style single-element lists to a scalar."""
+        if isinstance(value, (list, tuple)):
+            if len(value) == 1:
+                return value[0]
+            if len(value) == 0:
+                return None
+        return value

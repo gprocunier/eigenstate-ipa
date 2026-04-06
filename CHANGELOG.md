@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.5.0
+
+- added `eigenstate.ipa.vault_write` for IdM vault lifecycle management from Ansible
+- added `plugins/module_utils/ipa_client.py` as a shared Kerberos auth and `ipalib` connection layer for write-capable IPA operations
+- `vault_write` supports `state: present`, `state: absent`, and `state: archived`
+- supports standard, symmetric, and asymmetric vault types
+- standard vault writes are idempotent; symmetric and asymmetric archive operations remain write-always because content comparison would require decryption
+- supports delta-only member management via `members` and `members_absent`
+- supports Ansible check mode
+- added vault-write reference, capability, and use-case documentation
+- refreshed collection metadata and docs to describe the integrated inventory, vault, principal, keytab, cert, OTP, and vault-write feature set
+
 ## 1.4.0
 
 - added `eigenstate.ipa.otp` for OTP token issue, lookup, revoke, and host enrollment password generation
