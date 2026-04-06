@@ -1,3 +1,10 @@
+---
+layout: default
+title: Inventory Plugin
+---
+
+{% raw %}
+
 # Inventory Plugin
 
 Nearby docs:
@@ -238,3 +245,5 @@ automation boundary:
 - role-targeted deploys
 - access-boundary auditing
 - policy-targeted SSH or hardening work
+
+{% endraw %}

@@ -1,3 +1,10 @@
+---
+layout: default
+title: IdM Vault Capabilities
+---
+
+{% raw %}
+
 # IdM Vault Capabilities
 
 Nearby docs:
@@ -768,3 +775,5 @@ Why this pattern fits:
 
 For option-level behavior, failure modes, and exact lookup syntax, return to
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>IDM VAULT PLUGIN</kbd></a>.
+
+{% endraw %}

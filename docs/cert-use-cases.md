@@ -1,3 +1,10 @@
+---
+layout: default
+title: IdM Cert Use Cases
+---
+
+{% raw %}
+
 # IdM Cert Use Cases
 
 Nearby docs:
@@ -885,3 +892,5 @@ any steady-state cert issuance and audit workflow.
 
 For the decision model behind these scenarios, return to
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>IDM CERT CAPABILITIES</kbd></a>.
+
+{% endraw %}

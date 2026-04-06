@@ -1,3 +1,10 @@
+---
+layout: default
+title: Keytab Plugin
+---
+
+{% raw %}
+
 # Keytab Plugin
 
 Nearby docs:
@@ -301,3 +308,5 @@ you need operator patterns rather than option-by-option reference:
 - keytab rotation workflows
 - deploying keytabs across a fleet of services
 - AAP credential type integration for keytab-based auth
+
+{% endraw %}

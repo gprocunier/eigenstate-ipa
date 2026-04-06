@@ -1,3 +1,10 @@
+---
+layout: default
+title: OTP Capabilities
+---
+
+{% raw %}
+
 # OTP Capabilities
 
 Nearby docs:
@@ -273,3 +280,5 @@ message earlier.
 For option-level behavior, field definitions, and exact lookup syntax, return
 to
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>OTP PLUGIN</kbd></a>.
+
+{% endraw %}

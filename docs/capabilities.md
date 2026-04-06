@@ -1,3 +1,10 @@
+---
+layout: default
+title: Capabilities
+---
+
+{% raw %}
+
 # Capabilities
 
 Nearby docs:
@@ -18,3 +25,5 @@ The split is intentional:
 
 - inventory capabilities describe how IdM objects become hosts and groups
 - vault capabilities describe how IdM vaults become runtime secret inputs
+
+{% endraw %}

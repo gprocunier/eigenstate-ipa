@@ -1,3 +1,10 @@
+---
+layout: default
+title: Inventory Capabilities
+---
+
+{% raw %}
+
 # Inventory Capabilities
 
 Nearby docs:
@@ -246,3 +253,5 @@ The most useful operator sequence is usually:
 
 For option-level details and exact field behavior, return to
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>INVENTORY PLUGIN</kbd></a>.
+
+{% endraw %}

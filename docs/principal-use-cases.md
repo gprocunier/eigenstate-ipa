@@ -1,3 +1,10 @@
+---
+layout: default
+title: Principal Use Cases
+---
+
+{% raw %}
+
 # Principal Use Cases
 
 Nearby docs:
@@ -511,3 +518,5 @@ scheduled compliance job that writes a report rather than immediately failing.
         dest: /var/log/ipa-principal-audit.txt
         mode: "0640"
 ```
+
+{% endraw %}

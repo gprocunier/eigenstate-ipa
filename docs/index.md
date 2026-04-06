@@ -8,6 +8,8 @@ description: >-
   AAP integration, and secure secret retrieval.
 ---
 
+{% raw %}
+
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It has
@@ -91,3 +93,5 @@ runtime secret retrieval.
 
 - GitHub: [gprocunier/eigenstate-ipa](https://github.com/gprocunier/eigenstate-ipa)
 - Issues: [github.com/gprocunier/eigenstate-ipa/issues](https://github.com/gprocunier/eigenstate-ipa/issues)
+
+{% endraw %}

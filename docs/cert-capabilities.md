@@ -1,3 +1,10 @@
+---
+layout: default
+title: IdM Cert Capabilities
+---
+
+{% raw %}
+
 # IdM Cert Capabilities
 
 Nearby docs:
@@ -626,3 +633,5 @@ explicitly revoked.
 
 For option-level behavior, failure modes, and exact lookup syntax, return to
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>IDM CERT PLUGIN</kbd></a>.
+
+{% endraw %}

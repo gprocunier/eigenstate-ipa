@@ -1,3 +1,10 @@
+---
+layout: default
+title: IdM Vault Write Use Cases
+---
+
+{% raw %}
+
 # IdM Vault Write Use Cases
 
 Nearby docs:
@@ -547,3 +554,5 @@ Why this pattern:
   state, which is useful for downstream gate assertions
 - integrate this as a `--check` pre-run in a CI pipeline before the actual
   rotation job is approved and dispatched
+
+{% endraw %}

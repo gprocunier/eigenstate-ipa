@@ -1,3 +1,10 @@
+---
+layout: default
+title: Principal Plugin
+---
+
+{% raw %}
+
 # Principal Plugin
 
 Nearby docs:
@@ -288,3 +295,5 @@ when you need operator patterns rather than option-by-option reference:
 - user lock state inspection before automation runs
 - bulk missing-keytab audits
 - cross-plugin workflows combining principal check with keytab or cert operations
+
+{% endraw %}

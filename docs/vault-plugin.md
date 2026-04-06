@@ -1,3 +1,10 @@
+---
+layout: default
+title: IdM Vault Plugin
+---
+
+{% raw %}
+
 # IdM Vault Plugin
 
 Nearby docs:
@@ -357,3 +364,5 @@ you need operator patterns rather than option-by-option reference:
 - certificate deployment
 - keytab distribution
 - rotation and incident-response workflows
+
+{% endraw %}

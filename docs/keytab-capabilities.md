@@ -1,3 +1,10 @@
+---
+layout: default
+title: Keytab Capabilities
+---
+
+{% raw %}
+
 # Keytab Capabilities
 
 Nearby docs:
@@ -465,3 +472,5 @@ commands.
 | Compliance enctype restriction | `enctypes=['aes256-cts']` or similar |
 | Non-interactive auth in AAP | `kerberos_keytab` pointing to Controller-mounted keytab |
 | Full service bootstrap with vault-delivered secrets | Admin keytab → `eigenstate.ipa.keytab` → service keytab → `eigenstate.ipa.vault` as service principal |
+
+{% endraw %}

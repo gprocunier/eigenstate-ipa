@@ -1,3 +1,10 @@
+---
+layout: default
+title: Principal Capabilities
+---
+
+{% raw %}
+
 # Principal Capabilities
 
 Nearby docs:
@@ -283,3 +290,5 @@ Why this pattern fits:
 For option-level behavior, field definitions, and exact lookup syntax, return
 to
 <a href="https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html"><kbd>PRINCIPAL PLUGIN</kbd></a>.
+
+{% endraw %}

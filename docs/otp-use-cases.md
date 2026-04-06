@@ -1,3 +1,10 @@
+---
+layout: default
+title: OTP Use Cases
+---
+
+{% raw %}
+
 # OTP Use Cases
 
 Nearby docs:
@@ -552,3 +559,5 @@ Notes:
   lookup
 - when a later task reuses `token_id` from a prior lookup result as an input
   term, use `| string` to force a plain text token ID in the Jinja layer
+
+{% endraw %}

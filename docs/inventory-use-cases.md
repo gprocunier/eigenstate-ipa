@@ -1,3 +1,10 @@
+---
+layout: default
+title: Inventory Use Cases
+---
+
+{% raw %}
+
 # Inventory Use Cases
 
 Nearby docs:
@@ -356,3 +363,5 @@ workflow available.
 
 For the decision model behind these scenarios, return to
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>.
+
+{% endraw %}

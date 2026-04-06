@@ -1,3 +1,10 @@
+---
+layout: default
+title: AAP Integration
+---
+
+{% raw %}
+
 # AAP Integration
 
 Nearby docs:
@@ -211,3 +218,5 @@ That works well when:
 > If an inventory sync works but IdM vault lookups fail inside the same EE, suspect
 > missing `ipalib`/`ipaclient` content first. The two plugins do not share the
 > same client dependency stack.
+
+{% endraw %}

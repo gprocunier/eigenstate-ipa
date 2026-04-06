@@ -1,3 +1,10 @@
+---
+layout: default
+title: IdM Vault Write Module
+---
+
+{% raw %}
+
 # IdM Vault Write Module
 
 Nearby docs:
@@ -387,3 +394,5 @@ Common failure classes:
 > An ownership-scope mismatch is the most common source of unexpected
 > not-found failures. If a vault exists in IdM but the module reports it does
 > not, recheck `username`, `service`, and `shared` first.
+
+{% endraw %}

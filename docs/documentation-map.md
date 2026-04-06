@@ -7,12 +7,14 @@ description: >-
   and AAP integration guidance.
 ---
 
+{% raw %}
+
 # Documentation Map
 
 Start with the navigation buttons below. They are the quickest way to get to
 the part of the collection you actually need.
 
-Current release: `1.5.0`
+Current release: `1.5.1`
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
@@ -213,3 +215,5 @@ The top README covers collection scope, installation, and repository layout.
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>IDM CERT USE CASES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>OTP USE CASES</kbd></a>
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
+
+{% endraw %}

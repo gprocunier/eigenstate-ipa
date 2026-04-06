@@ -1,3 +1,10 @@
+---
+layout: default
+title: IdM Cert Plugin
+---
+
+{% raw %}
+
 # IdM Cert Plugin
 
 Nearby docs:
@@ -340,3 +347,5 @@ you need operator patterns rather than option-by-option reference:
 - cert lifecycle from request through install
 - expiry audits integrated with inventory-backed targeting
 - cert plus private key bundle assembly patterns
+
+{% endraw %}

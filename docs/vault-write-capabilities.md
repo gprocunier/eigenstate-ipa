@@ -1,3 +1,10 @@
+---
+layout: default
+title: IdM Vault Write Capabilities
+---
+
+{% raw %}
+
 # IdM Vault Write Capabilities
 
 Nearby docs:
@@ -312,3 +319,5 @@ key store; the controller holds it only transiently.
 
 For worked scenarios covering each of these, see
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html"><kbd>VAULT WRITE USE CASES</kbd></a>.
+
+{% endraw %}

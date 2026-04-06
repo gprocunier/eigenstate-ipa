@@ -1,3 +1,10 @@
+---
+layout: default
+title: OTP Plugin
+---
+
+{% raw %}
+
 # OTP Plugin
 
 Nearby docs:
@@ -361,3 +368,5 @@ when you need operator patterns rather than option-by-option reference:
 - bulk enrollment across an inventory group
 - emergency revocation of all tokens for a user
 - cross-plugin patterns combining OTP with principal state checks
+
+{% endraw %}

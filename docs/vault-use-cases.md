@@ -1,3 +1,10 @@
+---
+layout: default
+title: IdM Vault Use Cases
+---
+
+{% raw %}
+
 # IdM Vault Use Cases
 
 Nearby docs:
@@ -591,3 +598,5 @@ Kerberos for steady-state secret retrieval.
 
 For the decision model behind these scenarios, return to
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>IDM VAULT CAPABILITIES</kbd></a>.
+
+{% endraw %}

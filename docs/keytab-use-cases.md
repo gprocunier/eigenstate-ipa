@@ -1,3 +1,10 @@
+---
+layout: default
+title: Keytab Use Cases
+---
+
+{% raw %}
+
 # Keytab Use Cases
 
 Nearby docs:
@@ -462,3 +469,5 @@ account has a non-expired password that does not require a first-login change.
 
 For the decision model behind these scenarios, return to
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>.
+
+{% endraw %}
