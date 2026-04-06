@@ -351,6 +351,22 @@ class IPAClient(object):
     # ------------------------------------------------------------------
 
     def _resolve_verify(self, verify):
+        if isinstance(verify, bool):
+            if not verify:
+                self._warn(
+                    "TLS verification is disabled for eigenstate.ipa. "
+                    "Set 'verify' to the IPA CA certificate path for "
+                    "production use.")
+                return False
+        elif isinstance(verify, str):
+            verify = verify.strip()
+            if verify.lower() in ('false', 'no', 'off', '0'):
+                self._warn(
+                    "TLS verification is disabled for eigenstate.ipa. "
+                    "Set 'verify' to the IPA CA certificate path for "
+                    "production use.")
+                return False
+
         if verify is not None:
             if not os.path.exists(verify):
                 raise IPAClientError(

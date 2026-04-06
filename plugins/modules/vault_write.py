@@ -26,7 +26,7 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: vault_write
-version_added: "1.4.0"
+version_added: "1.5.0"
 short_description: Create, archive, modify, and delete FreeIPA/IdM vaults
 description:
   - Manages FreeIPA/IdM vault lifecycle — create, update, archive secrets,
@@ -145,8 +145,8 @@ options:
     type: str
   vault_password:
     description: >-
-      Password for a symmetric vault. Required when C(state=archived) and
-      C(vault_type=symmetric). Mutually exclusive with
+      Password for a symmetric vault. Required when creating or archiving
+      a C(vault_type=symmetric) vault. Mutually exclusive with
       C(vault_password_file).
     type: str
     no_log: true
@@ -178,7 +178,7 @@ notes:
   - Changing the vault type of an existing vault is not supported. Delete
     and recreate the vault to change its type.
   - For symmetric vaults, C(vault_password) or C(vault_password_file) is
-    required with C(state=archived).
+    required when creating or archiving the vault.
   - For asymmetric vaults, C(vault_public_key) or
     C(vault_public_key_file) is required at creation time.
 seealso:
@@ -241,6 +241,7 @@ EXAMPLES = r"""
     state: present
     vault_type: symmetric
     shared: true
+    vault_password: "{{ vault_encryption_password }}"
     server: idm-01.example.com
     ipaadmin_password: "{{ ipa_password }}"
 
@@ -366,7 +367,6 @@ def _vault_find(api, name, scope_args):
     result = api.Command.vault_find(
         name,
         all=True,
-        no_members=False,
         **scope_args
     )
     entries = result.get('result', [])
@@ -402,6 +402,92 @@ def _member_list(entry):
     return sorted(members)
 
 
+def _bucket_member_principals(api, principals):
+    """Partition principals into the IPA member argument buckets."""
+    buckets = {
+        'user': [],
+        'group': [],
+        'service': [],
+    }
+    unresolved = []
+
+    def _show(command_name, principal):
+        command = getattr(api.Command, command_name, None)
+        if command is None:
+            return None
+        try:
+            result = command(principal, all=True, raw=False)
+            return result.get('result', {}) if isinstance(result, dict) else {}
+        except ipalib_errors.NotFound:
+            return None
+        except Exception:
+            return None
+
+    for principal in sorted(set(to_text(p) for p in principals)):
+        if '/' in principal:
+            service_entry = _show('service_show', principal)
+            if service_entry is not None:
+                canonical = _unwrap(
+                    service_entry.get('krbcanonicalname')
+                    or service_entry.get('krbprincipalname')
+                    or principal
+                )
+                buckets['service'].append(to_text(canonical))
+                continue
+        if _show('user_show', principal) is not None:
+            buckets['user'].append(principal)
+            continue
+        if _show('group_show', principal) is not None:
+            buckets['group'].append(principal)
+            continue
+        service_entry = _show('service_show', principal)
+        if service_entry is not None:
+            canonical = _unwrap(
+                service_entry.get('krbcanonicalname')
+                or service_entry.get('krbprincipalname')
+                or principal
+            )
+            buckets['service'].append(to_text(canonical))
+            continue
+        unresolved.append(principal)
+
+    return buckets, unresolved
+
+
+def _canonicalize_member_for_compare(api, principal):
+    """Normalize service principals to the canonical IPA member spelling."""
+    principal = to_text(principal)
+    if '/' not in principal:
+        return principal
+
+    command = getattr(api.Command, 'service_show', None)
+    if command is None:
+        return principal
+
+    try:
+        result = command(principal, all=True, raw=False)
+        entry = result.get('result', {}) if isinstance(result, dict) else {}
+    except Exception:
+        return principal
+
+    canonical = _unwrap(
+        entry.get('krbcanonicalname')
+        or entry.get('krbprincipalname')
+        or principal
+    )
+    return to_text(canonical)
+
+
+def _filter_member_buckets(buckets, selected):
+    """Restrict bucketed members to the selected canonical identifiers."""
+    filtered = {}
+    for member_type, principals in buckets.items():
+        kept = [principal for principal in principals if principal in selected]
+        if kept:
+            filtered[member_type] = kept
+    return filtered
+
+
 def _owner_list(entry):
     """Extract owner list from a vault_show result."""
     owners = []
@@ -423,6 +509,15 @@ def _format_vault_result(name, scope_label, entry):
     }
 
 
+def _has_member_failures(value):
+    """Return True when an IPA failed-member structure contains real failures."""
+    if isinstance(value, dict):
+        return any(_has_member_failures(item) for item in value.values())
+    if isinstance(value, (list, tuple, set)):
+        return any(_has_member_failures(item) for item in value)
+    return bool(value)
+
+
 def _ensure_present(module, api, name, scope_args, scope_label, check_mode):
     """Ensure the vault exists; create or update as needed.
 
@@ -432,6 +527,8 @@ def _ensure_present(module, api, name, scope_args, scope_label, check_mode):
     description = module.params['description']
     vault_public_key = module.params['vault_public_key']
     vault_public_key_file = module.params['vault_public_key_file']
+    vault_password = module.params['vault_password']
+    vault_password_file = module.params['vault_password_file']
 
     # Resolve public key bytes for asymmetric vaults
     public_key_bytes = None
@@ -445,6 +542,10 @@ def _ensure_present(module, api, name, scope_args, scope_label, check_mode):
                 msg="vault_type=asymmetric requires 'vault_public_key' "
                     "or 'vault_public_key_file'.")
 
+    if vault_password_file:
+        vault_password = _read_file_text(vault_password_file)
+        module.warn_if_permissive = getattr(module, '_warn_if_permissive', None)
+
     entry = _vault_find(api, name, scope_args)
     changed = False
 
@@ -456,7 +557,12 @@ def _ensure_present(module, api, name, scope_args, scope_label, check_mode):
             if description is not None:
                 add_args['description'] = description
             if vault_type == 'symmetric':
-                add_args['ipavaultsalt'] = os.urandom(32)
+                if not vault_password:
+                    module.fail_json(
+                        msg="vault_type=symmetric requires 'vault_password' "
+                            "or 'vault_password_file' when creating the vault."
+                    )
+                add_args['password'] = vault_password
             elif vault_type == 'asymmetric' and public_key_bytes:
                 add_args['ipavaultpublickey'] = public_key_bytes
             result = api.Command.vault_add(name, **add_args)
@@ -598,8 +704,16 @@ def _reconcile_members(module, api, name, scope_args, entry, check_mode):
         return False
 
     current_members = set(_member_list(entry))
-    to_add = desired_add - current_members
-    to_remove = desired_remove & current_members
+    desired_add_canonical = {
+        _canonicalize_member_for_compare(api, principal)
+        for principal in desired_add
+    }
+    desired_remove_canonical = {
+        _canonicalize_member_for_compare(api, principal)
+        for principal in desired_remove
+    }
+    to_add = desired_add_canonical - current_members
+    to_remove = desired_remove_canonical & current_members
 
     if not to_add and not to_remove:
         return False
@@ -607,34 +721,55 @@ def _reconcile_members(module, api, name, scope_args, entry, check_mode):
     if check_mode:
         return True
 
-    # vault_add_member / vault_remove_member accept user/group/service args.
-    # Pass each principal as a single-element list under 'user' for simplicity;
-    # IPA resolves the type from the principal format.
     changed = False
+    member_arg_map = {
+        'user': 'user',
+        'group': 'group',
+        'service': 'services',
+    }
 
     if to_add:
-        result = api.Command.vault_add_member(
-            name, user=list(to_add), **scope_args)
+        add_buckets, unresolved = _bucket_member_principals(api, to_add)
+        if unresolved:
+            module.fail_json(
+                msg="Unable to resolve vault member principal(s): %s"
+                    % ', '.join(sorted(unresolved)))
+        add_buckets = _filter_member_buckets(add_buckets, to_add)
+        add_args = dict(scope_args)
+        for member_type, principals in add_buckets.items():
+            if principals:
+                add_args[member_arg_map[member_type]] = principals
+        result = api.Command.vault_add_member(name, **add_args)
         failed = result.get('failed', {})
-        # Filter out benign "already a member" errors
-        real_failures = {k: v for k, v in failed.items()
-                        if v and 'already a member' not in str(v).lower()}
-        if real_failures:
+        if _has_member_failures(failed):
+            if 'already a member' in str(failed).lower():
+                failed = {}
+        if _has_member_failures(failed):
             module.fail_json(
                 msg="vault_add_member reported failures: %s"
-                    % to_native(real_failures))
+                    % to_native(failed))
         changed = True
 
     if to_remove:
-        result = api.Command.vault_remove_member(
-            name, user=list(to_remove), **scope_args)
+        remove_buckets, unresolved = _bucket_member_principals(api, to_remove)
+        if unresolved:
+            module.fail_json(
+                msg="Unable to resolve vault member principal(s): %s"
+                    % ', '.join(sorted(unresolved)))
+        remove_buckets = _filter_member_buckets(remove_buckets, to_remove)
+        remove_args = dict(scope_args)
+        for member_type, principals in remove_buckets.items():
+            if principals:
+                remove_args[member_arg_map[member_type]] = principals
+        result = api.Command.vault_remove_member(name, **remove_args)
         failed = result.get('failed', {})
-        real_failures = {k: v for k, v in failed.items()
-                        if v and 'not a member' not in str(v).lower()}
-        if real_failures:
+        if _has_member_failures(failed):
+            if 'not a member' in str(failed).lower():
+                failed = {}
+        if _has_member_failures(failed):
             module.fail_json(
                 msg="vault_remove_member reported failures: %s"
-                    % to_native(real_failures))
+                    % to_native(failed))
         changed = True
 
     return changed

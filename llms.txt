@@ -1,26 +1,36 @@
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
-(IdM / FreeIPA). It exposes one inventory plugin, one lookup plugin, and one
-action module:
+(IdM / FreeIPA). It exposes one inventory plugin, five lookup plugins, and
+one vault lifecycle module for live inventory, vault-backed secret retrieval
+and storage, Kerberos principal state, Kerberos keytab delivery, IdM CA
+certificate automation, and OTP workflows:
 
 - `eigenstate.ipa.idm`
 - `eigenstate.ipa.vault`
 - `eigenstate.ipa.vault_write`
+- `eigenstate.ipa.principal`
+- `eigenstate.ipa.keytab`
+- `eigenstate.ipa.cert`
+- `eigenstate.ipa.otp`
 
 The collection treats IdM as both:
 
 - a source of live infrastructure inventory
-- a source of truth for secret retrieval and storage
+- a source of truth for secret retrieval
 
 ## What It Does
 
 - builds dynamic inventory from IdM-managed hosts, hostgroups, netgroups, and
   HBAC policy
 - retrieves secrets from IdM vaults through Kerberos-authenticated lookups
-- manages vault lifecycle — create, archive, rotate, and delete vaults
+- manages vault lifecycle with create, archive, modify, and delete operations
+- queries user, host, and service principal state before enrollment or secret issuance steps
+- retrieves Kerberos keytab files for service and host principals
+- requests, retrieves, and searches IdM CA certificates for host and service principals
+- issues OTP tokens for users and one-time enrollment passwords for IdM hosts
 - supports user, service, and shared vault scopes
-- supports standard, symmetric, and asymmetric vault types
+- supports standard, symmetric, and asymmetric vault retrieval
 - supports metadata inspection, scoped search, and structured return shapes
 - supports text and binary payload handling for Ansible and AAP workflows
 
@@ -31,12 +41,24 @@ The collection treats IdM as both:
 - [docs/inventory-plugin.md](docs/inventory-plugin.md)
 - [docs/vault-plugin.md](docs/vault-plugin.md)
 - [docs/vault-write-plugin.md](docs/vault-write-plugin.md)
+- [docs/principal-plugin.md](docs/principal-plugin.md)
+- [docs/keytab-plugin.md](docs/keytab-plugin.md)
+- [docs/cert-plugin.md](docs/cert-plugin.md)
+- [docs/otp-plugin.md](docs/otp-plugin.md)
 - [docs/inventory-capabilities.md](docs/inventory-capabilities.md)
 - [docs/vault-capabilities.md](docs/vault-capabilities.md)
 - [docs/vault-write-capabilities.md](docs/vault-write-capabilities.md)
+- [docs/principal-capabilities.md](docs/principal-capabilities.md)
+- [docs/keytab-capabilities.md](docs/keytab-capabilities.md)
+- [docs/cert-capabilities.md](docs/cert-capabilities.md)
+- [docs/otp-capabilities.md](docs/otp-capabilities.md)
 - [docs/inventory-use-cases.md](docs/inventory-use-cases.md)
 - [docs/vault-use-cases.md](docs/vault-use-cases.md)
 - [docs/vault-write-use-cases.md](docs/vault-write-use-cases.md)
+- [docs/principal-use-cases.md](docs/principal-use-cases.md)
+- [docs/keytab-use-cases.md](docs/keytab-use-cases.md)
+- [docs/cert-use-cases.md](docs/cert-use-cases.md)
+- [docs/otp-use-cases.md](docs/otp-use-cases.md)
 - [docs/aap-integration.md](docs/aap-integration.md)
 
 ## Plugin Summary
@@ -59,19 +81,60 @@ The collection treats IdM as both:
 
 ### `eigenstate.ipa.vault_write`
 
-- action module
+- module
 - uses `ipalib` for vault lifecycle management
 - supports `state: present`, `state: absent`, and `state: archived`
 - creates standard, symmetric, and asymmetric vaults
-- full idempotency for standard vaults; write-always for symmetric/asymmetric
-- delta-only member management via `members` and `members_absent`
+- standard vault archives are idempotent; symmetric and asymmetric archives are write-always
+- supports delta-only member management via `members` and `members_absent`
 - supports Ansible check mode
+
+### `eigenstate.ipa.principal`
+
+- lookup plugin
+- uses `ipalib` for Kerberos principal state queries
+- supports `show` and `find`
+- returns existence, key, lock, and last-auth state for user, host, and service principals
+- supports `record` and `map_record` result shaping
+
+### `eigenstate.ipa.keytab`
+
+- lookup plugin
+- uses `ipa-getkeytab` from the platform IPA client tooling for keytab
+  retrieval
+- no ipalib dependency at retrieval time
+- supports `retrieve` mode (safe default, existing keys only) and `generate`
+  mode (rotates principal keys; invalidates all existing keytabs)
+- supports per-principal encryption-type selection via `enctypes`
+- returns base64-encoded keytab content in `value`, `record`, or `map` format
+
+### `eigenstate.ipa.cert`
+
+- lookup plugin
+- uses `ipalib` for IdM CA request, retrieval, and search operations
+- supports `request`, `retrieve`, and `find`
+- accepts inline CSRs or controller-local CSR files
+- supports PEM and base64-encoded DER output
+- supports `value`, `record`, `map`, and `map_record` result shaping
+
+### `eigenstate.ipa.otp`
+
+- lookup plugin
+- uses `ipalib` for OTP token issue, lookup, and revoke operations
+- supports `totp`, `hotp`, and one-time host enrollment password generation
+- supports `add`, `find`, `show`, and `revoke`
+- returns OTP URIs, host enrollment passwords, or structured token metadata
 
 ## Runtime Notes
 
 - target Ansible floor: `2.14.0`
 - RHEL 9 compatibility is intentional
-- vault operations require `python3-ipalib` and `python3-ipaclient`
+- vault lookup and vault write operations require `python3-ipalib` and `python3-ipaclient`
+- principal lookups require `python3-ipalib` and `python3-ipaclient`
+- keytab lookups require the platform package that provides `ipa-getkeytab`
+  on the control node or execution environment
+- cert lookups require `python3-ipalib` and `python3-ipaclient`
+- otp lookups require `python3-ipalib` and `python3-ipaclient`
 - controller or execution-environment usage may also require Kerberos client
   tooling
 
@@ -79,10 +142,14 @@ The collection treats IdM as both:
 
 - `plugins/inventory/idm.py` - dynamic inventory plugin
 - `plugins/lookup/vault.py` - vault lookup plugin
-- `plugins/modules/vault_write.py` - vault write action module
-- `plugins/module_utils/ipa_client.py` - shared Kerberos auth and ipalib layer
+- `plugins/modules/vault_write.py` - vault write module
+- `plugins/module_utils/ipa_client.py` - shared Kerberos auth and `ipalib` connection layer for IPA write operations
+- `plugins/lookup/principal.py` - Kerberos principal state lookup plugin
+- `plugins/lookup/keytab.py` - keytab lookup plugin
+- `plugins/lookup/cert.py` - IdM certificate lookup plugin
+- `plugins/lookup/otp.py` - OTP and host enrollment password lookup plugin
 - `docs/` - operator-facing documentation
-- `tests/` - unit coverage for vault plugins and modules
+- `tests/` - unit coverage for the vault, vault_write, principal, keytab, cert, and otp components
 - `scripts/validate-collection.sh` - repo validation path
 - `Makefile` - convenience wrapper for validation
 
@@ -90,7 +157,7 @@ The collection treats IdM as both:
 
 - collection name: `eigenstate.ipa`
 - namespace: `eigenstate`
-- current version: `1.4.0`
+- current version: `1.5.0`
 - author: Greg Procunier
 - license: GPL-3.0-or-later
 - repository: https://github.com/gprocunier/eigenstate-ipa

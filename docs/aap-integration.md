@@ -4,6 +4,10 @@ Nearby docs:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html"><kbd>&nbsp;&nbsp;PRINCIPAL PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>&nbsp;&nbsp;IDM CERT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>&nbsp;&nbsp;OTP PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
@@ -15,7 +19,7 @@ It covers:
 
 - what must exist in the execution environment
 - how to authenticate non-interactively
-- how to wire the inventory plugin and IdM vault lookup into controller objects
+- how to wire the inventory plugin and the lookup plugins into controller objects
 
 ## Contents
 
@@ -36,14 +40,22 @@ flowchart LR
     cred["Controller credential\npassword or keytab"]
     inv["eigenstate.ipa.idm"]
     vault["eigenstate.ipa.vault"]
+    principal["eigenstate.ipa.principal"]
+    keytab["eigenstate.ipa.keytab"]
+    otp["eigenstate.ipa.otp"]
     idm["IdM / FreeIPA"]
 
     ctrl --> ee
     cred --> ee
     ee --> inv
     ee --> vault
+    ee --> principal
+    ee --> keytab
     inv --> idm
     vault --> idm
+    principal --> idm
+    keytab --> idm
+    otp --> idm
 ```
 
 ## Execution Environment Requirements
@@ -71,6 +83,53 @@ For the IdM vault lookup:
 > the IdM client libraries, vault retrieval will fail even if network access and
 > credentials are otherwise correct.
 
+For the principal-state lookup:
+
+- `python3-ipalib`
+- `python3-ipaclient`
+- `krb5-workstation` when password-driven or keytab-driven ticket acquisition is
+  needed
+
+> [!NOTE]
+> The principal lookup is read-only but still depends on the same IdM client
+> Python stack as the vault and cert lookups.
+
+For the Kerberos keytab lookup:
+
+- on RHEL 10, `ipa-client` (provides the `ipa-getkeytab` binary there)
+- on other EE bases, the package that provides `ipa-getkeytab`
+- `krb5-workstation` when password-driven or keytab-driven ticket acquisition is
+  needed
+
+> [!NOTE]
+> The keytab lookup does not require `python3-ipalib` or `python3-ipaclient`.
+> It shells out to `ipa-getkeytab` directly. If that binary is not installed,
+> the lookup fails immediately with a release-aware install hint.
+
+For the IdM certificate lookup:
+
+- `python3-ipalib`
+- `python3-ipaclient`
+- `krb5-workstation` when password-driven or keytab-driven ticket acquisition is
+  needed
+
+> [!NOTE]
+> The cert lookup talks to the IdM CA through `ipalib` and does not require
+> `certmonger` in the EE. It does require the IdM client Python libraries to be
+> present, like the vault lookup.
+
+For the OTP lookup:
+
+- `python3-ipalib`
+- `python3-ipaclient`
+- `krb5-workstation` when password-driven or keytab-driven ticket acquisition is
+  needed
+
+> [!NOTE]
+> The OTP lookup uses `ipalib` to create, inspect, and revoke OTP tokens and to
+> generate one-time host enrollment passwords. Treat returned OTP URIs and host
+> enrollment passwords as secret material in controller logs and credentials.
+
 ## Authentication Guidance
 
 For controller use, prefer Kerberos with a keytab over plaintext password auth.
@@ -88,8 +147,8 @@ Recommended pattern:
 - point `kerberos_keytab` at that mounted path
 - provide `verify` with the IdM CA path
 
-Password auth still works for the inventory plugin and for the IdM vault
-lookup's ticket acquisition path, but it is the weaker controller posture.
+Password auth still works for the inventory plugin and for the IdM lookup
+plugins' ticket acquisition path, but it is the weaker controller posture.
 
 ## Inventory Source Pattern
 

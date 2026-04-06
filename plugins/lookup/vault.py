@@ -485,6 +485,24 @@ class LookupModule(LookupBase):
 
     def _resolve_verify(self, verify):
         """Resolve TLS verification behavior for lookup requests."""
+        if isinstance(verify, bool):
+            if not verify:
+                display.warning(
+                    "TLS verification is disabled for eigenstate.ipa.vault. "
+                    "Set 'verify' to the IPA CA certificate path for "
+                    "production use."
+                )
+                return False
+        elif isinstance(verify, str):
+            verify = verify.strip()
+            if verify.lower() in ('false', 'no', 'off', '0'):
+                display.warning(
+                    "TLS verification is disabled for eigenstate.ipa.vault. "
+                    "Set 'verify' to the IPA CA certificate path for "
+                    "production use."
+                )
+                return False
+
         if verify is not None:
             if not os.path.exists(verify):
                 raise AnsibleLookupError(
@@ -659,9 +677,13 @@ class LookupModule(LookupBase):
         """Build scope arguments for IPA commands."""
         scope_args = {}
         if username:
-            scope_args['username'] = to_text(username, errors='surrogate_or_strict')
+            scope_args['username'] = str(
+                to_text(username, errors='surrogate_or_strict')
+            )
         elif service:
-            scope_args['service'] = to_text(service, errors='surrogate_or_strict')
+            scope_args['service'] = str(
+                to_text(service, errors='surrogate_or_strict')
+            )
         elif shared:
             scope_args['shared'] = True
         return scope_args
@@ -784,6 +806,7 @@ class LookupModule(LookupBase):
 
     def _retrieve_vault(self, name, scope_label, **kwargs):
         """Retrieve a single vault's data via ipalib."""
+        name = str(to_text(name, errors='surrogate_or_strict'))
         retrieve_args = {}
 
         # Vault ownership scope
@@ -843,6 +866,7 @@ class LookupModule(LookupBase):
 
     def _show_vault(self, name, scope_label, **kwargs):
         """Return metadata for a single vault."""
+        name = str(to_text(name, errors='surrogate_or_strict'))
         show_args = self._scope_args(
             kwargs.get('username'),
             kwargs.get('service'),
@@ -875,6 +899,8 @@ class LookupModule(LookupBase):
 
     def _find_vaults(self, criteria, scope_label, **kwargs):
         """Search for vault metadata in the selected scope."""
+        if criteria is not None:
+            criteria = str(to_text(criteria, errors='surrogate_or_strict'))
         find_args = self._scope_args(
             kwargs.get('username'),
             kwargs.get('service'),
@@ -974,7 +1000,9 @@ class LookupModule(LookupBase):
 
             results = []
             for vault_name in terms:
-                vault_name = to_text(vault_name, errors='surrogate_or_strict')
+                vault_name = str(
+                    to_text(vault_name, errors='surrogate_or_strict')
+                )
                 cache_key = (
                     operation,
                     vault_name,

@@ -81,6 +81,7 @@ It can get there in three ways:
 TLS behavior:
 
 - `verify: /path/to/ca.crt` enables explicit certificate verification
+- `verify: false` disables verification explicitly, with a warning
 - omitting `verify` first tries `/etc/ipa/ca.crt`
 - if no local IdM CA path is available, the module warns and relies on the
   ipalib default behavior
@@ -138,8 +139,9 @@ and keytabs.
 
 ### Symmetric Vaults
 
-The vault encrypts the payload with a password. Archiving and retrieving both
-require the password (`vault_password` or `vault_password_file`).
+The vault encrypts the payload with a password. Creating, archiving, and
+retrieving all require the password (`vault_password` or
+`vault_password_file`).
 
 Use when an additional control layer is required beyond IdM authorization.
 
@@ -180,6 +182,9 @@ principals that need to change.
 Both lists accept user, group, and service principal names. Member
 reconciliation runs after the state operation completes, during any run where
 the vault exists (or was just created).
+The module classifies each entry and passes it to the matching IPA member
+argument set before making the member API call. On the live IPA API that
+means `user`, `group`, and `services`.
 
 Benign errors from IdM — "already a member" or "not a member" — are silently
 filtered. Only unexpected failures cause the module to fail.
@@ -223,7 +228,7 @@ operation, not the actual current state.
 | `vault_public_key_file` | no | — | Path to RSA public key PEM file; mutually exclusive with `vault_public_key` |
 | `data` | no | — | Secret payload to archive; `no_log`; mutually exclusive with `data_file` |
 | `data_file` | no | — | Path to file to archive as payload; mutually exclusive with `data` |
-| `vault_password` | no | — | Symmetric vault password; `no_log`; mutually exclusive with `vault_password_file` |
+| `vault_password` | no | — | Symmetric vault password for create/archive; `no_log`; mutually exclusive with `vault_password_file` |
 | `vault_password_file` | no | — | Path to file containing symmetric vault password; mutually exclusive with `vault_password` |
 | `members` | no | `[]` | Principals to ensure are vault members (delta-only) |
 | `members_absent` | no | `[]` | Principals to ensure are not vault members (delta-only) |
@@ -291,6 +296,7 @@ Create a symmetric vault:
     state: present
     vault_type: symmetric
     shared: true
+    vault_password: "{{ vault_encryption_password }}"
     server: idm-01.example.com
     ipaadmin_password: "{{ ipa_password }}"
 
@@ -370,7 +376,8 @@ Common failure classes:
 - no valid Kerberos ticket and no password/keytab supplied
 - wrong vault scope — the vault exists but under a different scope; the module
   reports not found even when the vault exists
-- missing `vault_password` or `vault_password_file` for a symmetric vault
+- missing `vault_password` or `vault_password_file` when creating or
+  archiving a symmetric vault
 - missing `vault_public_key` or `vault_public_key_file` for a new asymmetric vault
 - `state: archived` called without `data` or `data_file`
 - `EmptyModlist` from IdM when no property actually changed; the module treats

@@ -292,6 +292,37 @@ class TestStatePresent(VaultWriteTestBase):
             _module_params(state='present'), setup, check_mode=True)
         self.assertEqual(result.get('changed'), True)
 
+    def test_symmetric_vault_creation_requires_password(self):
+        """state=present must supply a password when creating a symmetric vault."""
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                return_value={'result': []})
+
+        result = self._run(
+            _module_params(state='present', vault_type='symmetric'),
+            setup)
+        self.assertIn('vault_type=symmetric requires', result.get('msg', ''))
+
+    def test_creates_symmetric_vault_with_password(self):
+        """state=present passes password to vault_add for new symmetric vaults."""
+        entry = _make_vault_entry(vault_type='symmetric')
+
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                return_value={'result': []})
+            api.Command.vault_add = mock.MagicMock(
+                return_value={'result': entry})
+
+        result = self._run(
+            _module_params(
+                state='present',
+                vault_type='symmetric',
+                vault_password='sym-pass'),
+            setup)
+        self.assertEqual(result.get('changed'), True)
+        add_kwargs = self.fake_api.Command.vault_add.call_args.kwargs
+        self.assertEqual(add_kwargs['password'], 'sym-pass')
+
     def test_scope_mutual_exclusion_raises(self):
         """Providing both username and shared triggers fail_json."""
         params = _module_params(state='present', username='alice', shared=True)
@@ -547,6 +578,9 @@ class TestMemberManagement(VaultWriteTestBase):
                     {'result': [entry]},
                     {'result': [entry]},
                 ])
+            api.Command.user_show = mock.MagicMock(return_value={'result': {}})
+            api.Command.group_show = mock.MagicMock(side_effect=self.fake_errors.NotFound())
+            api.Command.service_show = mock.MagicMock(side_effect=self.fake_errors.NotFound())
             api.Command.vault_add_member = mock.MagicMock(
                 return_value={'result': {}, 'failed': {}})
 
@@ -578,6 +612,9 @@ class TestMemberManagement(VaultWriteTestBase):
                     {'result': [entry]},
                     {'result': [_make_vault_entry()]},
                 ])
+            api.Command.user_show = mock.MagicMock(return_value={'result': {}})
+            api.Command.group_show = mock.MagicMock(side_effect=self.fake_errors.NotFound())
+            api.Command.service_show = mock.MagicMock(side_effect=self.fake_errors.NotFound())
             api.Command.vault_remove_member = mock.MagicMock(
                 return_value={'result': {}, 'failed': {}})
 
@@ -613,6 +650,102 @@ class TestMemberManagement(VaultWriteTestBase):
             setup,
             check_mode=True)
         self.assertEqual(result.get('changed'), True)
+
+    def test_adds_service_members_via_service_argument(self):
+        """service principals are routed to vault_add_member(services=...)."""
+        entry = _make_vault_entry()
+        service_input = 'HTTP/web.example.com'
+        service_principal = 'HTTP/web.example.com@EXAMPLE.COM'
+
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                side_effect=[
+                    {'result': [entry]},
+                    {'result': [entry]},
+                ])
+            api.Command.service_show = mock.MagicMock(
+                return_value={'result': {'krbcanonicalname': [service_principal]}})
+            api.Command.vault_add_member = mock.MagicMock(
+                return_value={'result': {}, 'failed': {}})
+
+        self._run(
+            _module_params(state='present', members=[service_input]),
+            setup)
+        add_kwargs = self.fake_api.Command.vault_add_member.call_args.kwargs
+        self.assertEqual(add_kwargs['services'], [service_principal])
+        self.assertNotIn('users', add_kwargs)
+
+    def test_adds_group_members_via_group_argument(self):
+        """group names are routed to vault_add_member(group=...)."""
+        entry = _make_vault_entry()
+
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                side_effect=[
+                    {'result': [entry]},
+                    {'result': [entry]},
+                ])
+            api.Command.user_show = mock.MagicMock(side_effect=self.fake_errors.NotFound())
+            api.Command.group_show = mock.MagicMock(return_value={'result': {}})
+            api.Command.service_show = mock.MagicMock(side_effect=self.fake_errors.NotFound())
+            api.Command.vault_add_member = mock.MagicMock(
+                return_value={'result': {}, 'failed': {}})
+
+        self._run(
+            _module_params(state='present', members=['ops-admins']),
+            setup)
+        add_kwargs = self.fake_api.Command.vault_add_member.call_args.kwargs
+        self.assertEqual(add_kwargs['group'], ['ops-admins'])
+        self.assertNotIn('user', add_kwargs)
+
+    def test_empty_failed_member_structure_is_ignored(self):
+        """IPA's empty nested failed structure is not treated as a real failure."""
+        entry = _make_vault_entry()
+
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                side_effect=[
+                    {'result': [entry]},
+                    {'result': [entry]},
+                ])
+            api.Command.user_show = mock.MagicMock(return_value={'result': {}})
+            api.Command.group_show = mock.MagicMock(side_effect=self.fake_errors.NotFound())
+            api.Command.service_show = mock.MagicMock(side_effect=self.fake_errors.NotFound())
+            api.Command.vault_add_member = mock.MagicMock(
+                return_value={
+                    'result': {},
+                    'failed': {'member': {'user': (), 'group': (), 'services': ()}},
+                })
+
+        result = self._run(
+            _module_params(state='present', members=['alice']),
+            setup)
+        self.assertEqual(result.get('changed'), True)
+
+    def test_service_member_remove_matches_canonical_membership(self):
+        """service removals match the canonical member_service value from IPA."""
+        service_input = 'HTTP/web.example.com'
+        service_principal = 'HTTP/web.example.com@EXAMPLE.COM'
+        entry = _make_vault_entry()
+        entry['member_service'] = [service_principal]
+
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                side_effect=[
+                    {'result': [entry]},
+                    {'result': [_make_vault_entry()]},
+                ])
+            api.Command.service_show = mock.MagicMock(
+                return_value={'result': {'krbcanonicalname': [service_principal]}})
+            api.Command.vault_remove_member = mock.MagicMock(
+                return_value={'result': {}, 'failed': {'member': {'user': (), 'group': (), 'services': ()}}})
+
+        result = self._run(
+            _module_params(state='present', members_absent=[service_input]),
+            setup)
+        self.assertEqual(result.get('changed'), True)
+        remove_kwargs = self.fake_api.Command.vault_remove_member.call_args.kwargs
+        self.assertEqual(remove_kwargs['services'], [service_principal])
 
 
 # ---------------------------------------------------------------------------
@@ -725,6 +858,20 @@ class TestIPAClient(unittest.TestCase):
             self.assertEqual(len(warnings), 0)
         finally:
             os.unlink(path)
+
+    def test_resolve_verify_false_disables_tls_explicitly(self):
+        warnings = []
+        client = self.ipa_client_mod.IPAClient(
+            warn_callback=warnings.append)
+        self.assertFalse(client._resolve_verify(False))
+        self.assertEqual(len(warnings), 1)
+
+    def test_resolve_verify_string_false_disables_tls_explicitly(self):
+        warnings = []
+        client = self.ipa_client_mod.IPAClient(
+            warn_callback=warnings.append)
+        self.assertFalse(client._resolve_verify('false'))
+        self.assertEqual(len(warnings), 1)
 
 
 if __name__ == '__main__':

@@ -130,12 +130,12 @@ same payload produce no changes.
 
 ## Symmetric Vault: Extra Unlock Material
 
-Use a symmetric vault when the archive step requires an additional password
-beyond IdM authorization.
+Use a symmetric vault when creation and archive should require an additional
+password beyond IdM authorization.
 
 ```mermaid
 flowchart TD
-    create["state: present → vault_add with random salt"]
+    create["state: present → vault_add with password"]
     find["vault_find → exists?"]
     archive["vault_archive (password required) → always changed=true"]
 
@@ -143,9 +143,9 @@ flowchart TD
     find -->|yes| archive
 ```
 
-At creation time the module generates a random 32-byte salt for the vault.
-The salt is opaque to the caller. The vault password is supplied by the
-caller at archive time and is never stored by the module.
+At creation time the module supplies the symmetric vault password to IdM so
+the vault can be initialized correctly. The same password is required again
+at archive and retrieval time and is never stored by the module.
 
 Design your automation so the password is sourced from a controller
 credential or another vault, not from a static variable.
@@ -216,9 +216,10 @@ If `to_add` and `to_remove` are both empty, the member reconciliation step
 returns `changed: false` without making any API calls.
 
 Members can be users, groups, or service principals. Pass them by their full
-principal name or group name. The module passes them to `vault_add_member`
-and `vault_remove_member` as user entries — IdM resolves the actual object
-type from the principal format.
+principal name or group name. The module classifies each entry and passes it
+to the matching IPA member argument set before calling `vault_add_member` or
+`vault_remove_member`. On the live IPA API that means `user`, `group`, and
+`services`.
 
 > [!NOTE]
 > The `members` and `members_absent` lists are not mutually exclusive at the
