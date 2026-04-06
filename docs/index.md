@@ -4,13 +4,13 @@ title: eigenstate.ipa
 description: >-
   Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory,
   IdM vault lookup, Kerberos principal state, Kerberos keytab delivery,
-  certificate automation, AAP integration, and secure secret retrieval.
+  certificate automation, OTP workflows, AAP integration, and secure secret retrieval.
 ---
 
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It has
-five main jobs:
+six main jobs:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
 - IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and
@@ -19,15 +19,16 @@ five main jobs:
 - Kerberos keytab retrieval for host and service principals
 - IdM CA certificate request, retrieval, and expiry search via the Dogtag PKI
   backend
+- OTP token issue, lookup, revoke, and host enrollment password generation
 
 It fits environments that already use IdM for host data, policy context, and
 runtime secret retrieval.
 
 ## Current Release
 
-- `1.3.0`
-- adds `eigenstate.ipa.principal` to the integrated collection alongside the
-  released inventory, vault, keytab, and cert plugins
+- `1.4.0`
+- adds `eigenstate.ipa.otp` to the integrated collection alongside the
+  released inventory, vault, principal, keytab, and cert plugins
 
 ## Start Here
 
@@ -38,11 +39,13 @@ runtime secret retrieval.
 - [Principal Plugin](./principal-plugin.md)
 - [Keytab Plugin](./keytab-plugin.md)
 - [Cert Plugin](./cert-plugin.md)
+- [OTP Plugin](./otp-plugin.md)
 - [Inventory Use Cases](./inventory-use-cases.md)
 - [Vault Use Cases](./vault-use-cases.md)
 - [Principal Use Cases](./principal-use-cases.md)
 - [Keytab Use Cases](./keytab-use-cases.md)
 - [Cert Use Cases](./cert-use-cases.md)
+- [OTP Use Cases](./otp-use-cases.md)
 - [AAP Integration](./aap-integration.md)
 
 ## What The Collection Provides
@@ -62,6 +65,9 @@ runtime secret retrieval.
   IdM CA certificate request and retrieval. Signs CSRs against service
   principals, retrieves existing certs by serial number, and finds certs by
   expiry window or principal — all via `ipalib` without certmonger.
+- `eigenstate.ipa.otp`
+  OTP token issue, search, inspection, revocation, and one-time host
+  enrollment password generation through IdM.
 
 ## Best Fit
 

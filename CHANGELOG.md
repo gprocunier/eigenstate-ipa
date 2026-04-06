@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0
+
+- added `eigenstate.ipa.otp` for OTP token issue, lookup, revoke, and host enrollment password generation
+- fixed repeated OTP lookups in one Ansible process by disconnecting the managed `ipalib` RPC backend before ccache cleanup
+- aligned structured `map` and `map_record` OTP results with the Ansible lookup return contract
+- added explicit `verify=false` handling for OTP lookup TLS behavior
+- refreshed collection metadata and docs to describe the integrated inventory, vault, principal, keytab, cert, and otp feature set
+
 ## 1.3.0
 
 - added `eigenstate.ipa.principal` for Kerberos principal existence, key, lock, and last-auth inspection
