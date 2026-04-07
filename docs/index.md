@@ -12,16 +12,20 @@ description: >-
 
 # eigenstate.ipa
 
-`eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It has
-seven main jobs:
+`eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. I use it
+to treat IdM as more than an authentication service. The collection turns IdM
+into a source of inventory, policy context, Kerberos material, certificate
+automation, OTP state, and vault-backed secret retrieval for Ansible and AAP.
+
+## Collection Scope
+
+The collection covers seven main areas:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
-- IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and
-  AAP
+- IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and AAP
 - Kerberos principal state inspection for user, host, and service objects
 - Kerberos keytab retrieval for host and service principals
-- IdM CA certificate request, retrieval, and expiry search via the Dogtag PKI
-  backend
+- IdM CA certificate request, retrieval, and expiry search through the Dogtag backend
 - OTP token issue, lookup, revoke, and host enrollment password generation
 - IdM vault lifecycle management for create, archive, update, and delete flows
 
@@ -31,31 +35,56 @@ runtime secret retrieval.
 ## Current Release
 
 - `1.5.0`
-- adds `eigenstate.ipa.vault_write` to the integrated collection alongside the
-  released inventory, vault, principal, keytab, cert, and OTP components
+- adds `eigenstate.ipa.vault_write` alongside the released inventory, vault,
+  principal, keytab, cert, and OTP components
 - create, archive, modify, and delete IdM vaults from Ansible
-- full idempotency for standard vaults; check mode support
+- full idempotency for standard vaults and check-mode support
 - delta-only member management
 
 ## Start Here
 
-- [Collection Overview](https://github.com/gprocunier/eigenstate-ipa)
-- [Documentation Map](https://gprocunier.github.io/eigenstate-ipa/documentation-map.html)
-- [Inventory Plugin](./inventory-plugin.md)
-- [Vault Plugin](./vault-plugin.md)
-- [Vault Write Module](./vault-write-plugin.md)
-- [Principal Plugin](./principal-plugin.md)
-- [Keytab Plugin](./keytab-plugin.md)
-- [Cert Plugin](./cert-plugin.md)
-- [OTP Plugin](./otp-plugin.md)
-- [Inventory Use Cases](./inventory-use-cases.md)
-- [Vault Use Cases](./vault-use-cases.md)
-- [Vault Write Use Cases](./vault-write-use-cases.md)
-- [Principal Use Cases](./principal-use-cases.md)
-- [Keytab Use Cases](./keytab-use-cases.md)
-- [Cert Use Cases](./cert-use-cases.md)
-- [OTP Use Cases](./otp-use-cases.md)
-- [AAP Integration](./aap-integration.md)
+<a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>COLLECTION OVERVIEW</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>DOCUMENTATION MAP</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
+
+## Plugin Reference
+
+Use these pages when you need formal option reference, auth behavior, return
+data, or operation-specific details.
+
+<a href="./inventory-plugin.md"><kbd>INVENTORY PLUGIN</kbd></a>
+<a href="./vault-plugin.md"><kbd>VAULT PLUGIN</kbd></a>
+<a href="./vault-write-plugin.md"><kbd>VAULT WRITE MODULE</kbd></a>
+<a href="./principal-plugin.md"><kbd>PRINCIPAL PLUGIN</kbd></a>
+<a href="./keytab-plugin.md"><kbd>KEYTAB PLUGIN</kbd></a>
+<a href="./cert-plugin.md"><kbd>CERT PLUGIN</kbd></a>
+<a href="./otp-plugin.md"><kbd>OTP PLUGIN</kbd></a>
+
+## Capability Guides
+
+Use these pages when you are deciding which IdM boundary, retrieval path, or
+automation pattern fits the problem.
+
+<a href="./inventory-capabilities.md"><kbd>INVENTORY CAPABILITIES</kbd></a>
+<a href="./vault-capabilities.md"><kbd>VAULT CAPABILITIES</kbd></a>
+<a href="./vault-write-capabilities.md"><kbd>VAULT WRITE CAPABILITIES</kbd></a>
+<a href="./principal-capabilities.md"><kbd>PRINCIPAL CAPABILITIES</kbd></a>
+<a href="./keytab-capabilities.md"><kbd>KEYTAB CAPABILITIES</kbd></a>
+<a href="./cert-capabilities.md"><kbd>CERT CAPABILITIES</kbd></a>
+<a href="./otp-capabilities.md"><kbd>OTP CAPABILITIES</kbd></a>
+
+## Use Cases
+
+Use these when you want worked examples, role patterns, or end-to-end
+playbooks.
+
+<a href="./inventory-use-cases.md"><kbd>INVENTORY USE CASES</kbd></a>
+<a href="./vault-use-cases.md"><kbd>VAULT USE CASES</kbd></a>
+<a href="./vault-write-use-cases.md"><kbd>VAULT WRITE USE CASES</kbd></a>
+<a href="./principal-use-cases.md"><kbd>PRINCIPAL USE CASES</kbd></a>
+<a href="./keytab-use-cases.md"><kbd>KEYTAB USE CASES</kbd></a>
+<a href="./cert-use-cases.md"><kbd>CERT USE CASES</kbd></a>
+<a href="./otp-use-cases.md"><kbd>OTP USE CASES</kbd></a>
 
 ## What The Collection Provides
 
@@ -77,7 +106,7 @@ runtime secret retrieval.
 - `eigenstate.ipa.cert`
   IdM CA certificate request and retrieval. Signs CSRs against service
   principals, retrieves existing certs by serial number, and finds certs by
-  expiry window or principal — all via `ipalib` without certmonger.
+  expiry window or principal via `ipalib` without certmonger.
 - `eigenstate.ipa.otp`
   OTP token issue, search, inspection, revocation, and one-time host
   enrollment password generation through IdM.
