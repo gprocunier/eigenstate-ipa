@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.1
+
+- added collection-wide rotation workflow guidance for static secrets, keytabs, and certificates
+- added a Vault/CyberArk primer to position `eigenstate.ipa` for operators coming from external secrets and PAM platforms
+- expanded the docs landing pages, navigation map, and related guides to surface the new rotation and comparison material
+
 ## 1.6.0
 
 - added `eigenstate.ipa.selinuxmap` for read-only inspection of SELinux user map state from FreeIPA/IdM

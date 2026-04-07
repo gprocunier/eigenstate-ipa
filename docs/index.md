@@ -37,17 +37,19 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.6.0`
-- adds `eigenstate.ipa.selinuxmap` for read-only SELinux user map inspection
-- adds `eigenstate.ipa.hbacrule` for HBAC rule inspection and live access
-  testing via the FreeIPA hbactest engine
-- both plugins follow the established ccache lifecycle and support
-  `result_format=record` and `result_format=map_record`
+- `1.6.1`
+- adds collection-wide rotation workflow guidance for static secrets, keytabs,
+  and certificates
+- adds a Vault/CyberArk primer for operators evaluating the collection against
+  external secrets and PAM platforms
+- expands the main documentation map and landing pages to reflect the new
+  rotation and comparison guidance
 
 ## Start Here
 
 <a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>COLLECTION OVERVIEW</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>DOCUMENTATION MAP</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
 
 ## Plugin Reference
@@ -68,7 +70,10 @@ data, or operation-specific details.
 ## Capability Guides
 
 Use these pages when you are deciding which IdM boundary, retrieval path, or
-automation pattern fits the problem.
+automation pattern fits the problem. If you are coming from HashiCorp Vault or
+CyberArk, start with
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
+before drilling into the rotation and plugin-specific pages.
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>VAULT CAPABILITIES</kbd></a>
@@ -79,6 +84,14 @@ automation pattern fits the problem.
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>OTP CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html"><kbd>SELINUX MAP CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html"><kbd>HBAC RULE CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
+
+## Primer
+
+Use this page when the first question is whether the collection can replace or
+reduce a Vault or CyberArk footprint for an IdM-centric automation estate.
+
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
 
 ## Use Cases
 
@@ -94,6 +107,7 @@ playbooks.
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>OTP USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html"><kbd>SELINUX MAP USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html"><kbd>HBAC RULE USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
 
 ## What The Collection Provides
 

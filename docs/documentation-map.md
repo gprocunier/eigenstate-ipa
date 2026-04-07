@@ -4,7 +4,8 @@ title: Documentation Map
 description: >-
   Navigation map for the eigenstate.ipa documentation set, including
   inventory, IdM vault, vault-write, principal, keytab, cert, otp, selinuxmap,
-  hbacrule, use cases, and AAP integration guidance.
+  hbacrule, rotation workflow guidance, use cases, and AAP integration
+  guidance.
 ---
 
 {% raw %}
@@ -14,7 +15,7 @@ description: >-
 Start with the navigation buttons below. They are the quickest way to get to
 the part of the collection you actually need.
 
-Current release: `1.6.0`
+Current release: `1.6.1`
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
@@ -34,6 +35,7 @@ Current release: `1.6.0`
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>&nbsp;&nbsp;OTP CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html"><kbd>&nbsp;&nbsp;SELINUX MAP CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html"><kbd>&nbsp;&nbsp;HBAC RULE CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>&nbsp;&nbsp;ROTATION CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>&nbsp;&nbsp;IDM VAULT USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html"><kbd>&nbsp;&nbsp;VAULT WRITE USE CASES&nbsp;&nbsp;</kbd></a>
@@ -43,6 +45,8 @@ Current release: `1.6.0`
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>&nbsp;&nbsp;OTP USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html"><kbd>&nbsp;&nbsp;SELINUX MAP USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html"><kbd>&nbsp;&nbsp;HBAC RULE USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>&nbsp;&nbsp;ROTATION USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>&nbsp;&nbsp;VAULT/CYBERARK PRIMER&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>&nbsp;&nbsp;TOP README&nbsp;&nbsp;</kbd></a>
 
@@ -50,6 +54,10 @@ Use this page as the entry point to the docs set:
 
 - start with the plugin reference when you need option or auth behavior
 - use the capability guides when you are choosing an IdM boundary or vault scope
+- use the Vault/CyberArk primer when you need the high-level positioning for
+  external secrets or PAM users
+- use the rotation guides when you are deciding how to schedule and position
+  controller-side rotation workflows
 - use the use-case guides when you want concrete inventory or playbook patterns
 - use the AAP guide when the job runs inside Controller or an execution environment
 
@@ -95,6 +103,30 @@ Use these when you need:
 - symmetric and asymmetric vault creation
 - member management and delegated access
 - idempotency behavior and check-mode pre-flight patterns
+
+### I Want A Primer For HashiCorp Vault Or CyberArk Users
+
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>&nbsp;&nbsp;VAULT/CYBERARK PRIMER&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>&nbsp;&nbsp;ROTATION CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
+
+Use these when you need:
+
+- side-by-side positioning against HashiCorp Vault and CyberArk
+- the role AAP plays in making controller-side workflows comparable
+- a direct explanation of where dynamic leases and PAM still sit outside the collection
+
+### I Want A Rotation Workflow Model Across Static Secrets, Keytabs, And Certs
+
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>&nbsp;&nbsp;ROTATION CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>&nbsp;&nbsp;ROTATION USE CASES&nbsp;&nbsp;</kbd></a>
+
+Use these when you need:
+
+- the collection-wide position on rotation versus lease engines
+- controller-side workflow guidance for AAP-scheduled rotations
+- a single decision point across vault secrets, keytabs, and certificates
+- honest boundaries for Vault and CyberArk comparisons
 
 ### I Want To Check Principal State Before Keytab Or Cert Operations
 
@@ -218,6 +250,8 @@ The top README covers collection scope, installation, and repository layout.
 | [OTP Capabilities](https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html) | Scenario-driven guidance for OTP token and host enrollment workflows |
 | [SELinux Map Capabilities](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html) | Scenario-driven guidance for SELinux confinement validation patterns |
 | [HBAC Rule Capabilities](https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html) | Scenario-driven guidance for HBAC rule inspection and access testing patterns |
+| [Rotation Capabilities](https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html) | Collection-wide rotation model for static secrets, keytabs, and certificates |
+| [Vault/CyberArk Primer](https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html) | High-level comparison and positioning guide for Vault and CyberArk users |
 | [Inventory Use Cases](https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html) | Detailed worked examples for inventory-backed automation |
 | [Vault Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html) | Detailed worked examples for vault-backed secret retrieval |
 | [Vault Write Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html) | Detailed worked examples for vault lifecycle automation |
