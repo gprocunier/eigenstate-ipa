@@ -110,29 +110,29 @@ Use this page as the navigation layer for the docs set:
 
 | Document | Purpose |
 | --- | --- |
-| [Top README](../README.md) | Collection overview, install, and project framing |
-| [Inventory Plugin](./inventory-plugin.md) | Formal reference for `eigenstate.ipa.idm` |
-| [Vault Plugin](./vault-plugin.md) | Formal reference for `eigenstate.ipa.vault` |
-| [Vault Write Module](./vault-write-plugin.md) | Formal reference for `eigenstate.ipa.vault_write` |
-| [Principal Plugin](./principal-plugin.md) | Formal reference for `eigenstate.ipa.principal` |
-| [Keytab Plugin](./keytab-plugin.md) | Formal reference for `eigenstate.ipa.keytab` |
-| [Cert Plugin](./cert-plugin.md) | Formal reference for `eigenstate.ipa.cert` |
-| [OTP Plugin](./otp-plugin.md) | Formal reference for `eigenstate.ipa.otp` |
-| [Inventory Capabilities](./inventory-capabilities.md) | Scenario-driven guidance for inventory use cases |
-| [Vault Capabilities](./vault-capabilities.md) | Scenario-driven guidance for vault retrieval use cases |
-| [Vault Write Capabilities](./vault-write-capabilities.md) | Vault type matrix, idempotency guarantees, and rotation patterns |
-| [Principal Capabilities](./principal-capabilities.md) | Scenario-driven guidance for principal-state lookup workflows |
-| [Keytab Capabilities](./keytab-capabilities.md) | Scenario-driven guidance for Kerberos keytab deployment |
-| [Cert Capabilities](./cert-capabilities.md) | Scenario-driven guidance for IdM CA certificate workflows |
-| [OTP Capabilities](./otp-capabilities.md) | Scenario-driven guidance for OTP token and host enrollment workflows |
-| [Inventory Use Cases](./inventory-use-cases.md) | Detailed worked examples for inventory-backed automation |
-| [Vault Use Cases](./vault-use-cases.md) | Detailed worked examples for vault-backed secret retrieval |
-| [Vault Write Use Cases](./vault-write-use-cases.md) | Detailed worked examples for vault lifecycle automation |
-| [Principal Use Cases](./principal-use-cases.md) | Detailed worked examples for principal pre-flight and audit workflows |
-| [Keytab Use Cases](./keytab-use-cases.md) | Detailed worked examples for keytab retrieval and deployment |
-| [Cert Use Cases](./cert-use-cases.md) | Detailed worked examples for certificate issuance, retrieval, and expiry audits |
-| [OTP Use Cases](./otp-use-cases.md) | Detailed worked examples for OTP issue, rotation, inspection, and host enrollment |
-| [AAP Integration](./aap-integration.md) | Execution environment and controller integration patterns |
+| [Top README](https://github.com/gprocunier/eigenstate-ipa) | Collection overview, install, and project framing |
+| [Inventory Plugin](https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html) | Formal reference for `eigenstate.ipa.idm` |
+| [Vault Plugin](https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html) | Formal reference for `eigenstate.ipa.vault` |
+| [Vault Write Module](https://gprocunier.github.io/eigenstate-ipa/vault-write-plugin.html) | Formal reference for `eigenstate.ipa.vault_write` |
+| [Principal Plugin](https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html) | Formal reference for `eigenstate.ipa.principal` |
+| [Keytab Plugin](https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html) | Formal reference for `eigenstate.ipa.keytab` |
+| [Cert Plugin](https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html) | Formal reference for `eigenstate.ipa.cert` |
+| [OTP Plugin](https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html) | Formal reference for `eigenstate.ipa.otp` |
+| [Inventory Capabilities](https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html) | Scenario-driven guidance for inventory use cases |
+| [Vault Capabilities](https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html) | Scenario-driven guidance for vault retrieval use cases |
+| [Vault Write Capabilities](https://gprocunier.github.io/eigenstate-ipa/vault-write-capabilities.html) | Vault type matrix, idempotency guarantees, and rotation patterns |
+| [Principal Capabilities](https://gprocunier.github.io/eigenstate-ipa/principal-capabilities.html) | Scenario-driven guidance for principal-state lookup workflows |
+| [Keytab Capabilities](https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html) | Scenario-driven guidance for Kerberos keytab deployment |
+| [Cert Capabilities](https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html) | Scenario-driven guidance for IdM CA certificate workflows |
+| [OTP Capabilities](https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html) | Scenario-driven guidance for OTP token and host enrollment workflows |
+| [Inventory Use Cases](https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html) | Detailed worked examples for inventory-backed automation |
+| [Vault Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html) | Detailed worked examples for vault-backed secret retrieval |
+| [Vault Write Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html) | Detailed worked examples for vault lifecycle automation |
+| [Principal Use Cases](https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html) | Detailed worked examples for principal pre-flight and audit workflows |
+| [Keytab Use Cases](https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html) | Detailed worked examples for keytab retrieval and deployment |
+| [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) | Detailed worked examples for certificate issuance, retrieval, and expiry audits |
+| [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) | Detailed worked examples for OTP issue, rotation, inspection, and host enrollment |
+| [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) | Execution environment and controller integration patterns |
 
 ## Recommended Reading Order
 

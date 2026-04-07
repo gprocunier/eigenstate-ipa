@@ -34,7 +34,7 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.5.0`
+- `1.5.1`
 - adds `eigenstate.ipa.vault_write` alongside the released inventory, vault,
   principal, keytab, cert, and OTP components
 - create, archive, modify, and delete IdM vaults from Ansible
@@ -52,39 +52,39 @@ runtime secret retrieval.
 Use these pages when you need formal option reference, auth behavior, return
 data, or operation-specific details.
 
-<a href="./inventory-plugin.md"><kbd>INVENTORY PLUGIN</kbd></a>
-<a href="./vault-plugin.md"><kbd>VAULT PLUGIN</kbd></a>
-<a href="./vault-write-plugin.md"><kbd>VAULT WRITE MODULE</kbd></a>
-<a href="./principal-plugin.md"><kbd>PRINCIPAL PLUGIN</kbd></a>
-<a href="./keytab-plugin.md"><kbd>KEYTAB PLUGIN</kbd></a>
-<a href="./cert-plugin.md"><kbd>CERT PLUGIN</kbd></a>
-<a href="./otp-plugin.md"><kbd>OTP PLUGIN</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>INVENTORY PLUGIN</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>VAULT PLUGIN</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-plugin.html"><kbd>VAULT WRITE MODULE</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html"><kbd>PRINCIPAL PLUGIN</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>KEYTAB PLUGIN</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>CERT PLUGIN</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>OTP PLUGIN</kbd></a>
 
 ## Capability Guides
 
 Use these pages when you are deciding which IdM boundary, retrieval path, or
 automation pattern fits the problem.
 
-<a href="./inventory-capabilities.md"><kbd>INVENTORY CAPABILITIES</kbd></a>
-<a href="./vault-capabilities.md"><kbd>VAULT CAPABILITIES</kbd></a>
-<a href="./vault-write-capabilities.md"><kbd>VAULT WRITE CAPABILITIES</kbd></a>
-<a href="./principal-capabilities.md"><kbd>PRINCIPAL CAPABILITIES</kbd></a>
-<a href="./keytab-capabilities.md"><kbd>KEYTAB CAPABILITIES</kbd></a>
-<a href="./cert-capabilities.md"><kbd>CERT CAPABILITIES</kbd></a>
-<a href="./otp-capabilities.md"><kbd>OTP CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>VAULT CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-capabilities.html"><kbd>VAULT WRITE CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/principal-capabilities.html"><kbd>PRINCIPAL CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>CERT CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>OTP CAPABILITIES</kbd></a>
 
 ## Use Cases
 
 Use these when you want worked examples, role patterns, or end-to-end
 playbooks.
 
-<a href="./inventory-use-cases.md"><kbd>INVENTORY USE CASES</kbd></a>
-<a href="./vault-use-cases.md"><kbd>VAULT USE CASES</kbd></a>
-<a href="./vault-write-use-cases.md"><kbd>VAULT WRITE USE CASES</kbd></a>
-<a href="./principal-use-cases.md"><kbd>PRINCIPAL USE CASES</kbd></a>
-<a href="./keytab-use-cases.md"><kbd>KEYTAB USE CASES</kbd></a>
-<a href="./cert-use-cases.md"><kbd>CERT USE CASES</kbd></a>
-<a href="./otp-use-cases.md"><kbd>OTP USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>INVENTORY USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>VAULT USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html"><kbd>VAULT WRITE USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html"><kbd>PRINCIPAL USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>KEYTAB USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>CERT USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>OTP USE CASES</kbd></a>
 
 ## What The Collection Provides
 
