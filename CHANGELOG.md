@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.6.0
+
+- added `eigenstate.ipa.selinuxmap` for read-only inspection of SELinux user map state from FreeIPA/IdM
+- added `eigenstate.ipa.hbacrule` for read-only inspection of HBAC rule state and live access testing via the FreeIPA `hbactest` engine
+- `selinuxmap` supports `show` (named map lookup) and `find` (bulk enumeration); returns `selinuxuser`, `enabled`, `hbacrule` (linked rule name extracted from `seealso` DN), direct member lists, and `description`
+- `hbacrule` supports `show`, `find`, and `test`; the `test` operation invokes `hbactest` and returns `denied`, `matched`, and `notmatched`
+- both plugins follow the established ccache lifecycle pattern and support `result_format=record` and `result_format=map_record`
+- fixed `hbacrule operation=test` to accept the top-level `ipalib` `hbactest` response shape seen on live IdM servers
+- fixed `selinuxmap` and `hbacrule` `DOCUMENTATION` parsing so `ansible-doc`, Ansible runtime loading, and Galaxy import can load the plugins cleanly
+- added selinuxmap plugin reference, capability, and use-case documentation
+- added hbacrule plugin reference, capability, and use-case documentation
+- bumped collection tags to include `selinux`, `hbac`, and `policy`
+
 ## 1.5.1
 
 - fixed the `eigenstate.ipa.vault_write` module `DOCUMENTATION` block so `ansible-doc` and Ansible Galaxy can parse the module docs cleanly

@@ -4,7 +4,8 @@ title: eigenstate.ipa
 description: >-
   Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory,
   IdM vault lookup, Kerberos principal state, Kerberos keytab delivery,
-  certificate automation, OTP workflows, IdM vault lifecycle automation,
+  certificate automation, OTP workflows, SELinux user map inspection,
+  HBAC rule inspection and access testing, IdM vault lifecycle automation,
   AAP integration, and secure secret retrieval.
 ---
 
@@ -19,7 +20,7 @@ automation, OTP state, and vault-backed secret retrieval for Ansible and AAP.
 
 ## Collection Scope
 
-The collection covers seven main areas:
+The collection covers nine main areas:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
 - IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and AAP
@@ -28,18 +29,20 @@ The collection covers seven main areas:
 - IdM CA certificate request, retrieval, and expiry search through the Dogtag backend
 - OTP token issue, lookup, revoke, and host enrollment password generation
 - IdM vault lifecycle management for create, archive, update, and delete flows
+- SELinux user map inspection for confinement model pre-flight and audit
+- HBAC rule inspection and live access testing via the FreeIPA hbactest engine
 
 It fits environments that already use IdM for host data, policy context, and
 runtime secret retrieval.
 
 ## Current Release
 
-- `1.5.1`
-- adds `eigenstate.ipa.vault_write` alongside the released inventory, vault,
-  principal, keytab, cert, and OTP components
-- create, archive, modify, and delete IdM vaults from Ansible
-- full idempotency for standard vaults and check-mode support
-- delta-only member management
+- `1.6.0`
+- adds `eigenstate.ipa.selinuxmap` for read-only SELinux user map inspection
+- adds `eigenstate.ipa.hbacrule` for HBAC rule inspection and live access
+  testing via the FreeIPA hbactest engine
+- both plugins follow the established ccache lifecycle and support
+  `result_format=record` and `result_format=map_record`
 
 ## Start Here
 
@@ -59,6 +62,8 @@ data, or operation-specific details.
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>KEYTAB PLUGIN</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>CERT PLUGIN</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>OTP PLUGIN</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html"><kbd>SELINUX MAP PLUGIN</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html"><kbd>HBAC RULE PLUGIN</kbd></a>
 
 ## Capability Guides
 
@@ -72,6 +77,8 @@ automation pattern fits the problem.
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>CERT CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>OTP CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html"><kbd>SELINUX MAP CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html"><kbd>HBAC RULE CAPABILITIES</kbd></a>
 
 ## Use Cases
 
@@ -85,6 +92,8 @@ playbooks.
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>KEYTAB USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>CERT USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>OTP USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html"><kbd>SELINUX MAP USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html"><kbd>HBAC RULE USE CASES</kbd></a>
 
 ## What The Collection Provides
 
@@ -110,6 +119,16 @@ playbooks.
 - `eigenstate.ipa.otp`
   OTP token issue, search, inspection, revocation, and one-time host
   enrollment password generation through IdM.
+- `eigenstate.ipa.selinuxmap`
+  Read-only inspection of SELinux user map state from FreeIPA/IdM.
+  Returns the SELinux user, enabled state, linked HBAC rule name,
+  direct member lists, and description for named maps or bulk
+  enumeration.
+- `eigenstate.ipa.hbacrule`
+  Read-only inspection of HBAC rule state and live access testing via
+  the FreeIPA `hbactest` engine. Supports `show`, `find`, and `test`;
+  the `test` operation invokes the same evaluation logic SSSD uses at
+  login and returns `denied`, `matched`, and `notmatched`.
 
 ## Best Fit
 

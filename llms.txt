@@ -1,10 +1,11 @@
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
-(IdM / FreeIPA). It exposes one inventory plugin, five lookup plugins, and
+(IdM / FreeIPA). It exposes one inventory plugin, seven lookup plugins, and
 one vault lifecycle module for live inventory, vault-backed secret retrieval
 and storage, Kerberos principal state, Kerberos keytab delivery, IdM CA
-certificate automation, and OTP workflows:
+certificate automation, OTP workflows, SELinux user map inspection, and
+HBAC rule inspection and access testing:
 
 - `eigenstate.ipa.idm`
 - `eigenstate.ipa.vault`
@@ -13,6 +14,8 @@ certificate automation, and OTP workflows:
 - `eigenstate.ipa.keytab`
 - `eigenstate.ipa.cert`
 - `eigenstate.ipa.otp`
+- `eigenstate.ipa.selinuxmap`
+- `eigenstate.ipa.hbacrule`
 
 The collection treats IdM as both:
 
@@ -29,6 +32,8 @@ The collection treats IdM as both:
 - retrieves Kerberos keytab files for service and host principals
 - requests, retrieves, and searches IdM CA certificates for host and service principals
 - issues OTP tokens for users and one-time enrollment passwords for IdM hosts
+- inspects SELinux user map state including linked HBAC rule names and direct member lists
+- inspects HBAC rule state and runs live access tests via the FreeIPA hbactest engine
 - supports user, service, and shared vault scopes
 - supports standard, symmetric, and asymmetric vault retrieval
 - supports metadata inspection, scoped search, and structured return shapes
@@ -45,6 +50,8 @@ The collection treats IdM as both:
 - [docs/keytab-plugin.md](docs/keytab-plugin.md)
 - [docs/cert-plugin.md](docs/cert-plugin.md)
 - [docs/otp-plugin.md](docs/otp-plugin.md)
+- [docs/selinuxmap-plugin.md](docs/selinuxmap-plugin.md)
+- [docs/hbacrule-plugin.md](docs/hbacrule-plugin.md)
 - [docs/inventory-capabilities.md](docs/inventory-capabilities.md)
 - [docs/vault-capabilities.md](docs/vault-capabilities.md)
 - [docs/vault-write-capabilities.md](docs/vault-write-capabilities.md)
@@ -52,6 +59,8 @@ The collection treats IdM as both:
 - [docs/keytab-capabilities.md](docs/keytab-capabilities.md)
 - [docs/cert-capabilities.md](docs/cert-capabilities.md)
 - [docs/otp-capabilities.md](docs/otp-capabilities.md)
+- [docs/selinuxmap-capabilities.md](docs/selinuxmap-capabilities.md)
+- [docs/hbacrule-capabilities.md](docs/hbacrule-capabilities.md)
 - [docs/inventory-use-cases.md](docs/inventory-use-cases.md)
 - [docs/vault-use-cases.md](docs/vault-use-cases.md)
 - [docs/vault-write-use-cases.md](docs/vault-write-use-cases.md)
@@ -59,6 +68,8 @@ The collection treats IdM as both:
 - [docs/keytab-use-cases.md](docs/keytab-use-cases.md)
 - [docs/cert-use-cases.md](docs/cert-use-cases.md)
 - [docs/otp-use-cases.md](docs/otp-use-cases.md)
+- [docs/selinuxmap-use-cases.md](docs/selinuxmap-use-cases.md)
+- [docs/hbacrule-use-cases.md](docs/hbacrule-use-cases.md)
 - [docs/aap-integration.md](docs/aap-integration.md)
 
 ## Plugin Summary
@@ -125,6 +136,29 @@ The collection treats IdM as both:
 - supports `add`, `find`, `show`, and `revoke`
 - returns OTP URIs, host enrollment passwords, or structured token metadata
 
+### `eigenstate.ipa.selinuxmap`
+
+- lookup plugin
+- uses `ipalib` for read-only SELinux user map state queries
+- supports `show` (named map lookup) and `find` (bulk enumeration)
+- returns `name`, `selinuxuser`, `enabled`, `hbacrule` (linked rule name
+  extracted from `seealso` DN), `users`, `groups`, `hosts`, `hostgroups`,
+  and `description`
+- supports `record` and `map_record` result shaping
+
+### `eigenstate.ipa.hbacrule`
+
+- lookup plugin
+- uses `ipalib` for read-only HBAC rule state queries and live access testing
+- supports `show`, `find`, and `test`
+- `show`/`find` return `name`, `enabled`, `usercategory`, `hostcategory`,
+  `servicecategory`, `users`, `groups`, `hosts`, `hostgroups`, `services`,
+  `servicegroups`, and `description`
+- `test` invokes the FreeIPA `hbactest` engine (same logic SSSD uses at login)
+  and returns `user`, `targethost`, `service`, `denied`, `matched`, and
+  `notmatched`
+- supports `record` and `map_record` result shaping for `show`/`find`
+
 ## Runtime Notes
 
 - target Ansible floor: `2.14.0`
@@ -135,6 +169,8 @@ The collection treats IdM as both:
   on the control node or execution environment
 - cert lookups require `python3-ipalib` and `python3-ipaclient`
 - otp lookups require `python3-ipalib` and `python3-ipaclient`
+- selinuxmap lookups require `python3-ipalib` and `python3-ipaclient`
+- hbacrule lookups require `python3-ipalib` and `python3-ipaclient`
 - controller or execution-environment usage may also require Kerberos client
   tooling
 
@@ -148,8 +184,10 @@ The collection treats IdM as both:
 - `plugins/lookup/keytab.py` - keytab lookup plugin
 - `plugins/lookup/cert.py` - IdM certificate lookup plugin
 - `plugins/lookup/otp.py` - OTP and host enrollment password lookup plugin
+- `plugins/lookup/selinuxmap.py` - SELinux user map lookup plugin
+- `plugins/lookup/hbacrule.py` - HBAC rule query and hbactest lookup plugin
 - `docs/` - operator-facing documentation
-- `tests/` - unit coverage for the vault, vault_write, principal, keytab, cert, and otp components
+- `tests/` - unit coverage for the vault, vault_write, principal, keytab, cert, otp, selinuxmap, and hbacrule components
 - `scripts/validate-collection.sh` - repo validation path
 - `Makefile` - convenience wrapper for validation
 
@@ -157,7 +195,7 @@ The collection treats IdM as both:
 
 - collection name: `eigenstate.ipa`
 - namespace: `eigenstate`
-- current version: `1.5.1`
+- current version: `1.6.0`
 - author: Greg Procunier
 - license: GPL-3.0-or-later
 - repository: https://github.com/gprocunier/eigenstate-ipa
