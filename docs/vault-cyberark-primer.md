@@ -300,7 +300,7 @@ This is the surface where IdM is most differentiated from both Vault and CyberAr
 | Session recording policy | No | PSM (network-layer proxy) | tlog via SSSD + IdM central policy |
 | Session recording scope | N/A | SSH/RDP through PSM gateway | SSH, login, su, sudo (on-host tlog-rec) |
 | Recording storage / search | N/A | CyberArk Vault / PSM UI | syslog → Rsyslog/Elasticsearch |
-| Per-user / per-group recording policy | No | Via Safe/CyberArk policy | IdM-centralized SSSD session_recording |
+| Per-user / per-group recording policy | No | Via Safe/CyberArk policy | IdM-centralized SSSD session_recording keyed off IdM users and groups |
 
 **The HBAC argument:**
 
@@ -319,16 +319,17 @@ CyberArk PSM records sessions by proxying them through a central gateway. tlog t
 different approach: recording happens on the host, driven by policy distributed centrally
 through IdM.
 
-IdM stores session recording policy as directory entries specifying which users and host
-groups require recording. SSSD on each enrolled host queries IdM for that policy and
-applies it at login time by invoking `tlog-rec` as the session shell. The recording
-captures terminal I/O for SSH, login, su, and sudo sessions, emits JSON to syslog, and
-flows downstream to Elasticsearch or any syslog-compatible destination via Rsyslog or
-Fluentd. Playback is available via `tlog-play` on the command line or through a web
-interface.
+IdM stores session recording policy as directory entries or policy data keyed to
+users and groups, and the broader FreeIPA design also contemplates host and host-group
+scope. SSSD on each enrolled host queries IdM for that policy and applies it at login
+time by invoking `tlog-rec` as the session shell. The recording captures terminal I/O
+for SSH, login, su, and sudo sessions, emits JSON to syslog, and flows downstream to
+Elasticsearch or any syslog-compatible destination via Rsyslog or Fluentd. Playback is
+available via `tlog-play` on the command line or through a web interface.
 
 The architectural difference from CyberArk PSM is where recording happens: tlog records
-on the host, driven by policy distributed through IdM. PSM records by interposing the
+on the host, while the policy that decides who and what to record can be distributed
+centrally through IdM and resolved through host-side SSSD. PSM records by interposing the
 connection at a central gateway. Neither architecture is inherently superior — the choice
 reflects an organizational security posture decision. An organization that mandates
 network-layer session brokering is making an architectural commitment that can be

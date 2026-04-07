@@ -37,13 +37,13 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.6.1`
-- adds collection-wide rotation workflow guidance for static secrets, keytabs,
-  and certificates
-- adds a Vault/CyberArk primer for operators evaluating the collection against
-  external secrets and PAM platforms
-- expands the main documentation map and landing pages to reflect the new
-  rotation and comparison guidance
+- `1.6.2`
+- clarifies Vault/CyberArk positioning for the collection's session recording
+  and rotation guidance
+- keeps the primer aligned with IdM users, groups, and host-side SSSD policy
+  resolution for session recording
+- refreshes the docs landing pages and release references to match the updated
+  comparison language
 
 ## Start Here
 

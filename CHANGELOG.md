@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.2
+
+- clarified the Vault/CyberArk primer wording for session recording so it reflects IdM user and group policy with host-side SSSD resolution
+- updated the release docs and landing pages to keep the comparison and rotation guidance aligned
+
 ## 1.6.1
 
 - added collection-wide rotation workflow guidance for static secrets, keytabs, and certificates
