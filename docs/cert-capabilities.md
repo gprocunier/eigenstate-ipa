@@ -44,12 +44,12 @@ retrieval interface without certmonger running interactively on the target.
 
 ```mermaid
 flowchart TD
-    csr["CSR\ninline PEM or file"]
+    csr["CSR input"]
     principal["Service or host principal"]
-    auth["Kerberos auth\npassword, ticket, or keytab"]
+    auth["Kerberos auth"]
     lookup["eigenstate.ipa.cert"]
     ca["IdM CA\nDogtag PKI"]
-    result["Signed certificate\nPEM or base64, with metadata"]
+    result["Signed cert\nPEM or base64"]
 
     csr --> lookup
     principal --> lookup
@@ -319,18 +319,11 @@ Typical cases:
 
 ```mermaid
 flowchart TD
-    vault["IdM vault\nprivate key"] --> key_lookup["eigenstate.ipa.vault"]
-    ca["IdM CA\nsigned cert"] --> cert_lookup["eigenstate.ipa.cert"]
-    key_lookup --> bundle["cert + key bundle on controller"]
+    vault["Private key in vault"] --> key_lookup["Vault lookup"]
+    ca["Signed cert in IdM CA"] --> cert_lookup["Cert lookup"]
+    key_lookup --> bundle["Assemble bundle"]
     cert_lookup --> bundle
-    bundle --> target["deploy to target"]
-
-    style vault fill:#1a1a2e,color:#e0e0e0
-    style ca fill:#533483,color:#e0e0e0
-    style key_lookup fill:#16213e,color:#e0e0e0
-    style cert_lookup fill:#16213e,color:#e0e0e0
-    style bundle fill:#2d2d2d,color:#e0e0e0
-    style target fill:#0f3460,color:#e0e0e0
+    bundle --> target["Deploy to target"]
 ```
 
 Example:
@@ -414,10 +407,10 @@ Typical cases:
 
 ```mermaid
 flowchart TD
-    inventory["eigenstate.ipa.idm\ndynamic inventory"]
-    find["eigenstate.ipa.cert\noperation=find + expiry window"]
-    intersect["Intersect expiring cert principals\nwith inventory host set"]
-    renew["Targeted renewal play\nonly affected hosts"]
+    inventory["Dynamic inventory"]
+    find["Find expiring certs"]
+    intersect["Match principals\nto hosts"]
+    renew["Renew affected hosts"]
 
     inventory --> intersect
     find --> intersect
@@ -486,41 +479,16 @@ expiry, for operators who own the full cert lifecycle in automation.
 
 ```mermaid
 flowchart TD
-    subgraph prepare["Prepare"]
-        key["Generate private key on controller\nopenssl genrsa"]
-        csr["Generate CSR\nopenssl req"]
-        store["Archive key in IdM vault\noptional but recommended"]
-        key --> csr --> store
-    end
+    key["Generate key + CSR"]
+    vault["Optional: archive key"]
+    request["Request signed cert"]
+    deploy["Deploy cert + key"]
+    maintain["Find expiring certs"]
+    renew["Renew or revoke"]
 
-    subgraph issue["Issue"]
-        request["eigenstate.ipa.cert\noperation=request"]
-        signed["Signed PEM cert from IdM CA"]
-        request --> signed
-    end
-
-    subgraph deploy["Deploy"]
-        copy_cert["Copy cert to target"]
-        copy_key["Copy key from vault to target"]
-        reload["Reload service"]
-        copy_cert --> reload
-        copy_key --> reload
-    end
-
-    subgraph maintain["Maintain"]
-        find["eigenstate.ipa.cert\noperation=find + expiry window"]
-        renew["Renew: re-request with same CSR\nor generate new CSR"]
-        revoke["Revoke if compromised\nipa cert-revoke (out of band)"]
-        find --> renew
-        find --> revoke
-    end
-
-    prepare --> issue --> deploy --> maintain
-
-    style prepare fill:#2d2d2d,color:#e0e0e0
-    style issue fill:#533483,color:#e0e0e0
-    style deploy fill:#1a1a2e,color:#e0e0e0
-    style maintain fill:#16213e,color:#e0e0e0
+    key --> request --> deploy --> maintain --> renew
+    key -.-> vault
+    vault -.-> deploy
 ```
 
 ### Step 1 — Generate Key And CSR

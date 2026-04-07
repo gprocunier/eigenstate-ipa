@@ -47,15 +47,15 @@ rights to query the specific object types it will inspect.
 
 ```mermaid
 flowchart TD
-    ans["Ansible task or assert"]
+    task["Ansible task or assert"]
+    auth["Kerberos auth"]
     lookup["eigenstate.ipa.principal"]
-    krb["Kerberos ticket\nexisting, password-derived,\nor keytab-derived"]
-    ipa["ipalib principal APIs\nservice_show, host_show, user_show\nservice_find, host_find, user_find"]
+    ipa["ipalib principal APIs"]
     out["State record\nexists, has_keytab, disabled, last_auth"]
 
-    ans --> lookup
-    lookup --> krb
-    krb --> ipa
+    task --> lookup
+    auth --> lookup
+    lookup --> ipa
     ipa --> out
 ```
 
@@ -105,11 +105,11 @@ IdM object type from the principal name format:
 ```mermaid
 flowchart TD
     name["Principal name"]
-    slash{"Contains /"}
-    hostpfx{"Starts with host/"}
-    svc["type=service\nlookup: full name"]
-    host["type=host\nlookup: FQDN after host/"]
-    user["type=user\nlookup: uid before @"]
+    slash{"Contains /?"}
+    hostpfx{"Starts with host/?"}
+    svc["Service principal"]
+    host["Host principal"]
+    user["User principal"]
 
     name --> slash
     slash -->|yes| hostpfx

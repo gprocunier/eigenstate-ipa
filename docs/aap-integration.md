@@ -41,15 +41,16 @@ It covers:
 ## Controller Integration Model
 
 ```mermaid
-flowchart LR
-    ctrl["Automation Controller job"]
+flowchart TD
+    ctrl["Controller job"]
+    cred["Password or keytab credential"]
     ee["Execution environment"]
-    cred["Controller credential\npassword or keytab"]
-    inv["eigenstate.ipa.idm"]
-    vault["eigenstate.ipa.vault"]
-    principal["eigenstate.ipa.principal"]
-    keytab["eigenstate.ipa.keytab"]
-    otp["eigenstate.ipa.otp"]
+    inv["idm inventory"]
+    vault["vault lookup"]
+    principal["principal lookup"]
+    keytab["keytab lookup"]
+    cert["cert lookup"]
+    otp["otp lookup"]
     idm["IdM / FreeIPA"]
 
     ctrl --> ee
@@ -58,10 +59,13 @@ flowchart LR
     ee --> vault
     ee --> principal
     ee --> keytab
+    ee --> cert
+    ee --> otp
     inv --> idm
     vault --> idm
     principal --> idm
     keytab --> idm
+    cert --> idm
     otp --> idm
 ```
 

@@ -39,9 +39,12 @@ posture. Use this page when you need the corresponding playbook pattern.
 
 ```mermaid
 flowchart TD
-    question["Keytab need"] --> mode["generate (first issue or rotate)\nor retrieve (safe re-deploy)"]
-    mode --> scope["Single principal or fleet"]
-    scope --> deploy["Deploy to disk or inject into AAP credential"]
+    need["Keytab need"]
+    mode["Generate or retrieve"]
+    scope["Single principal or fleet"]
+    deploy["Deploy to disk\nor inject into AAP"]
+
+    need --> mode --> scope --> deploy
 ```
 
 ## 1. New Service Onboarding
@@ -133,9 +136,9 @@ over the inventory group.
 ```mermaid
 flowchart TD
     lookup["Single query\nresult_format='map'"]
-    web01["HTTP/web-01 → /etc/httpd/conf/httpd.keytab on web-01"]
-    web02["HTTP/web-02 → /etc/httpd/conf/httpd.keytab on web-02"]
-    web03["HTTP/web-03 → /etc/httpd/conf/httpd.keytab on web-03"]
+    web01["web-01 keytab"]
+    web02["web-02 keytab"]
+    web03["web-03 keytab"]
 
     lookup --> web01
     lookup --> web02
@@ -320,12 +323,12 @@ For the full pattern and one-time admin setup, see
 
 ```mermaid
 flowchart TD
-    admin_kt["Admin keytab\n/runner/env/ipa/admin.keytab"]
-    keytab_lookup["eigenstate.ipa.keytab\nHTTP/app.example.com"]
-    svc_kt["Service keytab\n/tmp/app-svc.keytab"]
-    vault_lookup["eigenstate.ipa.vault\nservice='HTTP/app.example.com'"]
-    bundle["Sealed bootstrap bundle"]
-    target["Target host — openssl cms -decrypt"]
+    admin_kt["Admin keytab"]
+    keytab_lookup["Keytab lookup"]
+    svc_kt["Service keytab"]
+    vault_lookup["Vault lookup"]
+    bundle["Sealed bundle"]
+    target["Target decrypts locally"]
 
     admin_kt --> keytab_lookup
     keytab_lookup --> svc_kt
@@ -408,11 +411,11 @@ The job template never handles the keytab bytes directly.
 
 ```mermaid
 flowchart TD
-    cred["Controller credential\nadmin.keytab mounted at /runner/env/ipa/admin.keytab"]
-    ee["Execution environment\nipa-client + krb5-workstation\n(RHEL 10 validated path)"]
+    cred["Controller keytab"]
+    ee["Execution environment"]
     lookup["eigenstate.ipa.keytab"]
     idm["IdM / FreeIPA"]
-    deployed["Service keytab deployed to target"]
+    deployed["Service keytab on target"]
 
     cred --> ee
     ee --> lookup

@@ -46,10 +46,13 @@ wherever that is the practical steady-state choice.
 ## Use Case Flow
 
 ```mermaid
-flowchart LR
-    A["certificate need"] --> B["choose operation"]
-    B --> C["choose result form"]
-    C --> D["write cert - build report - or renew"]
+flowchart TD
+    need["Certificate need"]
+    op["Choose operation"]
+    result["Choose result form"]
+    action["Write cert,\nbuild report, or renew"]
+
+    need --> op --> result --> action
 ```
 
 ## 1. Request A Certificate For A New Service
@@ -61,8 +64,13 @@ This is the most common cert issuance pattern for service deployments where
 certmonger is not running on the target.
 
 ```mermaid
-flowchart LR
-    A["CSR on controller"] --> B["cert request"] --> C["signed PEM from IdM CA"] --> D["cert file on target"]
+flowchart TD
+    csr["CSR on controller"]
+    request["Cert request"]
+    signed["Signed cert"]
+    deploy["Cert file on target"]
+
+    csr --> request --> signed --> deploy
 ```
 
 Example:
@@ -200,10 +208,13 @@ This is the standard pre-expiry renewal loop for service certificates managed
 outside certmonger.
 
 ```mermaid
-flowchart LR
-    A["find expiring certs"] --> B["identify principal and serial"]
-    B --> C["re-request with same CSR"] --> D["new serial - fresh validity"]
-    D --> E["install and reload"]
+flowchart TD
+    find["Find expiring certs"]
+    identify["Identify principal\nand serial"]
+    request["Re-request cert"]
+    install["Install and reload"]
+
+    find --> identify --> request --> install
 ```
 
 Example:
@@ -323,11 +334,11 @@ This is the primary full-TLS deployment pattern when the private key is stored
 in an IdM vault. It avoids moving private key material through any other system.
 
 ```mermaid
-flowchart LR
-    A["IdM vault - private key"] --> B["vault lookup"]
-    C["IdM CA"] --> D["cert lookup"]
-    B --> E["deploy cert and key to target"]
-    D --> E
+flowchart TD
+    key["Private key in vault"] --> key_lookup["Vault lookup"]
+    cert["Signed cert in IdM"] --> cert_lookup["Cert lookup"]
+    key_lookup --> deploy["Deploy cert + key"]
+    cert_lookup --> deploy
 ```
 
 Example:
@@ -404,12 +415,12 @@ This avoids running renewal logic on every host in the estate. Only the hosts
 whose certificates appear in the expiry window receive a cert operation.
 
 ```mermaid
-flowchart LR
-    A["idm inventory - hostgroup boundary"] --> B["targeted host set"]
-    C["cert find with expiry window"] --> D["expiring principals"]
-    B --> E["per-host when condition"]
-    D --> E
-    E --> F["request only for affected hosts"]
+flowchart TD
+    inventory["Inventory host boundary"] --> hosts["Targeted hosts"]
+    expiring["Find expiring certs"] --> principals["Expiring principals"]
+    hosts --> match["Match host\nand principal"]
+    principals --> match
+    match --> renew["Renew affected hosts"]
 ```
 
 Example:
@@ -544,10 +555,10 @@ expiry needs to be caught before it causes an outage, without requiring manual
 intervention.
 
 ```mermaid
-flowchart LR
-    A["AAP scheduled job"] --> B["cert find with expiry window"]
-    B --> C["no certs expiring - job passes"]
-    B --> D["certs expiring - report or renew"]
+flowchart TD
+    job["AAP scheduled job"] --> find["Find expiring certs"]
+    find --> none["No expirations"]
+    find --> action["Report or renew"]
 ```
 
 Example:
@@ -630,14 +641,16 @@ second vault — all before the target has received a single file.
 > cert/key pair has been established.
 
 ```mermaid
-flowchart LR
-    A["generate key and CSR on controller"] --> B["cert plugin signs CSR"]
-    A --> C["archive private key to vault"]
-    B --> D["seal artifact with host cert"]
-    D --> E["archive sealed blob to vault"]
-    C --> F["vault delivers key and blob to target"]
-    E --> F
-    F --> G["target unseals with private key"]
+flowchart TD
+    prep["Generate key + CSR"]
+    sign["Sign CSR"]
+    archive["Archive key to vault"]
+    seal["Seal artifact"]
+    deliver["Deliver key + blob"]
+    unseal["Target unseals locally"]
+
+    prep --> sign --> seal --> deliver --> unseal
+    prep --> archive --> deliver
 ```
 
 Example:
@@ -794,12 +807,15 @@ plugin to retrieve or renew the cert without needing to touch the controller
 filesystem again.
 
 ```mermaid
-flowchart LR
-    A["generate key and CSR"] --> B["cert plugin signs cert"]
-    A --> C["vault archives private key"]
-    B --> D["cert deployed to target"]
-    C --> D
-    D --> E["future: vault retrieves key - cert plugin renews cert"]
+flowchart TD
+    prep["Generate key + CSR"]
+    sign["Sign cert"]
+    archive["Archive key"]
+    deploy["Deploy cert + key"]
+    renew["Future renew path"]
+
+    prep --> sign --> deploy --> renew
+    prep --> archive --> deploy
 ```
 
 Example:

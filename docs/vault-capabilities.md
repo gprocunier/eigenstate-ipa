@@ -46,9 +46,9 @@ It is the IdM-vault-side companion to the inventory capabilities guide.
 flowchart TD
     vaults["IdM vaults"]
     scopes["user / service / shared scope"]
-    auth["Kerberos auth\npassword, ticket, or keytab"]
+    auth["Kerberos auth"]
     lookup["eigenstate.ipa.vault"]
-    tasks["Ansible tasks, templates,\ncredential injection"]
+    tasks["Tasks, templates,\ncredential injection"]
 
     vaults --> lookup
     scopes --> lookup
@@ -413,43 +413,15 @@ Do not assume the target already has a decryptable host cert just because it is
 enrolled. Verify with `getcert list` or `ipa-getcert list` first.
 
 ```mermaid
-flowchart LR
-    subgraph prep["Target Preparation"]
-        enroll["Host enrolled in IdM"]
-        certreq["Request host cert with certmonger\nif no cert/key exists yet"]
-        hostpair["Host X.509 cert + private key\nprivate key never leaves target"]
-        enroll --> certreq --> hostpair
-    end
+flowchart TD
+    hostpair["Host cert + private key\nstay on target"]
+    seal["Seal blob with host cert"]
+    store["Archive sealed blob to vault"]
+    broker["Vault lookup returns opaque blob"]
+    deliver["Deliver blob to target"]
+    unseal["Target decrypts locally"]
 
-    subgraph seal["Seal"]
-        cert["Target public certificate\nnot sensitive"]
-        blob["Sealed binary blob"]
-        cert -->|"openssl cms -encrypt -recip host-cert.pem"| blob
-    end
-
-    subgraph store["Store"]
-        vault["IdM vault\nKerberos access control"]
-        blob -->|"ipa vault-archive"| vault
-    end
-
-    subgraph broker["Broker"]
-        ansible["eigenstate.ipa.vault\nencoding=base64\nnever sees plaintext"]
-        vault -->|"retrieve sealed blob"| ansible
-    end
-
-    subgraph unseal["Unseal"]
-        deliver["Deliver opaque blob to target"]
-        target["openssl cms -decrypt\nusing target private key"]
-        ansible --> deliver --> target
-    end
-
-    hostpair -. export public cert .-> cert
-
-    style prep fill:#2d2d2d,color:#e0e0e0
-    style seal fill:#533483,color:#e0e0e0
-    style store fill:#1a1a2e,color:#e0e0e0
-    style broker fill:#16213e,color:#e0e0e0
-    style unseal fill:#0f3460,color:#e0e0e0
+    hostpair --> seal --> store --> broker --> deliver --> unseal
 ```
 
 ### Prerequisite — Confirm A Target Cert/Key Pair Exists
@@ -478,33 +450,17 @@ the final decrypt step.
 ### IPA Admin Path
 
 ```mermaid
-flowchart LR
-    kinit["kinit admin"]
-    prereq["Verify or request target cert/key"]
-    export["Export target public cert"]
-    verify["openssl x509 -noout -subject -dates"]
-    seal["openssl cms -encrypt"]
-    vaultadd["ipa vault-add --type standard --shared"]
-    archive["ipa vault-archive --shared"]
-    retrieve["eigenstate.ipa.vault lookup\nencoding=base64, include_metadata=true"]
-    copy["copy sealed blob to target"]
-    unseal["openssl cms -decrypt\nusing target cert/key"]
-    cleanup["remove sealed blob"]
+flowchart TD
+    prereq["Verify target cert/key"]
+    export["Export public cert"]
+    seal["Seal payload"]
+    archive["Create vault + archive blob"]
+    retrieve["Vault lookup retrieves blob"]
+    copy["Copy blob to target"]
+    unseal["Target decrypts"]
+    cleanup["Remove blob"]
 
-    prereq --> export --> verify --> seal --> vaultadd --> archive --> retrieve --> copy --> unseal --> cleanup
-    kinit --> export
-
-    style kinit fill:#2d2d2d,color:#e0e0e0
-    style prereq fill:#2d2d2d,color:#e0e0e0
-    style export fill:#533483,color:#e0e0e0
-    style verify fill:#533483,color:#e0e0e0
-    style seal fill:#533483,color:#e0e0e0
-    style vaultadd fill:#1a1a2e,color:#e0e0e0
-    style archive fill:#1a1a2e,color:#e0e0e0
-    style retrieve fill:#16213e,color:#e0e0e0
-    style copy fill:#0f3460,color:#e0e0e0
-    style unseal fill:#0f3460,color:#e0e0e0
-    style cleanup fill:#0f3460,color:#e0e0e0
+    prereq --> export --> seal --> archive --> retrieve --> copy --> unseal --> cleanup
 ```
 
 Use this when the operator has full IdM admin rights and owns the vault
@@ -632,23 +588,17 @@ root-readable only.
 ### Delegated Operator Path
 
 ```mermaid
-flowchart LR
-    admin["Admin one-time setup\nvault-add + vault-add-member"]
+flowchart TD
+    admin["One-time vault setup"]
     prereq["Target cert/key exists"]
-    operator["Operator seals artifact"]
-    archive["Operator archives sealed blob"]
-    retrieve["Automation retrieves opaque blob"]
-    decrypt["Target decrypts with host private key"]
+    seal["Seal artifact"]
+    archive["Archive blob"]
+    retrieve["Automation retrieves blob"]
+    decrypt["Target decrypts"]
 
-    admin --> operator
-    prereq --> operator --> archive --> retrieve --> decrypt
-
-    style admin fill:#2d2d2d,color:#e0e0e0
-    style prereq fill:#2d2d2d,color:#e0e0e0
-    style operator fill:#533483,color:#e0e0e0
-    style archive fill:#1a1a2e,color:#e0e0e0
-    style retrieve fill:#16213e,color:#e0e0e0
-    style decrypt fill:#0f3460,color:#e0e0e0
+    admin --> seal
+    prereq --> seal
+    seal --> archive --> retrieve --> decrypt
 ```
 
 Use this when the operator does not have IdM admin rights. An admin creates

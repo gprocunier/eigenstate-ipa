@@ -224,12 +224,18 @@
   }
 
   .markdown-body .mermaid {
-    max-width: var(--rh-body-width);
+    max-width: 100%;
     margin: 1.5rem 0;
     overflow-x: auto;
     border: 1px solid var(--rh-gray-20);
-    background: var(--rh-gray-10);
-    padding: 1rem;
+    background: #ffffff;
+    padding: 0.85rem;
+  }
+
+  .markdown-body .mermaid svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
   }
 
   @media (max-width: 768px) {

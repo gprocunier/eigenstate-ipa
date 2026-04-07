@@ -41,31 +41,23 @@ know which capability fits your situation.
 
 ```mermaid
 flowchart TD
-    q["What do you need?"]
+    need["OTP need"]
+    issue["Issue credential"]
+    inspect["Inspect state"]
+    revoke["Revoke or rotate"]
+    gate["Pre-check before issue"]
 
-    new_token["New TOTP/HOTP token\nfor a user"]
-    enroll_pw["Enrollment password\nfor a host"]
-    rotate["Rotate existing token\n(revoke old, add new)"]
-    find_tokens["Find tokens\nfor audit or revoke"]
-    revoke_all["Revoke all tokens\nfor a user"]
-    check["Confirm token exists\nbefore acting"]
-    cross["Pre-validate principal\nthen issue token"]
+    need --> issue
+    need --> inspect
+    need --> revoke
+    need --> gate
 
-    q --> new_token
-    q --> enroll_pw
-    q --> rotate
-    q --> find_tokens
-    q --> revoke_all
-    q --> check
-    q --> cross
-
-    new_token --> add_totp["add, token_type=totp/hotp"]
-    enroll_pw --> add_host["add, token_type=host"]
-    rotate --> find_then_add["show → revoke → add"]
-    find_tokens --> find_op["find, owner= filter"]
-    revoke_all --> bulk_revoke["find → loop revoke"]
-    check --> show_op["show — exists=false is not an error"]
-    cross --> principal_first["principal show → assert → otp add"]
+    issue --> user["User TOTP/HOTP"]
+    issue --> host["Host enrollment password"]
+    inspect --> show["show or find"]
+    revoke --> rotate["show → revoke → add"]
+    revoke --> bulk["find → loop revoke"]
+    gate --> principal["principal show → assert → otp add"]
 ```
 
 The OTP plugin is a write-capable credential primitive. `add` and `revoke`
@@ -91,25 +83,24 @@ Use `host` when automating host enrollment. The password is consumed by
 
 ```mermaid
 flowchart TD
-    q["What action?"]
+    action["OTP action"]
+    create{"Create new?"}
+    inspect{"Inspect existing?"}
+    token{"User token\nor host password?"}
+    know_id{"Know token ID?"}
+    remove{"Need revoke?"}
 
-    create{"Creating a\nnew credential?"}
-    lookup{"Looking up\nexisting state?"}
-
-    q --> create
-    q --> lookup
-
-    create --> type_q{"What kind?"}
-    type_q -->|"User 2FA"| add_totp["add, token_type=totp or hotp"]
-    type_q -->|"Host enrollment"| add_host["add, token_type=host"]
-
-    lookup --> know_id{"Know the\ntoken ID?"}
-    know_id -->|yes| show_op["show — returns state or exists=false"]
-    know_id -->|no| find_op["find — search, optionally filter by owner"]
-
-    find_op --> need_del{"Need to\ndelete?"}
-    need_del -->|yes| revoke_op["revoke — permanent, non-idempotent"]
-    need_del -->|no| done["done — use record for audit/display"]
+    action --> create
+    action --> inspect
+    create -->|yes| token
+    token -->|User token| add_totp["add totp/hotp"]
+    token -->|Host password| add_host["add host"]
+    inspect -->|yes| know_id
+    know_id -->|yes| show_op["show"]
+    know_id -->|no| find_op["find"]
+    find_op --> remove
+    remove -->|yes| revoke_op["revoke"]
+    remove -->|no| done["use record"]
 ```
 
 ## 1. Provision User TOTP Token
@@ -236,10 +227,10 @@ to disk.
 
 ```mermaid
 flowchart TD
-    cred_type["AAP custom credential type\nIPA_SERVER, IPA_KEYTAB fields"] --> launch["job launch"]
-    launch --> injector["injector template\nenroll_pass={{ lookup('eigenstate.ipa.otp',\ntarget_fqdn, token_type='host', ...) | first }}"]
-    injector --> play["play receives enroll_pass\nas extra var"]
-    play --> ipaclient["freeipa.ansible_freeipa.ipaclient\nwith ipaadmin_password=enroll_pass"]
+    cred_type["AAP custom credential type"] --> launch["Job launch"]
+    launch --> injector["Injector uses otp lookup"]
+    injector --> play["Play receives enroll_pass"]
+    play --> ipaclient["ipaclient enrolls host"]
 ```
 
 The credential type stores the IPA server and keytab path. The injector

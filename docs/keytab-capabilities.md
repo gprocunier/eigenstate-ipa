@@ -41,12 +41,12 @@ This plugin brings it into the Ansible automation lifecycle.
 
 ```mermaid
 flowchart TD
-    principal["IPA service or host principal\n(HTTP/, nfs/, host/, ...)"]
-    auth["Kerberos auth\npassword, ticket, or keytab"]
+    principal["Service or host principal"]
+    auth["Kerberos auth"]
     lookup["eigenstate.ipa.keytab"]
-    getkeytab["ipa-getkeytab subprocess"]
+    getkeytab["ipa-getkeytab"]
     idm["IdM / FreeIPA"]
-    out["base64-encoded keytab\nready for copy or credential injection"]
+    out["Base64 keytab\nfor copy or injection"]
 
     principal --> lookup
     auth --> lookup
@@ -171,9 +171,9 @@ name.
 
 ```mermaid
 flowchart TD
-    lookup["Single query — multiple principals\nresult_format='map'"]
-    web01["web_keytabs['HTTP/web-01'] → /etc/httpd/... on web-01"]
-    web02["web_keytabs['HTTP/web-02'] → /etc/httpd/... on web-02"]
+    lookup["One query\nresult_format='map'"]
+    web01["web-01 keytab"]
+    web02["web-02 keytab"]
 
     lookup --> web01
     lookup --> web02
@@ -291,11 +291,11 @@ The recommended AAP deployment pattern is:
 
 ```mermaid
 flowchart TD
-    cred["Controller credential\nadmin.keytab — mounted at /runner/env/ipa/admin.keytab"]
-    ee["Execution environment\nipa-client installed\n(RHEL 10 validated path)"]
-    lookup["eigenstate.ipa.keytab\nkerberos_keytab='/runner/env/ipa/admin.keytab'"]
+    cred["Controller keytab"]
+    ee["Execution environment"]
+    lookup["eigenstate.ipa.keytab"]
     idm["IdM / FreeIPA"]
-    target["Service keytab deployed\nto target host"]
+    target["Service keytab on target"]
 
     cred --> ee
     ee --> lookup
@@ -328,20 +328,18 @@ service principal.
 
 ```mermaid
 flowchart TD
-    admin_kt["Admin keytab\nmounted in EE at /runner/env/ipa/admin.keytab"]
-    keytab_lookup["eigenstate.ipa.keytab\nprincipal: HTTP/app.example.com"]
-    svc_kt["Service keytab\n/tmp/app-svc.keytab"]
-    vault_lookup["eigenstate.ipa.vault\nservice='HTTP/app.example.com'\nkerberos_keytab='/tmp/app-svc.keytab'"]
-    idm_vault["IdM service-scoped vault\napp-bootstrap-bundle"]
-    sealed_blob["Sealed bootstrap bundle\nbase64-encoded CMS blob"]
-    target["Target host\nopenssl cms -decrypt"]
+    admin_kt["Admin keytab"]
+    keytab_lookup["Keytab lookup"]
+    svc_kt["Service keytab"]
+    vault_lookup["Vault lookup"]
+    blob["Sealed bundle"]
+    target["Target decrypts locally"]
 
     admin_kt --> keytab_lookup
     keytab_lookup --> svc_kt
     svc_kt --> vault_lookup
-    vault_lookup --> idm_vault
-    idm_vault --> sealed_blob
-    sealed_blob --> target
+    vault_lookup --> blob
+    blob --> target
 ```
 
 This matters for the audit trail. When the vault lookup authenticates as

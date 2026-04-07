@@ -40,30 +40,17 @@ to know which capability fits your situation.
 
 ```mermaid
 flowchart TD
-    q["What do you need to know?"]
+    need["Principal state question"]
+    check["Existence, keys,\nlock state, or last auth"]
+    bulk["Single principal\nor bulk search"]
+    gate["Gate or report"]
+    act["Then get keytab,\nrequest cert, or stop"]
 
-    exists["Does the principal exist?"]
-    keys["Does it have keys?"]
-    lock["Is the account locked?"]
-    auth["When did it last authenticate?"]
-    bulk["Which principals are missing keys?"]
-    gate["Block automation if state is wrong"]
-    chain["Then act — get keytab or cert"]
-
-    q --> exists
-    q --> keys
-    q --> lock
-    q --> auth
-    q --> bulk
-    q --> gate
-    q --> chain
-
-    exists --> gate
-    keys --> gate
-    lock --> gate
-    auth --> gate
+    need --> check
+    need --> bulk
+    check --> gate
     bulk --> gate
-    gate --> chain
+    gate --> act
 ```
 
 The principal plugin is a read-only pre-flight primitive. It does not create

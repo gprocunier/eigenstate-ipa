@@ -40,19 +40,16 @@ need the corresponding playbook.
 
 ```mermaid
 flowchart TD
-    q["What state do I need to verify?"]
-    single["Single principal\noperation=show"]
-    multi["Multiple principals\noperation=show result_format=map_record"]
-    all["All principals of a type\noperation=find"]
-    gate["Assert and gate\nor report findings"]
-    act["Act on result\nkeytab, cert, or conditional logic"]
+    need["State to verify"]
+    single["Show one principal"]
+    bulk["Show many\nor find by type"]
+    gate["Assert or report"]
+    act["Continue with keytab,\ncert, or conditional logic"]
 
-    q --> single
-    q --> multi
-    q --> all
+    need --> single
+    need --> bulk
     single --> gate
-    multi --> gate
-    all --> gate
+    bulk --> gate
     gate --> act
 ```
 

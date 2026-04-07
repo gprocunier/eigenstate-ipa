@@ -41,22 +41,22 @@ read and auth rights required for the specific IdM objects you want to expose.
 ## Inventory Model
 
 ```mermaid
-flowchart LR
+flowchart TD
     idm["IdM / FreeIPA"]
     hosts["Hosts"]
-    hgs["Hostgroups"]
-    ngs["Netgroups"]
+    hostgroups["Hostgroups"]
+    netgroups["Netgroups"]
     hbac["HBAC rules"]
     plugin["eigenstate.ipa.idm"]
     inv["Ansible inventory"]
 
     idm --> hosts
-    idm --> hgs
-    idm --> ngs
+    idm --> hostgroups
+    idm --> netgroups
     idm --> hbac
     hosts --> plugin
-    hgs --> plugin
-    ngs --> plugin
+    hostgroups --> plugin
+    netgroups --> plugin
     hbac --> plugin
     plugin --> inv
 ```

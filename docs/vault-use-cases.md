@@ -48,10 +48,13 @@ permissions line up with the scope they are responsible for.
 ## Use Case Flow
 
 ```mermaid
-flowchart LR
-    need["Runtime secret need"] --> scope["Choose vault scope"]
-    scope --> form["Choose text or binary return form"]
-    form --> task["Inject into task, file, or credential flow"]
+flowchart TD
+    need["Runtime secret need"]
+    scope["Choose vault scope"]
+    form["Choose text or binary return form"]
+    task["Inject into task,\nfile, or credential flow"]
+
+    need --> scope --> form --> task
 ```
 
 ## 1. Shared Database Password Injection
@@ -274,11 +277,14 @@ but instead needs a one-time bootstrap credential that leads into a normal
 Kerberos-backed automation flow.
 
 ```mermaid
-flowchart LR
-    otp["IdM OTP or one-time enrollment password"] --> enroll["host enrollment or first login"]
-    enroll --> kt["Kerberos ticket or keytab"]
-    kt --> lookup["eigenstate.ipa.vault"]
-    lookup --> secret["runtime secret retrieval"]
+flowchart TD
+    otp["OTP or enrollment password"]
+    enroll["Host enrollment\nor first login"]
+    kt["Kerberos ticket or keytab"]
+    lookup["Vault lookup"]
+    secret["Runtime secret"]
+
+    otp --> enroll --> kt --> lookup --> secret
 ```
 
 This is the right mental model when the real goal is:
@@ -402,11 +408,14 @@ artifact, Ansible should deliver it, and a downstream system should do the
 final consume or unseal step.
 
 ```mermaid
-flowchart LR
-    vault["shared vault with sealed payload"] --> lookup["lookup(..., encoding='base64', include_metadata=true)"]
-    lookup --> broker["AAP or Ansible job"]
-    broker --> target["target host or downstream controller"]
-    target --> consume["final local consume or unseal"]
+flowchart TD
+    vault["Shared vault with sealed payload"]
+    lookup["Lookup returns opaque blob"]
+    broker["AAP or Ansible job"]
+    target["Target host\nor downstream controller"]
+    consume["Local consume or unseal"]
+
+    vault --> lookup --> broker --> target --> consume
 ```
 
 This is useful when:
@@ -549,11 +558,14 @@ archives the artifact — no certmonger installation or prior enrollment
 state required on the target.
 
 ```mermaid
-flowchart LR
-    A["cert plugin signs CSR on controller"] --> B["host cert used as CMS recipient"]
-    B --> C["sealed blob archived to vault"]
-    C --> D["vault plugin delivers blob and key to target"]
-    D --> E["target unseals with private key"]
+flowchart TD
+    sign["Cert plugin signs CSR"]
+    seal["Host cert used as recipient"]
+    archive["Archive sealed blob"]
+    deliver["Vault plugin delivers blob"]
+    unseal["Target unseals locally"]
+
+    sign --> seal --> archive --> deliver --> unseal
 ```
 
 This enables two cross-plugin patterns:
