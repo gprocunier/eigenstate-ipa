@@ -17,7 +17,7 @@ material, certificates, DNS, and access policy instead of forcing those
 surfaces into separate inventory files, ad hoc shell scripts, or external
 stores.
 
-Current release: `1.10.1`
+Current release: `1.10.2`
 
 ## Start Here
 
@@ -27,6 +27,8 @@ Use the collection-wide pages in this order when you are orienting yourself:
   for reading order and problem-based navigation
 - <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
   if you are translating Vault or CyberArk expectations into an IdM-native model
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>
+  if OpenShift uses Keycloak over IdM-backed trust and the question is the platform workflow around the cluster
 - <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
   if the workflow runs in Controller or an execution environment
 - <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
@@ -61,6 +63,7 @@ as workflows rather than as isolated plugins.
 | Host enrollment | `otp` bootstrap + official IdM enrollment modules + `principal` verification | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) |
 | Policy validation before change | `hbacrule` + `selinuxmap` + `sudo` + optional `dns`/`principal` checks | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) |
 | Sealed artifact delivery | `cert` recipient + `vault_write` archive + `vault` retrieval | [Vault Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html) |
+| OpenShift platform workflows | Keycloak + IdM trust + AAP workflows for break-glass, guest enrollment, RHACM remediation, RHACS response paths, Quay automation, and service onboarding | [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html) |
 
 ## Plugin Families
 
@@ -83,6 +86,18 @@ as workflows rather than as isolated plugins.
 
 - <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
   explains where the collection overlaps with Vault or CyberArk and where it does not
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>
+  frames the collection for OpenShift estates using Keycloak and IdM-backed trust
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html"><kbd>OPENSHIFT OPERATOR USE CASES</kbd></a>
+  focuses on cluster-admin and OpenShift Virtualization workflows
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>OPENSHIFT RHACM USE CASES</kbd></a>
+  focuses on RHACM policy events and cluster lifecycle hooks
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>OPENSHIFT RHACS USE CASES</kbd></a>
+  focuses on RHACS findings, enforcement, and identity-aware response workflows
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>OPENSHIFT QUAY USE CASES</kbd></a>
+  focuses on Quay identity, mirroring, repository notifications, and registry onboarding workflows
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html"><kbd>OPENSHIFT DEVELOPER USE CASES</kbd></a>
+  focuses on app-team onboarding and developer-facing platform workflows
 - <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
   explains execution-environment dependencies, non-interactive auth, and controller-side patterns
 - <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>

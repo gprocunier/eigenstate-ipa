@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.2
+
+- broadened the OpenShift docs stream into an explicit OpenShift ecosystem primer while keeping the stable `openshift-primer.md` URL
+- added RHACM, RHACS, and Quay workflow branches plus focused use-case pages for event-driven remediation, security-response paths, and registry automation
+- refactored the repo and Pages navigation so the ecosystem primer now routes naturally into the adjacent product-specific branches instead of collapsing into one long OpenShift page
+
 ## 1.10.1
 
 - refactored the repository `README.md` to remove the global navigation-button dump and group `<kbd>` links by topic adjacency instead

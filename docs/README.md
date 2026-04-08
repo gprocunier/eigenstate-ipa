@@ -20,6 +20,14 @@ Use these entry points instead of reading the files as a flat list:
   for reading order and problem-based navigation
 - <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
   if you are comparing the collection to Vault or CyberArk
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>
+  if OpenShift uses Keycloak and IdM-backed trust and you want the surrounding workflow model
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>OPENSHIFT RHACM USE CASES</kbd></a>
+  if RHACM is the event source for policy or lifecycle automation
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>OPENSHIFT RHACS USE CASES</kbd></a>
+  if RHACS findings or enforcement need an identity-aware response path
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>OPENSHIFT QUAY USE CASES</kbd></a>
+  if Quay workflows need cleaner identity, mirroring, and repository-event automation
 - <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
   if the workflow runs in Controller or an execution environment
 - <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>

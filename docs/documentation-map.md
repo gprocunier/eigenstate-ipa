@@ -13,7 +13,7 @@ description: >-
 Use this page when you know the problem category but do not yet know which
 collection page should be your first stop.
 
-Current release: `1.10.1`
+Current release: `1.10.2`
 
 ## Reading Model
 
@@ -41,6 +41,16 @@ reference pages from wandering into broad architectural prose.
 3. <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
 4. <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
 
+### I run OpenShift or OpenShift Virtualization
+
+1. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>
+2. <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
+3. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html"><kbd>OPENSHIFT OPERATOR USE CASES</kbd></a>
+4. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>OPENSHIFT RHACM USE CASES</kbd></a>
+5. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>OPENSHIFT RHACS USE CASES</kbd></a>
+6. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>OPENSHIFT QUAY USE CASES</kbd></a>
+7. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html"><kbd>OPENSHIFT DEVELOPER USE CASES</kbd></a>
+
 ### I already know the plugin and just need syntax
 
 Go straight to [Reference By Area](#reference-by-area).
@@ -59,6 +69,10 @@ These are the collection combinations worth learning as flows.
 | Host enrollment | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) | OTP bootstrap plus official IdM enrollment modules and post-checks |
 | Policy validation before privileged change | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) | `hbacrule`, `selinuxmap`, `sudo`, `principal`, and `dns` as controller-side gates |
 | Vault or CyberArk displacement analysis | [Vault/CyberArk Primer](https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html) | comparison framing without pretending the collection is a lease engine or PAM suite |
+| OpenShift platform and app workflows | [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html) | routes cluster admins, virtualization operators, developers, RHACM operators, RHACS operators, and Quay operators into the right IdM-backed workflow pages |
+| RHACM event-driven remediation | [OpenShift RHACM Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html) | RHACM policy violations and lifecycle hooks become AAP jobs that verify real IdM identity, policy, and supporting artifacts before they run |
+| RHACS findings and enforcement | [OpenShift RHACS Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html) | RHACS alerts, admission controls, and network-policy output become governed workflows instead of generic follow-up tickets |
+| Quay identity and repo automation | [OpenShift Quay Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html) | Quay team access, mirroring, notifications, and registry onboarding become IdM-aware workflows instead of local credential sprawl |
 
 ## Choose By Problem
 
@@ -117,6 +131,12 @@ These are the collection combinations worth learning as flows.
 - [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html)
 - [Vault/CyberArk Primer](https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html)
 - [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html)
+- [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html)
+- [OpenShift Operator Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html)
+- [OpenShift RHACM Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html)
+- [OpenShift RHACS Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html)
+- [OpenShift Quay Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html)
+- [OpenShift Developer Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html)
 
 ## Reference By Area
 

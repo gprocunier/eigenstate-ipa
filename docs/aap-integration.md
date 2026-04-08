@@ -10,6 +10,10 @@ title: AAP Integration
 Related docs:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>&nbsp;&nbsp;VAULT/CYBERARK PRIMER&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>&nbsp;&nbsp;OPENSHIFT ECOSYSTEM PRIMER&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHACM USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHACS USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT QUAY USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>&nbsp;&nbsp;ROTATION USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>&nbsp;&nbsp;EPHEMERAL ACCESS CAPABILITIES&nbsp;&nbsp;</kbd></a>
@@ -217,6 +221,63 @@ Read next:
 
 For the delegated user side specifically, continue to
 <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-use-cases.html"><kbd>USER LEASE USE CASES</kbd></a>.
+
+### 7. OpenShift and OpenShift Virtualization workflows
+
+When OpenShift uses Keycloak on top of IdM-backed trust, the collection's
+value shows up around the cluster rather than in direct cluster CRUD.
+
+The strongest controller-side patterns are:
+
+- time-bounded break-glass with `user_lease`
+- controller-scoped Kerberos identity for cluster-support services
+- guest enrollment with `otp` plus the official IdM collections
+- internal service onboarding with `principal`, `dns`, `cert`, and `vault_write`
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>.
+
+### 8. RHACM-triggered remediation and lifecycle hooks
+
+RHACM can trigger AAP from policy violations and lifecycle events. The useful pattern is that AAP owns the job, while IdM owns the identity, policy, and supporting-state boundary. RHACM hands off event context such as `target_clusters`, `policy_name`, and `policy_violations`; AAP turns that into a controller-side workflow; `eigenstate.ipa` checks whether the supporting state is actually ready.
+
+In practice, that means RHACM-triggered jobs can use the same controller-side patterns already used elsewhere in the collection:
+
+- `principal` and `keytab` for authenticated remediation jobs
+- `hbacrule`, `sudo`, and `selinuxmap` for path validation before the job starts
+- `user_lease` for temporary operator access when a fix should not become permanent
+- `otp` plus the official IdM collections when a hook creates a supporting host or VM
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>OPENSHIFT RHACM USE CASES</kbd></a>.
+
+### 9. RHACS-triggered security workflows
+
+RHACS already owns policy evaluation, admission control, runtime detection, and notifier integrations. The valuable AAP pattern is not to duplicate those controls. It is to make the response path identity-aware.
+
+In practice, that means RHACS-triggered jobs can use controller-side patterns such as:
+
+- `principal` and `keytab` for service-authenticated remediation jobs
+- `hbacrule`, `sudo`, and `selinuxmap` for pre-flight validation before touching supporting hosts
+- `user_lease` for temporary operator access that expires in IdM instead of living in a ticket
+- `dns`, `cert`, and `vault_write` when a security finding exposes missing onboarding prerequisites for an internal service
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>OPENSHIFT RHACS USE CASES</kbd></a>.
+
+### 10. Quay-triggered registry and repository workflows
+
+Quay already owns registry behavior, repository notifications, mirroring, and robot-account workflows. The useful AAP pattern is to make the surrounding automation path identity-aware instead of trying to turn Quay into a full workflow engine.
+
+In practice, that means Quay-triggered or Quay-adjacent jobs can use controller-side patterns such as:
+
+- `principal` and `keytab` for service-authenticated mirror or promotion jobs
+- `dns`, `cert`, and `vault_write` when registry or route onboarding still needs surrounding enterprise-state checks
+- `hbacrule`, `sudo`, and `selinuxmap` when a helper host or bastion is in the workflow path
+- `user_lease` for temporary registry administration that should expire in IdM
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>OPENSHIFT QUAY USE CASES</kbd></a>.
 
 ## Example Patterns
 
