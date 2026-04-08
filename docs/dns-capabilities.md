@@ -135,7 +135,7 @@ Why this fits:
 
 | Need | Query |
 | --- | --- |
-| Check that one named host or service record exists | `operation='show'` |
+| Check that one named DNS record exists | `operation='show'` |
 | Validate one reverse record | `operation='show'` against the reverse zone |
 | Inspect the zone apex entry | `operation='show'` with `@` |
 | Search a zone broadly with IdM-native matching | `operation='find'` |

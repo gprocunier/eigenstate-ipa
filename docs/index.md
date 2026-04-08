@@ -29,7 +29,7 @@ The collection covers eleven main areas:
 - Kerberos keytab retrieval for host and service principals
 - IdM CA certificate request, retrieval, and expiry search through the Dogtag backend
 - OTP token issue, lookup, revoke, and host enrollment password generation
-- IdM DNS record inspection for forward, reverse, service-discovery, and zone-apex validation
+- IdM DNS record inspection for forward, reverse, broad zone, and zone-apex validation
 - IdM vault lifecycle management for create, archive, update, and delete flows
 - SELinux user map inspection for confinement model pre-flight and audit
 - sudo policy inspection for rules, commands, and command groups
@@ -40,12 +40,12 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.7.0`
-- adds `eigenstate.ipa.sudo` for read-only inspection of IdM sudo rules, sudo
-  commands, and sudo command groups
-- adds sudo reference, capability, and use-case guides and wires them into the
+- `1.8.0`
+- adds `eigenstate.ipa.dns` for read-only inspection of IdM DNS records through
+  `show` and `find` operations
+- adds DNS reference, capability, and use-case guides and wires them into the
   collection navigation
-- refreshes the release metadata and install examples for the published sudo
+- refreshes the release metadata and install examples for the published DNS
   lookup release
 
 ## Start Here
@@ -143,7 +143,7 @@ playbooks.
   OTP token issue, search, inspection, revocation, and one-time host
   enrollment password generation through IdM.
 - `eigenstate.ipa.dns`
-  Read-only inspection of forward, reverse, service-discovery, and zone-apex
+  Read-only inspection of forward, reverse, broad-search, and zone-apex
   DNS record state from FreeIPA/IdM.
 - `eigenstate.ipa.selinuxmap`
   Read-only inspection of SELinux user map state from FreeIPA/IdM.

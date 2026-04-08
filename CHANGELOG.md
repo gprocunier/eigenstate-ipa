@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.0
+
+- added `eigenstate.ipa.dns` for read-only inspection of IdM DNS records through `show` and `find` operations
+- DNS lookup covers forward records, reverse records, zone-apex entry checks, and broad zone searches over the record families the IdM DNS APIs expose directly
+- added unit coverage for DNS lookup behavior, including missing-record handling, apex markers, and record-type filtering
+- added DNS plugin reference, capability, and use-case documentation
+- refreshed the collection overview, docs home, and documentation map to surface the new DNS lookup release
+
 ## 1.7.0
 
 - added `eigenstate.ipa.sudo` for read-only inspection of IdM sudo rules, sudo commands, and sudo command groups

@@ -110,7 +110,7 @@ At a high level:
 - `eigenstate.ipa.otp` uses `ipalib` to issue OTP tokens for users and
   one-time host enrollment passwords for IdM-managed onboarding flows
 - `eigenstate.ipa.dns` uses `ipalib` to read integrated IdM DNS records for
-  forward, reverse, service-discovery, and zone-apex validation workflows
+  forward, reverse, zone-apex, and broad zone validation workflows
 - `eigenstate.ipa.selinuxmap` uses `ipalib` to read SELinux user map state from
   IdM, returning the assigned SELinux user string, enabled state, and the linked
   HBAC rule name when HBAC-linked scope is configured
@@ -128,7 +128,7 @@ At a high level:
 | Kerberos keytab | lookup | `eigenstate.ipa.keytab` | Retrieves Kerberos keytab files for service and host principals via `ipa-getkeytab` |
 | IdM certificates | lookup | `eigenstate.ipa.cert` | Requests, retrieves, and searches IdM CA certificates for host and service principals |
 | OTP and enrollment credentials | lookup | `eigenstate.ipa.otp` | Issues user OTP tokens and one-time host enrollment passwords through IdM |
-| DNS record state | lookup | `eigenstate.ipa.dns` | Reads forward, reverse, service-discovery, and zone-apex DNS records from IdM |
+| DNS record state | lookup | `eigenstate.ipa.dns` | Reads forward, reverse, zone-apex, and broad-search DNS records from IdM |
 | SELinux user map state | lookup | `eigenstate.ipa.selinuxmap` | Reads SELinux user map configuration and HBAC-linked scope from IdM |
 | Sudo policy state | lookup | `eigenstate.ipa.sudo` | Reads sudo rules, sudo commands, and sudo command groups from IdM |
 | HBAC rule state and access test | lookup | `eigenstate.ipa.hbacrule` | Reads HBAC rule configuration and runs live access tests via the FreeIPA hbactest engine |
@@ -201,7 +201,7 @@ If you are wiring the plugins into actual automation, start with:
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.7.0.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.8.0.tar.gz
 ```
 
 Verify:
