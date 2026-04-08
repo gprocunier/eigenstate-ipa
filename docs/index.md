@@ -37,13 +37,12 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.6.2`
-- clarifies Vault/CyberArk positioning for the collection's session recording
-  and rotation guidance
-- keeps the primer aligned with IdM users, groups, and host-side SSSD policy
-  resolution for session recording
-- refreshes the docs landing pages and release references to match the updated
-  comparison language
+- `1.6.3`
+- restructures the documentation map into a real landing page organized by
+  reader intent and workflow area
+- removes the duplicated top-level link dump in favor of grouped problem-based
+  navigation
+- aligns the docs map and docs README so the navigation model is consistent
 
 ## Start Here
 

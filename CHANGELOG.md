@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.3
+
+- restructured the documentation map into a problem-oriented landing page instead of a flat link dump
+- aligned `docs/documentation-map.md` and `docs/README.md` so the docs navigation model is consistent
+
 ## 1.6.2
 
 - clarified the Vault/CyberArk primer wording for session recording so it reflects IdM user and group policy with host-side SSSD resolution
