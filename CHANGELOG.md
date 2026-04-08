@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.1
+
+- restored the detailed Vault versus CyberArk versus Eigenstate comparison tables in the primer, with stronger emphasis on where IdM-native Kerberos, PKI, policy, OTP, and inventory workflows materially differentiate the collection
+- kept the tighter `1.9.0` primer flow while bringing back the side-by-side capability framing for challenger positioning
+
 ## 1.9.0
 
 - added inventory hostvar enrichment controls with `hostvars_enabled` and `hostvars_include`, plus validation tests and updated inventory guidance for real Ansible hostvar merge behavior
