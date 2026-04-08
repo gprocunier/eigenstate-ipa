@@ -48,7 +48,7 @@ For the complementary read path, see
 ## Write Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     module["eigenstate.ipa.vault_write"]
     auth["Kerberos ticket\nexisting, password-derived, or keytab-derived"]
     api["ipalib vault APIs"]

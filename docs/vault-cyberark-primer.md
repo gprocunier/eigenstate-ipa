@@ -120,7 +120,7 @@ Where a Vault or CyberArk user perceives a "rotation gap," the right answer is:
 ### HashiCorp Vault
 
 ```mermaid
-flowchart TD
+flowchart LR
     A["Your Automation\n(AAP / Ansible)"]
     B["Vault HTTP API"]
     C["Vault Agent / AppRole / OIDC Auth"]
@@ -142,7 +142,7 @@ identity provider.
 ### CyberArk
 
 ```mermaid
-flowchart TD
+flowchart LR
     A["Your Automation\n(AAP / Ansible)"]
     B["CCP / AIM API"]
     C["PAM Console\n(Vault / Safe / Policy)"]
@@ -166,7 +166,7 @@ Access Management) platform that also does secrets injection.
 ### Eigenstate
 
 ```mermaid
-flowchart TD
+flowchart LR
     A["AAP Execution Environment"]
     B["Eigenstate plugins / modules\n(Kerberos auth)"]
 

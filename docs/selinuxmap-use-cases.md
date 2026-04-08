@@ -36,7 +36,7 @@ need the corresponding playbook.
 ## Use Case Flow
 
 ```mermaid
-flowchart TD
+flowchart LR
     need["Confinement state to verify"]
     single["Show one map"]
     bulk["Find all maps"]
@@ -57,7 +57,7 @@ before a play deploys to the target host. Without this check, a missing or
 disabled map means the identity logs in as `unconfined_u`.
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["selinuxmap show\nops-deploy-map"] --> exists{"exists?"}
     exists -->|no| fail["fail - map not registered"]
     exists -->|yes| enabled{"enabled?"}
@@ -133,7 +133,7 @@ Validate both the SELinux user map and the HBAC rule it delegates scope to.
 Use this when the confinement boundary should match the access boundary.
 
 ```mermaid
-flowchart TD
+flowchart LR
     selinux["selinuxmap show\nops-deploy-map"] --> linked{"hbacrule\nnot null?"}
     linked -->|no| fail_scope["fail - expected HBAC-linked scope"]
     linked -->|yes| hbac["hbacrule show\nmap.hbacrule"]
@@ -320,7 +320,7 @@ Combine `eigenstate.ipa.selinuxmap` and `eigenstate.ipa.hbacrule` with
 the linked HBAC rule would actually permit access.
 
 ```mermaid
-flowchart TD
+flowchart LR
     map["selinuxmap show\nops-deploy-map"] --> map_ok{"exists and enabled?"}
     map_ok -->|no| fail_map["fail - confinement map inactive"]
     map_ok -->|yes| hbac_name["hbacrule = map.hbacrule"]

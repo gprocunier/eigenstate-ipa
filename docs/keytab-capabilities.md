@@ -41,7 +41,7 @@ This plugin brings it into the Ansible automation lifecycle.
 ## Retrieval Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     principal["Service or host principal"]
     auth["Kerberos auth"]
     lookup["eigenstate.ipa.keytab"]
@@ -68,7 +68,7 @@ When a service principal has just been created in IdM, it may not have keys
 yet. Use `retrieve_mode='generate'` for the first keytab issuance.
 
 ```mermaid
-flowchart TD
+flowchart LR
     create["ipa service-add HTTP/webserver.example.com"]
     issue["lookup(..., retrieve_mode='generate')"]
     deploy["ansible.builtin.copy → /etc/httpd/conf/httpd.keytab"]
@@ -106,7 +106,7 @@ Once a principal has keys, use the default `retrieve_mode='retrieve'`. This
 only reads existing keys and never rotates them.
 
 ```mermaid
-flowchart TD
+flowchart LR
     existing["Existing IPA service principal\nwith keys already issued"]
     retrieve["lookup(..., retrieve_mode='retrieve')"]
     use["Inject keytab into new host\nor AAP credential"]
@@ -136,7 +136,7 @@ The plugin always returns base64-encoded content. Decode it before writing to
 disk with the `b64decode` filter.
 
 ```mermaid
-flowchart TD
+flowchart LR
     lookup["lookup returns base64 keytab"]
     decode["| b64decode"]
     copy["ansible.builtin.copy → dest with mode 0600"]
@@ -171,7 +171,7 @@ in one query call with `result_format='map'` and address each by principal
 name.
 
 ```mermaid
-flowchart TD
+flowchart LR
     lookup["One query\nresult_format='map'"]
     web01["web-01 keytab"]
     web02["web-02 keytab"]
@@ -217,7 +217,7 @@ rotation so that the new keytab is deployed to all consuming services in the
 same play before anything tries to re-authenticate.
 
 ```mermaid
-flowchart TD
+flowchart LR
     rotate["lookup(..., retrieve_mode='generate')\nRotates keys — old keytabs immediately invalid"]
     deploy["Deploy new keytab to all consumers\nbefore they re-authenticate"]
     verify["klist -kt /path/to/new.keytab\nKinit to verify new keys work"]
@@ -291,7 +291,7 @@ The recommended AAP deployment pattern is:
   (on the validated RHEL 10 path, that is `ipa-client`)
 
 ```mermaid
-flowchart TD
+flowchart LR
     cred["Controller keytab"]
     ee["Execution environment"]
     lookup["eigenstate.ipa.keytab"]
@@ -328,7 +328,7 @@ authenticating credential for a subsequent vault lookup scoped to the same
 service principal.
 
 ```mermaid
-flowchart TD
+flowchart LR
     admin_kt["Admin keytab"]
     keytab_lookup["Keytab lookup"]
     svc_kt["Service keytab"]

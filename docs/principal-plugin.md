@@ -46,7 +46,7 @@ rights to query the specific object types it will inspect.
 ## Lookup Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     task["Ansible task or assert"]
     auth["Kerberos auth"]
     lookup["eigenstate.ipa.principal"]
@@ -103,7 +103,7 @@ IdM object type from the principal name format:
 | `admin@REALM` | user | uid before `@` |
 
 ```mermaid
-flowchart TD
+flowchart LR
     name["Principal name"]
     slash{"Contains /?"}
     hostpfx{"Starts with host/?"}

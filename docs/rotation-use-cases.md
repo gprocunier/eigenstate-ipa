@@ -38,7 +38,7 @@ Use this when a shared application secret lives in an IdM vault and needs a
 periodic controller-driven update.
 
 ```mermaid
-flowchart TD
+flowchart LR
     sched["AAP schedule"] --> gen["Generate new value"]
     gen --> archive["vault_write state=archived"]
     archive --> deploy["Deploy or inject new value"]
@@ -90,7 +90,7 @@ Why this is the preferred shape:
 Use this when an approval gate needs a preview before the actual rotation run.
 
 ```mermaid
-flowchart TD
+flowchart LR
     preview["check_mode preview"] --> approve{"approved?"}
     approve -->|yes| run["real archive run"]
     approve -->|no| stop["no write"]
@@ -137,7 +137,7 @@ Use this when a service principal is shared by one or more hosts and the new
 keytab must be deployed immediately after rotation.
 
 ```mermaid
-flowchart TD
+flowchart LR
     pre["principal pre-flight"] --> rotate["keytab retrieve_mode='generate'"]
     rotate --> deploy["copy new keytab to all consumers"]
     deploy --> restart["restart or reload services"]
@@ -210,7 +210,7 @@ Use this when certificate rotation is driven by an expiry window rather than a
 native cert lease model.
 
 ```mermaid
-flowchart TD
+flowchart LR
     find["cert operation=find"] --> loop["loop over expiring certs"]
     loop --> request["cert operation=request"]
     request --> deploy["deploy renewed cert"]

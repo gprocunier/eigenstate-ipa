@@ -53,7 +53,7 @@ To create, modify, or delete HBAC rules, use
 ## Lookup Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     task["Ansible task or assert"]
     auth["Kerberos auth"]
     lookup["eigenstate.ipa.hbacrule"]

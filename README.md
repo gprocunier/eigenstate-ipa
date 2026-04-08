@@ -184,7 +184,7 @@ If you are wiring the plugins into actual automation, start with:
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.6.3.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.6.4.tar.gz
 ```
 
 Verify:

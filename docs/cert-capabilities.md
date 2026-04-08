@@ -44,7 +44,7 @@ retrieval interface without certmonger running interactively on the target.
 ## Request Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     csr["CSR input"]
     principal["Service or host principal"]
     auth["Kerberos auth"]
@@ -319,7 +319,7 @@ Typical cases:
 - automated renewal that replaces both files atomically
 
 ```mermaid
-flowchart TD
+flowchart LR
     vault["Private key in vault"] --> key_lookup["Vault lookup"]
     ca["Signed cert in IdM CA"] --> cert_lookup["Cert lookup"]
     key_lookup --> bundle["Assemble bundle"]
@@ -407,7 +407,7 @@ Typical cases:
 - targeted cert refresh without touching hosts with valid certs
 
 ```mermaid
-flowchart TD
+flowchart LR
     inventory["Dynamic inventory"]
     find["Find expiring certs"]
     intersect["Match principals\nto hosts"]
@@ -479,7 +479,7 @@ This section covers the end-to-end path from CSR generation through cert
 expiry, for operators who own the full cert lifecycle in automation.
 
 ```mermaid
-flowchart TD
+flowchart LR
     key["Generate key + CSR"]
     vault["Optional: archive key"]
     request["Request signed cert"]

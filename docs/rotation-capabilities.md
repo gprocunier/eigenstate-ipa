@@ -101,7 +101,7 @@ problem.
 The intended steady-state model is:
 
 ```mermaid
-flowchart TD
+flowchart LR
     sched["AAP schedule or external trigger"]
     job["Controller-side playbook"]
     pre["Pre-flight checks\nprincipal / expiry / metadata"]

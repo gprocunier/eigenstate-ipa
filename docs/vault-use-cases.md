@@ -48,7 +48,7 @@ permissions line up with the scope they are responsible for.
 ## Use Case Flow
 
 ```mermaid
-flowchart TD
+flowchart LR
     need["Runtime secret need"]
     scope["Choose vault scope"]
     form["Choose text or binary return form"]
@@ -277,7 +277,7 @@ but instead needs a one-time bootstrap credential that leads into a normal
 Kerberos-backed automation flow.
 
 ```mermaid
-flowchart TD
+flowchart LR
     otp["OTP or enrollment password"]
     enroll["Host enrollment\nor first login"]
     kt["Kerberos ticket or keytab"]
@@ -408,7 +408,7 @@ artifact, Ansible should deliver it, and a downstream system should do the
 final consume or unseal step.
 
 ```mermaid
-flowchart TD
+flowchart LR
     vault["Shared vault with sealed payload"]
     lookup["Lookup returns opaque blob"]
     broker["AAP or Ansible job"]
@@ -558,7 +558,7 @@ archives the artifact — no certmonger installation or prior enrollment
 state required on the target.
 
 ```mermaid
-flowchart TD
+flowchart LR
     sign["Cert plugin signs CSR"]
     seal["Host cert used as recipient"]
     archive["Archive sealed blob"]

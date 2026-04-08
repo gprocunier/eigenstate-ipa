@@ -57,7 +57,7 @@ are skipped. The return value reflects the projected state after the
 operation would have completed.
 
 ```mermaid
-flowchart TD
+flowchart LR
     task["vault_write with check_mode: true"]
     inspect["Read current vault state from IdM"]
     diff["Compute what would change"]
@@ -119,7 +119,7 @@ unless you expect the change on every run.
 Use a standard vault for the majority of rotation and provisioning automation.
 
 ```mermaid
-flowchart TD
+flowchart LR
     create["state: present → vault_add"]
     find["vault_find → exists?"]
     retrieve["vault_retrieve current payload"]
@@ -142,7 +142,7 @@ Use a symmetric vault when creation and archive should require an additional
 password beyond IdM authorization.
 
 ```mermaid
-flowchart TD
+flowchart LR
     create["state: present → vault_add with password"]
     find["vault_find → exists?"]
     archive["vault_archive (password required) → always changed=true"]
@@ -164,7 +164,7 @@ Use an asymmetric vault when the secret should be retrievable only by the
 entity that holds the corresponding private key.
 
 ```mermaid
-flowchart TD
+flowchart LR
     pubkey["vault_public_key or vault_public_key_file"]
     create["state: present → vault_add with public key"]
     archive["vault_archive → always changed=true"]
@@ -184,7 +184,7 @@ plugin.
 `state: absent` is the decommission path.
 
 ```mermaid
-flowchart TD
+flowchart LR
     find["vault_find → exists?"]
     skip["no-op: changed=false"]
     delete["vault_del → changed=true"]
@@ -203,7 +203,7 @@ between the desired state and the current state and only makes the minimum
 change.
 
 ```mermaid
-flowchart TD
+flowchart LR
     current["Current member list from vault_show"]
     desired_add["members list"]
     desired_remove["members_absent list"]
@@ -240,7 +240,7 @@ to the matching IPA member argument set before calling `vault_add_member` or
 Rotation is the primary operational use case for this module.
 
 ```mermaid
-flowchart TD
+flowchart LR
     read["vault lookup plugin\nretrieve current secret"]
     generate["generate new secret\ncommunity.general.random_string\nor custom generator"]
     archive["vault_write state=archived\narchive new secret"]
@@ -265,7 +265,7 @@ archives it into IdM. Previously this required shelling out to `ipa
 vault-archive`. With `vault_write`, the archive step is native Ansible.
 
 ```mermaid
-flowchart TD
+flowchart LR
     cert["eigenstate.ipa.cert\nrequest or retrieve host cert"]
     seal["openssl cms -encrypt\nseals artifact with host public cert"]
     vault_create["vault_write state=present\ncreate asymmetric or standard vault"]
@@ -287,7 +287,7 @@ it into IdM immediately after issuance so the controller does not hold the
 long-term secret.
 
 ```mermaid
-flowchart TD
+flowchart LR
     issue["eigenstate.ipa.cert request\nCSR → signed cert"]
     key["private key on controller\ntemporarily"]
     archive["eigenstate.ipa.vault_write state=archived\narchive private key bytes"]

@@ -37,12 +37,11 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.6.3`
-- restructures the documentation map into a real landing page organized by
-  reader intent and workflow area
-- removes the duplicated top-level link dump in favor of grouped problem-based
-  navigation
-- aligns the docs map and docs README so the navigation model is consistent
+- `1.6.4`
+- normalizes Mermaid flowcharts to left-to-right layout to avoid the repeated
+  vertical spacing artifact in the published docs
+- refreshes diagram-heavy docs so the published GitHub Pages render is more
+  compact and readable
 
 ## Start Here
 

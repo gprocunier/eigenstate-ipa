@@ -41,7 +41,7 @@ read and auth rights required for the specific IdM objects you want to expose.
 ## Inventory Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     idm["IdM / FreeIPA"]
     hosts["Hosts"]
     hostgroups["Hostgroups"]

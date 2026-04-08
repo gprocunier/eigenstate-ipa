@@ -35,7 +35,7 @@ or confinement workflow and need to know which capability fits your situation.
 ## Capability Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     need["Access policy question"]
     config["Rule exists\nand enabled?"]
     scope["Who is in scope?\nUsers, hosts, services"]
@@ -78,7 +78,7 @@ Typical cases:
   application problem
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["hbacrule show\nrule name"] --> exists{"exists?"}
     exists -->|no| fail["fail - rule not registered in IdM"]
     exists -->|yes| enabled{"enabled?"}
@@ -108,7 +108,7 @@ Typical cases:
   intended and nowhere else
 
 ```mermaid
-flowchart TD
+flowchart LR
     test["hbacrule test\nuser, targethost, service"] --> granted{"denied=false?"}
     granted -->|no| fail["fail - access would be denied\ncheck matched/notmatched"]
     granted -->|yes| proceed["proceed with automation"]
@@ -140,7 +140,7 @@ Important caveat:
 - in those environments, the stronger check is often that the expected rule lands in `matched` or `notmatched` as intended
 
 ```mermaid
-flowchart TD
+flowchart LR
     test["hbacrule test\nrestricted-user, prod-host, sshd"] --> denied{"denied=true?"}
     denied -->|no| fail["fail - access was granted,\nexpected denial"]
     denied -->|yes| pass["access correctly denied"]
@@ -168,7 +168,7 @@ Typical cases:
 - compliance workflows that report on the scope model of all rules
 
 ```mermaid
-flowchart TD
+flowchart LR
     show["hbacrule show\nrule name"] --> cat{"usercategory=all\nor hostcategory=all?"}
     cat -->|yes| wide["rule applies universally -\nreport or assert intent"]
     cat -->|no| members["check users/groups\nand hosts/hostgroups lists"]
@@ -196,7 +196,7 @@ Typical cases:
 - inventory-style reports of the full HBAC policy model before a change window
 
 ```mermaid
-flowchart TD
+flowchart LR
     find["hbacrule find"] --> all["all rules in IdM"]
     all --> filter["filter by enabled state,\ncategory, or membership"]
     filter --> report["report or assert"]
@@ -224,7 +224,7 @@ Typical cases:
   before any of them deploy
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["hbacrule show\nall required rules"] --> assert{"all exist\nand enabled?"}
     assert -->|yes| deploy["proceed to deploy stage"]
     assert -->|no| abort["fail with diagnostic message"]
@@ -242,7 +242,7 @@ Combine `eigenstate.ipa.hbacrule` and `eigenstate.ipa.selinuxmap` to validate
 the complete access and confinement model from the access side.
 
 ```mermaid
-flowchart TD
+flowchart LR
     hbac["hbacrule show\nops-deploy"] --> hbac_ok{"exists\nand enabled?"}
     hbac_ok -->|no| fail_hbac["fail - access rule inactive"]
     hbac_ok -->|yes| test["hbacrule test\nconfirm access granted"]

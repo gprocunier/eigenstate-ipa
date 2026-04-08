@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.4
+
+- normalized Mermaid flowcharts from top-down to left-to-right layout across the docs set to remove the repeated vertical spacing artifact in GitHub Pages renders
+- refreshed release references to match the diagram-rendering cleanup
+
 ## 1.6.3
 
 - restructured the documentation map into a problem-oriented landing page instead of a flat link dump

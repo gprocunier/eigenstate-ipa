@@ -39,7 +39,7 @@ need the corresponding playbook.
 ## Use Case Flow
 
 ```mermaid
-flowchart TD
+flowchart LR
     need["State to verify"]
     single["Show one principal"]
     bulk["Show many\nor find by type"]
@@ -60,7 +60,7 @@ IdM before issuing a keytab. Without this check, a missing principal or an
 unkeyed principal produces a silent failure downstream.
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["principal show\nHTTP/web01.corp.example.com"] --> exists{"exists?"}
     exists -->|no| fail["fail — service not registered in IdM"]
     exists -->|yes| keys{"has_keytab?"}
@@ -99,7 +99,7 @@ Confirm a host is enrolled in IdM and its principal has keys before
 requesting a certificate or distributing a keytab.
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["principal show\nhost/node01.corp.example.com"] --> enrolled{"exists?"}
     enrolled -->|no| fail["fail — host not enrolled"]
     enrolled -->|yes| keys{"has_keytab?"}

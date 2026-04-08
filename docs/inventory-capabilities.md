@@ -35,7 +35,7 @@ The focus here is operational boundary selection, not option reference.
 ## Relationship Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     hosts["IdM hosts"]
     hostgroups["IdM hostgroups"]
     netgroups["IdM netgroups"]

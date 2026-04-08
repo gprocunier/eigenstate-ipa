@@ -47,7 +47,7 @@ wherever that is the practical steady-state choice.
 ## Use Case Flow
 
 ```mermaid
-flowchart TD
+flowchart LR
     need["Certificate need"]
     op["Choose operation"]
     result["Choose result form"]
@@ -65,7 +65,7 @@ This is the most common cert issuance pattern for service deployments where
 certmonger is not running on the target.
 
 ```mermaid
-flowchart TD
+flowchart LR
     csr["CSR on controller"]
     request["Cert request"]
     signed["Signed cert"]
@@ -209,7 +209,7 @@ This is the standard pre-expiry renewal loop for service certificates managed
 outside certmonger.
 
 ```mermaid
-flowchart TD
+flowchart LR
     find["Find expiring certs"]
     identify["Identify principal\nand serial"]
     request["Re-request cert"]
@@ -335,7 +335,7 @@ This is the primary full-TLS deployment pattern when the private key is stored
 in an IdM vault. It avoids moving private key material through any other system.
 
 ```mermaid
-flowchart TD
+flowchart LR
     key["Private key in vault"] --> key_lookup["Vault lookup"]
     cert["Signed cert in IdM"] --> cert_lookup["Cert lookup"]
     key_lookup --> deploy["Deploy cert + key"]
@@ -416,7 +416,7 @@ This avoids running renewal logic on every host in the estate. Only the hosts
 whose certificates appear in the expiry window receive a cert operation.
 
 ```mermaid
-flowchart TD
+flowchart LR
     inventory["Inventory host boundary"] --> hosts["Targeted hosts"]
     expiring["Find expiring certs"] --> principals["Expiring principals"]
     hosts --> match["Match host\nand principal"]
@@ -556,7 +556,7 @@ expiry needs to be caught before it causes an outage, without requiring manual
 intervention.
 
 ```mermaid
-flowchart TD
+flowchart LR
     job["AAP scheduled job"] --> find["Find expiring certs"]
     find --> none["No expirations"]
     find --> action["Report or renew"]
@@ -642,7 +642,7 @@ second vault — all before the target has received a single file.
 > cert/key pair has been established.
 
 ```mermaid
-flowchart TD
+flowchart LR
     prep["Generate key + CSR"]
     sign["Sign CSR"]
     archive["Archive key to vault"]
@@ -808,7 +808,7 @@ plugin to retrieve or renew the cert without needing to touch the controller
 filesystem again.
 
 ```mermaid
-flowchart TD
+flowchart LR
     prep["Generate key + CSR"]
     sign["Sign cert"]
     archive["Archive key"]

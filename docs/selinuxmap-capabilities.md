@@ -36,7 +36,7 @@ validation workflow and need to know which capability fits your situation.
 ## Capability Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     need["Confinement state question"]
     map["Map exists and enabled?"]
     context["Correct SELinux user context?"]
@@ -73,7 +73,7 @@ Typical cases:
   are installed or services are started
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["selinuxmap show\nmap name"] --> exists{"exists?"}
     exists -->|no| fail["fail - map not registered in IdM"]
     exists -->|yes| enabled{"enabled?"}
@@ -103,7 +103,7 @@ Typical cases:
 - audit workflows that report every map that assigns `unconfined_u`
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["selinuxmap show\nmap name"] --> exists{"exists\nand enabled?"}
     exists -->|no| fail["fail - map absent or disabled"]
     exists -->|yes| context{"selinuxuser is\nexpected value?"}
@@ -132,7 +132,7 @@ Typical cases:
   (map enabled but rule disabled, or vice versa)
 
 ```mermaid
-flowchart TD
+flowchart LR
     selinux["selinuxmap show\nmap name"] --> hbac_linked{"hbacrule\nnot null?"}
     hbac_linked -->|no| direct["direct membership -\nassert users/hosts directly"]
     hbac_linked -->|yes| hbac["hbacrule show\nlinked rule name"]
@@ -164,7 +164,7 @@ Typical cases:
   of a maintenance window
 
 ```mermaid
-flowchart TD
+flowchart LR
     pre["selinuxmap show\nbefore maintenance"] --> disabled{"enabled=false?"}
     disabled -->|no| fail["fail - map still active,\ndo not proceed"]
     disabled -->|yes| work["perform maintenance tasks"]
@@ -195,7 +195,7 @@ Typical cases:
   hosts
 
 ```mermaid
-flowchart TD
+flowchart LR
     find["selinuxmap find"] --> all["all maps in IdM"]
     all --> filter["filter by selinuxuser,\nenabled, or hbacrule"]
     filter --> report["report or assert"]
@@ -223,7 +223,7 @@ Typical cases:
   before any of them deploy
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["selinuxmap show\nall required maps"] --> assert{"all exist\nand enabled?"}
     assert -->|yes| deploy["proceed to deploy stage"]
     assert -->|no| abort["fail with diagnostic message"]
@@ -241,7 +241,7 @@ Combine `eigenstate.ipa.selinuxmap` and `eigenstate.ipa.hbacrule` in the same
 play to validate the complete confinement and access model.
 
 ```mermaid
-flowchart TD
+flowchart LR
     map["selinuxmap show\nmap name"] --> linked{"has hbacrule?"}
     linked -->|no| direct_assert["assert direct\nusers/hosts present"]
     linked -->|yes| hbac["hbacrule show\nmap.hbacrule"]

@@ -51,7 +51,7 @@ To create, modify, or delete SELinux user maps, use
 ## Lookup Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     task["Ansible task or assert"]
     auth["Kerberos auth"]
     lookup["eigenstate.ipa.selinuxmap"]

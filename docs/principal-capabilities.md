@@ -39,7 +39,7 @@ to know which capability fits your situation.
 ## Capability Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     need["Principal state question"]
     check["Existence, keys,\nlock state, or last auth"]
     bulk["Single principal\nor bulk search"]
@@ -71,7 +71,7 @@ Typical cases:
   recoverable condition
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["principal show\nservice principal"] --> exists{"exists?"}
     exists -->|no| fail["fail — service not enrolled"]
     exists -->|yes| keys{"has_keytab?"}
@@ -100,7 +100,7 @@ Typical cases:
   yet enrolled before attempting any CA requests
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["principal show\nhost principal"] --> enrolled{"exists?"}
     enrolled -->|no| fail["fail — host not enrolled in IdM"]
     enrolled -->|yes| cert["eigenstate.ipa.cert\noperation=request"]
@@ -125,7 +125,7 @@ Typical cases:
 - conditional logic that behaves differently for locked versus active accounts
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["principal show\nuser principal"] --> locked{"disabled?"}
     locked -->|yes| fail["fail or skip — account is locked"]
     locked -->|no| auth{"last_auth recent?"}
@@ -156,7 +156,7 @@ Typical cases:
   missing key material
 
 ```mermaid
-flowchart TD
+flowchart LR
     find["principal find\nprincipal_type=service"] --> all["all service principals"]
     all --> filter["filter where has_keytab=false"]
     filter --> empty{"any missing?"}
@@ -184,7 +184,7 @@ Typical cases:
   any cert or keytab work begins
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["principal show\n(all required principals)"] --> assert{"all exist\nand have keys?"}
     assert -->|yes| deploy["proceed to deploy stage"]
     assert -->|no| abort["fail with diagnostic message"]
@@ -204,7 +204,7 @@ Combine `eigenstate.ipa.principal` and `eigenstate.ipa.keytab` in the same
 play when you want to pre-validate and then retrieve in a single role.
 
 ```mermaid
-flowchart TD
+flowchart LR
     show["principal show\nservice principal"] --> gate{"exists and\nhas_keytab?"}
     gate -->|no| fail["fail — principal not ready"]
     gate -->|yes| keytab["keytab retrieve\nwrite to target host"]
@@ -220,7 +220,7 @@ Combine `eigenstate.ipa.principal` and `eigenstate.ipa.cert` when requesting
 a certificate for a host or service.
 
 ```mermaid
-flowchart TD
+flowchart LR
     show["principal show\nhost or service principal"] --> enrolled{"exists?"}
     enrolled -->|no| fail["fail — not enrolled"]
     enrolled -->|yes| cert["cert request\nCSR → IdM CA"]
@@ -244,7 +244,7 @@ Typical cases:
   IdM record
 
 ```mermaid
-flowchart TD
+flowchart LR
     install["ipa-client-install\non target host"] --> verify["principal show\nhost/target.example.com"]
     verify --> enrolled{"exists?"}
     enrolled -->|no| fail["fail — client install did not register"]

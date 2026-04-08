@@ -40,7 +40,7 @@ know which capability fits your situation.
 ## Capability Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     need["OTP need"]
     issue["Issue credential"]
     inspect["Inspect state"]
@@ -82,7 +82,7 @@ Use `host` when automating host enrollment. The password is consumed by
 ## Operation Decision
 
 ```mermaid
-flowchart TD
+flowchart LR
     action["OTP action"]
     create{"Create new?"}
     inspect{"Inspect existing?"}
@@ -110,7 +110,7 @@ a user. The result is an `otpauth://` URI suitable for QR code generation or
 direct import into an authenticator app.
 
 ```mermaid
-flowchart TD
+flowchart LR
     add["otp add\ntoken_type=totp\nowner=alice"] --> uri["otpauth:// URI"]
     uri --> qr["QR code generation task\n(optional)"]
     uri --> vault_store["eigenstate.ipa.vault\narchive URI for recovery"]
@@ -132,7 +132,7 @@ To replace a token without leaving the old one active:
 3. Use `add` to issue a new one.
 
 ```mermaid
-flowchart TD
+flowchart LR
     show["otp show\ntoken_id=old-tok"] --> exists{"exists?"}
     exists -->|no| skip["nothing to revoke"]
     exists -->|yes| revoke["otp revoke\ntoken_id=old-tok"]
@@ -149,7 +149,7 @@ Use `operation=add`, `token_type=host` to generate a one-time enrollment passwor
 for a host, then pass it to `freeipa.ansible_freeipa.ipaclient`.
 
 ```mermaid
-flowchart TD
+flowchart LR
     ipahost["freeipa.ansible_freeipa.ipahost\ncreate host record in IdM"] --> enroll_pw["otp add, token_type=host\nFQDN=web-01.example.com"]
     enroll_pw --> pw["one-time password"]
     pw --> ipaclient["freeipa.ansible_freeipa.ipaclient\nwith ipaadmin_password=pw"]
@@ -170,7 +170,7 @@ enrollment passwords for multiple hosts at once. Pair the result map with
 `freeipa.ansible_freeipa.ipaclient` using `delegate_to`.
 
 ```mermaid
-flowchart TD
+flowchart LR
     group["inventory group\nnew_hosts"] --> loop["loop: otp add token_type=host\nfor each FQDN"]
     loop --> pw_map["map: fqdn → password"]
     pw_map --> delegate["ipaclient role\ndelegate_to each host\nwith its password"]
@@ -190,7 +190,7 @@ tokens in one play:
 2. Loop `revoke` over the result.
 
 ```mermaid
-flowchart TD
+flowchart LR
     find["otp find\nowner=alice"] --> tokens["list of token IDs"]
     tokens --> empty{"any tokens?"}
     empty -->|no| done["nothing to revoke"]
@@ -208,7 +208,7 @@ or revoking it. A missing token returns `exists=false` — this is not an
 error.
 
 ```mermaid
-flowchart TD
+flowchart LR
     show["otp show\ntoken_id=tok-abc"] --> exists{"exists?"}
     exists -->|no| skip["log: token already gone\nno action needed"]
     exists -->|yes| rotate["proceed with rotation"]
@@ -226,7 +226,7 @@ credential per-run, injecting it as an extra variable without persisting it
 to disk.
 
 ```mermaid
-flowchart TD
+flowchart LR
     cred_type["AAP custom credential type"] --> launch["Job launch"]
     launch --> injector["Injector uses otp lookup"]
     injector --> play["Play receives enroll_pass"]
@@ -243,7 +243,7 @@ Combine `eigenstate.ipa.principal` and `eigenstate.ipa.otp` when issuing a
 token for a host or user that may not yet be registered in IdM.
 
 ```mermaid
-flowchart TD
+flowchart LR
     principal["principal show\nuser or host principal"] --> exists{"exists in IdM?"}
     exists -->|no| fail["fail — principal not enrolled\nno token to issue"]
     exists -->|yes| otp["otp add\nissue token or enrollment password"]

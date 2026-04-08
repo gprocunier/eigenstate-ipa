@@ -39,7 +39,7 @@ posture. Use this page when you need the corresponding playbook pattern.
 ## Use Case Flow
 
 ```mermaid
-flowchart TD
+flowchart LR
     need["Keytab need"]
     mode["Generate or retrieve"]
     scope["Single principal or fleet"]
@@ -55,7 +55,7 @@ Use `retrieve_mode='generate'` for the initial keytab issuance, then switch
 to `retrieve` for all subsequent runs.
 
 ```mermaid
-flowchart TD
+flowchart LR
     add["ipa service-add HTTP/webserver.idm.corp.lan"]
     issue["retrieve_mode='generate'"]
     deploy["copy → /etc/httpd/conf/httpd.keytab"]
@@ -102,7 +102,7 @@ fresh copy of the existing keys without invalidating other hosts that share
 the same service principal.
 
 ```mermaid
-flowchart TD
+flowchart LR
     rebuild["Host rebuilt — keytab file gone"]
     retrieve["retrieve_mode='retrieve'\nExisting keys, no rotation"]
     redeploy["copy → /etc/krb5.keytab"]
@@ -135,7 +135,7 @@ all principals in a single query using `result_format='map'` and iterate
 over the inventory group.
 
 ```mermaid
-flowchart TD
+flowchart LR
     lookup["Single query\nresult_format='map'"]
     web01["web-01 keytab"]
     web02["web-02 keytab"]
@@ -181,7 +181,7 @@ must happen in the same play — the old keytab is invalid the moment `generate`
 completes.
 
 ```mermaid
-flowchart TD
+flowchart LR
     rotate["retrieve_mode='generate'\nRotates keys — old keytabs immediately invalid"]
     deploy["Deploy new keytab to all consumers\nbefore they re-authenticate"]
     restart["Notify service handlers"]
@@ -323,7 +323,7 @@ For the full pattern and one-time admin setup, see
 [Keytab Capabilities — Section 8](keytab-capabilities.md#8-service-bootstrap-keytab-gated-vault-secret-delivery).
 
 ```mermaid
-flowchart TD
+flowchart LR
     admin_kt["Admin keytab"]
     keytab_lookup["Keytab lookup"]
     svc_kt["Service keytab"]
@@ -411,7 +411,7 @@ into the execution environment. Point `kerberos_keytab` at the mounted path.
 The job template never handles the keytab bytes directly.
 
 ```mermaid
-flowchart TD
+flowchart LR
     cred["Controller keytab"]
     ee["Execution environment"]
     lookup["eigenstate.ipa.keytab"]

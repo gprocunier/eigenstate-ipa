@@ -49,7 +49,7 @@ Consume host enrollment passwords with
 ## Token Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     ans["Ansible task"]
     lookup["eigenstate.ipa.otp"]
     krb["Kerberos ticket\nexisting, password-derived,\nor keytab-derived"]

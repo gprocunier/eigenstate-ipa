@@ -43,7 +43,7 @@ It is the IdM-vault-side companion to the inventory capabilities guide.
 ## Retrieval Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     vaults["IdM vaults"]
     scopes["user / service / shared scope"]
     auth["Kerberos auth"]
@@ -413,7 +413,7 @@ Do not assume the target already has a decryptable host cert just because it is
 enrolled. Verify with `getcert list` or `ipa-getcert list` first.
 
 ```mermaid
-flowchart TD
+flowchart LR
     hostpair["Host cert + private key\nstay on target"]
     seal["Seal blob with host cert"]
     store["Archive sealed blob to vault"]
@@ -450,7 +450,7 @@ the final decrypt step.
 ### IPA Admin Path
 
 ```mermaid
-flowchart TD
+flowchart LR
     prereq["Verify target cert/key"]
     export["Export public cert"]
     seal["Seal payload"]
@@ -588,7 +588,7 @@ root-readable only.
 ### Delegated Operator Path
 
 ```mermaid
-flowchart TD
+flowchart LR
     admin["One-time vault setup"]
     prereq["Target cert/key exists"]
     seal["Seal artifact"]

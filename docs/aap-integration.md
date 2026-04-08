@@ -42,7 +42,7 @@ It covers:
 ## Controller Integration Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     ctrl["Controller job"]
     cred["Password or keytab credential"]
     ee["Execution environment"]

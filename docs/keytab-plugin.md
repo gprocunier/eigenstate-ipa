@@ -46,7 +46,7 @@ IPA RBAC delegation.
 ## Retrieval Model
 
 ```mermaid
-flowchart TD
+flowchart LR
     ans["Ansible task or template"]
     lookup["eigenstate.ipa.keytab"]
     krb["Kerberos ticket\nexisting, password-derived,\nor keytab-derived"]

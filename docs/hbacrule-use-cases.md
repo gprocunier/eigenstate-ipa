@@ -36,7 +36,7 @@ need the corresponding playbook.
 ## Use Case Flow
 
 ```mermaid
-flowchart TD
+flowchart LR
     need["Access policy state to verify"]
     config["Show one rule\nor find all rules"]
     test["Test access\nfor a specific user"]
@@ -57,7 +57,7 @@ play deploys to the target host. A missing or disabled rule means the identity
 cannot log in.
 
 ```mermaid
-flowchart TD
+flowchart LR
     check["hbacrule show\nops-deploy"] --> exists{"exists?"}
     exists -->|no| fail["fail - rule not registered in IdM"]
     exists -->|yes| enabled{"enabled?"}
@@ -98,7 +98,7 @@ before running tasks that depend on it. This uses the FreeIPA hbactest engine â€
 the same evaluation SSSD performs at login.
 
 ```mermaid
-flowchart TD
+flowchart LR
     test["hbacrule test\nsvc-deploy, app01, sshd"] --> granted{"denied=false?"}
     granted -->|no| fail["fail - access denied\ncheck matched/notmatched"]
     granted -->|yes| proceed["proceed"]
@@ -345,7 +345,7 @@ Combine `eigenstate.ipa.hbacrule` with `operation=test` and
 access side outward.
 
 ```mermaid
-flowchart TD
+flowchart LR
     test["hbacrule test\nsvc-deploy, app01, sshd"] --> granted{"denied=false?"}
     granted -->|no| fail_access["fail - access denied"]
     granted -->|yes| map["selinuxmap show\nops-deploy-map"]
