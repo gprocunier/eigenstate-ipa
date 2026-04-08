@@ -1,6 +1,6 @@
 # eigenstate.ipa
 
-**An Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory, IdM vault retrieval and lifecycle automation, Kerberos principal state, keytab delivery, certificate automation, OTP workflows, sudo policy inspection, SELinux user map inspection, and HBAC rule inspection and access testing.**
+**An Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory, IdM vault retrieval and lifecycle automation, Kerberos principal state, keytab delivery, certificate automation, OTP workflows, DNS record inspection, sudo policy inspection, SELinux user map inspection, and HBAC rule inspection and access testing.**
 
 [![License: GPL-3.0](https://img.shields.io/github/license/gprocunier/eigenstate-ipa)](COPYING)
 ![Ansible 2.14+](https://img.shields.io/badge/Ansible-2.14%2B-blue)
@@ -15,6 +15,7 @@
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>&nbsp;&nbsp;IDM CERT PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>&nbsp;&nbsp;OTP PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/dns-plugin.html"><kbd>&nbsp;&nbsp;DNS PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html"><kbd>&nbsp;&nbsp;SELINUX MAP PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html"><kbd>&nbsp;&nbsp;SUDO PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html"><kbd>&nbsp;&nbsp;HBAC RULE PLUGIN&nbsp;&nbsp;</kbd></a>
@@ -25,6 +26,7 @@
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>&nbsp;&nbsp;KEYTAB CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>&nbsp;&nbsp;IDM CERT CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>&nbsp;&nbsp;OTP CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/dns-capabilities.html"><kbd>&nbsp;&nbsp;DNS CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html"><kbd>&nbsp;&nbsp;SELINUX MAP CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html"><kbd>&nbsp;&nbsp;SUDO CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html"><kbd>&nbsp;&nbsp;HBAC RULE CAPABILITIES&nbsp;&nbsp;</kbd></a>
@@ -36,6 +38,7 @@
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>&nbsp;&nbsp;KEYTAB USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>&nbsp;&nbsp;IDM CERT USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>&nbsp;&nbsp;OTP USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/dns-use-cases.html"><kbd>&nbsp;&nbsp;DNS USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html"><kbd>&nbsp;&nbsp;SELINUX MAP USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-use-cases.html"><kbd>&nbsp;&nbsp;SUDO USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html"><kbd>&nbsp;&nbsp;HBAC RULE USE CASES&nbsp;&nbsp;</kbd></a>
@@ -84,7 +87,7 @@ Without those two paths, operators usually end up with:
 - keytabs staged by hand outside the automation lifecycle
 - certificate requests handled in separate CA workflows outside the automation lifecycle
 
-This collection closes that gap with one inventory plugin, eight lookup plugins,
+This collection closes that gap with one inventory plugin, nine lookup plugins,
 and one vault lifecycle module.
 
 ## What The Collection Contains
@@ -106,6 +109,8 @@ At a high level:
   certificates for host and service principals via the Dogtag backend
 - `eigenstate.ipa.otp` uses `ipalib` to issue OTP tokens for users and
   one-time host enrollment passwords for IdM-managed onboarding flows
+- `eigenstate.ipa.dns` uses `ipalib` to read integrated IdM DNS records for
+  forward, reverse, service-discovery, and zone-apex validation workflows
 - `eigenstate.ipa.selinuxmap` uses `ipalib` to read SELinux user map state from
   IdM, returning the assigned SELinux user string, enabled state, and the linked
   HBAC rule name when HBAC-linked scope is configured
@@ -123,6 +128,7 @@ At a high level:
 | Kerberos keytab | lookup | `eigenstate.ipa.keytab` | Retrieves Kerberos keytab files for service and host principals via `ipa-getkeytab` |
 | IdM certificates | lookup | `eigenstate.ipa.cert` | Requests, retrieves, and searches IdM CA certificates for host and service principals |
 | OTP and enrollment credentials | lookup | `eigenstate.ipa.otp` | Issues user OTP tokens and one-time host enrollment passwords through IdM |
+| DNS record state | lookup | `eigenstate.ipa.dns` | Reads forward, reverse, service-discovery, and zone-apex DNS records from IdM |
 | SELinux user map state | lookup | `eigenstate.ipa.selinuxmap` | Reads SELinux user map configuration and HBAC-linked scope from IdM |
 | Sudo policy state | lookup | `eigenstate.ipa.sudo` | Reads sudo rules, sudo commands, and sudo command groups from IdM |
 | HBAC rule state and access test | lookup | `eigenstate.ipa.hbacrule` | Reads HBAC rule configuration and runs live access tests via the FreeIPA hbactest engine |
@@ -141,6 +147,7 @@ If you are deciding whether the collection fits your use case, start with:
 - <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>IDM CERT CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>OTP CAPABILITIES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/dns-capabilities.html"><kbd>DNS CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html"><kbd>SELINUX MAP CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html"><kbd>SUDO CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html"><kbd>HBAC RULE CAPABILITIES</kbd></a>
@@ -152,6 +159,7 @@ If you are deciding whether the collection fits your use case, start with:
 - <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>KEYTAB USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>IDM CERT USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>OTP USE CASES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/dns-use-cases.html"><kbd>DNS USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html"><kbd>SELINUX MAP USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-use-cases.html"><kbd>SUDO USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html"><kbd>HBAC RULE USE CASES</kbd></a>
@@ -206,6 +214,7 @@ ansible-doc -t lookup eigenstate.ipa.principal
 ansible-doc -t lookup eigenstate.ipa.keytab
 ansible-doc -t lookup eigenstate.ipa.cert
 ansible-doc -t lookup eigenstate.ipa.otp
+ansible-doc -t lookup eigenstate.ipa.dns
 ansible-doc -t lookup eigenstate.ipa.selinuxmap
 ansible-doc -t lookup eigenstate.ipa.sudo
 ansible-doc -t lookup eigenstate.ipa.hbacrule
@@ -214,7 +223,7 @@ ansible-doc -t lookup eigenstate.ipa.hbacrule
 > [!NOTE]
 > The inventory plugin talks to the IdM JSON-RPC API and can use either
 > password authentication or Kerberos with an optional keytab. The vault
-> lookup, vault write, principal, cert, and OTP components use `ipalib` and
+> lookup, vault write, principal, cert, OTP, and DNS components use `ipalib` and
 > therefore depend on the local IdM client Python libraries being available on
 > the control node or execution environment. The keytab
 > plugin shells out to `ipa-getkeytab` and does not require `ipalib`; on RHEL
