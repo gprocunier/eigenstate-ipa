@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.0
+
+- added `eigenstate.ipa.sudo` for read-only inspection of IdM sudo rules, sudo commands, and sudo command groups
+- `sudo` supports `show` and `find` operations across rules, commands, and command groups with the established controller-side `ipalib` auth pattern
+- added unit coverage for sudo rule, command, and command-group lookup behavior, including missing-object handling
+- added sudo plugin reference, capability, and use-case documentation
+- refreshed the collection overview, docs home, and documentation map to surface the new sudo lookup release
+
 ## 1.6.4
 
 - normalized Mermaid flowcharts from top-down to left-to-right layout across the docs set to remove the repeated vertical spacing artifact in GitHub Pages renders

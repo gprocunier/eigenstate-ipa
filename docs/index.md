@@ -39,11 +39,13 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.6.4`
-- normalizes Mermaid flowcharts to left-to-right layout to avoid the repeated
-  vertical spacing artifact in the published docs
-- refreshes diagram-heavy docs so the published GitHub Pages render is more
-  compact and readable
+- `1.7.0`
+- adds `eigenstate.ipa.sudo` for read-only inspection of IdM sudo rules, sudo
+  commands, and sudo command groups
+- adds sudo reference, capability, and use-case guides and wires them into the
+  collection navigation
+- refreshes the release metadata and install examples for the published sudo
+  lookup release
 
 ## Start Here
 
