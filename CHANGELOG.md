@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.1
+
+- refactored the repository `README.md` to remove the global navigation-button dump and group `<kbd>` links by topic adjacency instead
+- trimmed redundant README content so the repository front page reads more cleanly without changing the GitHub Pages docs set
+
 ## 1.10.0
 
 - added `eigenstate.ipa.user_lease` for narrow IdM-native control of `krbPrincipalExpiration` and optional `krbPasswordExpiration` on existing users
