@@ -32,8 +32,9 @@ posture. Use this page when you need the corresponding playbook pattern.
 - [5. Compliance-Restricted Keytab For A FIPS Environment](#5-compliance-restricted-keytab-for-a-fips-environment)
 - [6. NFS Service Keytab Bootstrap](#6-nfs-service-keytab-bootstrap)
 - [7. Host Keytab Recovery After Rebuild](#7-host-keytab-recovery-after-rebuild)
-- [8. Keytab-Gated Vault Secret Delivery](#8-keytab-gated-vault-secret-delivery)
-- [9. AAP Job Template With Controller-Mounted Keytab](#9-aap-job-template-with-controller-mounted-keytab)
+- [8. Controller-Scoped Keytab With Immediate Retirement](#8-controller-scoped-keytab-with-immediate-retirement)
+- [9. Keytab-Gated Vault Secret Delivery](#9-keytab-gated-vault-secret-delivery)
+- [10. AAP Job Template With Controller-Mounted Keytab](#10-aap-job-template-with-controller-mounted-keytab)
 - [Kerberos Is A Good Default Here](#kerberos-is-a-good-default-here)
 
 ## Use Case Flow
@@ -312,7 +313,69 @@ for the enrolled host identity without generating new keys.
 > enrollment. Use this pattern only when the host was enrolled separately
 > or when the keytab file was lost without re-enrolling the host in IdM.
 
-## 8. Keytab-Gated Vault Secret Delivery
+## 8. Controller-Scoped Keytab With Immediate Retirement
+
+For a dedicated automation principal, a keytab can be treated as short-lived
+bootstrap material rather than a long-lived standing secret. The job retrieves
+or generates the keytab, uses it to obtain tickets, completes the work, and
+then rotates the principal again so the prior key material is dead.
+
+```mermaid
+flowchart LR
+    start["controller job starts"] --> issue["issue or retrieve keytab"]
+    issue --> auth["kinit / Kerberos tickets"]
+    auth --> work["perform automation work"]
+    work --> retire["retrieve_mode='generate' to rotate again"]
+    retire --> end["prior keytab material no longer valid"]
+```
+
+```yaml
+- name: Controller-scoped automation principal with immediate retirement
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    principal_name: HTTP/aap-once.idm.corp.lan
+
+  tasks:
+    - name: Issue run keytab
+      ansible.builtin.set_fact:
+        run_keytab_b64: "{{ lookup('eigenstate.ipa.keytab',
+                             principal_name,
+                             server='idm-01.idm.corp.lan',
+                             kerberos_keytab='/runner/env/ipa/admin.keytab',
+                             retrieve_mode='generate',
+                             verify='/etc/ipa/ca.crt') }}"
+      no_log: true
+
+    - name: Use keytab for controller-side work
+      ansible.builtin.copy:
+        content: "{{ run_keytab_b64 | b64decode }}"
+        dest: /tmp/aap-once.keytab
+        mode: "0600"
+      no_log: true
+
+    - name: Retire prior key material immediately after run
+      ansible.builtin.set_fact:
+        _retired: "{{ lookup('eigenstate.ipa.keytab',
+                        principal_name,
+                        server='idm-01.idm.corp.lan',
+                        kerberos_keytab='/runner/env/ipa/admin.keytab',
+                        retrieve_mode='generate',
+                        verify='/etc/ipa/ca.crt') }}"
+      no_log: true
+
+    - name: Discard replacement keytab locally
+      ansible.builtin.file:
+        path: /tmp/aap-once.keytab
+        state: absent
+```
+
+This is not a lease engine. It is a workflow pattern for dedicated automation
+principals when Kerberos already fits the architecture and immediate retirement
+of the prior key material is enough.
+
+## 9. Keytab-Gated Vault Secret Delivery
 
 This is the cross-plugin bootstrap pattern. The keytab plugin retrieves a
 service keytab, which is then used as the Kerberos credential for a
@@ -404,7 +467,7 @@ The audit trail in IdM shows `HTTP/app.idm.corp.lan` retrieved the vault
 payload — not the admin principal. The admin credential is only visible in
 the keytab retrieval step, not in the secret delivery step.
 
-## 9. AAP Job Template With Controller-Mounted Keytab
+## 10. AAP Job Template With Controller-Mounted Keytab
 
 Store the admin keytab as a Controller credential type that mounts a file
 into the execution environment. Point `kerberos_keytab` at the mounted path.

@@ -34,8 +34,9 @@ This plugin brings it into the Ansible automation lifecycle.
 - [4. Fleet Keytab Deployment With Map Format](#4-fleet-keytab-deployment-with-map-format)
 - [5. Keytab Rotation Workflow](#5-keytab-rotation-workflow)
 - [6. Encryption-Type-Restricted Keytab Retrieval](#6-encryption-type-restricted-keytab-retrieval)
-- [7. AAP Credential Type Pattern For Admin Keytab](#7-aap-credential-type-pattern-for-admin-keytab)
-- [8. Service Bootstrap: Keytab-Gated Vault Secret Delivery](#8-service-bootstrap-keytab-gated-vault-secret-delivery)
+- [7. Short-Lived Machine Identity Pattern](#7-short-lived-machine-identity-pattern)
+- [8. AAP Credential Type Pattern For Admin Keytab](#8-aap-credential-type-pattern-for-admin-keytab)
+- [9. Service Bootstrap: Keytab-Gated Vault Secret Delivery](#9-service-bootstrap-keytab-gated-vault-secret-delivery)
 - [Quick Decision Matrix](#quick-decision-matrix)
 
 ## Retrieval Model
@@ -280,7 +281,35 @@ Typical `enctypes` values:
 Empty `enctypes` delegates encryption type selection to the IPA server policy.
 That is the right default for most environments.
 
-## 7. AAP Credential Type Pattern For Admin Keytab
+## 7. Short-Lived Machine Identity Pattern
+
+If the workload fits Kerberos, keytabs give the collection a stronger answer to
+short-lived machine credentials than ordinary static passwords.
+
+```mermaid
+flowchart LR
+    issue["retrieve or generate keytab"] --> ticket["use keytab to obtain Kerberos tickets"]
+    ticket --> work["perform controller-side work"]
+    work --> retire["rotate principal keys again"]
+    retire --> dead["prior keytab material invalidated"]
+```
+
+Why this matters:
+
+- the runtime credential is usually a Kerberos ticket, not repeated direct use of the keytab
+- rotating the principal keys invalidates prior keytab material immediately
+- `principal` and `keytab` together let automation inspect and drive that lifecycle
+
+Boundary:
+
+- this is not a native lease engine
+- there is no TTL object or renewal contract
+- it works best for dedicated automation principals or tightly coordinated rollout windows
+
+This is the right mental model when you want a stronger machine-identity story
+without claiming dynamic-secret semantics that IdM does not provide.
+
+## 8. AAP Credential Type Pattern For Admin Keytab
 
 The recommended AAP deployment pattern is:
 
@@ -318,7 +347,7 @@ and `kinit`. On other releases, install the package that provides
 `/usr/sbin/ipa-getkeytab`. This avoids pulling in the full
 `python3-ipaclient` stack that the vault plugin requires.
 
-## 8. Service Bootstrap: Keytab-Gated Vault Secret Delivery
+## 9. Service Bootstrap: Keytab-Gated Vault Secret Delivery
 
 A service cannot retrieve its own secrets from IdM vault until it has a valid
 Kerberos credential. The keytab plugin is what delivers that credential. The

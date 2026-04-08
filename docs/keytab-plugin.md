@@ -27,6 +27,7 @@ This reference covers:
 - the difference between `retrieve` and `generate` modes
 - how to control encryption types
 - how to return keytab content for downstream use
+- why Kerberos key rotation can be used as an operationally short-lived machine-credential pattern
 
 The authenticating principal must have permission to retrieve keytabs for the
 target principals. In most environments this requires admin rights or explicit
@@ -106,6 +107,28 @@ TLS verification behavior:
   trust store
 
 ## Retrieve vs Generate
+
+### Why this matters beyond file delivery
+
+A keytab is not just a file-delivery problem. In Kerberos-based automation it is
+often the bootstrap material used to obtain the real runtime credential: a
+Kerberos ticket. That makes the keytab surface more operationally powerful than
+an ordinary static password.
+
+When the principal is dedicated to one controller workflow or one tightly scoped
+service boundary, `retrieve_mode='generate'` can also be used as an immediate
+retirement mechanism: rotating the principal keys invalidates the previous
+keytab material at once. In practice that means a job can:
+
+- issue or retrieve a keytab for the run
+- acquire Kerberos tickets from it
+- rotate the principal again when the run closes
+- discard the replacement if the intent is immediate retirement
+
+That is not a Vault-style lease model. There is no TTL or issuer-owned renewal
+contract. But it is still a materially stronger short-lived machine-identity
+pattern than leaving a shared password in place indefinitely.
+
 
 The `retrieve_mode` option controls the behavior of the `ipa-getkeytab` call.
 

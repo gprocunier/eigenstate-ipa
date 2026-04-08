@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.2
+
+- refined the Vault/CyberArk primer to explain the Kerberos and keytab angle on the ephemeral-secrets gap: not dynamic leases, but a stronger machine-identity story when immediate key retirement fits the workflow
+- expanded the keytab reference, capabilities, and use-case docs to frame key rotation as an operationally short-lived credential pattern for dedicated automation principals
+
 ## 1.9.1
 
 - restored the detailed Vault versus CyberArk versus Eigenstate comparison tables in the primer, with stronger emphasis on where IdM-native Kerberos, PKI, policy, OTP, and inventory workflows materially differentiate the collection

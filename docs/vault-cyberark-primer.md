@@ -278,6 +278,24 @@ create, deploy, rotate, and cleanup jobs on a schedule. That is useful. It is
 not the same security contract as a credential born with native TTL and backend
 revocation semantics.
 
+The strongest partial answer to this gap is Kerberos, not the vault surface.
+When the workload can use a dedicated Kerberos principal, `eigenstate.ipa`
+makes machine identity much easier to orchestrate than ordinary static
+passwords. A controller can retrieve or issue a keytab, use it to obtain
+Kerberos tickets for the run, and then retire the underlying key material
+immediately by rotating the principal again. That gives you operationally
+short-lived machine credentials without pretending they are Vault-style leased
+secrets.
+
+The boundary still matters:
+
+- there is no native lease object, TTL, or renewal contract
+- rotation is a workflow decision, not an issuer-enforced expiry model
+- destructive key rotation still requires coordinated rollout to every consumer
+
+So this is not a replacement for dynamic database or cloud credentials. It is a
+stronger machine-identity story when Kerberos already fits the architecture.
+
 ### Broad PAM and privileged session brokering
 
 CyberArk still owns the stronger story for central privileged session brokering,
