@@ -4,8 +4,9 @@ title: eigenstate.ipa
 description: >-
   Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory,
   IdM vault lookup, Kerberos principal state, Kerberos keytab delivery,
-  certificate automation, OTP workflows, SELinux user map inspection,
-  HBAC rule inspection and access testing, IdM vault lifecycle automation,
+  certificate automation, OTP workflows, sudo policy inspection,
+  SELinux user map inspection, HBAC rule inspection and access testing,
+  IdM vault lifecycle automation,
   AAP integration, and secure secret retrieval.
 ---
 
@@ -20,7 +21,7 @@ automation, OTP state, and vault-backed secret retrieval for Ansible and AAP.
 
 ## Collection Scope
 
-The collection covers nine main areas:
+The collection covers ten main areas:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
 - IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and AAP
@@ -30,6 +31,7 @@ The collection covers nine main areas:
 - OTP token issue, lookup, revoke, and host enrollment password generation
 - IdM vault lifecycle management for create, archive, update, and delete flows
 - SELinux user map inspection for confinement model pre-flight and audit
+- sudo policy inspection for rules, commands, and command groups
 - HBAC rule inspection and live access testing via the FreeIPA hbactest engine
 
 It fits environments that already use IdM for host data, policy context, and
@@ -63,6 +65,7 @@ data, or operation-specific details.
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>CERT PLUGIN</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>OTP PLUGIN</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html"><kbd>SELINUX MAP PLUGIN</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html"><kbd>SUDO PLUGIN</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html"><kbd>HBAC RULE PLUGIN</kbd></a>
 
 ## Capability Guides
@@ -81,6 +84,7 @@ before drilling into the rotation and plugin-specific pages.
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>CERT CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>OTP CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html"><kbd>SELINUX MAP CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html"><kbd>SUDO CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html"><kbd>HBAC RULE CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
 
@@ -104,6 +108,7 @@ playbooks.
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>CERT USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>OTP USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html"><kbd>SELINUX MAP USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/sudo-use-cases.html"><kbd>SUDO USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html"><kbd>HBAC RULE USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
 
@@ -136,6 +141,11 @@ playbooks.
   Returns the SELinux user, enabled state, linked HBAC rule name,
   direct member lists, and description for named maps or bulk
   enumeration.
+- `eigenstate.ipa.sudo`
+  Read-only inspection of sudo rules, sudo commands, and sudo command
+  groups from FreeIPA/IdM. Returns rule scope, command assignments,
+  RunAs data, descriptions, and command-group membership for named or
+  bulk queries.
 - `eigenstate.ipa.hbacrule`
   Read-only inspection of HBAC rule state and live access testing via
   the FreeIPA `hbactest` engine. Supports `show`, `find`, and `test`;
