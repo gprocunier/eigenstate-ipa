@@ -16,6 +16,7 @@ If you are mapping the collection into OpenShift ecosystem workflows:
 
 For the adjacent branches off that primer:
 
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHOSO USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHACM USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHACS USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT QUAY USE CASES&nbsp;&nbsp;</kbd></a>
@@ -155,7 +156,7 @@ If the comparison translates into an IdM-native workflow for you, these are the 
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.10.2.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.10.3.tar.gz
 ```
 
 Verify the main surfaces you plan to use. For example:

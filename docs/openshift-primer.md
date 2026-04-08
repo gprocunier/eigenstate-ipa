@@ -16,6 +16,7 @@ Related docs:
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>&nbsp;&nbsp;EPHEMERAL ACCESS CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT OPERATOR USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHOSO USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHACM USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHACS USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT QUAY USE CASES&nbsp;&nbsp;</kbd></a>
@@ -34,7 +35,7 @@ It is a framing page for the surrounding control plane:
 - identity brokerage across multiple AD domains
 - controller-side policy and inventory in AAP
 - temporary access, enrollment, DNS, PKI, and service identity workflows
-- RHACM, RHACS, and Quay workflows around the cluster
+- RHOSO, RHACM, RHACS, and Quay workflows around the platform
 
 ## Assumed Model
 
@@ -78,7 +79,6 @@ IdM can absorb the harder parts:
 - delegated administrative boundaries
 - OTP, DNS, and internal PKI
 
-If RHACM is the event source, the same control plane also works for policy violations and lifecycle hooks. RHACM decides when to fire; AAP runs the job; IdM decides whether the identity, policy, and supporting artifacts are actually ready.
 That matters because the OpenShift-facing login layer becomes cleaner when the
 ugly estate-side identity work happens upstream of it.
 
@@ -97,6 +97,22 @@ With `eigenstate.ipa`, controller workflows can use:
 - vault lifecycle for static secrets and archived artifacts
 
 That is where the collection becomes operationally useful for OpenShift teams.
+
+### RHOSO Splits Operator And Tenant Identity On Purpose
+
+RHOSO adds a useful twist to the ecosystem story because it has at least two
+real identity boundaries:
+
+- the cloud operator domain
+- one or more tenant domains or tenant-facing federation paths
+
+That makes RHOSO a good place to talk about what IdM and AAP do around the
+platform rather than inside it:
+
+- operator maintenance access can expire with the maintenance window
+- data-plane host access can be pre-flight checked before the change starts
+- tenant-facing names, certificates, and service identities can be handled as one controller-side workflow
+- the tenant identity model does not have to collapse into the cloud operator identity model
 
 ### RHACM Turns Policy Events Into Identity-Aware Jobs
 
@@ -143,16 +159,16 @@ That is where the collection matters:
 - temporary registry administration can expire in IdM instead of surviving as a
   standing exception
 
-### The Value Shows Up Around The Cluster
+### The Value Shows Up Around The Platform
 
-The collection is not trying to replace OpenShift RBAC, cluster operators, or
-the `oc` CLI.
+The collection is not trying to replace OpenShift RBAC, cluster operators,
+Keystone domains, or the `oc` CLI.
 
 Its value is in the surrounding workflows that are usually harder than the
-cluster change itself:
+platform change itself:
 
 - opening and closing temporary elevated access
-- onboarding a guest or service into enterprise identity
+- onboarding a guest, service, or cloud-adjacent host into enterprise identity
 - proving that DNS, policy, and service identity are ready before a rollout
 - using enterprise identity for controller-side automation instead of shared secrets
 
@@ -162,6 +178,8 @@ cluster change itself:
 | --- | --- | --- | --- |
 | OpenShift cluster admin | time-bounded break-glass, controller auth for support services, policy-gated maintenance | `user_lease`, `principal`, `keytab`, `hbacrule`, `sudo`, `selinuxmap`, `idm` | [OpenShift Operator Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html) |
 | OpenShift Virtualization admin | guest enrollment, temporary guest administration, targeting VMs by identity shape | `otp`, `user_lease`, `idm`, `principal`, `keytab` | [OpenShift Operator Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html) |
+| RHOSO cloud operator | maintenance windows, data-plane host access, and supporting service state stop depending on standing admin rights and guessed host policy | `user_lease`, `hbacrule`, `sudo`, `selinuxmap`, `otp`, `principal`, `keytab`, `dns`, `cert`, `vault_write` | [OpenShift RHOSO Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html) |
+| RHOSO tenant operator or domain admin | tenant identity stays distinct from the operator domain while service onboarding and temporary interventions remain governed | `user_lease`, `principal`, `dns`, `cert`, `vault_write` | [OpenShift RHOSO Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html) |
 | OpenShift developer or app team | internal service onboarding, coherent app bootstrap, narrower temporary elevation | `principal`, `dns`, `cert`, `vault_write`, `user_lease` | [OpenShift Developer Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html) |
 | RHACM operator | policy violations and lifecycle hooks become identity-aware AAP triggers instead of blind shell remediations | `principal`, `keytab`, `hbacrule`, `sudo`, `selinuxmap`, `user_lease`, `otp` | [OpenShift RHACM Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html) |
 | RHACS operator | security findings become governed remediation, temporary access, and onboarding flows instead of generic follow-up tickets | `user_lease`, `principal`, `keytab`, `hbacrule`, `sudo`, `selinuxmap`, `dns`, `cert`, `vault_write` | [OpenShift RHACS Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html) |
@@ -175,6 +193,7 @@ Do not read these pages as a claim that `eigenstate.ipa` is:
 
 - an OpenShift installation framework
 - a replacement for cluster RBAC design
+- a replacement for Keystone or RHOSO lifecycle tooling
 - a dynamic secrets engine
 - a generic PAM session broker
 
@@ -186,10 +205,12 @@ service lifecycle state as automation input.
 
 ## Read Next
 
-Continue by persona:
+Continue by topic:
 
 - platform or virtualization operations:
   <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html"><kbd>OPENSHIFT OPERATOR USE CASES</kbd></a>
+- RHOSO cloud and tenant boundaries:
+  <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>OPENSHIFT RHOSO USE CASES</kbd></a>
 - developer and app onboarding flows:
   <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html"><kbd>OPENSHIFT DEVELOPER USE CASES</kbd></a>
 - RHACM-triggered remediation and lifecycle hooks:

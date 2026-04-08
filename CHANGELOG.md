@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.3
+
+- added a RHOSO branch to the OpenShift ecosystem docs with separate operator and tenant use-case pages instead of folding cloud and tenant identity into one page
+- threaded the new RHOSO branch through the OpenShift primer, AAP integration guide, docs map, docs home, and repository README so the navigation flow stays aligned with the rest of the project
+- refreshed release references for the `1.10.3` docs release
+
 ## 1.10.2
 
 - broadened the OpenShift docs stream into an explicit OpenShift ecosystem primer while keeping the stable `openshift-primer.md` URL

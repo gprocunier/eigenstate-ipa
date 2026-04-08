@@ -11,6 +11,7 @@ Related docs:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>&nbsp;&nbsp;VAULT/CYBERARK PRIMER&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>&nbsp;&nbsp;OPENSHIFT ECOSYSTEM PRIMER&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHOSO USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHACM USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHACS USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT QUAY USE CASES&nbsp;&nbsp;</kbd></a>
@@ -278,6 +279,22 @@ In practice, that means Quay-triggered or Quay-adjacent jobs can use controller-
 
 Read next:
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>OPENSHIFT QUAY USE CASES</kbd></a>.
+
+### 11. RHOSO operator and tenant workflows
+
+RHOSO already has its own operator-driven lifecycle, Keystone identity model,
+and RHEL data-plane relationship. The useful AAP pattern is the work around
+those boundaries rather than inside the product.
+
+In practice, that means RHOSO-adjacent jobs can use controller-side patterns such as:
+
+- `user_lease` for operator maintenance windows that should expire in IdM
+- `hbacrule`, `sudo`, and `selinuxmap` for pre-flight validation before touching RHEL data-plane hosts
+- `otp` plus the official IdM collections when support hosts or utility VMs need first-day enrollment
+- `principal`, `dns`, `cert`, and `vault_write` when cloud-facing or tenant-facing services need a coherent onboarding flow
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>OPENSHIFT RHOSO USE CASES</kbd></a>.
 
 ## Example Patterns
 
