@@ -79,6 +79,7 @@ The claim is narrower and stronger:
 | Static secret lifecycle | `eigenstate.ipa.vault_write` | create, archive, rotate, and delegate vault access |
 | Kerberos identity checks | `eigenstate.ipa.principal` | gate workflows before keytab or cert work |
 | Key material | `eigenstate.ipa.keytab` | retrieve or rotate service keytabs |
+| Temporary user lease boundary | `eigenstate.ipa.user_lease` | expire delegated temporary users in IdM instead of relying on cleanup alone |
 | PKI | `eigenstate.ipa.cert` | request, retrieve, and audit IdM certificates |
 | Enrollment credentials | `eigenstate.ipa.otp` | issue user OTP seeds and host enrollment passwords |
 | DNS inspection | `eigenstate.ipa.dns` | verify forward, reverse, and zone-apex state |
@@ -226,12 +227,19 @@ CyberArk do not answer:
 - would it land in the expected SELinux context?
 - does the expected sudo policy surface exist?
 
-### 4. Identity-backed inventory rather than static inventory drift
+### 4. Lease-like temporary access where IdM owns the cutoff
+
+Use `user_lease` when a delegated temporary user should become unusable because
+IdM expiry attributes close the window, not because a later cleanup job happens
+to run. Use `principal` + `keytab` when the stronger answer is a Kerberos-first
+machine identity with immediate key retirement.
+
+### 5. Identity-backed inventory rather than static inventory drift
 
 Use `idm` inventory to let AAP or Ansible target by IdM hostgroups, netgroups,
 HBAC scope, and curated host metadata.
 
-### 5. Enrollment and first-day trust
+### 6. Enrollment and first-day trust
 
 Use `otp` to create the one-time host password, then hand enrollment to the
 official IdM collections. Use `principal` afterward if the play needs a
@@ -279,9 +287,10 @@ create, deploy, rotate, and cleanup jobs on a schedule. That is useful. It is
 not the same security contract as a credential born with native TTL and backend
 revocation semantics.
 
-The strongest partial answer to this gap is Kerberos, not the vault surface.
-When the workload can use a dedicated Kerberos principal, `eigenstate.ipa`
-makes machine identity much easier to orchestrate than ordinary static
+The strongest partial answers to this gap are IdM-native identity controls, not the vault surface.
+For delegated temporary users, `user_lease` can make the user expire in IdM itself so the
+cutoff is not just a later cleanup task. For Kerberos machine identity, `eigenstate.ipa`
+makes keytab-backed automation much easier to orchestrate than ordinary static
 passwords. A controller can retrieve or issue a keytab, use it to obtain
 Kerberos tickets for the run, and then retire the underlying key material
 immediately by rotating the principal again. That gives you operationally

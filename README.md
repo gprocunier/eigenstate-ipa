@@ -1,6 +1,6 @@
 # eigenstate.ipa
 
-**An Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory, IdM vault retrieval and lifecycle automation, Kerberos principal state, keytab delivery, certificate automation, OTP workflows, DNS record inspection, sudo policy inspection, SELinux user map inspection, and HBAC rule inspection and access testing.**
+**An Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory, IdM vault retrieval and lifecycle automation, Kerberos principal state, keytab delivery, delegated user-lease control, certificate automation, OTP workflows, DNS record inspection, sudo policy inspection, SELinux user map inspection, and HBAC rule inspection and access testing.**
 
 [![License: GPL-3.0](https://img.shields.io/github/license/gprocunier/eigenstate-ipa)](COPYING)
 ![Ansible 2.14+](https://img.shields.io/badge/Ansible-2.14%2B-blue)
@@ -13,6 +13,7 @@
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-plugin.html"><kbd>&nbsp;&nbsp;VAULT WRITE MODULE&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html"><kbd>&nbsp;&nbsp;PRINCIPAL PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-plugin.html"><kbd>&nbsp;&nbsp;USER LEASE MODULE&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>&nbsp;&nbsp;IDM CERT PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>&nbsp;&nbsp;OTP PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/dns-plugin.html"><kbd>&nbsp;&nbsp;DNS PLUGIN&nbsp;&nbsp;</kbd></a>
@@ -24,6 +25,7 @@
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-capabilities.html"><kbd>&nbsp;&nbsp;VAULT WRITE CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/principal-capabilities.html"><kbd>&nbsp;&nbsp;PRINCIPAL CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>&nbsp;&nbsp;KEYTAB CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html"><kbd>&nbsp;&nbsp;USER LEASE CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>&nbsp;&nbsp;IDM CERT CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>&nbsp;&nbsp;OTP CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/dns-capabilities.html"><kbd>&nbsp;&nbsp;DNS CAPABILITIES&nbsp;&nbsp;</kbd></a>
@@ -36,6 +38,7 @@
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html"><kbd>&nbsp;&nbsp;VAULT WRITE USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html"><kbd>&nbsp;&nbsp;PRINCIPAL USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>&nbsp;&nbsp;KEYTAB USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-use-cases.html"><kbd>&nbsp;&nbsp;USER LEASE USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>&nbsp;&nbsp;IDM CERT USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>&nbsp;&nbsp;OTP USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/dns-use-cases.html"><kbd>&nbsp;&nbsp;DNS USE CASES&nbsp;&nbsp;</kbd></a>
@@ -88,7 +91,7 @@ Without those two paths, operators usually end up with:
 - certificate requests handled in separate CA workflows outside the automation lifecycle
 
 This collection closes that gap with one inventory plugin, nine lookup plugins,
-and one vault lifecycle module.
+and two write modules.
 
 ## What The Collection Contains
 
@@ -105,6 +108,9 @@ At a high level:
 - `eigenstate.ipa.keytab` uses `ipa-getkeytab` to retrieve Kerberos keytab
   files for service and host principals, returning base64-encoded content ready
   to write to disk or inject into an AAP credential type
+- `eigenstate.ipa.user_lease` uses `ipalib` to manage `krbPrincipalExpiration`
+  and optional `krbPasswordExpiration` for existing IdM users, making temporary
+  user access an IdM-owned boundary instead of a cleanup-only convention
 - `eigenstate.ipa.cert` uses `ipalib` to request, retrieve, and search IdM CA
   certificates for host and service principals via the Dogtag backend
 - `eigenstate.ipa.otp` uses `ipalib` to issue OTP tokens for users and
@@ -126,6 +132,7 @@ At a high level:
 | IdM vault lifecycle | module | `eigenstate.ipa.vault_write` | Creates, archives, updates, and deletes IdM vaults with check-mode and member-management support |
 | Kerberos principal state | lookup | `eigenstate.ipa.principal` | Reads user, host, and service principal existence, key, lock, and last-auth state from IdM |
 | Kerberos keytab | lookup | `eigenstate.ipa.keytab` | Retrieves Kerberos keytab files for service and host principals via `ipa-getkeytab` |
+| User lease boundary | module | `eigenstate.ipa.user_lease` | Sets, expires, or clears user expiry attributes for delegated temporary-access workflows |
 | IdM certificates | lookup | `eigenstate.ipa.cert` | Requests, retrieves, and searches IdM CA certificates for host and service principals |
 | OTP and enrollment credentials | lookup | `eigenstate.ipa.otp` | Issues user OTP tokens and one-time host enrollment passwords through IdM |
 | DNS record state | lookup | `eigenstate.ipa.dns` | Reads forward, reverse, zone-apex, and broad-search DNS records from IdM |
@@ -145,6 +152,7 @@ If you are deciding whether the collection fits your use case, start with:
 - <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-capabilities.html"><kbd>VAULT WRITE CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/principal-capabilities.html"><kbd>PRINCIPAL CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html"><kbd>USER LEASE CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>IDM CERT CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>OTP CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/dns-capabilities.html"><kbd>DNS CAPABILITIES</kbd></a>
@@ -157,6 +165,7 @@ If you are deciding whether the collection fits your use case, start with:
 - <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html"><kbd>VAULT WRITE USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html"><kbd>PRINCIPAL USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>KEYTAB USE CASES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-use-cases.html"><kbd>USER LEASE USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>IDM CERT USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>OTP USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/dns-use-cases.html"><kbd>DNS USE CASES</kbd></a>
@@ -187,6 +196,7 @@ If you are wiring the plugins into actual automation, start with:
 - <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-plugin.html"><kbd>VAULT WRITE MODULE</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html"><kbd>PRINCIPAL PLUGIN</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>KEYTAB PLUGIN</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-plugin.html"><kbd>USER LEASE MODULE</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>IDM CERT PLUGIN</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>OTP PLUGIN</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html"><kbd>SELINUX MAP PLUGIN</kbd></a>
@@ -199,7 +209,7 @@ If you are wiring the plugins into actual automation, start with:
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.9.3.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.10.0.tar.gz
 ```
 
 Verify:
@@ -210,6 +220,7 @@ ansible-doc -t lookup eigenstate.ipa.vault
 ansible-doc -t module eigenstate.ipa.vault_write
 ansible-doc -t lookup eigenstate.ipa.principal
 ansible-doc -t lookup eigenstate.ipa.keytab
+ansible-doc -t module eigenstate.ipa.user_lease
 ansible-doc -t lookup eigenstate.ipa.cert
 ansible-doc -t lookup eigenstate.ipa.otp
 ansible-doc -t lookup eigenstate.ipa.dns
@@ -229,7 +240,7 @@ ansible-doc -t lookup eigenstate.ipa.hbacrule
 > provides `ipa-getkeytab` on the control node or EE. The cert plugin uses
 > `ipalib` like the vault plugin and can request, retrieve, and search IdM CA
 > certificates without `certmonger` on the target. The OTP, selinuxmap,
-> sudo, and hbacrule plugins use the same IdM client Python stack as the
+> sudo, hbacrule, and user_lease module use the same IdM client Python stack as the
 > vault, principal, and cert lookups.
 
 ## Repository Layout
@@ -242,6 +253,7 @@ ansible-doc -t lookup eigenstate.ipa.hbacrule
 | `plugins/module_utils/ipa_client.py` | Shared Kerberos auth and `ipalib` connection utilities for IPA write operations |
 | `plugins/lookup/principal.py` | Lookup plugin for Kerberos principal state queries |
 | `plugins/lookup/keytab.py` | Lookup plugin for Kerberos keytab retrieval via `ipa-getkeytab` |
+| `plugins/modules/user_lease.py` | Module for delegated temporary-user expiry and lease boundaries in IdM |
 | `plugins/lookup/cert.py` | Lookup plugin for IdM CA certificate request, retrieval, and search |
 | `plugins/lookup/otp.py` | Lookup plugin for OTP token issuance and host enrollment password generation |
 | `plugins/lookup/selinuxmap.py` | Lookup plugin for SELinux user map state inspection |

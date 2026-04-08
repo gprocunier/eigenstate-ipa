@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.10.0
+
+- added `eigenstate.ipa.user_lease` for narrow IdM-native control of `krbPrincipalExpiration` and optional `krbPasswordExpiration` on existing users
+- validated delegated non-admin operation in the lab with RBAC scoped to governed group membership and expiry-attribute writes
+- added user-lease reference, capabilities, and use-case docs and wired the new module into the docs home, documentation map, AAP guide, ephemeral-access guide, and Vault/CyberArk primer
+- fixed the broken Mermaid flowchart in section 8 of `keytab-use-cases.md` so the GitHub Pages render no longer fails
+
 ## 1.9.3
 
 - added the collection-wide `ephemeral-access-capabilities` guide to frame delegated temporary users and Kerberos key retirement as IdM-native lease-like access patterns

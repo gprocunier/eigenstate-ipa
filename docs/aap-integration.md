@@ -65,7 +65,7 @@ coherent instead of ad hoc.
 
 - `eigenstate.ipa.idm`
 
-### `ipalib`-backed lookups and module
+### `ipalib`-backed lookups and modules
 
 - `eigenstate.ipa.vault`
 - `eigenstate.ipa.vault_write`
@@ -73,6 +73,7 @@ coherent instead of ad hoc.
 - `eigenstate.ipa.cert`
 - `eigenstate.ipa.otp`
 - `eigenstate.ipa.dns`
+- `eigenstate.ipa.user_lease`
 - `eigenstate.ipa.selinuxmap`
 - `eigenstate.ipa.sudo`
 - `eigenstate.ipa.hbacrule`
@@ -91,7 +92,7 @@ operations.
 | Surface | EE requirements | Notes |
 | --- | --- | --- |
 | `idm` inventory | `python3-requests`; `python3-gssapi`; `python3-requests-gssapi` or `python3-requests-kerberos`; `krb5-workstation` when keytab-driven `kinit` is used | inventory does not require `ipalib` |
-| `vault`, `vault_write`, `principal`, `cert`, `otp`, `dns`, `selinuxmap`, `sudo`, `hbacrule` | `python3-ipalib`; `python3-ipaclient`; `krb5-workstation` for ticket acquisition | these share the same IdM Python stack |
+| `vault`, `vault_write`, `principal`, `cert`, `otp`, `dns`, `user_lease`, `selinuxmap`, `sudo`, `hbacrule` | `python3-ipalib`; `python3-ipaclient`; `krb5-workstation` for ticket acquisition | these share the same IdM Python stack |
 | `keytab` | package providing `ipa-getkeytab`; `krb5-workstation` | on RHEL 10 this is `ipa-client` |
 
 > [!IMPORTANT]
@@ -208,11 +209,14 @@ AAP can orchestrate temporary access, but it is not the only control. The
 stronger patterns are the ones where IdM itself makes the identity unusable
 after the window closes:
 
-- delegated temporary users with expiry controls
+- delegated temporary users with `user_lease` expiry controls
 - dedicated Kerberos principals whose key material is retired by rotation
 
 Read next:
 <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
+
+For the delegated user side specifically, continue to
+<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-use-cases.html"><kbd>USER LEASE USE CASES</kbd></a>.
 
 ## Example Patterns
 

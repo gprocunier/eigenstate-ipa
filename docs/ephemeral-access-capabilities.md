@@ -15,6 +15,7 @@ Related docs:
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>&nbsp;&nbsp;VAULT/CYBERARK PRIMER&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>&nbsp;&nbsp;KEYTAB CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html"><kbd>&nbsp;&nbsp;USER LEASE CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>&nbsp;&nbsp;OTP CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
@@ -55,7 +56,8 @@ Those remain real gaps relative to Vault.
 ## Pattern 1: Delegated Temporary User Lease
 
 This pattern is for temporary user-backed automation or delegated temporary
-operator access.
+operator access. In the collection, the concrete surface for this is
+`eigenstate.ipa.user_lease`.
 
 ```mermaid
 flowchart LR
@@ -103,6 +105,11 @@ Best fit:
   principal
 - delegated administration models where one team owns the group boundary and
   the temporary access window
+
+Read next for the concrete module surface:
+
+- <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-plugin.html"><kbd>USER LEASE MODULE</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-use-cases.html"><kbd>USER LEASE USE CASES</kbd></a>
 
 ## Pattern 2: Kerberos Machine Identity Lease
 
@@ -192,6 +199,8 @@ After this page:
 
 - read <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
   for the higher-level comparison framing
+- read <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html"><kbd>USER LEASE CAPABILITIES</kbd></a>
+  for the delegated temporary-user side in concrete module terms
 - read <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>
   for the Kerberos machine-identity side in more depth
 - read <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>

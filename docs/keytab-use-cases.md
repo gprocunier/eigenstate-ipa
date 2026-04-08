@@ -322,11 +322,11 @@ then rotates the principal again so the prior key material is dead.
 
 ```mermaid
 flowchart LR
-    start["controller job starts"] --> issue["issue or retrieve keytab"]
-    issue --> auth["kinit / Kerberos tickets"]
-    auth --> work["perform automation work"]
-    work --> retire["retrieve_mode='generate' to rotate again"]
-    retire --> end["prior keytab material no longer valid"]
+    job["Controller job"] --> issue["Issue or retrieve keytab"]
+    issue --> tickets["Obtain Kerberos tickets"]
+    tickets --> work["Run automation work"]
+    work --> rotate["Rotate principal keys again"]
+    rotate --> retired["Prior keytab material invalidated"]
 ```
 
 ```yaml
