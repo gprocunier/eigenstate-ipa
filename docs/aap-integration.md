@@ -12,6 +12,7 @@ Related docs:
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>&nbsp;&nbsp;VAULT/CYBERARK PRIMER&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>&nbsp;&nbsp;ROTATION USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>&nbsp;&nbsp;EPHEMERAL ACCESS CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
@@ -200,6 +201,18 @@ Best combination:
 
 That keeps `eigenstate.ipa` on the credential-generation boundary it was built
 for instead of turning it into a full enrollment role.
+
+### 6. Lease-like temporary access patterns
+
+AAP can orchestrate temporary access, but it is not the only control. The
+stronger patterns are the ones where IdM itself makes the identity unusable
+after the window closes:
+
+- delegated temporary users with expiry controls
+- dedicated Kerberos principals whose key material is retired by rotation
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
 
 ## Example Patterns
 

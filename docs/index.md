@@ -17,7 +17,7 @@ material, certificates, DNS, and access policy instead of forcing those
 surfaces into separate inventory files, ad hoc shell scripts, or external
 stores.
 
-Current release: `1.9.2`
+Current release: `1.9.3`
 
 ## Start Here
 
@@ -31,6 +31,8 @@ Use the collection-wide pages in this order when you are orienting yourself:
   if the workflow runs in Controller or an execution environment
 - <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
   if the question is scheduled lifecycle management rather than one lookup call
+- <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
+  if the question is temporary access or lease-like behavior inside IdM
 
 ## How The Docs Work
 
@@ -55,6 +57,7 @@ as workflows rather than as isolated plugins.
 | Service onboarding | `principal` pre-flight + `keytab` retrieval + optional `cert` issuance | [Principal Use Cases](https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html) |
 | TLS bootstrap and renewal | `cert` + `vault_write` for private key archival + `vault` retrieval | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) |
 | Static secret lifecycle | `vault_write` mutation + `vault` retrieval + AAP scheduling | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) |
+| Lease-like temporary access | delegated temporary users or `principal` + `keytab` retirement | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) |
 | Host enrollment | `otp` bootstrap + official IdM enrollment modules + `principal` verification | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) |
 | Policy validation before change | `hbacrule` + `selinuxmap` + `sudo` + optional `dns`/`principal` checks | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) |
 | Sealed artifact delivery | `cert` recipient + `vault_write` archive + `vault` retrieval | [Vault Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html) |
@@ -85,6 +88,8 @@ as workflows rather than as isolated plugins.
   explains the collection-wide rotation model for static assets
 - <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
   shows scheduled workflows built from the collection primitives
+- <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
+  explains IdM-native lease-like temporary access patterns for users and Kerberos principals
 
 ## Best Fit
 

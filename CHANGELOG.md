@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.3
+
+- added the collection-wide `ephemeral-access-capabilities` guide to frame delegated temporary users and Kerberos key retirement as IdM-native lease-like access patterns
+- linked the new temporary-access guidance into the docs home, documentation map, AAP integration guide, and Vault/CyberArk primer without collapsing those pages into circular comparison prose
+
 ## 1.9.2
 
 - refined the Vault/CyberArk primer to explain the Kerberos and keytab angle on the ephemeral-secrets gap: not dynamic leases, but a stronger machine-identity story when immediate key retirement fits the workflow

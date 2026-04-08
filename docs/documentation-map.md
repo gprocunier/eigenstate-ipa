@@ -13,7 +13,7 @@ description: >-
 Use this page when you know the problem category but do not yet know which
 collection page should be your first stop.
 
-Current release: `1.9.2`
+Current release: `1.9.3`
 
 ## Reading Model
 
@@ -39,6 +39,7 @@ reference pages from wandering into broad architectural prose.
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
 2. <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
 3. <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
+4. <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
 
 ### I already know the plugin and just need syntax
 
@@ -54,6 +55,7 @@ These are the collection combinations worth learning as flows.
 | Service onboarding and key material | [Principal Use Cases](https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html) | principal pre-flight is the gate before keytab and cert work |
 | TLS bootstrap and renewal | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) | cert issuance, retrieval, renewal, and vault-backed private-key handling |
 | Static secret lifecycle in Controller | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) | `vault_write`, `vault`, `keytab`, and `cert` in scheduled jobs |
+| Lease-like temporary access in IdM | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) | delegated temporary users plus Kerberos key retirement patterns without pretending they are dynamic secret leases |
 | Host enrollment | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) | OTP bootstrap plus official IdM enrollment modules and post-checks |
 | Policy validation before privileged change | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) | `hbacrule`, `selinuxmap`, `sudo`, `principal`, and `dns` as controller-side gates |
 | Vault or CyberArk displacement analysis | [Vault/CyberArk Primer](https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html) | comparison framing without pretending the collection is a lease engine or PAM suite |
@@ -111,6 +113,7 @@ These are the collection combinations worth learning as flows.
 - [Rotation Capabilities](https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html)
 - [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html)
 - [Vault/CyberArk Primer](https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html)
+- [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html)
 
 ## Reference By Area
 
