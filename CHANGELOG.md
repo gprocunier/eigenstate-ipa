@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.0
+
+- added inventory hostvar enrichment controls with `hostvars_enabled` and `hostvars_include`, plus validation tests and updated inventory guidance for real Ansible hostvar merge behavior
+- refactored the docs home, documentation map, and AAP integration pages around the current shipped plugin surface and the collection's highest-value controller-side workflows
+- refreshed the Vault/CyberArk primer to reflect the current collection state and tightened cross-plugin use cases for DNS plus principal/cert, sudo plus HBAC, and OTP plus vault recovery flows
+
 ## 1.8.2
 
 - updated the AAP integration guide to reflect the current collection surface, including `vault_write`, `dns`, `selinuxmap`, `sudo`, and `hbacrule`

@@ -39,8 +39,8 @@ description:
     (IDM/FreeIPA) hosts, hostgroups, netgroups, and HBAC rules.
   - IDM hostgroups, netgroups, and HBAC rules are mapped to Ansible
     groups with configurable prefixes.
-  - Host attributes from IDM are exposed as host variables with an
-    C(idm_) prefix.
+  - A curated set of host attributes from IDM is exposed as host
+    variables with a C(idm_) prefix.
   - Nested hostgroups are fully resolved when building group membership.
   - HBAC rules with C(hostcategory=all) automatically include all
     enrolled hosts.
@@ -141,6 +141,25 @@ options:
       IDM hosts are kept regardless of group membership.
     type: bool
     default: false
+  hostvars_enabled:
+    description: >-
+      Export curated IDM host attributes as C(idm_*) host variables.
+      Disable this when you only want host attribute export. Group
+      variables derived from hostgroups, netgroups, or HBAC rules may
+      still merge into hostvars during inventory processing.
+    type: bool
+    default: true
+  hostvars_include:
+    description: >-
+      Restrict exported host-attribute IDM variables to this
+      allowlist of C(idm_*) names. An empty list keeps the default
+      curated set. Group variables derived from generated inventory
+      groups are not filtered by this setting. Unknown variable names
+      are rejected so inventory config fails fast instead of silently
+      dropping requested metadata.
+    type: list
+    elements: str
+    default: []
   use_kerberos:
     description: >-
       Use Kerberos (GSSAPI) authentication instead of password
@@ -241,6 +260,16 @@ hostgroup_filter:
   - webservers
 host_filter_from_groups: true
 
+# Keep only selected host variables
+---
+plugin: eigenstate.ipa.idm
+server: idm-01.example.com
+ipaadmin_password: "{{ lookup('env', 'IPA_ADMIN_PASSWORD') }}"
+hostvars_include:
+  - idm_location
+  - idm_os
+  - idm_hostgroups
+
 # With caching enabled (useful for large IDM deployments)
 ---
 plugin: eigenstate.ipa.idm
@@ -337,6 +366,10 @@ _IPA_HOST_ATTRS = {
     'memberof_hostgroup':      ('idm_hostgroups', True),
 }
 
+_HOSTVAR_NAMES = {
+    var_name for var_name, _keep_list in _IPA_HOST_ATTRS.values()
+}
+
 
 class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
     """Dynamic inventory from Red Hat IDM / FreeIPA."""
@@ -349,6 +382,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         self._ipa_url = None
         self._verify = False
         self._hostgroup_members = {}
+        self._selected_host_attrs_cache = None
         self._ccache_path = None
         self._previous_ccache = None
         self._managing_ccache = False
@@ -671,11 +705,43 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
     # Inventory population
     # ------------------------------------------------------------------
 
+    def _selected_host_attrs(self):
+        """Return the configured subset of host attributes to export."""
+        if self._selected_host_attrs_cache is not None:
+            return self._selected_host_attrs_cache
+
+        if not self.get_option('hostvars_enabled'):
+            self._selected_host_attrs_cache = {}
+            return self._selected_host_attrs_cache
+
+        include = self.get_option('hostvars_include') or []
+        if not include:
+            self._selected_host_attrs_cache = _IPA_HOST_ATTRS
+            return self._selected_host_attrs_cache
+
+        unknown = sorted(set(include) - _HOSTVAR_NAMES)
+        if unknown:
+            raise AnsibleParserError(
+                "Unsupported hostvars_include value(s): %s. Valid names: %s"
+                % (
+                    ', '.join(unknown),
+                    ', '.join(sorted(_HOSTVAR_NAMES)),
+                )
+            )
+
+        allowed = set(include)
+        self._selected_host_attrs_cache = {
+            ipa_attr: (var_name, keep_list)
+            for ipa_attr, (var_name, keep_list) in _IPA_HOST_ATTRS.items()
+            if var_name in allowed
+        }
+        return self._selected_host_attrs_cache
+
     def _add_host(self, fqdn, host_data):
         """Add a single host to the Ansible inventory."""
         self.inventory.add_host(fqdn)
 
-        for ipa_attr, (var_name, keep_list) in _IPA_HOST_ATTRS.items():
+        for ipa_attr, (var_name, keep_list) in self._selected_host_attrs().items():
             if ipa_attr in host_data:
                 value = host_data[ipa_attr]
                 if keep_list:

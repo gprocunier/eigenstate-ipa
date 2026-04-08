@@ -21,8 +21,9 @@ Related docs:
 This reference covers:
 
 - what the plugin reads from IdM
-- how IdM objects are converted into Ansible groups and host vars
+- how IdM objects are converted into Ansible groups and curated `idm_*` host vars
 - how password auth and Kerberos auth differ operationally
+- how `hostvars_enabled` and `hostvars_include` control metadata export
 - when filters remove hosts from inventory versus only pruning groups
 
 The principal does not need to be a global IdM administrator. It does need the
@@ -34,6 +35,7 @@ read and auth rights required for the specific IdM objects you want to expose.
 - [Authentication Model](#authentication-model)
 - [Current Supported Options](#current-supported-options)
 - [How Groups Are Built](#how-groups-are-built)
+- [Host Variable Enrichment](#host-variable-enrichment)
 - [Filtering Behavior](#filtering-behavior)
 - [Minimal Examples](#minimal-examples)
 - [When To Read The Scenario Guide](#when-to-read-the-scenario-guide)
@@ -68,8 +70,9 @@ The inventory plugin reads the IdM JSON-RPC API and consumes four object classes
 - `netgroups`
 - `hbacrules`
 
-Host attributes are exposed as host variables with an `idm_` prefix. Group
-names created from IdM objects are sanitized into Ansible-safe names.
+The plugin exports a curated set of IdM host attributes as host variables with
+an `idm_` prefix. Group names created from IdM objects are sanitized into
+Ansible-safe names.
 
 ## Authentication Model
 
@@ -116,6 +119,8 @@ enrolled with IdM.
 | `netgroup_prefix` | Prefix for netgroup-derived Ansible groups |
 | `hbacrule_prefix` | Prefix for HBAC-derived Ansible groups |
 | `host_filter_from_groups` | Removes hosts that do not land in any selected generated group |
+| `hostvars_enabled` | Enables curated `idm_*` host variable export |
+| `hostvars_include` | Allowlist of exported `idm_*` host variable names |
 
 The plugin also supports standard constructed-inventory features such as:
 
@@ -129,15 +134,7 @@ The plugin also supports standard constructed-inventory features such as:
 ### Hosts
 
 When `sources` includes `hosts`, every enrolled IdM host is added to inventory.
-Important host attributes are mapped to variables such as:
-
-- `idm_fqdn`
-- `idm_description`
-- `idm_location`
-- `idm_os`
-- `idm_hostgroups`
-- `idm_ssh_public_keys`
-- `idm_krbprincipalname`
+The plugin then applies the curated hostvar export policy described below.
 
 ### Hostgroups
 
@@ -170,6 +167,48 @@ The plugin resolves:
 - `hostcategory=all` as all enrolled hosts
 
 Disabled rules are skipped unless `include_disabled_hbacrules: true`.
+
+## Host Variable Enrichment
+
+The inventory plugin does not dump every raw IPA attribute into hostvars. It
+exports a curated set of automation-friendly fields under `idm_*` names.
+
+Default curated variables:
+
+| Host var | Meaning |
+| --- | --- |
+| `idm_fqdn` | Enrolled host FQDN |
+| `idm_description` | Host description |
+| `idm_locality` | LDAP locality field |
+| `idm_location` | IdM host location |
+| `idm_platform` | Hardware platform |
+| `idm_os` | Operating system version |
+| `idm_krbcanonicalname` | Canonical Kerberos principal name |
+| `idm_has_keytab` | Whether a host keytab is present |
+| `idm_has_password` | Whether a host password exists |
+| `idm_serverhostname` | Server-side hostname field |
+| `idm_dn` | LDAP distinguished name |
+| `idm_krb_ok_as_delegate` | Kerberos OK-AS-DELEGATE flag |
+| `idm_krb_requires_preauth` | Kerberos preauth requirement |
+| `idm_ssh_public_keys` | SSH public keys |
+| `idm_krbprincipalname` | Principal aliases |
+| `idm_managedby` | Managing hosts |
+| `idm_hostgroups` | Direct IdM hostgroup membership |
+
+Control knobs:
+
+- `hostvars_enabled: true` keeps hostvar enrichment on by default
+- `hostvars_enabled: false` disables host attribute export from IdM host objects
+- `hostvars_include:` narrows host attribute export to a specific allowlist of `idm_*` names
+
+> [!NOTE]
+> `hostvars_include` accepts the exported `idm_*` variable names, not the raw
+> LDAP or IPA attribute names. Unknown names fail fast during inventory parsing.
+>
+> Live bastion validation against `idm-01.workshop.lan` showed that these
+> settings only control host-level enrichment. Group variables from generated
+> hostgroups or HBAC groups can still merge into the final hostvars view because
+> that merge happens later in normal Ansible inventory processing.
 
 ## Filtering Behavior
 
@@ -233,6 +272,21 @@ compose:
   ansible_host: idm_fqdn
 groups:
   has_keytab: idm_has_keytab | default(false)
+```
+
+Trim hostvar export to only what the job needs:
+
+```yaml
+plugin: eigenstate.ipa.idm
+server: idm-01.example.com
+ipaadmin_password: "{{ lookup('env', 'IPA_ADMIN_PASSWORD') }}"
+verify: /etc/ipa/ca.crt
+sources:
+  - hosts
+hostvars_include:
+  - idm_location
+  - idm_os
+  - idm_hostgroups
 ```
 
 ## When To Read The Scenario Guide

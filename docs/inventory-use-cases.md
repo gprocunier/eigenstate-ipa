@@ -34,9 +34,10 @@ that scope.
 - [2. Role-Based Application Deployment](#2-role-based-application-deployment)
 - [3. Nested Application Tier Maintenance](#3-nested-application-tier-maintenance)
 - [4. Patch By Metadata Rather Than Named Group](#4-patch-by-metadata-rather-than-named-group)
-- [5. Access-Scope Audit](#5-access-scope-audit)
-- [6. Policy-Scoped SSH Hardening](#6-policy-scoped-ssh-hardening)
-- [7. Estate-Wide Policy Coverage Check](#7-estate-wide-policy-coverage-check)
+- [5. Keep AAP Inventory Sync Metadata Narrow](#5-keep-aap-inventory-sync-metadata-narrow)
+- [6. Access-Scope Audit](#6-access-scope-audit)
+- [7. Policy-Scoped SSH Hardening](#7-policy-scoped-ssh-hardening)
+- [8. Estate-Wide Policy Coverage Check](#8-estate-wide-policy-coverage-check)
 - [Kerberos Is A Good Default Here](#kerberos-is-a-good-default-here)
 
 ## Use Case Flow
@@ -231,7 +232,47 @@ Kerberos pays off here because it lets a non-admin operator run the same
 inventory source repeatedly from AAP or a bastion without storing a password in
 the playbook.
 
-## 5. Access-Scope Audit
+## 5. Keep AAP Inventory Sync Metadata Narrow
+
+When Automation Controller only needs a small metadata surface for smart
+inventories or grouped targeting, keep the inventory plugin on `hosts` and
+trim the exported `idm_*` variables.
+
+```mermaid
+flowchart LR
+    IDM["IdM hosts"] --> INV["sources: [hosts]"]
+    INV --> FILTER["hostvars_include"]
+    FILTER --> AAP["lean synced inventory"]
+```
+
+Inventory:
+
+```yaml
+plugin: eigenstate.ipa.idm
+server: idm-01.corp.example.com
+use_kerberos: true
+kerberos_keytab: /runner/env/ipa/admin.keytab
+verify: /etc/ipa/ca.crt
+sources:
+  - hosts
+hostvars_include:
+  - idm_location
+  - idm_os
+  - idm_hostgroups
+keyed_groups:
+  - key: idm_location
+    prefix: dc
+    separator: "_"
+```
+
+Why this helps:
+
+- the synced inventory stays readable instead of carrying every available IdM host field
+- AAP smart inventories and templates still get the metadata they need
+- the exported hostvar contract becomes stable enough to document and reuse across jobs
+- generated group vars such as HBAC or hostgroup descriptions still merge normally, so this trims host metadata without breaking group context
+
+## 6. Access-Scope Audit
 
 When the question is who can reach the systems, use netgroups.
 
@@ -272,7 +313,7 @@ This is not a global-admin task. It is a jurisdictional audit task: a delegated
 operator can inspect the hosts their team may touch without needing broader
 IdM privileges.
 
-## 6. Policy-Scoped SSH Hardening
+## 7. Policy-Scoped SSH Hardening
 
 When the target boundary is the policy itself, use HBAC rules.
 
@@ -312,7 +353,7 @@ For non-admin teams, this is the common pattern: the HBAC rule already encodes
 the scope they are allowed to manage, and the collection simply turns that
 policy into a target set.
 
-## 7. Estate-Wide Policy Coverage Check
+## 8. Estate-Wide Policy Coverage Check
 
 When an HBAC rule uses `hostcategory=all`, the group becomes an easy audit and
 validation boundary.

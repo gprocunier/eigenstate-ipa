@@ -26,10 +26,35 @@ def _load_inventory_module():
     return module
 
 
+class FakeInventory:
+    def __init__(self):
+        self.hosts = {}
+
+    def add_host(self, name, group=None):
+        self.hosts.setdefault(name, {"groups": set(), "vars": {}})
+        if group is not None:
+            self.hosts[name]["groups"].add(group)
+
+    def set_variable(self, name, key, value):
+        self.hosts.setdefault(name, {"groups": set(), "vars": {}})
+        self.hosts[name]["vars"][key] = value
+
+
 class InventoryPluginTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.mod = _load_inventory_module()
+
+    def _inventory_with_options(self, **options):
+        inventory = self.mod.InventoryModule()
+        inventory.inventory = FakeInventory()
+        defaults = {
+            "hostvars_enabled": True,
+            "hostvars_include": [],
+        }
+        defaults.update(options)
+        inventory.get_option = lambda name: defaults[name]
+        return inventory
 
     def test_resolve_verify_uses_explicit_path(self):
         inventory = self.mod.InventoryModule()
@@ -119,6 +144,84 @@ class InventoryPluginTests(unittest.TestCase):
                     "kerberos_keytab",
                 )
         warning.assert_not_called()
+
+    def test_selected_host_attrs_returns_default_curated_set(self):
+        inventory = self._inventory_with_options()
+        self.assertEqual(inventory._selected_host_attrs(), self.mod._IPA_HOST_ATTRS)
+
+    def test_selected_host_attrs_can_be_disabled(self):
+        inventory = self._inventory_with_options(hostvars_enabled=False)
+        self.assertEqual(inventory._selected_host_attrs(), {})
+
+    def test_selected_host_attrs_filters_to_allowlist(self):
+        inventory = self._inventory_with_options(
+            hostvars_include=["idm_location", "idm_hostgroups"],
+        )
+        self.assertEqual(
+            inventory._selected_host_attrs(),
+            {
+                "nshostlocation": ("idm_location", False),
+                "memberof_hostgroup": ("idm_hostgroups", True),
+            },
+        )
+
+    def test_selected_host_attrs_rejects_unknown_allowlist_values(self):
+        inventory = self._inventory_with_options(
+            hostvars_include=["idm_location", "idm_not_real"],
+        )
+        with self.assertRaises(self.mod.AnsibleParserError) as ctx:
+            inventory._selected_host_attrs()
+        self.assertIn("idm_not_real", str(ctx.exception))
+
+    def test_add_host_exports_curated_hostvars(self):
+        inventory = self._inventory_with_options()
+        inventory._add_host(
+            "web-01.corp.example.com",
+            {
+                "fqdn": ["web-01.corp.example.com"],
+                "nshostlocation": ["DC East"],
+                "memberof_hostgroup": ["webservers", "prod"],
+                "ipasshpubkey": ["ssh-ed25519 AAAA..."],
+            },
+        )
+        host = inventory.inventory.hosts["web-01.corp.example.com"]
+        self.assertEqual(host["vars"]["idm_fqdn"], "web-01.corp.example.com")
+        self.assertEqual(host["vars"]["idm_location"], "DC East")
+        self.assertEqual(host["vars"]["idm_hostgroups"], ["webservers", "prod"])
+        self.assertEqual(host["vars"]["idm_ssh_public_keys"], ["ssh-ed25519 AAAA..."])
+
+    def test_add_host_respects_hostvars_include(self):
+        inventory = self._inventory_with_options(
+            hostvars_include=["idm_location", "idm_hostgroups"],
+        )
+        inventory._add_host(
+            "web-01.corp.example.com",
+            {
+                "fqdn": ["web-01.corp.example.com"],
+                "nshostlocation": ["DC East"],
+                "memberof_hostgroup": ["webservers", "prod"],
+            },
+        )
+        hostvars = inventory.inventory.hosts["web-01.corp.example.com"]["vars"]
+        self.assertEqual(
+            hostvars,
+            {
+                "idm_location": "DC East",
+                "idm_hostgroups": ["webservers", "prod"],
+            },
+        )
+
+    def test_add_host_skips_hostvars_when_disabled(self):
+        inventory = self._inventory_with_options(hostvars_enabled=False)
+        inventory._add_host(
+            "web-01.corp.example.com",
+            {
+                "fqdn": ["web-01.corp.example.com"],
+                "nshostlocation": ["DC East"],
+            },
+        )
+        host = inventory.inventory.hosts["web-01.corp.example.com"]
+        self.assertEqual(host["vars"], {})
 
 
 if __name__ == "__main__":

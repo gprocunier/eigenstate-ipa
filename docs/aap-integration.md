@@ -9,102 +9,62 @@ title: AAP Integration
 
 Related docs:
 
-<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>&nbsp;&nbsp;INVENTORY PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-plugin.html"><kbd>&nbsp;&nbsp;VAULT WRITE MODULE&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html"><kbd>&nbsp;&nbsp;PRINCIPAL PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>&nbsp;&nbsp;IDM CERT PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>&nbsp;&nbsp;OTP PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/dns-plugin.html"><kbd>&nbsp;&nbsp;DNS PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html"><kbd>&nbsp;&nbsp;SELINUX MAP PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html"><kbd>&nbsp;&nbsp;SUDO PLUGIN&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html"><kbd>&nbsp;&nbsp;HBAC RULE PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>&nbsp;&nbsp;VAULT/CYBERARK PRIMER&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>&nbsp;&nbsp;ROTATION USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>&nbsp;&nbsp;INVENTORY USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
 
-This page describes how to run `eigenstate.ipa` inside Ansible Automation
-Platform / Automation Controller.
+This page explains how `eigenstate.ipa` fits into Ansible Automation Platform
+and Automation Controller.
 
-It covers:
+The important boundary is simple: the collection is mostly controller-side.
+The execution environment talks directly to IdM. Managed hosts usually consume
+artifacts or decisions that were produced on the controller.
 
-- what must exist in the execution environment
-- how to authenticate non-interactively
-- how the current inventory, lookup, and module surfaces map into controller jobs
-- what runtime patterns fit inventory syncs, secret retrieval, pre-flight checks, and static-secret workflows
+Use this page for:
 
-## Contents
+- execution-environment dependency planning
+- non-interactive authentication guidance
+- the controller-side workflows that are actually worth standardizing
+- the handoff point between `eigenstate.ipa` and the official IdM collections
 
-- [Controller Integration Model](#controller-integration-model)
-- [Current AAP-Capable Collection Surface](#current-aap-capable-collection-surface)
-- [Execution Environment Requirements](#execution-environment-requirements)
-- [Authentication Guidance](#authentication-guidance)
-- [Inventory Source Pattern](#inventory-source-pattern)
-- [Lookup Pattern](#lookup-pattern)
-- [Vault Write Module Pattern](#vault-write-module-pattern)
-- [Credential-Source And Runtime Secret Pattern](#credential-source-and-runtime-secret-pattern)
-- [Policy And Pre-Flight Pattern](#policy-and-pre-flight-pattern)
-- [Operational Guardrails](#operational-guardrails)
+Use plugin pages for exact options. Use use-case pages for full playbook detail.
+This page is the control-plane view.
 
-## Controller Integration Model
+## Controller Model
 
 ```mermaid
 flowchart LR
-    ctrl["Controller job or inventory sync"]
-    cred["Controller credential
-password or keytab"]
-    ee["Execution environment"]
-    inv["idm inventory"]
-    vault["vault lookup"]
-    write["vault_write module"]
-    principal["principal lookup"]
-    keytab["keytab lookup"]
-    cert["cert lookup"]
-    otp["otp lookup"]
-    dns["dns lookup"]
-    selinux["selinuxmap lookup"]
-    sudo["sudo lookup"]
-    hbac["hbacrule lookup"]
-    idm["IdM / FreeIPA"]
-
-    ctrl --> ee
-    cred --> ee
-    ee --> inv
-    ee --> vault
-    ee --> write
-    ee --> principal
-    ee --> keytab
-    ee --> cert
-    ee --> otp
-    ee --> dns
-    ee --> selinux
-    ee --> sudo
-    ee --> hbac
-    inv --> idm
-    vault --> idm
+    ctrl["Controller job or inventory sync"] --> ee["Execution environment"]
+    cred["Mounted keytab or password credential"] --> ee
+    ee --> inv["idm inventory"]
+    ee --> lookups["lookup plugins"]
+    ee --> write["vault_write module"]
+    inv --> idm["IdM / FreeIPA"]
+    lookups --> idm
     write --> idm
-    principal --> idm
-    keytab --> idm
-    cert --> idm
-    otp --> idm
-    dns --> idm
-    selinux --> idm
-    sudo --> idm
-    hbac --> idm
 ```
 
-## Current AAP-Capable Collection Surface
+The collection is strongest when AAP supplies:
 
-The current collection splits into three controller-side execution shapes.
+- the schedule
+- the execution environment image
+- credential injection
+- approvals and job boundaries
+- repeatable controller-side execution
 
-### Inventory plugin
+That is the part of the stack that makes IdM-backed workflows feel operationally
+coherent instead of ad hoc.
+
+## Current Controller-Side Surface
+
+### Inventory
 
 - `eigenstate.ipa.idm`
 
 ### `ipalib`-backed lookups and module
-
-These require the IdM client Python stack in the execution environment.
 
 - `eigenstate.ipa.vault`
 - `eigenstate.ipa.vault_write`
@@ -118,94 +78,139 @@ These require the IdM client Python stack in the execution environment.
 
 ### CLI-backed lookup
 
-This shells out to platform IPA tooling instead of `ipalib`.
-
 - `eigenstate.ipa.keytab`
 
-The important AAP boundary is that all of these are controller-side surfaces.
-The execution environment talks to IdM directly; the managed hosts do not need
-these libraries just because the job uses the collection.
+The official IdM collections still matter beside this surface. They remain the
+right place for enrollment, broad CRUD against IdM objects, and cert revocation.
+`eigenstate.ipa` is the read-heavy and workflow-focused layer around those
+operations.
 
 ## Execution Environment Requirements
 
-The current collection implies two dependency families plus the HTTP inventory
-stack.
-
-### Inventory plugin stack
-
-For `eigenstate.ipa.idm`:
-
-- `python3-requests`
-- either `python3-requests-gssapi` or `python3-requests-kerberos` for Kerberos mode
-- `python3-gssapi`
-- `krb5-workstation` when keytab-driven `kinit` is needed
-
-### `ipalib` stack
-
-For `vault`, `vault_write`, `principal`, `cert`, `otp`, `dns`, `selinuxmap`,
-`sudo`, and `hbacrule`:
-
-- `python3-ipalib`
-- `python3-ipaclient`
-- `krb5-workstation` when password-driven or keytab-driven ticket acquisition is needed
+| Surface | EE requirements | Notes |
+| --- | --- | --- |
+| `idm` inventory | `python3-requests`; `python3-gssapi`; `python3-requests-gssapi` or `python3-requests-kerberos`; `krb5-workstation` when keytab-driven `kinit` is used | inventory does not require `ipalib` |
+| `vault`, `vault_write`, `principal`, `cert`, `otp`, `dns`, `selinuxmap`, `sudo`, `hbacrule` | `python3-ipalib`; `python3-ipaclient`; `krb5-workstation` for ticket acquisition | these share the same IdM Python stack |
+| `keytab` | package providing `ipa-getkeytab`; `krb5-workstation` | on RHEL 10 this is `ipa-client` |
 
 > [!IMPORTANT]
-> If the execution environment is missing `python3-ipalib` or
-> `python3-ipaclient`, the inventory plugin may still work while every IdM
-> lookup or module fails. Inventory and the `ipalib` surfaces do not share the
-> same dependency stack.
+> Inventory can work while the `ipalib`-backed surfaces fail if the EE only
+> contains the HTTP stack. That split is deliberate in the collection, so the
+> EE image has to be deliberate too.
 
-### Keytab tooling stack
-
-For `eigenstate.ipa.keytab`:
-
-- on RHEL 10, `ipa-client` (provides `ipa-getkeytab` there)
-- on other execution-environment bases, the package that provides `ipa-getkeytab`
-- `krb5-workstation` when password-driven or keytab-driven ticket acquisition is needed
-
-> [!NOTE]
-> The keytab lookup does not require `python3-ipalib` or `python3-ipaclient`.
-> It shells out to `ipa-getkeytab` directly.
-
-### Practical EE build rule
-
-For most controller estates, the easiest stable execution environment is one
-that contains all three groups so inventory syncs, secret retrieval, policy
-checks, vault lifecycle jobs, and keytab workflows can run from the same image.
+For most estates, the simplest stable Controller posture is one EE containing
+all three dependency groups.
 
 ## Authentication Guidance
 
-For controller use, prefer Kerberos with a keytab over plaintext password auth.
+Prefer Kerberos with a mounted keytab.
 
 Why:
 
-- no interactive `kinit`
-- cleaner non-interactive execution
-- consistent behavior for inventory syncs and job runs
-- one credential shape works across the inventory plugin, the `ipalib` surfaces, and the keytab lookup
+- the same credential shape works for inventory, lookups, `vault_write`, and `keytab`
+- it avoids reusable plaintext admin passwords in job templates
+- it works for inventory syncs and normal job runs
+- it fits Controller credential injection cleanly
 
 Recommended pattern:
 
-- store the keytab as a controller credential-managed file
-- inject it into the execution environment at runtime
-- point `kerberos_keytab` at that mounted path
-- set `ipaadmin_principal` explicitly when needed
-- provide `verify` with the IdM CA path
+- store the keytab as a Controller-managed credential file
+- mount it into the EE at runtime
+- set `kerberos_keytab` explicitly in the inventory source or task
+- mount the IdM CA and set `verify`
+- set `ipaadmin_principal` explicitly when ambiguity is possible
 
-Password auth still works for the inventory plugin and the `ipalib` surfaces,
-but it is the weaker controller posture.
+## High-Value Controller Workflows
 
-## Inventory Source Pattern
+These are the combinations worth documenting and standardizing. They are the
+places where the collection becomes a coherent controller workflow instead of isolated plugin calls.
 
-Example controller inventory source content:
+### 1. Identity-driven inventory sync
+
+Use `eigenstate.ipa.idm` to make Controller inventory follow the IdM model
+instead of a second static host list.
+
+High-value combinations:
+
+- `hosts` + `hostvars_include` for lean synced metadata
+- `hostgroups`, `netgroups`, or `hbacrules` for security- or role-shaped targeting
+- `keyed_groups` over `idm_location`, `idm_os`, or `idm_hostgroups` for smart inventory input
+
+Guardrail:
+
+- `hostvars_enabled` and `hostvars_include` only control host attribute export
+- Ansible can still merge group-derived vars into final hostvars later in the inventory process
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>INVENTORY USE CASES</kbd></a>
+
+### 2. Pre-flight gate before changing systems
+
+Use lookups on the controller before any managed host work starts.
+
+Best combinations:
+
+- `dns` to verify name state the workflow depends on
+- `principal` to confirm the principal exists and is usable
+- `hbacrule` to test whether access is actually allowed
+- `selinuxmap` and `sudo` to confirm confinement and privilege shape
+
+This is one of the collection's strongest differentiated patterns. Vault and
+CyberArk can answer credential questions. They do not answer live IdM policy
+questions for a host, service, or login path.
+
+### 3. Service onboarding
+
+Use `principal` as the gate, then branch into the artifact you actually need:
+
+- `keytab` for Kerberos service onboarding
+- `cert` for X.509 issuance
+- `vault_write` when the workflow must archive a private key or related bootstrap secret
+
+This keeps identity state, key material, and cert issuance in one controller
+flow instead of scattering them across shell tasks.
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html"><kbd>PRINCIPAL USE CASES</kbd></a>
+
+### 4. Static secret lifecycle
+
+Use `vault_write` for mutation and `vault` for retrieval. Let AAP supply the
+schedule, approvals, execution boundary, and credentials.
+
+This is the correct answer to the collection's rotation story:
+
+- no native lease engine
+- yes controller-scheduled rotation workflows for static IdM-backed assets
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
+
+### 5. Host enrollment and first-day trust
+
+Use `otp` to generate the enrollment credential, then hand the actual
+installation to the official IdM collections.
+
+Best combination:
+
+- `eigenstate.ipa.otp` for the one-time host password
+- `freeipa.ansible_freeipa.ipahost` or `redhat.rhel_idm.ipahost` to ensure the host object exists
+- `freeipa.ansible_freeipa.ipaclient` or `redhat.rhel_idm.ipaclient` for enrollment
+- `principal` afterward if the workflow needs a post-enrollment check
+
+That keeps `eigenstate.ipa` on the credential-generation boundary it was built
+for instead of turning it into a full enrollment role.
+
+## Example Patterns
+
+### Lean inventory source for Controller
 
 ```yaml
 plugin: eigenstate.ipa.idm
 server: idm-01.corp.example.com
 use_kerberos: true
 kerberos_keytab: /runner/env/ipa/admin.keytab
-ipaadmin_principal: admin
-verify: /runner/env/ipa/ca.crt
+verify: /etc/ipa/ca.crt
 sources:
   - hosts
   - hostgroups
@@ -213,112 +218,111 @@ hostgroup_filter:
   - webservers
   - databases
 host_filter_from_groups: true
-compose:
-  ansible_host: idm_fqdn
+hostvars_include:
+  - idm_fqdn
+  - idm_location
+  - idm_hostgroups
+keyed_groups:
+  - key: idm_location
+    prefix: dc
+    separator: "_"
 ```
 
-## Lookup Pattern
-
-The general lookup pattern in AAP is the same across the current read-only
-surfaces: resolve data at job runtime inside the execution environment and keep
-IdM as the source of truth.
+### Controller-side policy gate before maintenance
 
 ```yaml
-- name: Load controller-side IdM state
-  ansible.builtin.set_fact:
-    db_password: "{{ lookup('eigenstate.ipa.vault',
-                     'database-password',
-                     server='idm-01.corp.example.com',
-                     kerberos_keytab='/runner/env/ipa/admin.keytab',
-                     shared=true,
-                     verify='/runner/env/ipa/ca.crt') }}"
-    principal_state: "{{ lookup('eigenstate.ipa.principal',
-                          'host/app-01.corp.example.com',
-                          server='idm-01.corp.example.com',
-                          kerberos_keytab='/runner/env/ipa/admin.keytab',
-                          verify='/runner/env/ipa/ca.crt') }}"
-    dns_record: "{{ lookup('eigenstate.ipa.dns',
-                     'idm-01',
-                     zone='corp.example.com',
-                     server='idm-01.corp.example.com',
-                     kerberos_keytab='/runner/env/ipa/admin.keytab',
-                     verify='/runner/env/ipa/ca.crt') }}"
-```
+- name: Pre-flight gate before privileged maintenance
+  hosts: localhost
+  gather_facts: false
 
-The same controller-mounted keytab pattern also applies to `cert`, `otp`,
-`selinuxmap`, `sudo`, and `hbacrule`.
-
-## Vault Write Module Pattern
-
-`eigenstate.ipa.vault_write` runs cleanly in AAP as a controller-side module
-when the execution environment already contains the `ipalib` stack.
-
-```yaml
-- name: Archive a new shared vault secret version from Controller
-  eigenstate.ipa.vault_write:
-    state: archived
-    name: database-password
-    scope: shared
-    vault_type: standard
-    value: "{{ rotated_value }}"
-    server: idm-01.corp.example.com
-    kerberos_keytab: /runner/env/ipa/admin.keytab
-    ipaadmin_principal: admin
-    verify: /runner/env/ipa/ca.crt
-```
-
-This is the normal module shape for scheduled static-secret workflows in AAP:
-Controller supplies the schedule, keytab credential, approval path, and job
-boundary; IdM remains the system of record.
-
-## Credential-Source And Runtime Secret Pattern
-
-One AAP pattern is to use the IdM vault lookup inside a custom credential type
-injector or job-vars resolution path.
-
-That works well when:
-
-- a controller-managed job needs a secret only at runtime
-- the secret should remain in IdM rather than being copied into controller storage
-- the same secret should resolve differently by scope or by rotated value over time
-
-The same broad idea also applies to OTP bootstrap values and keytab retrieval,
-with the normal caveat that returned keytabs, OTP URIs, and enrollment passwords
-should be treated as secret material in controller logs and survey output.
-
-## Policy And Pre-Flight Pattern
-
-AAP jobs can also use the collection as a controller-side validation layer
-before touching managed infrastructure.
-
-Common fits:
-
-- `principal` before keytab or certificate workflows
-- `dns` before deployment or enrollment steps that depend on forward or reverse records
-- `sudo`, `selinuxmap`, and `hbacrule` before compliance or access-sensitive changes
-- `cert` for scheduled expiry search and reporting
-
-```yaml
-- name: Validate IdM policy and name state before deploy
-  ansible.builtin.assert:
-    that:
-      - dns_record.exists
-      - principal_state.exists
-      - hbac_test.denied == false
   vars:
-    dns_record: "{{ lookup('eigenstate.ipa.dns', 'app-01', zone='corp.example.com', server='idm-01.corp.example.com', kerberos_keytab='/runner/env/ipa/admin.keytab', verify='/runner/env/ipa/ca.crt') }}"
-    principal_state: "{{ lookup('eigenstate.ipa.principal', 'host/app-01.corp.example.com', server='idm-01.corp.example.com', kerberos_keytab='/runner/env/ipa/admin.keytab', verify='/runner/env/ipa/ca.crt') }}"
-    hbac_test: "{{ lookup('eigenstate.ipa.hbacrule', operation='test', user='deploysvc', targethost='app-01.corp.example.com', service='sshd', server='idm-01.corp.example.com', kerberos_keytab='/runner/env/ipa/admin.keytab', verify='/runner/env/ipa/ca.crt') }}"
+    target_host: app01.corp.example.com
+    deploy_identity: svc-maintenance
+
+  tasks:
+    - name: Confirm sudo rule exists
+      ansible.builtin.set_fact:
+        sudo_rule: "{{ lookup('eigenstate.ipa.sudo',
+                        'ops-maintenance',
+                        sudo_object='rule',
+                        server='idm-01.corp.example.com',
+                        kerberos_keytab='/runner/env/ipa/admin.keytab',
+                        verify='/etc/ipa/ca.crt') }}"
+
+    - name: Confirm HBAC access would be granted
+      ansible.builtin.set_fact:
+        access_result: "{{ lookup('eigenstate.ipa.hbacrule',
+                            deploy_identity,
+                            operation='test',
+                            targethost=target_host,
+                            service='sshd',
+                            server='idm-01.corp.example.com',
+                            kerberos_keytab='/runner/env/ipa/admin.keytab',
+                            verify='/etc/ipa/ca.crt') }}"
+
+    - name: Assert policy is ready
+      ansible.builtin.assert:
+        that:
+          - sudo_rule.exists
+          - sudo_rule.enabled
+          - not access_result.denied
+        fail_msg: "IdM policy does not match the maintenance workflow boundary."
 ```
 
-## Operational Guardrails
+### Scheduled static secret update
 
-- keep the IdM CA available inside the execution environment and set `verify`
-- prefer keytab auth for repeatable non-interactive jobs
-- build one EE that includes the inventory HTTP stack, the `ipalib` stack, and `ipa-getkeytab` unless you have a reason to split them
-- treat returned keytabs, OTP URIs, enrollment passwords, and vault values as secret material in Controller output and callbacks
-- keep vault ownership scope explicit when ambiguity is possible
-- remember that `vault_write` is controller-side mutation of static IdM-backed assets, not a lease engine
-- remember that the collection reads and writes against IdM from the EE; managed hosts do not need these client libraries unless your play itself also uses them locally
+```yaml
+- name: Rotate a shared application secret
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Generate replacement secret
+      ansible.builtin.set_fact:
+        new_secret: "{{ lookup('community.general.random_string', length=32, special=false) }}"
+      no_log: true
+
+    - name: Archive replacement in IdM vault
+      eigenstate.ipa.vault_write:
+        name: app-secret
+        state: archived
+        shared: true
+        data: "{{ new_secret }}"
+        server: idm-01.corp.example.com
+        kerberos_keytab: /runner/env/ipa/admin.keytab
+        verify: /etc/ipa/ca.crt
+      no_log: true
+```
+
+## Where The Official IdM Collections Fit
+
+Use the official collections when the job is primarily object management rather
+than lookup-driven decision making.
+
+Typical examples:
+
+- host creation and enrollment
+- user, group, HBAC, sudo, or DNS CRUD
+- certificate revocation
+- large structural IdM configuration roles
+
+Use `eigenstate.ipa` when the job is primarily:
+
+- inventory shaping
+- secret retrieval or vault mutation
+- state inspection
+- live access testing
+- pre-flight gating
+- controller-side orchestration around IdM state
+
+## Guardrails
+
+To keep the docs and the workflows clear:
+
+- keep EE dependency detail here, not copied into every plugin page
+- keep exact parameter reference in plugin pages
+- keep cross-plugin flow in use-case pages and collection-wide guides
+- do not describe AAP as if it creates dynamic secret leases; it schedules and packages static workflows
+- do not describe `hostvars_enabled: false` as "empty hostvars"; it only stops host attribute export from IdM host objects
 
 {% endraw %}

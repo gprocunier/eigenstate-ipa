@@ -2,175 +2,100 @@
 layout: default
 title: eigenstate.ipa
 description: >-
-  Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory,
-  IdM vault lookup, Kerberos principal state, Kerberos keytab delivery,
-  certificate automation, OTP workflows, DNS record inspection,
-  sudo policy inspection, SELinux user map inspection, HBAC rule inspection and access testing,
-  IdM vault lifecycle automation,
-  AAP integration, and secure secret retrieval.
+  Ansible collection for Red Hat IdM / FreeIPA covering inventory, vault
+  retrieval and lifecycle, Kerberos principal and keytab workflows,
+  certificates, OTP, DNS, sudo, SELinux maps, and HBAC policy validation.
 ---
 
 {% raw %}
 
 # eigenstate.ipa
 
-`eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. I use it
-to treat IdM as more than an authentication service. The collection turns IdM
-into a source of inventory, policy context, Kerberos material, certificate
-automation, OTP state, and vault-backed secret retrieval for Ansible and AAP.
+`eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It treats
+IdM as a live automation system of record for inventory, secrets, Kerberos
+material, certificates, DNS, and access policy instead of forcing those
+surfaces into separate inventory files, ad hoc shell scripts, or external
+stores.
 
-## Collection Scope
-
-The collection covers eleven main areas:
-
-- dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
-- IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and AAP
-- Kerberos principal state inspection for user, host, and service objects
-- Kerberos keytab retrieval for host and service principals
-- IdM CA certificate request, retrieval, and expiry search through the Dogtag backend
-- OTP token issue, lookup, revoke, and host enrollment password generation
-- IdM DNS record inspection for forward, reverse, broad zone, and zone-apex validation
-- IdM vault lifecycle management for create, archive, update, and delete flows
-- SELinux user map inspection for confinement model pre-flight and audit
-- sudo policy inspection for rules, commands, and command groups
-- HBAC rule inspection and live access testing via the FreeIPA hbactest engine
-
-It fits environments that already use IdM for host data, policy context, and
-runtime secret retrieval.
-
-## Current Release
-
-- `1.8.2`
-- updates the AAP integration guide to reflect the current collection surface,
-  including `vault_write`, `dns`, `selinuxmap`, `sudo`, and `hbacrule`
-- reorganizes the AAP page around the actual execution-environment dependency
-  stacks and current controller-side runtime patterns
-- refreshes the release metadata for the published AAP documentation update
+Current release: `1.9.0`
 
 ## Start Here
 
-<a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>COLLECTION OVERVIEW</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>DOCUMENTATION MAP</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
+Use the collection-wide pages in this order when you are orienting yourself:
 
-Read the primer first, then move to the rotation and AAP pages if you are
-still mapping controller behavior, scheduling, or static-secret workflows.
+- <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>DOCUMENTATION MAP</kbd></a>
+  for reading order and problem-based navigation
+- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
+  if you are translating Vault or CyberArk expectations into an IdM-native model
+- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
+  if the workflow runs in Controller or an execution environment
+- <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
+  if the question is scheduled lifecycle management rather than one lookup call
+
+## How The Docs Work
+
+Every plugin area uses the same three-page shape:
+
+- `plugin` pages for exact syntax, auth behavior, return data, and option details
+- `capabilities` pages for decision boundaries and operational fit
+- `use cases` pages for worked playbook patterns and cross-plugin flow
+
+That split is intentional. The reference pages should stay precise. The
+capability pages should answer "is this the right boundary?" The use-case pages
+should show how the pieces combine without restating the full reference.
+
+## High-Value Workflows
+
+These are the combinations that matter most in practice and are worth reading
+as workflows rather than as isolated plugins.
+
+| Workflow | Main combination | Start here |
+| --- | --- | --- |
+| Identity-driven targeting | `idm` inventory + host metadata + HBAC-backed grouping | [Inventory Use Cases](https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html) |
+| Service onboarding | `principal` pre-flight + `keytab` retrieval + optional `cert` issuance | [Principal Use Cases](https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html) |
+| TLS bootstrap and renewal | `cert` + `vault_write` for private key archival + `vault` retrieval | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) |
+| Static secret lifecycle | `vault_write` mutation + `vault` retrieval + AAP scheduling | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) |
+| Host enrollment | `otp` bootstrap + official IdM enrollment modules + `principal` verification | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) |
+| Policy validation before change | `hbacrule` + `selinuxmap` + `sudo` + optional `dns`/`principal` checks | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) |
+| Sealed artifact delivery | `cert` recipient + `vault_write` archive + `vault` retrieval | [Vault Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html) |
+
+## Plugin Families
+
+| Area | Reference | Capabilities | Use cases |
+| --- | --- | --- | --- |
+| Inventory | [Inventory Plugin](https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html) | [Inventory Capabilities](https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html) | [Inventory Use Cases](https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html) |
+| Vault retrieval | [Vault Plugin](https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html) | [Vault Capabilities](https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html) | [Vault Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html) |
+| Vault lifecycle | [Vault Write Module](https://gprocunier.github.io/eigenstate-ipa/vault-write-plugin.html) | [Vault Write Capabilities](https://gprocunier.github.io/eigenstate-ipa/vault-write-capabilities.html) | [Vault Write Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html) |
+| Principal state | [Principal Plugin](https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html) | [Principal Capabilities](https://gprocunier.github.io/eigenstate-ipa/principal-capabilities.html) | [Principal Use Cases](https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html) |
+| Keytabs | [Keytab Plugin](https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html) | [Keytab Capabilities](https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html) | [Keytab Use Cases](https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html) |
+| Certificates | [Cert Plugin](https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html) | [Cert Capabilities](https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html) | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) |
+| OTP and enrollment | [OTP Plugin](https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html) | [OTP Capabilities](https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html) | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) |
+| DNS state | [DNS Plugin](https://gprocunier.github.io/eigenstate-ipa/dns-plugin.html) | [DNS Capabilities](https://gprocunier.github.io/eigenstate-ipa/dns-capabilities.html) | [DNS Use Cases](https://gprocunier.github.io/eigenstate-ipa/dns-use-cases.html) |
+| SELinux maps | [SELinux Map Plugin](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html) | [SELinux Map Capabilities](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html) | [SELinux Map Use Cases](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html) |
+| Sudo policy | [Sudo Plugin](https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html) | [Sudo Capabilities](https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html) | [Sudo Use Cases](https://gprocunier.github.io/eigenstate-ipa/sudo-use-cases.html) |
+| HBAC rules | [HBAC Rule Plugin](https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html) | [HBAC Rule Capabilities](https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html) | [HBAC Rule Use Cases](https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html) |
 
 ## Collection-Wide Guides
 
-These pages explain how the collection fits together beyond one plugin surface.
-
-<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
-
-## Plugin Reference
-
-Use these pages when you need formal option reference, auth behavior, return
-data, or operation-specific details.
-
-<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html"><kbd>INVENTORY PLUGIN</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>VAULT PLUGIN</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-plugin.html"><kbd>VAULT WRITE MODULE</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html"><kbd>PRINCIPAL PLUGIN</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>KEYTAB PLUGIN</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>CERT PLUGIN</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>OTP PLUGIN</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/dns-plugin.html"><kbd>DNS PLUGIN</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html"><kbd>SELINUX MAP PLUGIN</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html"><kbd>SUDO PLUGIN</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html"><kbd>HBAC RULE PLUGIN</kbd></a>
-
-## Capability Guides
-
-Use these pages when you are deciding which IdM boundary, retrieval path, or
-automation pattern fits the problem.
-
-<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>VAULT CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-capabilities.html"><kbd>VAULT WRITE CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/principal-capabilities.html"><kbd>PRINCIPAL CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>CERT CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>OTP CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/dns-capabilities.html"><kbd>DNS CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html"><kbd>SELINUX MAP CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html"><kbd>SUDO CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html"><kbd>HBAC RULE CAPABILITIES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
-
-## Use Cases
-
-Use these when you want worked examples, role patterns, or end-to-end
-playbooks.
-
-<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html"><kbd>INVENTORY USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html"><kbd>VAULT USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html"><kbd>VAULT WRITE USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html"><kbd>PRINCIPAL USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>KEYTAB USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>CERT USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>OTP USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/dns-use-cases.html"><kbd>DNS USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html"><kbd>SELINUX MAP USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/sudo-use-cases.html"><kbd>SUDO USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html"><kbd>HBAC RULE USE CASES</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
-
-## What The Collection Provides
-
-- `eigenstate.ipa.idm`
-  Dynamic inventory for live IdM-backed infrastructure targeting.
-- `eigenstate.ipa.vault`
-  IdM vault retrieval, metadata inspection, scoped search, and binary-safe
-  secret lookup.
-- `eigenstate.ipa.vault_write`
-  IdM vault lifecycle management for create, archive, rotate, and delete
-  flows from Ansible with full idempotency for standard vaults and
-  check-mode support.
-- `eigenstate.ipa.principal`
-  Kerberos principal existence, key, lock, and last-auth inspection for user,
-  host, and service principals.
-- `eigenstate.ipa.keytab`
-  Kerberos keytab retrieval for host and service principals via
-  `ipa-getkeytab`.
-- `eigenstate.ipa.cert`
-  IdM CA certificate request and retrieval. Signs CSRs against service
-  principals, retrieves existing certs by serial number, and finds certs by
-  expiry window or principal via `ipalib` without certmonger.
-- `eigenstate.ipa.otp`
-  OTP token issue, search, inspection, revocation, and one-time host
-  enrollment password generation through IdM.
-- `eigenstate.ipa.dns`
-  Read-only inspection of forward, reverse, broad-search, and zone-apex
-  DNS record state from FreeIPA/IdM.
-- `eigenstate.ipa.selinuxmap`
-  Read-only inspection of SELinux user map state from FreeIPA/IdM.
-  Returns the SELinux user, enabled state, linked HBAC rule name,
-  direct member lists, and description for named maps or bulk
-  enumeration.
-- `eigenstate.ipa.sudo`
-  Read-only inspection of sudo rules, sudo commands, and sudo command
-  groups from FreeIPA/IdM. Returns rule scope, command assignments,
-  RunAs data, descriptions, and command-group membership for named or
-  bulk queries.
-- `eigenstate.ipa.hbacrule`
-  Read-only inspection of HBAC rule state and live access testing via
-  the FreeIPA `hbactest` engine. Supports `show`, `find`, and `test`;
-  the `test` operation invokes the same evaluation logic SSSD uses at
-  login and returns `denied`, `matched`, and `notmatched`.
+- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
+  explains where the collection overlaps with Vault or CyberArk and where it does not
+- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
+  explains execution-environment dependencies, non-interactive auth, and controller-side patterns
+- <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
+  explains the collection-wide rotation model for static assets
+- <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
+  shows scheduled workflows built from the collection primitives
 
 ## Best Fit
 
-- Red Hat IdM / FreeIPA environments
-- Kerberos-first automation
-- Ansible Automation Platform execution environments
-- teams that want to use IdM as inventory and runtime secret source
+This collection fits best when:
 
-## Repository
+- IdM or FreeIPA already exists and should remain the source of truth
+- Kerberos-authenticated controller-side automation is preferable to external token systems
+- the workflow is static-secret retrieval, keytabs, certs, DNS, identity-aware inventory, or access-policy validation
+- AAP is available for scheduling, approvals, credential injection, and repeatable execution environments
 
-- GitHub: [gprocunier/eigenstate-ipa](https://github.com/gprocunier/eigenstate-ipa)
-- Issues: [github.com/gprocunier/eigenstate-ipa/issues](https://github.com/gprocunier/eigenstate-ipa/issues)
+For the repository overview and install path, return to
+<a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>TOP README</kbd></a>.
 
 {% endraw %}

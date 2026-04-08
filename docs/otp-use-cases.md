@@ -12,6 +12,7 @@ Related docs:
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>&nbsp;&nbsp;OTP PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>&nbsp;&nbsp;OTP CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html"><kbd>&nbsp;&nbsp;PRINCIPAL USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html"><kbd>&nbsp;&nbsp;VAULT WRITE USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
@@ -66,9 +67,15 @@ QR code.
       no_log: true
 
     - name: Archive URI in IdM vault for recovery
-      ansible.builtin.set_fact:
-        # placeholder: use eigenstate.ipa vault write module when available
-        _vault_note: "Archive {{ totp_record.token_id }} URI to vault"
+      eigenstate.ipa.vault_write:
+        name: "otp-recovery-{{ new_username }}"
+        state: archived
+        shared: true
+        data: "{{ totp_record.uri }}"
+        description: "Recovery seed for {{ new_username }} primary TOTP token"
+        server: "{{ ipa_server }}"
+        kerberos_keytab: "{{ ipa_keytab }}"
+        verify: "{{ ipa_ca }}"
       no_log: true
 
     - name: Record token ID for operator reference
@@ -78,9 +85,11 @@ QR code.
 
 Notes:
 
-- `no_log: true` on the `set_fact` task prevents the URI from appearing in
-  job output
+- `no_log: true` on both the token-creation task and the vault archive task
+  prevents the URI from appearing in job output
 - the `token_id` is safe to log — it does not contain the secret
+- this example uses a shared recovery vault for clarity; a user-scoped vault may
+  be the better ownership model in your estate
 - if the user already has a token from a previous run, this will add a second
   one; use the rotation pattern (use case 2) to replace rather than add
 

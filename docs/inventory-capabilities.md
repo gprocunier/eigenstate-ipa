@@ -29,6 +29,7 @@ The focus here is operational boundary selection, not option reference.
 - [2. Hostgroups: Role-Based Targeting](#2-hostgroups-role-based-targeting)
 - [3. Netgroups: Access-Boundary Targeting](#3-netgroups-access-boundary-targeting)
 - [4. HBAC Rules: Policy-Driven Targeting](#4-hbac-rules-policy-driven-targeting)
+- [5. Host Metadata Enrichment](#5-host-metadata-enrichment)
 - [Quick Decision Matrix](#quick-decision-matrix)
 - [Operational Pattern](#operational-pattern)
 
@@ -233,6 +234,29 @@ Why this source fits:
 > question: are you targeting by system role or by authorization policy? If the
 > answer is policy, use HBAC rules.
 
+## 5. Host Metadata Enrichment
+
+Use inventory hostvar enrichment when IdM host metadata is the real execution
+input and named groups are either too coarse or do not exist yet.
+
+Typical cases:
+
+- drive `keyed_groups` from `idm_location` or `idm_os`
+- expose hostgroup membership as metadata for later policy logic
+- trim the hostvar surface in AAP inventory syncs to only the fields a job uses
+
+```mermaid
+flowchart LR
+    META["Curated idm_* host vars"] --> KG["compose / keyed_groups / groups"] --> RUN["execution boundary built from metadata"]
+```
+
+Recommended pattern:
+
+- leave `hosts` enabled so the plugin still loads every enrolled host
+- keep `hostvars_enabled: true` unless you only need to suppress host attribute export
+- use `hostvars_include` when the inventory should export a small, predictable set of host metadata
+- remember that group-derived vars can still merge into hostvars even when host attribute export is reduced or disabled
+
 ## Quick Decision Matrix
 
 | Need | Best source |
@@ -241,6 +265,7 @@ Why this source fits:
 | Systems by infrastructure role | `hostgroups` |
 | Systems by who may access them | `netgroups` |
 | Systems by enforced access policy | `hbacrules` |
+| Metadata-driven targeting | `hosts` plus curated `idm_*` hostvars |
 
 ## Operational Pattern
 

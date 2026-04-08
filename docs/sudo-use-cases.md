@@ -11,6 +11,7 @@ Related docs:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html"><kbd>&nbsp;&nbsp;SUDO PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html"><kbd>&nbsp;&nbsp;SUDO CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html"><kbd>&nbsp;&nbsp;HBAC RULE USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
@@ -19,7 +20,8 @@ This page contains worked examples for `eigenstate.ipa.sudo` against
 FreeIPA/IdM.
 
 Use the capability guide to choose the right query shape. Use this page when
-you need the corresponding playbook pattern.
+you need the corresponding playbook pattern or when sudo policy is only one
+part of a broader IdM access gate.
 
 ## Contents
 
@@ -29,15 +31,16 @@ you need the corresponding playbook pattern.
 - [3. Confirm a Shared Command Group Exists](#3-confirm-a-shared-command-group-exists)
 - [4. Bulk Audit Disabled Sudo Rules](#4-bulk-audit-disabled-sudo-rules)
 - [5. Build a Named Map of Rule State](#5-build-a-named-map-of-rule-state)
+- [6. Gate Privileged Maintenance on Sudo and HBAC Together](#6-gate-privileged-maintenance-on-sudo-and-hbac-together)
 
 ## Use Case Flow
 
 ```mermaid
 flowchart LR
     need["Privileged workflow or audit need"]
-    type["Pick rule, command,\nor commandgroup"]
-    lookup["show one or find many"]
-    gate["Assert, report,\nor filter"]
+    type["Pick rule, command, or commandgroup"]
+    lookup["Show one or find many"]
+    gate["Assert, report, or combine with another policy check"]
     act["Proceed or fail"]
 
     need --> type --> lookup --> gate --> act
@@ -73,8 +76,8 @@ on that policy.
 
 ## 2. Verify a Rule Grants the Expected Command Surface
 
-Check that a rule grants the expected command or command group and does not rely
-on a broader surface than intended.
+Check that a rule grants the expected command or command group and does not
+rely on a broader surface than intended.
 
 ```yaml
 - name: Check sudo rule command assignments
@@ -176,5 +179,56 @@ Load multiple rules as a keyed dict when later tasks need direct named access.
         that:
           - not sudo_rule_map['breakglass'].enabled
         fail_msg: "breakglass rule is unexpectedly enabled."
+```
+
+## 6. Gate Privileged Maintenance on Sudo and HBAC Together
+
+A sudo rule alone is not enough to make a maintenance workflow safe. The
+identity also has to be allowed onto the host by current HBAC policy. This is
+one of the highest-value cross-plugin checks in the collection.
+
+```yaml
+- name: Confirm privileged maintenance boundary
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    maintenance_identity: svc-maintenance
+    target_host: app01.corp.example.com
+
+  tasks:
+    - name: Read sudo rule
+      ansible.builtin.set_fact:
+        sudo_rule: "{{ lookup('eigenstate.ipa.sudo',
+                        'ops-maintenance',
+                        sudo_object='rule',
+                        server='idm-01.corp.example.com',
+                        kerberos_keytab='/runner/env/ipa/admin.keytab',
+                        verify='/etc/ipa/ca.crt') }}"
+
+    - name: Run HBAC access test
+      ansible.builtin.set_fact:
+        access_result: "{{ lookup('eigenstate.ipa.hbacrule',
+                            maintenance_identity,
+                            operation='test',
+                            targethost=target_host,
+                            service='sshd',
+                            server='idm-01.corp.example.com',
+                            kerberos_keytab='/runner/env/ipa/admin.keytab',
+                            verify='/etc/ipa/ca.crt') }}"
+
+    - name: Assert privilege and access boundaries are both in place
+      ansible.builtin.assert:
+        that:
+          - sudo_rule.exists
+          - sudo_rule.enabled
+          - not access_result.denied
+        fail_msg: >-
+          Maintenance should not proceed until both sudo policy and HBAC access
+          allow {{ maintenance_identity }} onto {{ target_host }}.
+```
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html"><kbd>HBAC RULE USE CASES</kbd></a>
 
 {% endraw %}

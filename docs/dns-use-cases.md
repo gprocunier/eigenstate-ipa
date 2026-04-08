@@ -11,6 +11,8 @@ Related docs:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/dns-plugin.html"><kbd>&nbsp;&nbsp;DNS PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/dns-capabilities.html"><kbd>&nbsp;&nbsp;DNS CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html"><kbd>&nbsp;&nbsp;PRINCIPAL USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>&nbsp;&nbsp;CERT USE CASES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
 
 ## Purpose
@@ -19,7 +21,8 @@ This page contains worked examples for `eigenstate.ipa.dns` against
 FreeIPA/IdM.
 
 Use the capability guide to choose the right query shape. Use this page when
-you need the corresponding playbook pattern.
+you need the corresponding playbook pattern or a pre-flight gate that depends
+on DNS being right before a certificate, enrollment, or deployment workflow.
 
 ## Contents
 
@@ -29,6 +32,7 @@ you need the corresponding playbook pattern.
 - [3. Inspect the Zone Apex Entry](#3-inspect-the-zone-apex-entry)
 - [4. Audit Reverse DNS State](#4-audit-reverse-dns-state)
 - [5. Build a Named Map of Core Records](#5-build-a-named-map-of-core-records)
+- [6. Gate Certificate Issuance on DNS and Principal State](#6-gate-certificate-issuance-on-dns-and-principal-state)
 
 ## Use Case Flow
 
@@ -37,7 +41,7 @@ flowchart LR
     need["DNS pre-flight or audit need"]
     zone["Pick the authoritative zone"]
     lookup["Show one or find many"]
-    gate["Assert, report, or filter"]
+    gate["Assert, report, or combine with another IdM check"]
     act["Proceed or fail"]
 
     need --> zone --> lookup --> gate --> act
@@ -72,7 +76,8 @@ Verify that a required record exists before a play relies on it.
 
 ## 2. Search Zone Records by Type
 
-Filter a zone search down to one record family when you want a compact audit surface.
+Filter a zone search down to one record family when you want a compact audit
+surface.
 
 ```yaml
 - name: Audit forward records in workshop.lan
@@ -99,7 +104,8 @@ Filter a zone search down to one record family when you want a compact audit sur
 
 ## 3. Inspect the Zone Apex Entry
 
-Read the zone apex record when the workflow needs to confirm the authoritative apex entry and capture any metadata the IdM APIs expose.
+Read the zone apex record when the workflow needs to confirm the authoritative
+apex entry and capture any metadata the IdM APIs expose.
 
 ```yaml
 - name: Inspect workshop.lan apex data
@@ -152,7 +158,8 @@ Enumerate PTR-bearing records in a reverse zone.
 
 ## 5. Build a Named Map of Core Records
 
-Load multiple records into a keyed dict when later tasks need direct named access.
+Load multiple records into a keyed dict when later tasks need direct named
+access.
 
 ```yaml
 - name: Build keyed DNS record map
@@ -176,5 +183,53 @@ Load multiple records into a keyed dict when later tasks need direct named acces
           - dns_map['bastion-01'].exists
           - dns_map['bastion-01'].records.arecord == ['172.16.0.30']
         fail_msg: "bastion-01 DNS record is missing or incorrect."
+```
+
+## 6. Gate Certificate Issuance on DNS and Principal State
+
+Use DNS as a pre-flight gate before certificate issuance or first-day service
+bootstrap. The certificate workflow may succeed technically even when the name
+and identity model are not aligned yet. This pattern catches that earlier.
+
+```yaml
+- name: Confirm DNS and principal state before cert request
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    service_host: api.corp.example.com
+    service_principal: HTTP/api.corp.example.com
+
+  tasks:
+    - name: Read DNS record
+      ansible.builtin.set_fact:
+        dns_state: "{{ lookup('eigenstate.ipa.dns',
+                        'api',
+                        zone='corp.example.com',
+                        server='idm-01.corp.example.com',
+                        kerberos_keytab='/runner/env/ipa/admin.keytab',
+                        verify='/etc/ipa/ca.crt') }}"
+
+    - name: Read principal state
+      ansible.builtin.set_fact:
+        principal_state: "{{ lookup('eigenstate.ipa.principal',
+                              service_principal,
+                              server='idm-01.corp.example.com',
+                              kerberos_keytab='/runner/env/ipa/admin.keytab',
+                              verify='/etc/ipa/ca.crt') }}"
+
+    - name: Assert service identity is ready for certificate work
+      ansible.builtin.assert:
+        that:
+          - dns_state.exists
+          - dns_state.records.arecord | length > 0
+          - principal_state.exists
+        fail_msg: >-
+          Certificate issuance should not proceed until both DNS and principal
+          state are present for {{ service_host }}.
+```
+
+Read next:
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>CERT USE CASES</kbd></a>
 
 {% endraw %}
