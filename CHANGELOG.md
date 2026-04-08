@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.1
+
+- refactored the docs landing flow so the Vault/CyberArk primer is the single comparison entry point
+- removed redundant primer callouts from the docs home capability section and simplified the reading order around rotation and AAP guidance
+- refreshed release references for the docs-navigation cleanup
+
 ## 1.8.0
 
 - added `eigenstate.ipa.dns` for read-only inspection of IdM DNS records through `show` and `find` operations

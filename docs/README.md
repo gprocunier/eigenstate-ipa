@@ -14,7 +14,7 @@ description: >-
 Use this page when you know the kind of problem you are solving but do not yet
 know which document is the right starting point.
 
-Current release: `1.8.0`
+Current release: `1.8.1`
 
 ## Start Here
 
@@ -41,13 +41,12 @@ Current release: `1.8.0`
 
 ### I use Vault or CyberArk today
 
-- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
-- <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
-- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
+- start with <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
+- then read <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
+- then read <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
 
-This path explains where the collection overlaps with external secrets or PAM
-platforms, where AAP helps, and where the boundary remains static-secret and
-IdM-native rather than lease-based.
+This path keeps the comparison, rotation model, and controller story in one
+clear sequence instead of scattering the same framing across multiple sections.
 
 ### I need exact module or lookup syntax
 
@@ -76,15 +75,14 @@ or understanding how static secret workflows fit compared to Vault or CyberArk.
 - <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-capabilities.html"><kbd>VAULT WRITE CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html"><kbd>VAULT WRITE USE CASES</kbd></a>
 
-### Rotation and external-platform positioning
+### Rotation and controller workflows
 
 Use this when the question is not just how to call one plugin, but how the
-collection handles rotation, controller scheduling, or comparison against
-HashiCorp Vault and CyberArk.
+collection handles rotation, controller scheduling, and AAP execution flow
+after you already understand the comparison framing.
 
 - <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
-- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
 
 ### DNS, Kerberos, certificates, and identity pre-flight

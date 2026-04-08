@@ -171,16 +171,14 @@ If you are evaluating the collection from a HashiCorp Vault or CyberArk point
 of view, start with
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>.
 
-Then read:
+Then read the collection-wide guides in this order:
 
 - <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
 - <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
 
-These pages explain where the collection overlaps with external secrets or PAM
-platforms, where AAP closes the controller gap, and where the boundary remains
-static-secret workflow automation rather than native lease-based dynamic
-issuance.
+That keeps the primer as the single comparison entry point and moves the rest
+of the flow into the collection-wide execution and rotation guidance.
 
 If you are wiring the plugins into actual automation, start with:
 
@@ -201,7 +199,7 @@ If you are wiring the plugins into actual automation, start with:
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.8.0.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.8.1.tar.gz
 ```
 
 Verify:

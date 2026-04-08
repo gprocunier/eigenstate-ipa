@@ -1,7 +1,7 @@
 ---
 namespace: "eigenstate"
 name: "ipa"
-version: "1.8.0"
+version: "1.8.1"
 description: >-
   An Ansible collection for Red Hat IdM / FreeIPA with dynamic
   inventory plus IdM vault retrieval and lifecycle automation,

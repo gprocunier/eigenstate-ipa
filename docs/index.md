@@ -40,19 +40,29 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.8.0`
-- adds `eigenstate.ipa.dns` for read-only inspection of IdM DNS records through
-  `show` and `find` operations
-- adds DNS reference, capability, and use-case guides and wires them into the
-  collection navigation
-- refreshes the release metadata and install examples for the published DNS
-  lookup release
+- `1.8.1`
+- refactors the docs landing flow so the Vault/CyberArk primer is the single
+  comparison entry point
+- removes redundant primer callouts from the docs home navigation and clarifies
+  the reading order around rotation and AAP guidance
+- refreshes the release metadata for the docs-navigation cleanup
 
 ## Start Here
 
 <a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>COLLECTION OVERVIEW</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>DOCUMENTATION MAP</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
+
+Read the primer first, then move to the rotation and AAP pages if you are
+still mapping controller behavior, scheduling, or static-secret workflows.
+
+## Collection-Wide Guides
+
+These pages explain how the collection fits together beyond one plugin surface.
+
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
 
 ## Plugin Reference
@@ -75,10 +85,7 @@ data, or operation-specific details.
 ## Capability Guides
 
 Use these pages when you are deciding which IdM boundary, retrieval path, or
-automation pattern fits the problem. If you are coming from HashiCorp Vault or
-CyberArk, start with
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
-before drilling into the rotation and plugin-specific pages.
+automation pattern fits the problem.
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>VAULT CAPABILITIES</kbd></a>
@@ -92,13 +99,6 @@ before drilling into the rotation and plugin-specific pages.
 <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html"><kbd>SUDO CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html"><kbd>HBAC RULE CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
-
-## Primer
-
-Use this page when the first question is whether the collection can replace or
-reduce a Vault or CyberArk footprint for an IdM-centric automation estate.
-
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
 
 ## Use Cases
 
