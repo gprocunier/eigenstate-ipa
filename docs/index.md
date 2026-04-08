@@ -40,12 +40,12 @@ runtime secret retrieval.
 
 ## Current Release
 
-- `1.8.1`
-- refactors the docs landing flow so the Vault/CyberArk primer is the single
-  comparison entry point
-- removes redundant primer callouts from the docs home navigation and clarifies
-  the reading order around rotation and AAP guidance
-- refreshes the release metadata for the docs-navigation cleanup
+- `1.8.2`
+- updates the AAP integration guide to reflect the current collection surface,
+  including `vault_write`, `dns`, `selinuxmap`, `sudo`, and `hbacrule`
+- reorganizes the AAP page around the actual execution-environment dependency
+  stacks and current controller-side runtime patterns
+- refreshes the release metadata for the published AAP documentation update
 
 ## Start Here
 

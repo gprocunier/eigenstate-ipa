@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.2
+
+- updated the AAP integration guide to reflect the current collection surface, including `vault_write`, `dns`, `selinuxmap`, `sudo`, and `hbacrule`
+- reorganized the AAP page around the real execution-environment dependency stacks and current controller-side runtime patterns
+- refreshed release references for the AAP documentation update
+
 ## 1.8.1
 
 - refactored the docs landing flow so the Vault/CyberArk primer is the single comparison entry point

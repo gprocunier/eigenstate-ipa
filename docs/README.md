@@ -14,7 +14,7 @@ description: >-
 Use this page when you know the kind of problem you are solving but do not yet
 know which document is the right starting point.
 
-Current release: `1.8.1`
+Current release: `1.8.2`
 
 ## Start Here
 
