@@ -4,8 +4,8 @@ title: eigenstate.ipa
 description: >-
   Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory,
   IdM vault lookup, Kerberos principal state, Kerberos keytab delivery,
-  certificate automation, OTP workflows, sudo policy inspection,
-  SELinux user map inspection, HBAC rule inspection and access testing,
+  certificate automation, OTP workflows, DNS record inspection,
+  sudo policy inspection, SELinux user map inspection, HBAC rule inspection and access testing,
   IdM vault lifecycle automation,
   AAP integration, and secure secret retrieval.
 ---
@@ -21,7 +21,7 @@ automation, OTP state, and vault-backed secret retrieval for Ansible and AAP.
 
 ## Collection Scope
 
-The collection covers ten main areas:
+The collection covers eleven main areas:
 
 - dynamic inventory from IdM hosts, hostgroups, netgroups, and HBAC policy
 - IdM vault lookup for Kerberos-authenticated secret retrieval in Ansible and AAP
@@ -29,6 +29,7 @@ The collection covers ten main areas:
 - Kerberos keytab retrieval for host and service principals
 - IdM CA certificate request, retrieval, and expiry search through the Dogtag backend
 - OTP token issue, lookup, revoke, and host enrollment password generation
+- IdM DNS record inspection for forward, reverse, service-discovery, and zone-apex validation
 - IdM vault lifecycle management for create, archive, update, and delete flows
 - SELinux user map inspection for confinement model pre-flight and audit
 - sudo policy inspection for rules, commands, and command groups
@@ -66,6 +67,7 @@ data, or operation-specific details.
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>KEYTAB PLUGIN</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>CERT PLUGIN</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html"><kbd>OTP PLUGIN</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/dns-plugin.html"><kbd>DNS PLUGIN</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html"><kbd>SELINUX MAP PLUGIN</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html"><kbd>SUDO PLUGIN</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html"><kbd>HBAC RULE PLUGIN</kbd></a>
@@ -85,6 +87,7 @@ before drilling into the rotation and plugin-specific pages.
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html"><kbd>KEYTAB CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html"><kbd>CERT CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html"><kbd>OTP CAPABILITIES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/dns-capabilities.html"><kbd>DNS CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html"><kbd>SELINUX MAP CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html"><kbd>SUDO CAPABILITIES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html"><kbd>HBAC RULE CAPABILITIES</kbd></a>
@@ -109,6 +112,7 @@ playbooks.
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html"><kbd>KEYTAB USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html"><kbd>CERT USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html"><kbd>OTP USE CASES</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/dns-use-cases.html"><kbd>DNS USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html"><kbd>SELINUX MAP USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/sudo-use-cases.html"><kbd>SUDO USE CASES</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html"><kbd>HBAC RULE USE CASES</kbd></a>
@@ -138,6 +142,9 @@ playbooks.
 - `eigenstate.ipa.otp`
   OTP token issue, search, inspection, revocation, and one-time host
   enrollment password generation through IdM.
+- `eigenstate.ipa.dns`
+  Read-only inspection of forward, reverse, service-discovery, and zone-apex
+  DNS record state from FreeIPA/IdM.
 - `eigenstate.ipa.selinuxmap`
   Read-only inspection of SELinux user map state from FreeIPA/IdM.
   Returns the SELinux user, enabled state, linked HBAC rule name,
