@@ -872,9 +872,20 @@ def run_module():
         vault_result = None
 
         if state == 'absent':
-            changed = _ensure_absent(
-                module, api, name, scope_args, check_mode)
-            module.exit_json(changed=changed)
+            try:
+                changed = _ensure_absent(
+                    module, api, name, scope_args, check_mode)
+                module.exit_json(changed=changed)
+            except IPAClientError as exc:
+                module.fail_json(msg=to_native(exc))
+            except Exception as exc:
+                authz_msg = IPAClient.authz_error_message(
+                    exc, "delete vault '%s'" % name, principal)
+                if authz_msg:
+                    module.fail_json(msg=authz_msg)
+                module.fail_json(
+                    msg="Failed to delete vault '%s': %s"
+                        % (name, to_native(exc)))
 
         elif state == 'present':
             try:
@@ -889,10 +900,10 @@ def run_module():
             except IPAClientError as exc:
                 module.fail_json(msg=to_native(exc))
             except Exception as exc:
-                if ipalib_errors and isinstance(exc, ipalib_errors.AuthorizationError):
-                    module.fail_json(
-                        msg="Not authorized to manage vault '%s' as '%s': %s"
-                            % (name, principal, to_native(exc)))
+                authz_msg = IPAClient.authz_error_message(
+                    exc, "manage vault '%s'" % name, principal)
+                if authz_msg:
+                    module.fail_json(msg=authz_msg)
                 module.fail_json(
                     msg="Failed to manage vault '%s': %s"
                         % (name, to_native(exc)))
@@ -910,10 +921,10 @@ def run_module():
             except IPAClientError as exc:
                 module.fail_json(msg=to_native(exc))
             except Exception as exc:
-                if ipalib_errors and isinstance(exc, ipalib_errors.AuthorizationError):
-                    module.fail_json(
-                        msg="Not authorized to manage vault '%s' as '%s': %s"
-                            % (name, principal, to_native(exc)))
+                authz_msg = IPAClient.authz_error_message(
+                    exc, "archive into vault '%s'" % name, principal)
+                if authz_msg:
+                    module.fail_json(msg=authz_msg)
                 module.fail_json(
                     msg="Failed to archive into vault '%s': %s"
                         % (name, to_native(exc)))

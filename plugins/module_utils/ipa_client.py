@@ -116,6 +116,41 @@ class IPAClient(object):
                 "  RHEL/Fedora: dnf install python3-ipalib python3-ipaclient")
         return ipalib_errors
 
+    @staticmethod
+    def authz_error_kind(exc):
+        """Return a stable authz classification for known IPA errors."""
+        if not HAS_IPALIB or ipalib_errors is None:
+            return None
+
+        authz_error = getattr(ipalib_errors, 'AuthorizationError', None)
+        if authz_error and isinstance(exc, authz_error):
+            return 'authorization'
+
+        aci_error = getattr(ipalib_errors, 'ACIError', None)
+        if aci_error and isinstance(exc, aci_error):
+            return 'access_control'
+
+        return None
+
+    @classmethod
+    def is_authz_error(cls, exc):
+        return cls.authz_error_kind(exc) is not None
+
+    @classmethod
+    def authz_error_message(cls, exc, action, principal=None):
+        kind = cls.authz_error_kind(exc)
+        if kind == 'authorization':
+            msg = "Not authorized to %s" % action
+        elif kind == 'access_control':
+            msg = "Access-control policy denied %s" % action
+        else:
+            return None
+
+        if principal:
+            msg += " as '%s'" % principal
+
+        return "%s: %s" % (msg, to_native(exc))
+
     def connect(self, server, principal='admin', password=None,
                 keytab=None, verify=None):
         """Authenticate and connect to the IPA server.
