@@ -175,7 +175,7 @@ All expiry values are returned in generalized UTC format.
 | `ipaadmin_principal` | no | `admin` | Kerberos principal to authenticate as |
 | `ipaadmin_password` | no | `$IPA_ADMIN_PASSWORD` | password for the principal |
 | `kerberos_keytab` | no | `$IPA_KEYTAB` | keytab path; takes precedence over password |
-| `verify` | no | `$IPA_CERT` → `/etc/ipa/ca.crt` | IPA CA path for TLS verification |
+| `verify` | no | `$IPA_CERT` → `/etc/ipa/ca.crt` | IPA CA path for TLS verification. If no CA path is available, set `verify: false` explicitly to opt out. |
 
 ## Examples
 

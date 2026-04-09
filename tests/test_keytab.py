@@ -359,6 +359,13 @@ class KeytabLookupTests(unittest.TestCase):
         with self.assertRaises(self.mod.AnsibleLookupError):
             lookup._resolve_verify('/tmp/definitely-missing-ca.crt')
 
+
+    def test_resolve_verify_without_default_ca_falls_back_to_system_trust(self):
+        """Missing local IPA CA should still use the system trust store."""
+        lookup = self.mod.LookupModule()
+        with mock.patch.object(self.mod.os.path, 'exists', return_value=False):
+            self.assertIs(lookup._resolve_verify(None), False)
+
     def test_nonzero_exit_raises_error(self):
         """Non-zero ipa-getkeytab exit raises AnsibleLookupError with stderr."""
         def fake_run(cmd, **kwargs):

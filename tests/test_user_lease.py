@@ -210,6 +210,19 @@ class UserLeaseTestCase(unittest.TestCase):
             datetime.datetime(2026, 4, 8, 14, 30, 0),
         )
 
+
+    def test_sensitive_module_requires_explicit_tls_trust_or_opt_out(self):
+        warnings = []
+        client = self.ipa_client_mod.IPAClient(
+            warn_callback=warnings.append,
+            require_trusted_tls=True,
+        )
+        with mock.patch.object(self.ipa_client_mod.os.path, 'exists', return_value=False):
+            with self.assertRaises(self.ipa_client_mod.IPAClientError) as ctx:
+                client._resolve_verify(None)
+        self.assertIn('verify', str(ctx.exception))
+        self.assertEqual(warnings, [])
+
     def test_present_sets_principal_and_password(self):
         params = _module_params(password_expiration_matches_principal=True)
         captured, entry = self._run(params, _entry(groups=['lease-targets']))

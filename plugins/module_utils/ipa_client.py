@@ -83,13 +83,17 @@ class IPAClient(object):
             client.cleanup()
     """
 
-    def __init__(self, warn_callback=None):
+    def __init__(self, warn_callback=None, require_trusted_tls=False):
         """
         :param warn_callback: callable(msg) for issuing warnings.
             Pass ``module.warn`` from an AnsibleModule, or a display
             function from a lookup plugin.
+        :param require_trusted_tls: when ``True``, require either an
+            explicit CA path, the default local IPA CA path, or an
+            explicit ``verify=false`` operator opt-out.
         """
         self._warn = warn_callback or (lambda msg: None)
+        self._require_trusted_tls = require_trusted_tls
         self._ccache_path = None
         self._previous_ccache = None
         self._managing_ccache = False
@@ -376,6 +380,14 @@ class IPAClient(object):
         default_path = '/etc/ipa/ca.crt'
         if os.path.exists(default_path):
             return default_path
+
+        if self._require_trusted_tls:
+            raise IPAClientError(
+                "TLS verification could not be established for "
+                "eigenstate.ipa. Set 'verify' to the IPA CA certificate "
+                "path, ensure /etc/ipa/ca.crt is present, or set "
+                "'verify' to false explicitly if you intend to disable "
+                "verification.")
 
         self._warn(
             "TLS verification is disabled for eigenstate.ipa. "

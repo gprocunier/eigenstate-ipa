@@ -869,9 +869,21 @@ class TestIPAClient(unittest.TestCase):
     def test_resolve_verify_string_false_disables_tls_explicitly(self):
         warnings = []
         client = self.ipa_client_mod.IPAClient(
-            warn_callback=warnings.append)
+            warn_callback=warnings.append,
+            require_trusted_tls=True)
         self.assertFalse(client._resolve_verify('false'))
         self.assertEqual(len(warnings), 1)
+
+    def test_resolve_verify_requires_explicit_trust_for_sensitive_modules(self):
+        warnings = []
+        client = self.ipa_client_mod.IPAClient(
+            warn_callback=warnings.append,
+            require_trusted_tls=True)
+        with mock.patch.object(self.ipa_client_mod.os.path, 'exists', return_value=False):
+            with self.assertRaises(self.ipa_client_mod.IPAClientError) as ctx:
+                client._resolve_verify(None)
+        self.assertIn('verify', str(ctx.exception))
+        self.assertEqual(warnings, [])
 
 
 if __name__ == '__main__':

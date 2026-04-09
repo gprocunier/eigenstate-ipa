@@ -91,9 +91,9 @@ options:
       - name: IPA_KEYTAB
   verify:
     description: >-
-      Path to the IPA CA certificate for TLS verification.  Defaults to
-      C(/etc/ipa/ca.crt) when that file exists.  If neither is available
-      TLS verification is disabled with a warning.
+      Path to the IPA CA certificate for TLS verification. Defaults to
+      C(/etc/ipa/ca.crt) when that file exists. If no CA path is available,
+      the lookup fails unless C(verify) is set to C(false) explicitly.
     type: str
     env:
       - name: IPA_CERT
@@ -520,11 +520,11 @@ class LookupModule(LookupBase):
         if default_verify is not None:
             return default_verify
 
-        display.warning(
-            "TLS verification is disabled for eigenstate.ipa.cert. "
-            "Set 'verify' to the IPA CA certificate path for "
-            "production use.")
-        return False
+        raise AnsibleLookupError(
+            "TLS verification could not be established for "
+            "eigenstate.ipa.cert. Set 'verify' to the IPA CA certificate "
+            "path, ensure /etc/ipa/ca.crt is present, or set 'verify' to "
+            "false explicitly if you intend to disable verification.")
 
     def _warn_if_sensitive_file_permissive(self, path, option_name):
         """Warn when sensitive local files are readable by non-owners."""

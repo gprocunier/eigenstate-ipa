@@ -141,8 +141,8 @@ options:
   verify:
     description: >-
       Path to the IPA CA certificate for TLS verification. Auto-detected from
-      C(/etc/ipa/ca.crt) when not set. Disabled with a warning if neither is
-      available.
+      C(/etc/ipa/ca.crt) when not set. If neither is available, the module
+      fails unless C(verify) is set to C(false) explicitly.
     type: str
     env:
       - name: IPA_CERT
@@ -515,7 +515,7 @@ def run_module():
     require_groups = [to_text(group) for group in module.params['require_groups']]
     now = _utc_now()
 
-    client = IPAClient(warn_callback=module.warn)
+    client = IPAClient(warn_callback=module.warn, require_trusted_tls=True)
 
     try:
         client.connect(

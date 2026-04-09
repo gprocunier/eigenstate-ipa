@@ -872,13 +872,12 @@ class CertLookupTests(unittest.TestCase):
             result = lookup._resolve_verify(None)
         self.assertEqual(result, "/etc/ipa/ca.crt")
 
-    def test_resolve_verify_warns_and_disables_when_no_ca_available(self):
+    def test_resolve_verify_requires_explicit_trust_or_opt_out(self):
         lookup = self.mod.LookupModule()
         with mock.patch.object(self.mod.os.path, "exists", return_value=False):
-            with mock.patch.object(self.mod.display, "warning") as warning:
-                result = lookup._resolve_verify(None)
-        self.assertFalse(result)
-        warning.assert_called_once()
+            with self.assertRaises(self.mod.AnsibleLookupError) as ctx:
+                lookup._resolve_verify(None)
+        self.assertIn("verify", str(ctx.exception))
 
     def test_resolve_verify_raises_when_explicit_path_missing(self):
         lookup = self.mod.LookupModule()

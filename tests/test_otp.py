@@ -612,12 +612,12 @@ class OtpLookupTests(unittest.TestCase):
                 )
         warning.assert_called_once()
 
-    def test_resolve_verify_warns_when_no_local_ca_is_available(self):
+    def test_resolve_verify_requires_explicit_trust_or_opt_out(self):
         lookup = self.mod.LookupModule()
         with mock.patch.object(self.mod.os.path, "exists", return_value=False):
-            with mock.patch.object(self.mod.display, "warning") as warning:
-                self.assertFalse(lookup._resolve_verify(None))
-        warning.assert_called_once()
+            with self.assertRaises(self.mod.AnsibleLookupError) as ctx:
+                lookup._resolve_verify(None)
+        self.assertIn("verify", str(ctx.exception))
 
     def test_resolve_verify_false_disables_tls_explicitly(self):
         lookup = self.mod.LookupModule()
