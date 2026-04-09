@@ -563,29 +563,33 @@ class OtpLookupTests(unittest.TestCase):
 
     def test_activate_and_cleanup_ccache_restores_environment(self):
         lookup = self.mod.LookupModule()
-        with tempfile.NamedTemporaryFile() as ccache_file:
+        ccache_path = None
+        with tempfile.NamedTemporaryFile(delete=False) as ccache_file:
+            ccache_path = ccache_file.name
             original = os.environ.get("KRB5CCNAME")
             os.environ["KRB5CCNAME"] = "FILE:/tmp/original-cache"
             try:
                 lookup._activate_ccache(
-                    ccache_file.name,
-                    "FILE:%s" % ccache_file.name,
+                    ccache_path,
+                    "FILE:%s" % ccache_path,
                 )
                 self.assertEqual(
                     os.environ.get("KRB5CCNAME"),
-                    "FILE:%s" % ccache_file.name,
+                    "FILE:%s" % ccache_path,
                 )
                 lookup._cleanup_ccache()
                 self.assertEqual(
                     os.environ.get("KRB5CCNAME"),
                     "FILE:/tmp/original-cache",
                 )
-                self.assertFalse(os.path.exists(ccache_file.name))
+                self.assertFalse(os.path.exists(ccache_path))
             finally:
                 if original is None:
                     os.environ.pop("KRB5CCNAME", None)
                 else:
                     os.environ["KRB5CCNAME"] = original
+                if ccache_path and os.path.exists(ccache_path):
+                    os.unlink(ccache_path)
 
     def test_cleanup_ccache_disconnects_connected_backend(self):
         lookup = self.mod.LookupModule()

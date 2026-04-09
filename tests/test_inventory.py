@@ -99,29 +99,33 @@ class InventoryPluginTests(unittest.TestCase):
 
     def test_activate_and_cleanup_ccache_restores_environment(self):
         inventory = self.mod.InventoryModule()
-        with tempfile.NamedTemporaryFile() as ccache_file:
+        ccache_path = None
+        with tempfile.NamedTemporaryFile(delete=False) as ccache_file:
+            ccache_path = ccache_file.name
             original = os.environ.get("KRB5CCNAME")
             os.environ["KRB5CCNAME"] = "FILE:/tmp/original-inventory-cache"
             try:
                 inventory._activate_ccache(
-                    ccache_file.name,
-                    "FILE:%s" % ccache_file.name,
+                    ccache_path,
+                    "FILE:%s" % ccache_path,
                 )
                 self.assertEqual(
                     os.environ.get("KRB5CCNAME"),
-                    "FILE:%s" % ccache_file.name,
+                    "FILE:%s" % ccache_path,
                 )
                 inventory._cleanup_ccache()
                 self.assertEqual(
                     os.environ.get("KRB5CCNAME"),
                     "FILE:/tmp/original-inventory-cache",
                 )
-                self.assertFalse(os.path.exists(ccache_file.name))
+                self.assertFalse(os.path.exists(ccache_path))
             finally:
                 if original is None:
                     os.environ.pop("KRB5CCNAME", None)
                 else:
                     os.environ["KRB5CCNAME"] = original
+                if ccache_path and os.path.exists(ccache_path):
+                    os.unlink(ccache_path)
 
     def test_warns_when_keytab_permissions_are_too_permissive(self):
         inventory = self.mod.InventoryModule()
