@@ -56,6 +56,18 @@ class InventoryPluginTests(unittest.TestCase):
         inventory.get_option = lambda name: defaults[name]
         return inventory
 
+    def test_inventory_prefers_usr_bin_kinit(self):
+        inventory = self.mod.InventoryModule()
+        with mock.patch.object(self.mod.os.path, 'exists', side_effect=lambda path: path == '/usr/bin/kinit'):
+            with mock.patch.object(self.mod.shutil, 'which', return_value='/custom/bin/kinit'):
+                self.assertEqual(inventory._resolve_kinit_command(), '/usr/bin/kinit')
+
+    def test_inventory_falls_back_to_path_kinit(self):
+        inventory = self.mod.InventoryModule()
+        with mock.patch.object(self.mod.os.path, 'exists', return_value=False):
+            with mock.patch.object(self.mod.shutil, 'which', return_value='/custom/bin/kinit'):
+                self.assertEqual(inventory._resolve_kinit_command(), '/custom/bin/kinit')
+
     def test_resolve_verify_uses_explicit_path(self):
         inventory = self.mod.InventoryModule()
         with mock.patch.object(self.mod.os.path, "exists", return_value=True):

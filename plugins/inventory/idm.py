@@ -283,6 +283,7 @@ cache_connection: /tmp/idm_inventory_cache
 
 import os
 import re
+import shutil
 import stat
 import subprocess
 import tempfile
@@ -403,6 +404,18 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
     # Kerberos keytab helper
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _resolve_kinit_command():
+        preferred = '/usr/bin/kinit'
+        if os.path.exists(preferred):
+            return preferred
+
+        resolved = shutil.which('kinit')
+        if resolved:
+            return resolved
+
+        return preferred
+
     def _kinit_from_keytab(self, keytab, principal):
         """Obtain a Kerberos ticket from a keytab file.
 
@@ -427,13 +440,13 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         try:
             result = subprocess.run(          # pylint: disable=W1510
-                ['kinit', '-kt', keytab, principal],
+                [self._resolve_kinit_command(), '-kt', keytab, principal],
                 capture_output=True, text=True, timeout=30,
                 env=env)
         except FileNotFoundError:
             os.remove(ccache_path)
             raise AnsibleParserError(
-                "'kinit' command not found. Install "
+                "'kinit' command not found. Expected /usr/bin/kinit from krb5-workstation or a PATH-resolved kinit. Install "
                 "krb5-workstation:\n"
                 "  RHEL/Fedora: dnf install krb5-workstation")
         except subprocess.TimeoutExpired:
