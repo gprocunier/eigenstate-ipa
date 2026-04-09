@@ -238,6 +238,25 @@ class VaultWriteTestBase(unittest.TestCase):
 # state: present
 # ---------------------------------------------------------------------------
 
+class TestIPAClientKinitResolution(VaultWriteTestBase):
+
+    def test_prefers_usr_bin_kinit(self):
+        with mock.patch.object(self.ipa_client_mod.os.path, 'exists', side_effect=lambda path: path == '/usr/bin/kinit'):
+            with mock.patch.object(self.ipa_client_mod.shutil, 'which', return_value='/custom/bin/kinit'):
+                self.assertEqual(
+                    self.ipa_client_mod.IPAClient._resolve_kinit_command(),
+                    '/usr/bin/kinit',
+                )
+
+    def test_falls_back_to_path_kinit(self):
+        with mock.patch.object(self.ipa_client_mod.os.path, 'exists', return_value=False):
+            with mock.patch.object(self.ipa_client_mod.shutil, 'which', return_value='/custom/bin/kinit'):
+                self.assertEqual(
+                    self.ipa_client_mod.IPAClient._resolve_kinit_command(),
+                    '/custom/bin/kinit',
+                )
+
+
 class TestStatePresent(VaultWriteTestBase):
 
     def test_creates_vault_when_not_found(self):
