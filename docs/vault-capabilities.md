@@ -61,6 +61,11 @@ Choose the vault pattern that matches both:
 - the ownership boundary of the secret
 - the runtime form the consuming automation actually needs
 
+> [!WARNING]
+> Retrieved vault payloads are not automatically masked once they enter Ansible
+> variables. Put `no_log: true` on consuming tasks and avoid `debug:` or broad
+> fact printing for secret material.
+
 ## 1. Shared Standard Vaults: Estate-Wide Secret Injection
 
 Use a shared standard vault when the same secret must be consumed by automation
@@ -89,6 +94,7 @@ Example:
                      ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD'),
                      shared=true,
                      verify='/etc/ipa/ca.crt') }}"
+  no_log: true
 ```
 
 Why this pattern fits:

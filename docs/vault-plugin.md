@@ -66,6 +66,13 @@ The lookup uses the IdM Python client libraries directly through `ipalib`.
 Vault retrieval is not just a REST fetch. The client stack also handles the
 transport and vault-specific decryption workflow expected by IdM.
 
+> [!WARNING]
+> Lookup results from `eigenstate.ipa.vault` become ordinary Ansible data as
+> soon as the lookup returns. They are not automatically masked by the lookup
+> plugin. Put `no_log: true` on consuming `set_fact`, `copy`, `template`, or
+> module tasks when the payload is sensitive, and avoid `debug:` on retrieved
+> secrets.
+
 ## Authentication Model
 
 The lookup always operates with a Kerberos credential cache.
