@@ -56,6 +56,13 @@ class InventoryPluginTests(unittest.TestCase):
         inventory.get_option = lambda name: defaults[name]
         return inventory
 
+    def test_inventory_formats_subprocess_stderr(self):
+        inventory = self.mod.InventoryModule()
+        rendered = inventory._format_subprocess_stderr(('line one is quite long ' * 5) + '\nline two', limit=40)
+        self.assertTrue(rendered.startswith('line one is quite long'))
+        self.assertTrue(rendered.endswith('...'))
+        self.assertLessEqual(len(rendered), 40)
+
     def test_resolve_verify_uses_explicit_path(self):
         inventory = self.mod.InventoryModule()
         with mock.patch.object(self.mod.os.path, "exists", return_value=True):

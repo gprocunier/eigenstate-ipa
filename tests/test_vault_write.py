@@ -758,6 +758,19 @@ class TestIPAClient(unittest.TestCase):
         _, _, _, sys_patches = _fake_ipalib()
         cls.ipa_client_mod = _load_ipa_client(sys_patches)
 
+    def test_format_subprocess_stderr_keeps_short_output(self):
+        self.assertEqual(
+            self.ipa_client_mod.IPAClient._format_subprocess_stderr('Clock skew too great\n'),
+            'Clock skew too great',
+        )
+
+    def test_format_subprocess_stderr_truncates_and_flattens(self):
+        noisy = ('first line useful but very long ' * 6) + '\nsecond line context'
+        rendered = self.ipa_client_mod.IPAClient._format_subprocess_stderr(noisy, limit=60)
+        self.assertTrue(rendered.startswith('first line useful but very long'))
+        self.assertTrue(rendered.endswith('...'))
+        self.assertLessEqual(len(rendered), 60)
+
     def test_scope_args_shared(self):
         args = self.ipa_client_mod.IPAClient.scope_args(None, None, True)
         self.assertEqual(args, {'shared': True})
