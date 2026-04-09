@@ -271,6 +271,7 @@ Why this helps:
 - AAP smart inventories and templates still get the metadata they need
 - the exported hostvar contract becomes stable enough to document and reuse across jobs
 - generated group vars such as HBAC or hostgroup descriptions still merge normally, so this trims host metadata without breaking group context
+- if you turn caching on for repeated syncs, a controller-owned cache path such as `~/.ansible/cache/idm_inventory` keeps that metadata out of `/tmp`
 
 ## 6. Access-Scope Audit
 

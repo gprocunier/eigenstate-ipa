@@ -71,6 +71,13 @@ and staging estate.
 > The examples are illustrative. The important part is the decision boundary:
 > role, access boundary, or security policy.
 
+
+> [!NOTE]
+> If you cache this inventory in Automation Controller or on a bastion, prefer
+> a restricted path such as `~/.ansible/cache/idm_inventory`. The cache can
+> contain hostnames, SSH public keys, hostgroup membership, and other IdM-
+> derived metadata that should not be written to `/tmp`.
+
 ## 1. Hosts: Full Estate Discovery
 
 Use `hosts` when you need every enrolled system regardless of role grouping.

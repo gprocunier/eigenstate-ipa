@@ -129,6 +129,13 @@ The plugin also supports standard constructed-inventory features such as:
 - `groups`
 - inventory caching
 
+> [!NOTE]
+> If you enable inventory caching, keep the cache under a controller-owned
+> path such as `~/.ansible/cache/idm_inventory` rather than `/tmp`. Cached
+> inventory can include hostnames, group membership, SSH public keys, and
+> other IdM-derived metadata that should not live in a world-readable
+> directory.
+
 ## How Groups Are Built
 
 ### Hosts
