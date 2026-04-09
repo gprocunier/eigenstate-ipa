@@ -9,7 +9,7 @@ cleanup() {
 trap cleanup EXIT
 
 echo "==> Parsing YAML sources"
-python3 - "${PROJECT_ROOT}" <<'PY'
+python3 - "${PROJECT_ROOT}" <<'PY2'
 import sys
 from pathlib import Path
 
@@ -36,32 +36,26 @@ if failures:
     sys.exit(1)
 
 print("YAML parsing succeeded.")
-PY
+PY2
 
 echo "==> Checking Python syntax"
-PYTHONPYCACHEPREFIX="${TEMP_BUILD_DIR}/pycache" python3 -m py_compile \
-  "${PROJECT_ROOT}/plugins/inventory/idm.py" \
-  "${PROJECT_ROOT}/plugins/lookup/vault.py" \
-  "${PROJECT_ROOT}/plugins/lookup/principal.py" \
-  "${PROJECT_ROOT}/plugins/lookup/keytab.py" \
-  "${PROJECT_ROOT}/plugins/lookup/cert.py" \
-  "${PROJECT_ROOT}/plugins/lookup/otp.py"
+mapfile -t python_files < <(find "${PROJECT_ROOT}/plugins" "${PROJECT_ROOT}/tests" -type f -name '*.py' | sort)
+if ((${#python_files[@]} > 0)); then
+  PYTHONPYCACHEPREFIX="${TEMP_BUILD_DIR}/pycache" python3 -m py_compile "${python_files[@]}"
+else
+  echo "No Python files found to compile."
+fi
 
 if command -v yamllint >/dev/null 2>&1; then
   echo "==> Running yamllint"
-  yamllint -c "${PROJECT_ROOT}/.yamllint" \
-    "${PROJECT_ROOT}/galaxy.yml" \
-    "${PROJECT_ROOT}/meta/runtime.yml" \
-    "${PROJECT_ROOT}/docs"
+  yamllint -c "${PROJECT_ROOT}/.yamllint"     "${PROJECT_ROOT}/galaxy.yml"     "${PROJECT_ROOT}/meta/runtime.yml"     "${PROJECT_ROOT}/docs"     "${PROJECT_ROOT}/.github/workflows"
 else
   echo "==> yamllint not installed; skipping"
 fi
 
 if command -v ansible-lint >/dev/null 2>&1; then
   echo "==> Running ansible-lint on collection metadata"
-  if ! ansible-lint \
-    "${PROJECT_ROOT}/galaxy.yml" \
-    "${PROJECT_ROOT}/meta/runtime.yml"; then
+  if ! ansible-lint     "${PROJECT_ROOT}/galaxy.yml"     "${PROJECT_ROOT}/meta/runtime.yml"; then
     echo "ansible-lint reported issues; continuing because this validation path is advisory." >&2
   fi
 else
@@ -70,26 +64,27 @@ fi
 
 if command -v ansible-doc >/dev/null 2>&1; then
   echo "==> Validating plugin docs parse"
-  ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}" \
-    ansible-doc -t inventory -M "${PROJECT_ROOT}/plugins/inventory" idm >/dev/null
-  ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}" \
-    ansible-doc -t lookup -M "${PROJECT_ROOT}/plugins/lookup" vault >/dev/null
-  ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}" \
-    ansible-doc -t lookup -M "${PROJECT_ROOT}/plugins/lookup" principal >/dev/null
-  ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}" \
-    ansible-doc -t lookup -M "${PROJECT_ROOT}/plugins/lookup" keytab >/dev/null
-  ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}" \
-    ansible-doc -t lookup -M "${PROJECT_ROOT}/plugins/lookup" cert >/dev/null
-  ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}" \
-    ansible-doc -t lookup -M "${PROJECT_ROOT}/plugins/lookup" otp >/dev/null
+  while IFS= read -r file; do
+    name="$(basename "${file}" .py)"
+    ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}"       ansible-doc -t inventory -M "${PROJECT_ROOT}/plugins/inventory" "${name}" >/dev/null
+  done < <(find "${PROJECT_ROOT}/plugins/inventory" -maxdepth 1 -type f -name '*.py' ! -name '__init__.py' | sort)
+
+  while IFS= read -r file; do
+    name="$(basename "${file}" .py)"
+    ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}"       ansible-doc -t lookup -M "${PROJECT_ROOT}/plugins/lookup" "${name}" >/dev/null
+  done < <(find "${PROJECT_ROOT}/plugins/lookup" -maxdepth 1 -type f -name '*.py' ! -name '__init__.py' | sort)
+
+  while IFS= read -r file; do
+    name="$(basename "${file}" .py)"
+    ANSIBLE_COLLECTIONS_PATH="${TEMP_BUILD_DIR}"       ansible-doc -t module -M "${PROJECT_ROOT}/plugins/modules" "${name}" >/dev/null
+  done < <(find "${PROJECT_ROOT}/plugins/modules" -maxdepth 1 -type f -name '*.py' ! -name '__init__.py' | sort)
 else
   echo "==> ansible-doc not installed; skipping"
 fi
 
 if command -v ansible-galaxy >/dev/null 2>&1; then
   echo "==> Building collection tarball"
-  ansible-galaxy collection build "${PROJECT_ROOT}" \
-    --output-path "${TEMP_BUILD_DIR}" >/dev/null
+  ansible-galaxy collection build "${PROJECT_ROOT}"     --output-path "${TEMP_BUILD_DIR}" >/dev/null
 else
   echo "==> ansible-galaxy not installed; skipping collection build"
 fi
