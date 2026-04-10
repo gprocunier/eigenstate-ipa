@@ -9,6 +9,8 @@ import unittest
 
 from unittest import mock
 
+from tests.error_helpers import exception_text
+
 
 def _load_cert_module():
     module_name = "eigenstate_ipa_test_cert"
@@ -877,7 +879,7 @@ class CertLookupTests(unittest.TestCase):
         with mock.patch.object(self.mod.os.path, "exists", return_value=False):
             with self.assertRaises(self.mod.AnsibleLookupError) as ctx:
                 lookup._resolve_verify(None)
-        self.assertIn("verify", str(ctx.exception))
+        self.assertIn("verify", exception_text(ctx.exception))
 
     def test_resolve_verify_raises_when_explicit_path_missing(self):
         lookup = self.mod.LookupModule()

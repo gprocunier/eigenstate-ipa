@@ -8,6 +8,8 @@ import unittest
 
 from unittest import mock
 
+from tests.error_helpers import exception_text
+
 
 def _load_inventory_module():
     module_name = "eigenstate_ipa_test_inventory"
@@ -194,7 +196,7 @@ class InventoryPluginTests(unittest.TestCase):
         )
         with self.assertRaises(self.mod.AnsibleParserError) as ctx:
             inventory._selected_host_attrs()
-        self.assertIn("idm_not_real", str(ctx.exception))
+        self.assertIn("idm_not_real", exception_text(ctx.exception))
 
     def test_add_host_exports_curated_hostvars(self):
         inventory = self._inventory_with_options()

@@ -8,6 +8,8 @@ import unittest
 
 from unittest import mock
 
+from tests.error_helpers import exception_text
+
 # ---------------------------------------------------------------------------
 # Module loading helpers
 # ---------------------------------------------------------------------------
@@ -945,7 +947,7 @@ class TestIPAClient(unittest.TestCase):
         with mock.patch.object(self.ipa_client_mod.os.path, 'exists', return_value=False):
             with self.assertRaises(self.ipa_client_mod.IPAClientError) as ctx:
                 client._resolve_verify(None)
-        self.assertIn('verify', str(ctx.exception))
+        self.assertIn('verify', exception_text(ctx.exception))
         self.assertEqual(warnings, [])
 
 

@@ -10,6 +10,8 @@ import unittest
 
 from unittest import mock
 
+from tests.error_helpers import exception_text
+
 
 def _load_keytab_module():
     module_name = "eigenstate_ipa_test_keytab"
@@ -346,7 +348,7 @@ class KeytabLookupTests(unittest.TestCase):
             with mock.patch.object(lookup, "_rhel_major_version", return_value=10):
                 with self.assertRaises(self.mod.AnsibleLookupError) as ctx:
                     lookup._ensure_ipa_getkeytab_available()
-        self.assertIn("dnf install ipa-client", str(ctx.exception))
+        self.assertIn("dnf install ipa-client", exception_text(ctx.exception))
 
     def test_resolve_verify_false_returns_false(self):
         """Boolean false should disable the explicit --cacert override."""
@@ -381,7 +383,7 @@ class KeytabLookupTests(unittest.TestCase):
                     "retrieve",
                     "/etc/ipa/ca.crt",
                 )
-        self.assertIn("Principal not found", str(ctx.exception))
+        self.assertIn("Principal not found", exception_text(ctx.exception))
 
     def test_empty_keytab_raises_error(self):
         """Empty keytab output raises AnsibleLookupError."""
@@ -399,7 +401,7 @@ class KeytabLookupTests(unittest.TestCase):
                     "retrieve",
                     "/etc/ipa/ca.crt",
                 )
-        self.assertIn("empty keytab", str(ctx.exception))
+        self.assertIn("empty keytab", exception_text(ctx.exception))
 
     def test_timeout_raises_error(self):
         """subprocess.TimeoutExpired is wrapped into AnsibleLookupError."""
@@ -416,7 +418,7 @@ class KeytabLookupTests(unittest.TestCase):
                     "retrieve",
                     "/etc/ipa/ca.crt",
                 )
-        self.assertIn("timed out", str(ctx.exception))
+        self.assertIn("timed out", exception_text(ctx.exception))
 
     def test_server_required(self):
         """Missing server raises AnsibleLookupError."""
@@ -424,7 +426,7 @@ class KeytabLookupTests(unittest.TestCase):
         lookup = self._make_lookup(options)
         with self.assertRaises(self.mod.AnsibleLookupError) as ctx:
             lookup.run(["HTTP/host.example.com"], variables={})
-        self.assertIn("server", str(ctx.exception))
+        self.assertIn("server", exception_text(ctx.exception))
 
     def test_terms_required(self):
         """Empty terms list raises AnsibleLookupError."""

@@ -6,6 +6,8 @@ import unittest
 
 from unittest import mock
 
+from tests.error_helpers import exception_text
+
 
 def _load_principal_module():
     module_name = "eigenstate_ipa_test_principal"
@@ -498,7 +500,7 @@ class PrincipalLookupTests(unittest.TestCase):
         with self.assertRaises(Exception) as ctx:
             lookup.run([], variables={})
 
-        self.assertIn("explicit principal_type", str(ctx.exception))
+        self.assertIn("explicit principal_type", exception_text(ctx.exception))
 
     # ------------------------------------------------------------------
     # validation errors
@@ -515,7 +517,7 @@ class PrincipalLookupTests(unittest.TestCase):
         with self.assertRaises(Exception) as ctx:
             lookup.run([], variables={})
 
-        self.assertIn("_terms", str(ctx.exception))
+        self.assertIn("_terms", exception_text(ctx.exception))
 
     def test_unknown_operation_raises_error(self):
         options = {
@@ -529,7 +531,7 @@ class PrincipalLookupTests(unittest.TestCase):
         with self.assertRaises(Exception) as ctx:
             lookup.run(["admin"], variables={})
 
-        self.assertIn("delete", str(ctx.exception))
+        self.assertIn("delete", exception_text(ctx.exception))
 
     def test_missing_server_raises_error(self):
         options = {
@@ -542,7 +544,7 @@ class PrincipalLookupTests(unittest.TestCase):
         with self.assertRaises(Exception) as ctx:
             lookup.run(["admin"], variables={})
 
-        self.assertIn("server", str(ctx.exception))
+        self.assertIn("server", exception_text(ctx.exception))
 
     def test_authorization_error_raises_lookup_error(self):
         options = {
@@ -564,7 +566,7 @@ class PrincipalLookupTests(unittest.TestCase):
         finally:
             self.mod._ipa_api.Command.service_show = original_service_show
 
-        self.assertIn("Not authorized", str(ctx.exception))
+        self.assertIn("Not authorized", exception_text(ctx.exception))
 
     # ------------------------------------------------------------------
     # principal type detection

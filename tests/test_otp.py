@@ -8,6 +8,8 @@ import unittest
 
 from unittest import mock
 
+from tests.error_helpers import exception_text
+
 
 def _load_otp_module():
     module_name = "eigenstate_ipa_test_otp"
@@ -617,7 +619,7 @@ class OtpLookupTests(unittest.TestCase):
         with mock.patch.object(self.mod.os.path, "exists", return_value=False):
             with self.assertRaises(self.mod.AnsibleLookupError) as ctx:
                 lookup._resolve_verify(None)
-        self.assertIn("verify", str(ctx.exception))
+        self.assertIn("verify", exception_text(ctx.exception))
 
     def test_resolve_verify_false_disables_tls_explicitly(self):
         lookup = self.mod.LookupModule()
