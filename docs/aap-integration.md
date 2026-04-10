@@ -132,6 +132,11 @@ The collection now prefers `/usr/bin/kinit` when it exists and only falls back
 to a `PATH`-resolved `kinit` for non-standard layouts. Standard RHEL-based EEs
 should treat `/usr/bin/kinit` as the expected path.
 
+Password-based ticket acquisition remains supported. The collection prefers
+`ipalib.kinit_password` when it is available and retains a validated fallback
+to the system `kinit` command on supported RHEL controllers. Treat that path as
+a compatibility lane, not the primary EE design.
+
 ## High-Value Controller Workflows
 
 These are the combinations worth documenting and standardizing. They are the

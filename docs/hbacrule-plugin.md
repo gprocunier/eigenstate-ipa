@@ -75,8 +75,10 @@ plugins:
    Pass the path to a keytab file. The plugin calls `kinit -kt` and manages
    the ccache lifecycle around the connection.
 2. **Password** (`ipaadmin_password`): uses `ipalib.kinit_password` when
-   available, falls back to `kinit` subprocess. Set via `IPA_ADMIN_PASSWORD`
-   environment variable for AAP credential injection.
+   available and falls back to the system `kinit` command on supported RHEL
+   controllers as a compatibility path. In AAP, prefer keytabs over
+   password-derived tickets. Set via `IPA_ADMIN_PASSWORD` environment variable
+   for AAP credential injection.
 3. **Ambient ticket**: when neither password nor keytab is provided, the plugin
    uses whatever ticket is in the current `KRB5CCNAME` or the default ccache.
 
