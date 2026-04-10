@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.10.4
+
+- merged the full devsec hardening branch stack into `main`, covering TLS verification hardening, clearer authorization failures, explicit `kinit` path handling, stderr sanitization, cache-example hygiene, vault output guidance, and password `kinit` fallback validation
+- tightened the collection validation lane so the merged tree now passes both workstation validation and bastion-side source validation against the live Calabi lab through the documented `virt-01` jump boundary
+- hardened unit-test exception assertions across ansible-core versions so the validation path stays stable on newer controller environments instead of depending on one local Python and Ansible combination
+- refreshed release references for the `1.10.4` security-hardening release
+
 ## 1.10.3
 
 - added a RHOSO branch to the OpenShift ecosystem docs with separate operator and tenant use-case pages instead of folding cloud and tenant identity into one page
