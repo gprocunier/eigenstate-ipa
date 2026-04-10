@@ -90,8 +90,7 @@ TLS behavior:
 - `verify: /path/to/ca.crt` enables explicit certificate verification
 - `verify: false` disables verification explicitly, with a warning
 - omitting `verify` first tries `/etc/ipa/ca.crt`
-- if no local IdM CA path is available, the module warns and relies on the
-  ipalib default behavior
+- if no local IdM CA path is available, the module now fails unless you set `verify: false` explicitly
 
 ## Ownership Scope
 
@@ -225,7 +224,7 @@ operation, not the actual current state.
 | `ipaadmin_principal` | no | `admin` | Kerberos principal to authenticate as |
 | `ipaadmin_password` | no | `$IPA_ADMIN_PASSWORD` | Password for the principal |
 | `kerberos_keytab` | no | `$IPA_KEYTAB` | Path to a keytab file; takes precedence over password |
-| `verify` | no | `$IPA_CERT` → `/etc/ipa/ca.crt` | Path to IPA CA certificate for TLS verification |
+| `verify` | no | `$IPA_CERT` → `/etc/ipa/ca.crt` | Path to IPA CA certificate for TLS verification. If no CA path is available, set `verify: false` explicitly to opt out. |
 | `username` | no | — | User vault scope; mutually exclusive with `service` and `shared` |
 | `service` | no | — | Service vault scope; mutually exclusive with `username` and `shared` |
 | `shared` | no | `false` | Shared vault scope; mutually exclusive with `username` and `service` |

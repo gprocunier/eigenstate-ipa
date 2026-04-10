@@ -151,8 +151,8 @@ options:
     description: >-
       Path to the IPA CA certificate for TLS verification. Set C(false) to
       disable verification explicitly. If omitted, C(/etc/ipa/ca.crt) is used
-      when present; otherwise the plugin falls back to the system trust store
-      with a warning.
+      when present; otherwise the lookup fails until the operator provides a
+      CA path or opts out explicitly.
     type: raw
     env:
       - name: IPA_CERT
@@ -536,11 +536,11 @@ class LookupModule(LookupBase):
         if default_verify is not None:
             return default_verify
 
-        display.warning(
-            "TLS verification is disabled for eigenstate.ipa.otp. "
-            "Set 'verify' to the IPA CA certificate path for production use."
-        )
-        return False
+        raise AnsibleLookupError(
+            "TLS verification could not be established for "
+            "eigenstate.ipa.otp. Set 'verify' to the IPA CA certificate "
+            "path, ensure /etc/ipa/ca.crt is present, or set 'verify' to "
+            "false explicitly if you intend to disable verification.")
 
     def _warn_if_sensitive_file_permissive(self, path, option_name):
         """Warn when sensitive local files are readable by non-owners."""

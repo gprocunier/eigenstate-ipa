@@ -323,6 +323,8 @@ keyed_groups:
     separator: "_"
 ```
 
+For secret-bearing workflows, treat `verify` as part of the contract. If the execution environment does not carry `/etc/ipa/ca.crt`, provide an explicit CA path or set `verify: false` intentionally; the hardened module and lookup paths no longer fall back silently.
+
 ### Controller-side policy gate before maintenance
 
 ```yaml

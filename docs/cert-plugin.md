@@ -92,8 +92,7 @@ TLS behavior:
 
 - `verify: /path/to/ca.crt` enables explicit certificate verification
 - omitting `verify` first tries `/etc/ipa/ca.crt`
-- if no local IdM CA path is available, the plugin warns and falls back to the
-  system CA bundle behavior from `ipalib`
+- if no local IdM CA path is available, the lookup now fails unless you set `verify: false` explicitly
 
 ## Operations
 

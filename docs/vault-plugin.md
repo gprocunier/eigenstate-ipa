@@ -91,7 +91,7 @@ TLS behavior:
 
 - `verify: /path/to/ca.crt` enables explicit certificate verification
 - omitting `verify` first tries `/etc/ipa/ca.crt`
-- if no local IdM CA path is available, the plugin warns and then falls back to the system CA bundle behavior from `ipalib`
+- if no local IdM CA path is available, the lookup now fails unless you set `verify: false` explicitly
 
 That keeps the vault plugin aligned with the inventory plugin while still
 respecting `ipalib`'s own controller-side defaults.

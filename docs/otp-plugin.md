@@ -111,8 +111,7 @@ TLS behavior:
 
 - `verify: /path/to/ca.crt` enables explicit certificate verification
 - omitting `verify` first tries `/etc/ipa/ca.crt`
-- if no local IdM CA path is available, the plugin warns and falls back to
-  the system CA bundle behavior from `ipalib`
+- if no local IdM CA path is available, the lookup now fails unless you set `verify: false` explicitly
 
 ## Operations
 
@@ -151,7 +150,7 @@ user, combine `find` with `owner` filter and loop over the result.
 | `ipaadmin_principal` | str | `admin` | Kerberos principal for authentication. |
 | `ipaadmin_password` | str | — | Password for obtaining a Kerberos ticket. Env: `IPA_ADMIN_PASSWORD`. Secret. |
 | `kerberos_keytab` | str | — | Path to a keytab file for non-interactive authentication. Env: `IPA_KEYTAB`. |
-| `verify` | str | — | Path to the IPA CA certificate for TLS verification. Env: `IPA_CERT`. |
+| `verify` | str | — | Path to the IPA CA certificate for TLS verification. Env: `IPA_CERT`. If no CA path is available, set `verify: false` explicitly to opt out. |
 
 ### OTP-specific options
 
