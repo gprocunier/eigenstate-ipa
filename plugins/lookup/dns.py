@@ -322,6 +322,23 @@ class LookupModule(LookupBase):
 
         return preferred
 
+
+    @staticmethod
+    def _format_subprocess_stderr(stderr, limit=200):
+        text = to_native(stderr or '').strip()
+        if not text:
+            return 'no stderr output'
+
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        if not lines:
+            return 'no stderr output'
+
+        summary = ' | '.join(lines[:2])
+        if len(summary) > limit:
+            return summary[:limit - 3].rstrip() + '...'
+
+        return summary
+
     def _kinit_keytab(self, keytab, principal):
         if not os.path.isfile(keytab):
             raise AnsibleLookupError(
@@ -355,11 +372,9 @@ class LookupModule(LookupBase):
             os.remove(ccache_path)
             raise AnsibleLookupError(
                 "kinit with keytab failed (exit %d): %s\n"
-                "  keytab:    %s\n"
-                "  principal: %s\n"
-                "Verify: klist -kt %s"
-                % (result.returncode, result.stderr.strip(),
-                   keytab, principal, keytab))
+                "Verify the keytab with: klist -kt %s"
+                % (result.returncode, self._format_subprocess_stderr(result.stderr),
+                   keytab))
 
         self._activate_ccache(ccache_path, ccache_env)
         return ccache_path
@@ -401,7 +416,7 @@ class LookupModule(LookupBase):
                 raise AnsibleLookupError(
                     "kinit failed for '%s' (exit %d): %s"
                     % (principal, result.returncode,
-                       result.stderr.strip()))
+                       self._format_subprocess_stderr(result.stderr)))
 
         self._activate_ccache(ccache_path, ccache_env)
         return ccache_path

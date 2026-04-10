@@ -68,6 +68,13 @@ class InventoryPluginTests(unittest.TestCase):
             with mock.patch.object(self.mod.shutil, 'which', return_value='/custom/bin/kinit'):
                 self.assertEqual(inventory._resolve_kinit_command(), '/custom/bin/kinit')
 
+    def test_inventory_formats_subprocess_stderr(self):
+        inventory = self.mod.InventoryModule()
+        rendered = inventory._format_subprocess_stderr(('line one is quite long ' * 5) + '\nline two', limit=40)
+        self.assertTrue(rendered.startswith('line one is quite long'))
+        self.assertTrue(rendered.endswith('...'))
+        self.assertLessEqual(len(rendered), 40)
+
     def test_resolve_verify_uses_explicit_path(self):
         inventory = self.mod.InventoryModule()
         with mock.patch.object(self.mod.os.path, "exists", return_value=True):

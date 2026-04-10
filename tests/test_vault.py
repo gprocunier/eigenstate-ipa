@@ -111,6 +111,12 @@ class VaultLookupTests(unittest.TestCase):
             with mock.patch.object(self.mod.shutil, 'which', return_value='/custom/bin/kinit'):
                 self.assertEqual(lookup._resolve_kinit_command(), '/custom/bin/kinit')
 
+    def test_lookup_formats_subprocess_stderr(self):
+        lookup = self.mod.LookupModule()
+        rendered = lookup._format_subprocess_stderr(('line one is quite long ' * 5) + '\nline two', limit=30)
+        self.assertTrue(rendered.startswith('line one is quite long'))
+        self.assertTrue(rendered.endswith('...'))
+
     def test_value_format_returns_secret_values(self):
         options = {
             "server": "idm-01.example.com",

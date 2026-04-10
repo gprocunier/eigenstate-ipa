@@ -416,6 +416,23 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
         return preferred
 
+
+    @staticmethod
+    def _format_subprocess_stderr(stderr, limit=200):
+        text = to_native(stderr or '').strip()
+        if not text:
+            return 'no stderr output'
+
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        if not lines:
+            return 'no stderr output'
+
+        summary = ' | '.join(lines[:2])
+        if len(summary) > limit:
+            return summary[:limit - 3].rstrip() + '...'
+
+        return summary
+
     def _kinit_from_keytab(self, keytab, principal):
         """Obtain a Kerberos ticket from a keytab file.
 
@@ -457,16 +474,12 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
                 "/etc/krb5.conf is correct.")
 
         if result.returncode != 0:
-            stderr = result.stderr.strip()
+            stderr = self._format_subprocess_stderr(result.stderr)
             os.remove(ccache_path)
             raise AnsibleParserError(
                 "kinit with keytab failed (exit %d): %s\n"
-                "  keytab:    %s\n"
-                "  principal: %s\n"
-                "Verify the keytab contains the principal:\n"
-                "  klist -kt %s"
-                % (result.returncode, stderr,
-                   keytab, principal, keytab))
+                "Verify the keytab with: klist -kt %s"
+                % (result.returncode, stderr, keytab))
 
         # Point the current process at the new ccache so that
         # requests-gssapi / requests-kerberos picks it up.
