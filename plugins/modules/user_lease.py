@@ -556,10 +556,15 @@ def run_module():
                 client.api.Command.user_mod(username, **mod_args)
             except client.errors.EmptyModlist:
                 changed = False
-            except client.errors.AuthorizationError as exc:
-                module.fail_json(msg=to_native(exc))
             except Exception as exc:
-                module.fail_json(msg=to_native(exc))
+                authz_msg = IPAClient.authz_error_message(
+                    exc, "modify lease attributes for user '%s'" % username,
+                    module.params['ipaadmin_principal'])
+                if authz_msg:
+                    module.fail_json(msg=authz_msg)
+                module.fail_json(
+                    msg="Failed to modify lease attributes for user '%s': %s"
+                        % (username, to_native(exc)))
 
         after_entry = before_entry
         if changed:

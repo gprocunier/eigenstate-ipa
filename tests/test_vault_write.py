@@ -19,11 +19,13 @@ def _fake_ipalib():
     """Return a (fake_ipalib_module, fake_errors_ns) pair."""
     fake_not_found = type("NotFound", (Exception,), {})
     fake_auth_error = type("AuthorizationError", (Exception,), {})
+    fake_aci_error = type("ACIError", (Exception,), {})
     fake_empty_modlist = type("EmptyModlist", (Exception,), {})
 
     fake_errors = types.SimpleNamespace(
         NotFound=fake_not_found,
         AuthorizationError=fake_auth_error,
+        ACIError=fake_aci_error,
         EmptyModlist=fake_empty_modlist,
     )
 
@@ -221,6 +223,9 @@ class VaultWriteTestBase(unittest.TestCase):
         MockIPAClient.validate_scope = real_cls.validate_scope
         MockIPAClient.scope_args = real_cls.scope_args
         MockIPAClient.scope_label = real_cls.scope_label
+        MockIPAClient.authz_error_kind = real_cls.authz_error_kind
+        MockIPAClient.is_authz_error = real_cls.is_authz_error
+        MockIPAClient.authz_error_message = real_cls.authz_error_message
         MockIPAClient.return_value = client_instance
 
         with mock.patch.object(self.mod, 'AnsibleModule',
@@ -239,6 +244,22 @@ class VaultWriteTestBase(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 class TestStatePresent(VaultWriteTestBase):
+
+    def test_reports_authorization_failure_clearly(self):
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                side_effect=self.fake_errors.AuthorizationError('denied'))
+
+        result = self._run(_module_params(state='present'), setup)
+        self.assertIn("Not authorized to manage vault 'test-vault'", result['msg'])
+
+    def test_reports_aci_failure_clearly(self):
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                side_effect=self.fake_errors.ACIError('aci denied'))
+
+        result = self._run(_module_params(state='present'), setup)
+        self.assertIn("Access-control policy denied manage vault 'test-vault'", result['msg'])
 
     def test_creates_vault_when_not_found(self):
         """state=present creates vault when vault_find returns empty."""
@@ -336,6 +357,16 @@ class TestStatePresent(VaultWriteTestBase):
 # ---------------------------------------------------------------------------
 
 class TestStateAbsent(VaultWriteTestBase):
+
+    def test_absent_reports_authorization_failure_clearly(self):
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(return_value={'result': [_make_vault_entry()]})
+            api.Command.vault_del = mock.MagicMock(
+                side_effect=self.fake_errors.AuthorizationError('denied'))
+
+        result = self._run(_module_params(state='absent'), setup)
+        self.assertIn("Not authorized to delete vault 'test-vault'", result['msg'])
+
 
     def test_deletes_existing_vault(self):
         """state=absent deletes the vault when it exists."""

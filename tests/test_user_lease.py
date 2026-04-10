@@ -14,11 +14,13 @@ COLLECTION_ROOT = pathlib.Path(__file__).resolve().parents[1]
 def _fake_ipalib():
     fake_not_found = type('NotFound', (Exception,), {})
     fake_auth_error = type('AuthorizationError', (Exception,), {})
+    fake_aci_error = type('ACIError', (Exception,), {})
     fake_empty_modlist = type('EmptyModlist', (Exception,), {})
 
     fake_errors = types.SimpleNamespace(
         NotFound=fake_not_found,
         AuthorizationError=fake_auth_error,
+        ACIError=fake_aci_error,
         EmptyModlist=fake_empty_modlist,
     )
 
@@ -192,6 +194,9 @@ class UserLeaseTestCase(unittest.TestCase):
 
         real_cls = self.ipa_client_mod.IPAClient
         MockIPAClient = mock.MagicMock(spec=real_cls)
+        MockIPAClient.authz_error_kind = real_cls.authz_error_kind
+        MockIPAClient.is_authz_error = real_cls.is_authz_error
+        MockIPAClient.authz_error_message = real_cls.authz_error_message
         MockIPAClient.return_value = client_instance
 
         with mock.patch.object(self.mod, 'AnsibleModule', return_value=module_mock):
@@ -266,6 +271,80 @@ class UserLeaseTestCase(unittest.TestCase):
         self.assertTrue(captured['changed'])
         self.assertIsNotNone(captured['principal_expiration_after'])
         self.assertNotIn('krbprincipalexpiration', entry)
+
+    def test_reports_authorization_failure_clearly(self):
+        params = _module_params()
+
+        api = self.fake_api
+        state = {'entry': copy.deepcopy(_entry(groups=['lease-targets']))}
+
+        def user_show(username, all=True):
+            return {'result': copy.deepcopy(state['entry'])}
+
+        def user_mod(username, setattr=None, delattr=None, **kwargs):
+            raise self.fake_errors.AuthorizationError('denied')
+
+        api.Command = types.SimpleNamespace(user_show=user_show, user_mod=user_mod)
+
+        module_mock = _make_module(params)
+        client_instance = mock.MagicMock()
+        client_instance.connect = mock.MagicMock()
+        client_instance.cleanup = mock.MagicMock()
+        client_instance.api = api
+        client_instance.errors = self.fake_errors
+
+        real_cls = self.ipa_client_mod.IPAClient
+        MockIPAClient = mock.MagicMock(spec=real_cls)
+        MockIPAClient.authz_error_kind = real_cls.authz_error_kind
+        MockIPAClient.is_authz_error = real_cls.is_authz_error
+        MockIPAClient.authz_error_message = real_cls.authz_error_message
+        MockIPAClient.return_value = client_instance
+
+        with mock.patch.object(self.mod, 'AnsibleModule', return_value=module_mock):
+            with mock.patch.object(self.mod, 'IPAClient', MockIPAClient):
+                try:
+                    self.mod.run_module()
+                except SystemExit:
+                    pass
+
+        self.assertIn("Not authorized to modify lease attributes for user 'lease-target'", module_mock._captured['msg'])
+
+    def test_reports_aci_failure_clearly(self):
+        params = _module_params()
+
+        api = self.fake_api
+        state = {'entry': copy.deepcopy(_entry(groups=['lease-targets']))}
+
+        def user_show(username, all=True):
+            return {'result': copy.deepcopy(state['entry'])}
+
+        def user_mod(username, setattr=None, delattr=None, **kwargs):
+            raise self.fake_errors.ACIError('aci denied')
+
+        api.Command = types.SimpleNamespace(user_show=user_show, user_mod=user_mod)
+
+        module_mock = _make_module(params)
+        client_instance = mock.MagicMock()
+        client_instance.connect = mock.MagicMock()
+        client_instance.cleanup = mock.MagicMock()
+        client_instance.api = api
+        client_instance.errors = self.fake_errors
+
+        real_cls = self.ipa_client_mod.IPAClient
+        MockIPAClient = mock.MagicMock(spec=real_cls)
+        MockIPAClient.authz_error_kind = real_cls.authz_error_kind
+        MockIPAClient.is_authz_error = real_cls.is_authz_error
+        MockIPAClient.authz_error_message = real_cls.authz_error_message
+        MockIPAClient.return_value = client_instance
+
+        with mock.patch.object(self.mod, 'AnsibleModule', return_value=module_mock):
+            with mock.patch.object(self.mod, 'IPAClient', MockIPAClient):
+                try:
+                    self.mod.run_module()
+                except SystemExit:
+                    pass
+
+        self.assertIn("Access-control policy denied modify lease attributes for user 'lease-target'", module_mock._captured['msg'])
 
     def test_validation_requires_target_value_for_present(self):
         params = _module_params(
