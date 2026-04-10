@@ -874,5 +874,15 @@ class TestIPAClient(unittest.TestCase):
         self.assertEqual(len(warnings), 1)
 
 
+    def test_kinit_password_fallback_normalizes_stdin_newline(self):
+        client = self.ipa_client_mod.IPAClient()
+        self.ipa_client_mod.HAS_KINIT_PASSWORD = False
+        with mock.patch.object(self.ipa_client_mod.subprocess, 'run') as run_mock,                 mock.patch.object(self.ipa_client_mod.tempfile, 'mkstemp', return_value=(99, '/tmp/ccache-test')),                 mock.patch.object(self.ipa_client_mod.os, 'close'),                 mock.patch.object(self.ipa_client_mod.os, 'remove'),                 mock.patch.object(client, '_activate_ccache') as activate_mock:
+            run_mock.return_value = types.SimpleNamespace(returncode=0, stderr='')
+            client._kinit_password('admin', 'secret')
+        self.assertEqual(run_mock.call_args.kwargs['input'], 'secret\n')
+        activate_mock.assert_called_once_with('/tmp/ccache-test', 'FILE:/tmp/ccache-test')
+
+
 if __name__ == '__main__':
     unittest.main()

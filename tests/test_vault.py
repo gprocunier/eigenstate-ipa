@@ -291,6 +291,16 @@ class VaultLookupTests(unittest.TestCase):
         self.assertEqual(seen["name"], "db-pass")
         self.assertEqual(type(seen["name"]), str)
 
+    def test_password_fallback_normalizes_stdin_newline(self):
+        lookup = self.mod.LookupModule()
+        self.mod.HAS_KINIT_PASSWORD = False
+        with mock.patch.object(self.mod.subprocess, 'run') as run_mock,                 mock.patch.object(self.mod.tempfile, 'mkstemp', return_value=(12, '/tmp/ccache-vault')),                 mock.patch.object(self.mod.os, 'close'),                 mock.patch.object(self.mod.os, 'remove'),                 mock.patch.object(lookup, '_activate_ccache') as activate_mock:
+            run_mock.return_value = types.SimpleNamespace(returncode=0, stderr='')
+            lookup._kinit_password('admin', 'secret')
+        self.assertEqual(run_mock.call_args.kwargs['input'], 'secret\n')
+        activate_mock.assert_called_once_with('/tmp/ccache-vault', 'FILE:/tmp/ccache-vault')
+
+
     def test_show_operation_returns_metadata(self):
         options = {
             "server": "idm-01.example.com",

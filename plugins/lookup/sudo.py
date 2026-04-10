@@ -403,12 +403,16 @@ class LookupModule(LookupBase):
                     "kinit_password failed for '%s': %s"
                     % (principal, to_native(exc)))
         else:
+            password_input = to_text(
+                password, errors='surrogate_or_strict')
+            if not password_input.endswith('\n'):
+                password_input += '\n'
             env = os.environ.copy()
             env['KRB5CCNAME'] = ccache_env
             try:
                 result = subprocess.run(
                     ['kinit', principal],
-                    input=password, capture_output=True, text=True,
+                    input=password_input, capture_output=True, text=True,
                     timeout=30, env=env)
             except FileNotFoundError:
                 os.remove(ccache_path)
