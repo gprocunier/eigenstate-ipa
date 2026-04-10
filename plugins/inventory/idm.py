@@ -278,7 +278,7 @@ ipaadmin_password: "{{ lookup('env', 'IPA_ADMIN_PASSWORD') }}"
 cache: true
 cache_plugin: jsonfile
 cache_timeout: 3600
-cache_connection: /tmp/idm_inventory_cache
+cache_connection: ~/.ansible/cache/idm_inventory
 """
 
 import os
