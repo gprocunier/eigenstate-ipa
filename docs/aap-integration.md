@@ -126,6 +126,11 @@ Recommended pattern:
 - set `kerberos_keytab` explicitly in the inventory source or task
 - mount the IdM CA and set `verify`
 - set `ipaadmin_principal` explicitly when ambiguity is possible
+- ensure the EE contains `krb5-workstation` so `/usr/bin/kinit` is present in the standard RHEL location
+
+The collection now prefers `/usr/bin/kinit` when it exists and only falls back
+to a `PATH`-resolved `kinit` for non-standard layouts. Standard RHEL-based EEs
+should treat `/usr/bin/kinit` as the expected path.
 
 ## High-Value Controller Workflows
 

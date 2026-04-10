@@ -34,6 +34,7 @@ __metaclass__ = type
 import os
 import stat
 import subprocess
+import shutil
 import tempfile
 
 from ansible.module_utils.common.text.converters import to_native, to_text
@@ -293,6 +294,18 @@ class IPAClient(object):
     # Private: Kerberos credential management
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _resolve_kinit_command():
+        preferred = '/usr/bin/kinit'
+        if os.path.exists(preferred):
+            return preferred
+
+        resolved = shutil.which('kinit')
+        if resolved:
+            return resolved
+
+        return preferred
+
     def _kinit_keytab(self, keytab, principal):
         if not os.path.isfile(keytab):
             raise IPAClientError(
@@ -310,13 +323,13 @@ class IPAClient(object):
 
         try:
             result = subprocess.run(
-                ['kinit', '-kt', keytab, principal],
+                [self._resolve_kinit_command(), '-kt', keytab, principal],
                 capture_output=True, text=True, timeout=30,
                 env=env)
         except FileNotFoundError:
             os.remove(ccache_path)
             raise IPAClientError(
-                "'kinit' not found. Install krb5-workstation:\n"
+                "'kinit' not found. Expected /usr/bin/kinit from krb5-workstation or a PATH-resolved kinit. Install krb5-workstation:\n"
                 "  dnf install krb5-workstation")
         except subprocess.TimeoutExpired:
             os.remove(ccache_path)
@@ -355,14 +368,14 @@ class IPAClient(object):
             env['KRB5CCNAME'] = ccache_env
             try:
                 result = subprocess.run(
-                    ['kinit', principal],
+                    [self._resolve_kinit_command(), principal],
                     input=password, capture_output=True, text=True,
                     timeout=30, env=env)
             except FileNotFoundError:
                 os.remove(ccache_path)
                 raise IPAClientError(
                     "'kinit' not found and ipalib.kinit_password is "
-                    "not available. Install one of:\n"
+                    "not available. Expected /usr/bin/kinit from krb5-workstation or a PATH-resolved kinit. Install one of:\n"
                     "  dnf install krb5-workstation\n"
                     "  dnf install python3-ipaclient")
             except subprocess.TimeoutExpired:
