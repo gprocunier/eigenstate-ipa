@@ -91,7 +91,12 @@ fi
 
 if [[ -d "${PROJECT_ROOT}/tests" ]]; then
   echo "==> Running unit tests"
-  python3 -m unittest discover -s "${PROJECT_ROOT}/tests" -p 'test_*.py'
+  mapfile -t test_files < <(find "${PROJECT_ROOT}/tests" -maxdepth 1 -type f -name 'test_*.py' | sort)
+  for test_file in "${test_files[@]}"; do
+    test_module="$(basename "${test_file}" .py)"
+    echo "  -> ${test_module}"
+    python3 -m unittest "tests.${test_module}"
+  done
 else
   echo "==> tests directory not present; skipping unit tests"
 fi

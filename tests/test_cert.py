@@ -172,7 +172,8 @@ class CertLookupTests(unittest.TestCase):
         with mock.patch.object(self.mod, "HAS_IPALIB", False):
             with self.assertRaises(self.mod.AnsibleLookupError) as ctx:
                 lookup._ensure_ipalib()
-        self.assertIn("python3-ipalib", str(ctx.exception))
+        message = ctx.exception.args[0] if ctx.exception.args else repr(ctx.exception)
+        self.assertIn("python3-ipalib", message)
 
     def test_ensure_ipalib_passes_when_available(self):
         lookup = self.mod.LookupModule()
@@ -778,44 +779,52 @@ class CertLookupTests(unittest.TestCase):
 
     def test_activate_and_cleanup_ccache_restores_environment(self):
         lookup = self.mod.LookupModule()
-        with tempfile.NamedTemporaryFile() as ccache_file:
+        ccache_path = None
+        with tempfile.NamedTemporaryFile(delete=False) as ccache_file:
+            ccache_path = ccache_file.name
             original = os.environ.get("KRB5CCNAME")
             os.environ["KRB5CCNAME"] = "FILE:/tmp/original-cache"
             try:
                 lookup._activate_ccache(
-                    ccache_file.name,
-                    "FILE:%s" % ccache_file.name,
+                    ccache_path,
+                    "FILE:%s" % ccache_path,
                 )
                 self.assertEqual(
                     os.environ.get("KRB5CCNAME"),
-                    "FILE:%s" % ccache_file.name,
+                    "FILE:%s" % ccache_path,
                 )
                 lookup._cleanup_ccache()
                 self.assertEqual(
                     os.environ.get("KRB5CCNAME"),
                     "FILE:/tmp/original-cache",
                 )
-                self.assertFalse(os.path.exists(ccache_file.name))
+                self.assertFalse(os.path.exists(ccache_path))
             finally:
                 if original is None:
                     os.environ.pop("KRB5CCNAME", None)
                 else:
                     os.environ["KRB5CCNAME"] = original
+                if ccache_path and os.path.exists(ccache_path):
+                    os.unlink(ccache_path)
 
     def test_cleanup_ccache_removes_unset_env_when_none_was_set(self):
         lookup = self.mod.LookupModule()
         original = os.environ.pop("KRB5CCNAME", None)
+        ccache_path = None
         try:
-            with tempfile.NamedTemporaryFile() as ccache_file:
+            with tempfile.NamedTemporaryFile(delete=False) as ccache_file:
+                ccache_path = ccache_file.name
                 lookup._activate_ccache(
-                    ccache_file.name,
-                    "FILE:%s" % ccache_file.name,
+                    ccache_path,
+                    "FILE:%s" % ccache_path,
                 )
                 lookup._cleanup_ccache()
                 self.assertNotIn("KRB5CCNAME", os.environ)
         finally:
             if original is not None:
                 os.environ["KRB5CCNAME"] = original
+            if ccache_path and os.path.exists(ccache_path):
+                os.unlink(ccache_path)
 
     def test_cleanup_ccache_disconnects_ipalib_backend_when_managed(self):
         lookup = self.mod.LookupModule()
@@ -824,10 +833,12 @@ class CertLookupTests(unittest.TestCase):
             isconnected=lambda: True,
             disconnect=disconnect,
         )
-        with tempfile.NamedTemporaryFile() as ccache_file:
+        ccache_path = None
+        with tempfile.NamedTemporaryFile(delete=False) as ccache_file:
+            ccache_path = ccache_file.name
             lookup._activate_ccache(
-                ccache_file.name,
-                "FILE:%s" % ccache_file.name,
+                ccache_path,
+                "FILE:%s" % ccache_path,
             )
             with mock.patch.object(
                 self.mod, "_ipa_api",
@@ -836,6 +847,8 @@ class CertLookupTests(unittest.TestCase):
                 ),
             ), mock.patch.object(self.mod, "HAS_IPALIB", True):
                 lookup._cleanup_ccache()
+        if ccache_path and os.path.exists(ccache_path):
+            os.unlink(ccache_path)
         disconnect.assert_called_once_with()
 
     # -----------------------------------------------------------------------
