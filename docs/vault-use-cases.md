@@ -26,6 +26,12 @@ Not every caller is a global IdM administrator. A delegated operator can use
 IdM vault lookups inside their own jurisdiction if the vault ownership and IdM
 permissions line up with the scope they are responsible for.
 
+> [!WARNING]
+> `eigenstate.ipa.vault` does not mask returned secret values for you. Treat
+> every retrieval task as a secret-handling boundary: use `no_log: true` on the
+> consuming task, avoid `debug:`, and keep retrieved values out of broad fact
+> dumps.
+
 ## Contents
 
 - [Use Case Flow](#use-case-flow)
@@ -81,12 +87,28 @@ Example:
                      kerberos_keytab='/runner/env/ipa/team-svc.keytab',
                      shared=true,
                      verify='/etc/ipa/ca.crt') }}"
+  no_log: true
 
 - name: Render application config
   ansible.builtin.template:
     src: app.conf.j2
     dest: /etc/myapp/app.conf
+  no_log: true
 ```
+
+## Secret-Handling Anti-Pattern
+
+Do not do this:
+
+```yaml
+- name: Print a vault secret during troubleshooting
+  ansible.builtin.debug:
+    msg: "{{ lookup('eigenstate.ipa.vault', 'database-password', server='idm-01.corp.example.com', shared=true) }}"
+```
+
+That pushes the retrieved value into normal task output. Prefer a dedicated
+assertion about the downstream state, or use `no_log: true` on the task that
+consumes the secret without printing it.
 
 ## 2. Shared API Key From A Symmetric Vault
 

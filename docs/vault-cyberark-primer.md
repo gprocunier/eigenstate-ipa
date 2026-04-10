@@ -205,7 +205,8 @@ run the system.
 ### 1. Controller-scheduled static secret lifecycle
 
 Use `vault_write` for mutation, `vault` for retrieval, and AAP for schedule and
-approval.
+approval. When `vault` returns a secret, the consuming Ansible task still needs
+`no_log: true`; lookup output is not automatically masked.
 
 This is the collection's answer to the rotation gap:
 

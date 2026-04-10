@@ -190,6 +190,11 @@ Read next:
 Use `vault_write` for mutation and `vault` for retrieval. Let AAP supply the
 schedule, approvals, execution boundary, and credentials.
 
+> [!WARNING]
+> `eigenstate.ipa.vault` returns ordinary Ansible data. Put `no_log: true` on
+> the consuming task or on the small task block that carries the secret
+> forward. Do not rely on the lookup itself to mask output.
+
 This is the correct answer to the collection's rotation story:
 
 - no native lease engine
