@@ -11,6 +11,7 @@ Related docs:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-plugin.html"><kbd>&nbsp;&nbsp;USER LEASE PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html"><kbd>&nbsp;&nbsp;USER LEASE CAPABILITIES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-rbac-setup.html"><kbd>&nbsp;&nbsp;USER LEASE RBAC SETUP&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>&nbsp;&nbsp;EPHEMERAL ACCESS CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
@@ -20,6 +21,10 @@ Related docs:
 This page contains worked playbook patterns for `eigenstate.ipa.user_lease`.
 Use the capability guide to decide whether the module fits the temporary-access
 problem. Use this page when you need the corresponding playbook shape.
+
+If the IdM operator has not yet created the governed group, delegated
+permission, privilege, role, and operator user, start with
+<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-rbac-setup.html"><kbd>USER LEASE RBAC SETUP</kbd></a>.
 
 ## Contents
 

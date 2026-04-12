@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.5
+
+- hardened `eigenstate.ipa.vault` against Ansible and Jinja string-wrapper inputs by collapsing server, principal, scope, criteria, and decryption-related options to native built-in `str` values before connection setup and IPA calls
+- added regression coverage for wrapped vault lookup inputs so templated controller values do not regress into type-sensitive lookup failures
+- added the `user-lease-rbac-setup` guide and threaded it into the user-lease docs so IdM operators have a concrete delegated-RBAC setup path before consuming `eigenstate.ipa.user_lease`
+
 ## 1.10.4
 
 - merged the full devsec hardening branch stack into `main`, covering TLS verification hardening, clearer authorization failures, explicit `kinit` path handling, stderr sanitization, cache-example hygiene, vault output guidance, and password `kinit` fallback validation

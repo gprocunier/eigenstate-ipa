@@ -311,6 +311,60 @@ class VaultLookupTests(unittest.TestCase):
         self.assertEqual(seen["name"], "db-pass")
         self.assertEqual(type(seen["name"]), str)
 
+    def test_run_collapses_option_string_subclasses_before_find(self):
+        class UnsafeText(str):
+            pass
+
+        options = {
+            "operation": "find",
+            "server": UnsafeText("idm-01.example.com"),
+            "ipaadmin_principal": UnsafeText("admin"),
+            "ipaadmin_password": UnsafeText("secret"),
+            "verify": UnsafeText("/etc/ipa/ca.crt"),
+            "criteria": UnsafeText("db"),
+            "username": UnsafeText("appuser"),
+            "result_format": "record",
+        }
+        seen = {}
+
+        lookup = self._make_lookup(options)
+
+        def connect(server, principal, password, keytab, verify):
+            seen["connect"] = {
+                "server": server,
+                "principal": principal,
+                "password": password,
+                "keytab": keytab,
+                "verify": verify,
+            }
+
+        def find(criteria, scope_label, **kwargs):
+            seen["criteria"] = criteria
+            seen["scope_label"] = scope_label
+            seen["scope_username"] = kwargs["username"]
+            return []
+
+        lookup._connect = connect
+        lookup._find_vaults = find
+
+        result = lookup.run([], variables={})
+
+        self.assertEqual(result, [])
+        self.assertEqual(seen["criteria"], "db")
+        self.assertEqual(type(seen["criteria"]), str)
+        self.assertEqual(seen["scope_username"], "appuser")
+        self.assertEqual(type(seen["scope_username"]), str)
+        self.assertEqual(seen["scope_label"], "username=appuser")
+        self.assertEqual(seen["connect"]["server"], "idm-01.example.com")
+        self.assertEqual(type(seen["connect"]["server"]), str)
+        self.assertEqual(seen["connect"]["principal"], "admin")
+        self.assertEqual(type(seen["connect"]["principal"]), str)
+        self.assertEqual(seen["connect"]["password"], "secret")
+        self.assertEqual(type(seen["connect"]["password"]), str)
+        self.assertEqual(seen["connect"]["keytab"], None)
+        self.assertEqual(seen["connect"]["verify"], "/etc/ipa/ca.crt")
+        self.assertEqual(type(seen["connect"]["verify"]), str)
+
     def test_password_fallback_normalizes_stdin_newline(self):
         lookup = self.mod.LookupModule()
         self.mod.HAS_KINIT_PASSWORD = False

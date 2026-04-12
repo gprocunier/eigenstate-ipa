@@ -676,6 +676,15 @@ class LookupModule(LookupBase):
                 return None
         return value
 
+    def _native_text(self, value, fallback=''):
+        """Coerce Ansible/Jinja text wrappers into plain built-in str."""
+        raw = self._unwrap(value)
+        if raw is None:
+            raw = fallback
+        if raw is None:
+            return None
+        return ''.join([to_text(raw, errors='surrogate_or_strict')])
+
     def _format_vault_metadata(self, name, entry, scope_label):
         """Normalize vault metadata records returned by show/find."""
         if entry is None:
@@ -710,13 +719,9 @@ class LookupModule(LookupBase):
         """Build scope arguments for IPA commands."""
         scope_args = {}
         if username:
-            scope_args['username'] = str(
-                to_text(username, errors='surrogate_or_strict')
-            )
+            scope_args['username'] = self._native_text(username)
         elif service:
-            scope_args['service'] = str(
-                to_text(service, errors='surrogate_or_strict')
-            )
+            scope_args['service'] = self._native_text(service)
         elif shared:
             scope_args['shared'] = True
         return scope_args
@@ -839,14 +844,14 @@ class LookupModule(LookupBase):
 
     def _retrieve_vault(self, name, scope_label, **kwargs):
         """Retrieve a single vault's data via ipalib."""
-        name = str(to_text(name, errors='surrogate_or_strict'))
+        name = self._native_text(name)
         retrieve_args = {}
 
         # Vault ownership scope
         if kwargs.get('username'):
-            retrieve_args['username'] = kwargs['username']
+            retrieve_args['username'] = self._native_text(kwargs['username'])
         elif kwargs.get('service'):
-            retrieve_args['service'] = kwargs['service']
+            retrieve_args['service'] = self._native_text(kwargs['service'])
         elif kwargs.get('shared'):
             retrieve_args['shared'] = True
 
@@ -899,7 +904,7 @@ class LookupModule(LookupBase):
 
     def _show_vault(self, name, scope_label, **kwargs):
         """Return metadata for a single vault."""
-        name = str(to_text(name, errors='surrogate_or_strict'))
+        name = self._native_text(name)
         show_args = self._scope_args(
             kwargs.get('username'),
             kwargs.get('service'),
@@ -983,32 +988,51 @@ class LookupModule(LookupBase):
             self.set_options(var_options=variables, direct=kwargs)
 
             operation = self.get_option('operation')
-            server = self.get_option('server')
+            server = self._native_text(self.get_option('server'))
             if not server:
                 raise AnsibleLookupError(
                     "'server' is required. Set it directly or via the "
                     "IPA_SERVER environment variable.")
 
-            principal = self.get_option('ipaadmin_principal')
+            principal = self._native_text(
+                self.get_option('ipaadmin_principal'))
             password = self.get_option('ipaadmin_password')
+            if password is not None:
+                password = self._native_text(password)
             keytab = self.get_option('kerberos_keytab')
+            if keytab is not None:
+                keytab = self._native_text(keytab)
             verify = self._resolve_verify(self.get_option('verify'))
+            if isinstance(verify, str):
+                verify = self._native_text(verify)
             encoding = self.get_option('encoding')
             result_format = self.get_option('result_format')
             include_metadata = self.get_option('include_metadata')
             decode_json = self.get_option('decode_json')
             strip_trailing_newline = self.get_option('strip_trailing_newline')
             criteria = self.get_option('criteria')
+            if criteria is not None:
+                criteria = self._native_text(criteria)
 
             # Vault scope
             username = self.get_option('username')
+            if username is not None:
+                username = self._native_text(username)
             service = self.get_option('service')
+            if service is not None:
+                service = self._native_text(service)
             shared = self.get_option('shared')
 
             # Decryption params
             vault_password = self.get_option('vault_password')
+            if vault_password is not None:
+                vault_password = self._native_text(vault_password)
             vault_password_file = self.get_option('vault_password_file')
+            if vault_password_file is not None:
+                vault_password_file = self._native_text(vault_password_file)
             private_key_file = self.get_option('private_key_file')
+            if private_key_file is not None:
+                private_key_file = self._native_text(private_key_file)
 
             self._validate_scope(username, service, shared)
             self._validate_decryption_inputs(
@@ -1033,9 +1057,7 @@ class LookupModule(LookupBase):
 
             results = []
             for vault_name in terms:
-                vault_name = str(
-                    to_text(vault_name, errors='surrogate_or_strict')
-                )
+                vault_name = self._native_text(vault_name)
                 cache_key = (
                     operation,
                     vault_name,

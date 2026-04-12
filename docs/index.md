@@ -17,7 +17,7 @@ material, certificates, DNS, and access policy instead of forcing those
 surfaces into separate inventory files, ad hoc shell scripts, or external
 stores.
 
-Current release: `1.10.4`
+Current release: `1.10.5`
 
 ## Start Here
 

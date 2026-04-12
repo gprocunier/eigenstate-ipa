@@ -13,7 +13,7 @@ description: >-
 Use this page when you know the problem category but do not yet know which
 collection page should be your first stop.
 
-Current release: `1.10.4`
+Current release: `1.10.5`
 
 ## Reading Model
 
@@ -106,6 +106,7 @@ These are the collection combinations worth learning as flows.
 - [User Lease Module](https://gprocunier.github.io/eigenstate-ipa/user-lease-plugin.html)
 - [User Lease Capabilities](https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html)
 - [User Lease Use Cases](https://gprocunier.github.io/eigenstate-ipa/user-lease-use-cases.html)
+- [User Lease RBAC Setup](https://gprocunier.github.io/eigenstate-ipa/user-lease-rbac-setup.html)
 - [Cert Plugin](https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html)
 - [Cert Capabilities](https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html)
 - [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html)
