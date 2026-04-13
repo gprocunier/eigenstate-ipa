@@ -38,6 +38,8 @@ boundary rather than just see one green playbook.
 
 - embedded recording: <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease.svg"><kbd>OPEN SVG DIRECTLY</kbd></a>
 - format: standalone animated SVG rendered for inline docs embedding
+- rendered geometry: `132x40` to keep the embedded demo closer to a normal
+  large terminal instead of the original oversized capture
 - setting: `cloud-user` shell on `bastion-01.workshop.lan`
 - identities shown:
   - delegated operator: `jdoe@WORKSHOP.LAN`
@@ -49,7 +51,10 @@ inside the docs page.
 
 ## Embedded Demo
 
-![](./user-lease.svg)
+<img
+  src="https://gprocunier.github.io/eigenstate-ipa/user-lease.svg"
+  alt="Recorded user_lease manual demo showing lease open, vaulted password retrieval, successful SSH during the lease, and failed kinit after expiry"
+/>
 
 ## What The Demo Proves
 
