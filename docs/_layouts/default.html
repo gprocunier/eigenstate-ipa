@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'en-US' }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+    {% seo %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;700&family=Red+Hat+Mono:wght@400;500&family=Red+Hat+Text:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
+    <script type="module" src="{{ '/assets/site.js' | relative_url }}"></script>
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div class="site-header__inner">
+          <p class="eyebrow">{{ site.eyebrow | default: "Documentation" }}</p>
+          <div class="site-brand">
+            <div>
+              <h1 class="site-brand__title">{{ site.brand_title | default: site.title }}</h1>
+              <p class="site-brand__tagline">{{ site.brand_tagline | default: site.description }}</p>
+            </div>
+          </div>
+          <div class="site-header__actions">
+            <a href="{{ '/' | relative_url }}"><kbd>DOCS HOME</kbd></a>
+            <a href="{{ '/documentation-map.html' | relative_url }}"><kbd>DOCS MAP</kbd></a>
+            <a href="{{ site.repo_url }}"><kbd>TOP README</kbd></a>
+            <a href="{{ site.galaxy_url }}"><kbd>ANSIBLE GALAXY</kbd></a>
+          </div>
+        </div>
+      </header>
+      <main class="page-shell">
+        <div class="content-column">
+          <article class="markdown-body">
+            {{ content }}
+          </article>
+        </div>
+        <aside class="side-column">
+          <section class="context-block">
+            <h2>Collection Guides</h2>
+            <ul class="path-list">
+              <li>
+                <a href="{{ '/' | relative_url }}">
+                  <strong>Docs Home</strong>
+                  <span>Start with the collection overview and the highest-value workflows.</span>
+                </a>
+              </li>
+              <li>
+                <a href="{{ '/documentation-map.html' | relative_url }}">
+                  <strong>Documentation Map</strong>
+                  <span>Route by intent when you know the problem but not the right page.</span>
+                </a>
+              </li>
+              <li>
+                <a href="{{ site.repo_url }}">
+                  <strong>Top README</strong>
+                  <span>GitHub landing page for install, release, and repository context.</span>
+                </a>
+              </li>
+              <li>
+                <a href="{{ site.galaxy_url }}">
+                  <strong>Ansible Galaxy</strong>
+                  <span>Published collection artifact and install path.</span>
+                </a>
+              </li>
+            </ul>
+          </section>
+          <section class="toc-block" data-toc-root=".markdown-body" data-toc-levels="h2,h3">
+            <h2>On This Page</h2>
+            <ul data-generated-toc></ul>
+          </section>
+          <section class="source-block">
+            <h2>Source</h2>
+            <p>
+              <a href="{{ site.repo_url }}/blob/main/docs/{{ page.path }}">View this page on GitHub</a>
+            </p>
+          </section>
+        </aside>
+      </main>
+      <footer class="site-footer">
+        Published from repository docs on {{ site.time | date: "%Y-%m-%d" }}.
+      </footer>
+    </div>
+  </body>
+</html>

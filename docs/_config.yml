@@ -1,5 +1,10 @@
 ---
 title: "eigenstate-ipa"
+brand_title: "eigenstate.ipa"
+eyebrow: "eigenstate.ipa Documentation"
+brand_tagline: >-
+  IdM-native Ansible collection for inventory, vault, Kerberos, certificates,
+  OTP, policy, AAP workflows, and temporary access boundaries.
 description: >-
   Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory,
   IdM vault retrieval and lifecycle automation, Kerberos principal state,
@@ -7,6 +12,8 @@ description: >-
   and secure secret retrieval.
 url: "https://gprocunier.github.io"
 baseurl: "/eigenstate-ipa"
+repo_url: "https://github.com/gprocunier/eigenstate-ipa"
+galaxy_url: "https://galaxy.ansible.com/ui/repo/published/eigenstate/ipa/"
 theme: jekyll-theme-primer
 plugins:
   - jekyll-seo-tag
