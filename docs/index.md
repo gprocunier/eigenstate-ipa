@@ -35,6 +35,8 @@ Use the collection-wide pages in this order when you are orienting yourself:
   if the question is scheduled lifecycle management rather than one lookup call
 - <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
   if the question is temporary access or lease-like behavior inside IdM
+- <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html"><kbd>USER LEASE DEMO</kbd></a>
+  if you want to see the manual lease-open, login, and post-expiry failure sequence before reading the playbooks
 
 ## How The Docs Work
 
@@ -112,6 +114,8 @@ as workflows rather than as isolated plugins.
   shows scheduled workflows built from the collection primitives
 - <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
   explains IdM-native lease-like temporary access patterns for users and Kerberos principals
+- <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html"><kbd>USER LEASE DEMO</kbd></a>
+  shows the recorded manual `user_lease` behavior with a vaulted password, a real SSH login during the lease, and a post-expiry `kinit` failure
 
 ## Best Fit
 

@@ -106,6 +106,7 @@ These are the collection combinations worth learning as flows.
 - [User Lease Module](https://gprocunier.github.io/eigenstate-ipa/user-lease-plugin.html)
 - [User Lease Capabilities](https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html)
 - [User Lease Use Cases](https://gprocunier.github.io/eigenstate-ipa/user-lease-use-cases.html)
+- [User Lease Demo](https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html)
 - [User Lease RBAC Setup](https://gprocunier.github.io/eigenstate-ipa/user-lease-rbac-setup.html)
 - [Cert Plugin](https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html)
 - [Cert Capabilities](https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html)
@@ -162,6 +163,13 @@ These are the collection combinations worth learning as flows.
 | SELinux maps | [SELinux Map Plugin](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html) | [SELinux Map Capabilities](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html) | [SELinux Map Use Cases](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html) |
 | Sudo policy | [Sudo Plugin](https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html) | [Sudo Capabilities](https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html) | [Sudo Use Cases](https://gprocunier.github.io/eigenstate-ipa/sudo-use-cases.html) |
 | HBAC rules | [HBAC Rule Plugin](https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html) | [HBAC Rule Capabilities](https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html) | [HBAC Rule Use Cases](https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html) |
+
+## Demo And Validation
+
+- [User Lease Demo](https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html)
+  explains the recorded manual flow in `user-lease.svg` and shows the exact
+  boundary the demo proves: fresh `kinit` and SSH succeed during the lease,
+  then a fresh `kinit` fails after expiry
 
 ## Keep The Flow Clean
 
