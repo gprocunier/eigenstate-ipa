@@ -51,10 +51,7 @@ inside the docs page.
 
 ## Embedded Demo
 
-<img
-  src="https://gprocunier.github.io/eigenstate-ipa/user-lease.svg"
-  alt="Recorded user_lease manual demo showing lease open, vaulted password retrieval, successful SSH during the lease, and failed kinit after expiry"
-/>
+![](./user-lease.svg)
 
 ## What The Demo Proves
 
