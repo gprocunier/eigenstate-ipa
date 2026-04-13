@@ -232,6 +232,30 @@ after the window closes:
 - delegated temporary users with `user_lease` expiry controls
 - dedicated Kerberos principals whose key material is retired by rotation
 
+For delegated temporary users, the defense-in-depth value is that AAP and IdM
+are doing different jobs:
+
+```mermaid
+flowchart LR
+    aap["AAP"] --> sched["schedule / approval / EE credential injection"]
+    sched --> run["controller job run"]
+    run --> idm["IdM / FreeIPA"]
+    idm --> lease["principal + password expiry boundary"]
+    lease --> auth["fresh authentication allowed only inside the lease window"]
+```
+
+That is stronger than treating Controller as the only guardrail around a leased
+user password:
+
+- AAP decides when the workflow may run
+- IdM decides whether the user may still authenticate
+- vault retrieval can be just-in-time instead of a long-lived Controller secret
+- post-run cleanup is hygiene, not the only thing ending access
+
+This is the important implication for AAP design: if the temporary user's
+credential leaks or is retrieved again later, a fresh `kinit` can still fail
+because the IdM lease boundary has already closed.
+
 Read next:
 <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
 

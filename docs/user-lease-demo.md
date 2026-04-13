@@ -59,112 +59,6 @@ This is the key operational point: the password remains the same string, but it
 stops being usable for a fresh Kerberos login once the IdM lease boundary has
 passed.
 
-## Helper Files
-
-The recording uses two small helper files from the bastion demo directory
-`~/user-lease-demo`.
-
-### `setup-autobot-credential.sh`
-
-Use this once before recording, or any time you need to reseed a fresh random
-password for `jdoe-autobot` and archive it into `jdoe`'s IdM vault. This is
-bootstrap only. It is not part of the visible lease-open / login / expiry
-proof.
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-: "${LAB_DEFAULT_PASSWORD:?set LAB_DEFAULT_PASSWORD in the environment}"
-
-IPA_SERVER="${IPA_SERVER:-idm-01.workshop.lan}"
-REALM="${REALM:-WORKSHOP.LAN}"
-AUTOBOT_USER="${AUTOBOT_USER:-jdoe-autobot}"
-GROUP="${GROUP:-doe-corp-services}"
-VAULT_OWNER="${VAULT_OWNER:-jdoe}"
-VAULT_NAME="${VAULT_NAME:-jdoe-autobot-cred}"
-
-require_cmd() {
-  command -v "$1" >/dev/null 2>&1 || {
-    echo "missing required command: $1" >&2
-    exit 69
-  }
-}
-
-require_cmd kinit
-require_cmd ipa
-require_cmd mktemp
-require_cmd shred
-require_cmd openssl
-
-NEW_PASS="$(openssl rand -hex 16)"
-TMPFILE=""
-
-cleanup() {
-  if [[ -n "${TMPFILE}" && -e "${TMPFILE}" ]]; then
-    shred -u "${TMPFILE}" || rm -f "${TMPFILE}"
-  fi
-  unset NEW_PASS
-}
-trap cleanup EXIT
-
-echo "==> Authenticating as admin"
-printf '%s\n' "${LAB_DEFAULT_PASSWORD}" | kinit "admin@${REALM}" >/dev/null
-
-ipa user-show "${AUTOBOT_USER}" >/dev/null
-ipa group-show "${GROUP}" --all | grep -q "Member users:.*${AUTOBOT_USER}"
-
-echo "==> Setting a random password on ${AUTOBOT_USER}"
-printf '%s\n%s\n' "${NEW_PASS}" "${NEW_PASS}" | ipa passwd "${AUTOBOT_USER}" >/dev/null
-
-echo "==> Switching to ${VAULT_OWNER} for vault ownership"
-kdestroy -A >/dev/null 2>&1 || true
-printf '%s\n' "${LAB_DEFAULT_PASSWORD}" | kinit "${VAULT_OWNER}@${REALM}" >/dev/null
-
-ipa vault-add "${VAULT_NAME}" --type=standard >/dev/null 2>&1 || true
-
-TMPFILE="$(mktemp -p /dev/shm "${AUTOBOT_USER}.cred.XXXXXX")"
-chmod 600 "${TMPFILE}"
-printf '%s' "${NEW_PASS}" > "${TMPFILE}"
-
-echo "==> Archiving the credential to ${VAULT_OWNER}'s vault"
-ipa vault-archive "${VAULT_NAME}" --in="${TMPFILE}" >/dev/null
-
-echo "==> Result"
-ipa user-show "${AUTOBOT_USER}" --all | grep -E 'User login|User password expiration|Kerberos principal expiration|Password:|Kerberos keys available|Member of groups'
-echo "Vault name: ${VAULT_NAME}"
-echo "Vault owner: ${VAULT_OWNER}"
-```
-
-### `open-lease`
-
-Use this at the start of each demo run. It is intentionally minimal: it opens a
-short `user_lease` window for `jdoe-autobot` and prints the lease end time so
-the operator can move directly into vault retrieval, `kinit`, and SSH.
-
-```yaml
-#!/usr/bin/ansible-playbook
----
-- hosts: localhost
-  connection: local
-  gather_facts: false
-  tasks:
-    - name: Open a 2 minute lease for jdoe-autobot
-      eigenstate.ipa.user_lease:
-        username: jdoe-autobot
-        principal_expiration: "00:02"
-        password_expiration_matches_principal: true
-        require_groups:
-          - doe-corp-services
-        server: idm-01.workshop.lan
-        ipaadmin_principal: jdoe
-        verify: /etc/ipa/ca.crt
-      register: lease_state
-
-    - ansible.builtin.debug:
-        msg: "Lease for jdoe-autobot ends at {{ lease_state.lease_end }}"
-```
-
 ## Sequence In The Recording
 
 ### 1. Start clean and authenticate as the delegated operator
@@ -293,6 +187,114 @@ This recording helps with the most common practical confusion around
 The answer is that the password is only one part of the login path. For a fresh
 Kerberos-backed login, the KDC must also agree that the principal is still
 valid. `user_lease` moves that validation boundary into IdM itself.
+
+## Helper Files
+
+The recording uses two small helper files from the bastion demo directory
+`~/user-lease-demo`.
+
+### `setup-autobot-credential.sh`
+
+This helper appears in the demo because the manual lease flow assumes
+`jdoe-autobot` already has a vaulted credential. It seeds a fresh random
+password for `jdoe-autobot` and archives it into `jdoe`'s IdM vault before the
+visible lease-open / login / expiry sequence starts.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# LAB_DEFAULT_PASSWORD is the IPA admin password used to seed the demo resources.
+: "${LAB_DEFAULT_PASSWORD:?set LAB_DEFAULT_PASSWORD in the environment}"
+
+IPA_SERVER="${IPA_SERVER:-idm-01.workshop.lan}"
+REALM="${REALM:-WORKSHOP.LAN}"
+AUTOBOT_USER="${AUTOBOT_USER:-jdoe-autobot}"
+GROUP="${GROUP:-doe-corp-services}"
+VAULT_OWNER="${VAULT_OWNER:-jdoe}"
+VAULT_NAME="${VAULT_NAME:-jdoe-autobot-cred}"
+
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || {
+    echo "missing required command: $1" >&2
+    exit 69
+  }
+}
+
+require_cmd kinit
+require_cmd ipa
+require_cmd mktemp
+require_cmd shred
+require_cmd openssl
+
+NEW_PASS="$(openssl rand -hex 16)"
+TMPFILE=""
+
+cleanup() {
+  if [[ -n "${TMPFILE}" && -e "${TMPFILE}" ]]; then
+    shred -u "${TMPFILE}" || rm -f "${TMPFILE}"
+  fi
+  unset NEW_PASS
+}
+trap cleanup EXIT
+
+echo "==> Authenticating as admin"
+printf '%s\n' "${LAB_DEFAULT_PASSWORD}" | kinit "admin@${REALM}" >/dev/null
+
+ipa user-show "${AUTOBOT_USER}" >/dev/null
+ipa group-show "${GROUP}" --all | grep -q "Member users:.*${AUTOBOT_USER}"
+
+echo "==> Setting a random password on ${AUTOBOT_USER}"
+printf '%s\n%s\n' "${NEW_PASS}" "${NEW_PASS}" | ipa passwd "${AUTOBOT_USER}" >/dev/null
+
+echo "==> Switching to ${VAULT_OWNER} for vault ownership"
+kdestroy -A >/dev/null 2>&1 || true
+printf '%s\n' "${LAB_DEFAULT_PASSWORD}" | kinit "${VAULT_OWNER}@${REALM}" >/dev/null
+
+ipa vault-add "${VAULT_NAME}" --type=standard >/dev/null 2>&1 || true
+
+TMPFILE="$(mktemp -p /dev/shm "${AUTOBOT_USER}.cred.XXXXXX")"
+chmod 600 "${TMPFILE}"
+printf '%s' "${NEW_PASS}" > "${TMPFILE}"
+
+echo "==> Archiving the credential to ${VAULT_OWNER}'s vault"
+ipa vault-archive "${VAULT_NAME}" --in="${TMPFILE}" >/dev/null
+
+echo "==> Result"
+ipa user-show "${AUTOBOT_USER}" --all | grep -E 'User login|User password expiration|Kerberos principal expiration|Password:|Kerberos keys available|Member of groups'
+echo "Vault name: ${VAULT_NAME}"
+echo "Vault owner: ${VAULT_OWNER}"
+```
+
+### `open-lease`
+
+This helper appears in the demo because the manual flow starts with the
+operator opening a short `user_lease` window for `jdoe-autobot`. It keeps that
+step small and prints the lease end time before vault retrieval, `kinit`, and
+SSH.
+
+```yaml
+#!/usr/bin/ansible-playbook
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Open a 2 minute lease for jdoe-autobot
+      eigenstate.ipa.user_lease:
+        username: jdoe-autobot
+        principal_expiration: "00:02"
+        password_expiration_matches_principal: true
+        require_groups:
+          - doe-corp-services
+        server: idm-01.workshop.lan
+        ipaadmin_principal: jdoe
+        verify: /etc/ipa/ca.crt
+      register: lease_state
+
+    - ansible.builtin.debug:
+        msg: "Lease for jdoe-autobot ends at {{ lease_state.lease_end }}"
+```
 
 ## Where To Go Next
 

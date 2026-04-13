@@ -193,6 +193,19 @@ Why this pattern:
 AAP is the scheduler and execution boundary here, not the lease engine. IdM is
 still what makes the user unusable after the cutoff.
 
+```mermaid
+flowchart LR
+    approver["AAP approval / schedule"] --> ctrl["Controller job"]
+    ctrl --> ee["Execution environment"]
+    opcred["Delegated operator keytab"] --> ee
+    ee --> lease["user_lease write"]
+    ee --> vault["vault lookup / retrieve"]
+    lease --> idm["IdM / FreeIPA"]
+    vault --> idm
+    idm --> cutoff["krbPrincipalExpiration + krbPasswordExpiration"]
+    cutoff --> auth["fresh kinit / SSH succeeds only before expiry"]
+```
+
 Recommended Controller posture:
 
 - store the delegated operator keytab as a Controller-managed credential file
@@ -221,10 +234,31 @@ Minimal task shape:
         verify: /etc/ipa/ca.crt
 ```
 
+Why this is stronger than an AAP-only secret:
+
+```mermaid
+flowchart TB
+    subgraph plain["AAP credential only"]
+        a1["Controller stores leased-user password"] --> a2["Job uses password for kinit / SSH"]
+        a2 --> a3["Cleanup disables template or deletes local artifact"]
+        a3 --> a4["No IdM cutoff unless something else changes the account"]
+    end
+
+    subgraph leased["AAP + user_lease + IdM vault"]
+        b1["Controller stores operator credential"] --> b2["Job opens short lease in IdM"]
+        b2 --> b3["Job retrieves leased-user password just in time"]
+        b3 --> b4["IdM expires principal and password together"]
+        b4 --> b5["Fresh kinit / SSH fails after expiry even if the password is still known"]
+    end
+```
+
 Why this pattern:
 
 - AAP handles schedule, approval, and reporting
 - IdM still owns the actual expiration boundary
+- the leased user's password does not become the only control; IdM can still
+  refuse fresh authentication after the lease closes
+- the operator credential and the leased-user credential stay separate
 - the cleanup job can remove the user or group membership later without being
   the only thing preventing continued access
 
