@@ -9,8 +9,6 @@ description: >-
 
 {% raw %}
 
-# eigenstate.ipa
-
 `eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It treats
 IdM as a live automation system of record for inventory, secrets, Kerberos
 material, certificates, DNS, and access policy instead of forcing those
