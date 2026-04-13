@@ -37,17 +37,10 @@ boundary rather than just see one green playbook.
 ## Recording Artifact
 
 - embedded recording: <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease.svg"><kbd>OPEN SVG DIRECTLY</kbd></a>
-- format: standalone animated SVG rendered for inline docs embedding
-- rendered geometry: `132x40` to keep the embedded demo closer to a normal
-  large terminal instead of the original oversized capture
 - setting: `cloud-user` shell on `bastion-01.workshop.lan`
 - identities shown:
   - delegated operator: `jdoe@WORKSHOP.LAN`
   - leased user: `jdoe-autobot@WORKSHOP.LAN`
-
-This asset is a real SVG render, not a renamed asciinema JSON file. The
-rendered embed path matters because GitHub Pages can display the SVG directly
-inside the docs page.
 
 ## Embedded Demo
 
