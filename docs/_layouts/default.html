@@ -19,7 +19,7 @@
           <p class="eyebrow">{{ site.eyebrow | default: "Documentation" }}</p>
           <div class="site-brand">
             <div>
-              <h1 class="site-brand__title">{{ site.brand_title | default: site.title }}</h1>
+              <h1 class="site-brand__title"><a href="{{ '/' | relative_url }}">{{ site.brand_title | default: site.title }}</a></h1>
               <p class="site-brand__tagline">{{ site.brand_tagline | default: site.description }}</p>
             </div>
           </div>

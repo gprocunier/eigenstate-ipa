@@ -71,6 +71,17 @@ a {
   letter-spacing: -0.04em;
 }
 
+.site-brand__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-brand__title a:hover,
+.site-brand__title a:focus {
+  color: var(--rh-red-dark);
+  text-decoration: none;
+}
+
 .site-brand__tagline {
   margin: 0.35rem 0 0;
   max-width: 60rem;
