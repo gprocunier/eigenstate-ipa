@@ -84,11 +84,14 @@ options:
         When true, set C(krbPasswordExpiration) to the same effective time as
         C(krbPrincipalExpiration).
       - >-
+        Defaults to C(true) because leaving password expiry behind the
+        principal lease is generally unsafe for temporary-access workflows.
+      - >-
         With C(state=expired), this expires both attributes immediately.
       - >-
         Mutually exclusive with an explicit C(password_expiration).
     type: bool
-    default: false
+    default: true
   clear_password_expiration:
     description:
       - >-
@@ -150,6 +153,11 @@ notes:
   - Requires C(python3-ipalib) and C(python3-ipaclient) on the Ansible controller.
   - "RHEL/Fedora: C(dnf install python3-ipalib python3-ipaclient)"
   - >-
+    Setting C(password_expiration_matches_principal=false) leaves the
+    password authentication path outside the lease boundary unless
+    C(password_expiration) is managed separately. That is generally unsafe for
+    temporary-access workflows.
+  - >-
     The authenticated principal needs write access to
     C(krbPrincipalExpiration) on the target user. Managing
     C(krbPasswordExpiration) additionally requires write access to that
@@ -176,6 +184,7 @@ EXAMPLES = r"""
   eigenstate.ipa.user_lease:
     username: temp-deploy
     principal_expiration: "02:00"
+    password_expiration_matches_principal: true
     server: idm-01.example.com
     ipaadmin_password: "{{ ipa_password }}"
 
@@ -382,9 +391,13 @@ def _validate_params(module):
         module.fail_json(
             msg="'password_expiration' and 'password_expiration_matches_principal' are mutually exclusive.")
 
-    if state == 'present' and principal_expiration is None and password_expiration is None and not match_password:
-        module.fail_json(
-            msg="state=present requires 'principal_expiration', 'password_expiration', or 'password_expiration_matches_principal=true'.")
+    if state == 'present':
+        if principal_expiration is None and password_expiration is None:
+            module.fail_json(
+                msg="state=present requires 'principal_expiration' or 'password_expiration'.")
+        if match_password and principal_expiration is None:
+            module.fail_json(
+                msg="'password_expiration_matches_principal=true' requires 'principal_expiration' when state=present.")
 
     if state in ('expired', 'cleared'):
         if principal_expiration is not None or password_expiration is not None:
@@ -493,7 +506,7 @@ def run_module():
                        choices=['present', 'expired', 'cleared']),
             principal_expiration=dict(type='raw'),
             password_expiration=dict(type='raw', no_log=False),
-            password_expiration_matches_principal=dict(type='bool', default=False, no_log=False),
+            password_expiration_matches_principal=dict(type='bool', default=True, no_log=False),
             clear_password_expiration=dict(type='bool', default=False, no_log=False),
             require_groups=dict(type='list', elements='str', default=[]),
             server=dict(type='str', required=True),

@@ -106,7 +106,7 @@ def _module_params(**overrides):
         state='present',
         principal_expiration='2026-04-09T18:30:00Z',
         password_expiration=None,
-        password_expiration_matches_principal=False,
+        password_expiration_matches_principal=True,
         clear_password_expiration=False,
         require_groups=[],
         server='idm-01.example.com',
@@ -231,7 +231,7 @@ class UserLeaseTestCase(unittest.TestCase):
         self.assertEqual(warnings, [])
 
     def test_present_sets_principal_and_password(self):
-        params = _module_params(password_expiration_matches_principal=True)
+        params = _module_params()
         captured, entry = self._run(params, _entry(groups=['lease-targets']))
         self.assertTrue(captured['changed'])
         self.assertEqual(captured['principal_expiration_after'], '20260409183000Z')
@@ -248,6 +248,7 @@ class UserLeaseTestCase(unittest.TestCase):
         params = _module_params(
             state='cleared',
             principal_expiration=None,
+            password_expiration_matches_principal=False,
             clear_password_expiration=True,
         )
         current = _entry(
@@ -352,10 +353,30 @@ class UserLeaseTestCase(unittest.TestCase):
         params = _module_params(
             principal_expiration=None,
             password_expiration=None,
-            password_expiration_matches_principal=False,
         )
         captured, _entry_state = self._run(params, _entry())
         self.assertIn('state=present requires', captured['msg'])
+
+    def test_validation_requires_principal_when_matching_password_to_principal(self):
+        params = _module_params(
+            principal_expiration=None,
+            password_expiration='2026-04-09T19:00:00Z',
+            password_expiration_matches_principal=True,
+        )
+        captured, _entry_state = self._run(params, _entry())
+        self.assertIn('mutually exclusive', captured['msg'])
+
+    def test_explicit_password_only_requires_unsafe_opt_out(self):
+        params = _module_params(
+            principal_expiration=None,
+            password_expiration='2026-04-09T19:00:00Z',
+            password_expiration_matches_principal=False,
+        )
+        captured, entry = self._run(params, _entry(groups=['lease-targets']))
+        self.assertTrue(captured['changed'])
+        self.assertIsNone(captured['principal_expiration_after'])
+        self.assertEqual(captured['password_expiration_after'], '20260409190000Z')
+        self.assertNotIn('krbprincipalexpiration', entry)
 
 
 if __name__ == '__main__':

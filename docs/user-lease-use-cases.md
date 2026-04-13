@@ -52,6 +52,7 @@ Footnote: if you want the corresponding manual operator flow, see
       eigenstate.ipa.user_lease:
         username: temp-deploy
         principal_expiration: "02:00"
+        password_expiration_matches_principal: true
         server: idm-01.example.com
         kerberos_keytab: /etc/ipa/lease-operator.keytab
         ipaadmin_principal: lease-operator
@@ -65,6 +66,8 @@ Footnote: if you want the corresponding manual operator flow, see
 Why this pattern:
 
 - the access window is expressed by IdM, not by a later cleanup task alone
+- password expiry is pinned to the same lease boundary instead of leaving a
+  second authentication path behind
 - the relative input makes the lease start at job execution time
 - `lease_end` can be passed to downstream audit or notification steps
 

@@ -22,7 +22,8 @@ Related docs:
 boundary, not as generic user CRUD.
 
 Use it when an existing user should become unusable at a defined time by
-setting `krbPrincipalExpiration`, optionally with `krbPasswordExpiration`.
+setting `krbPrincipalExpiration` and, by default, matching
+`krbPasswordExpiration`.
 This reference covers the exact module surface: authentication, states, time
 formats, group-gated assertions, return data, and failure boundaries.
 
@@ -88,13 +89,16 @@ Ensures one or both expiry attributes are set to the requested time.
 - `principal_expiration` sets `krbPrincipalExpiration`
 - `password_expiration` sets `krbPasswordExpiration`
 - `password_expiration_matches_principal: true` sets password expiry to the
-  same effective time as principal expiry
+  same effective time as principal expiry and is the default
+- `password_expiration_matches_principal: false` leaves the password path
+  outside the lease boundary unless `password_expiration` is managed
+  separately; that is generally unsafe
 
 ### `state: expired`
 
 Sets `krbPrincipalExpiration` to the current UTC time. When
-`password_expiration_matches_principal: true` is also set, the password expiry
-is set to the same current time.
+`password_expiration_matches_principal: true` is left at its default, the
+password expiry is set to the same current time.
 
 ### `state: cleared`
 
@@ -171,7 +175,7 @@ All expiry values are returned in generalized UTC format.
 | `state` | no | `present` | `present`, `expired`, or `cleared` |
 | `principal_expiration` | no | — | target `krbPrincipalExpiration` for `state: present` |
 | `password_expiration` | no | — | target `krbPasswordExpiration` for `state: present` |
-| `password_expiration_matches_principal` | no | `false` | reuse the principal expiry time for password expiry |
+| `password_expiration_matches_principal` | no | `true` | reuse the principal expiry time for password expiry; setting it to `false` is generally unsafe unless password expiry is managed separately |
 | `clear_password_expiration` | no | `false` | with `state: cleared`, also remove password expiry |
 | `require_groups` | no | `[]` | require the user to belong to all listed groups |
 | `server` | yes | `$IPA_SERVER` | FQDN of the IPA server |
@@ -189,6 +193,7 @@ Set a two-hour lease window:
   eigenstate.ipa.user_lease:
     username: temp-deploy
     principal_expiration: "02:00"
+    password_expiration_matches_principal: true
     server: idm-01.example.com
     kerberos_keytab: /etc/ipa/lease-operator.keytab
     ipaadmin_principal: lease-operator
@@ -225,7 +230,8 @@ Clear lease state:
 The module fails when:
 
 - the target user does not exist
-- the caller requested `state: present` without any target expiry input
+- the caller requested `state: present` without `principal_expiration` or `password_expiration`
+- `password_expiration_matches_principal: true` is used without `principal_expiration`
 - `password_expiration` and `password_expiration_matches_principal` are used together
 - a required group is missing
 - the authenticated principal lacks IdM write rights for the selected attributes
