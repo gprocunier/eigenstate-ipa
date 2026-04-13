@@ -29,7 +29,6 @@ permission, privilege, role, and operator user, start with
 
 ## Contents
 
-- [0. Watch the Manual Demo](#0-watch-the-manual-demo)
 - [1. Give a Temporary User a Two-Hour Lease](#1-give-a-temporary-user-a-two-hour-lease)
 - [2. End Temporary Access Immediately](#2-end-temporary-access-immediately)
 - [3. Use a Governed Group Boundary](#3-use-a-governed-group-boundary)
@@ -38,27 +37,10 @@ permission, privilege, role, and operator user, start with
 
 ---
 
-## 0. Watch the Manual Demo
-
-If you want to see the boundary before reading playbooks, start with
-<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html"><kbd>USER LEASE DEMO</kbd></a>.
-
-That page walks through the recorded manual flow in
-<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease.svg"><kbd>USER-LEASE.SVG</kbd></a>:
-
-- delegated operator authenticates as `jdoe`
-- opens a short lease on `jdoe-autobot`
-- retrieves the vaulted password
-- performs a real `kinit` and SSH login as `jdoe-autobot`
-- destroys the cache and waits for expiry
-- shows the post-expiry `kinit` failure
-
-Use the demo page when the question is behavioral. Use the rest of this page
-when the question is the playbook shape.
-
----
-
 ## 1. Give a Temporary User a Two-Hour Lease
+
+Footnote: if you want the corresponding manual operator flow, see
+<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html"><kbd>USER LEASE DEMO</kbd></a>.
 
 ```yaml
 - name: Open a two-hour access window for a temporary user

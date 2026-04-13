@@ -18,9 +18,6 @@ Related docs:
 
 ## Purpose
 
-This page describes the recorded manual demo in
-<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease.svg"><kbd>USER-LEASE.SVG</kbd></a>.
-
 The recording is intentionally not an all-in-one automation proof. It shows the
 actual operator motions that matter:
 
@@ -36,7 +33,6 @@ boundary rather than just see one green playbook.
 
 ## Recording Artifact
 
-- embedded recording: <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease.svg"><kbd>OPEN SVG DIRECTLY</kbd></a>
 - setting: `cloud-user` shell on `bastion-01.workshop.lan`
 - identities shown:
   - delegated operator: `jdoe@WORKSHOP.LAN`
