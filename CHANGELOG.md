@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.6
+
+- changed `eigenstate.ipa.user_lease` so `password_expiration_matches_principal` now defaults to `true`, updated validation around the safer default, and added unit coverage for the explicit unsafe opt-out path
+- tightened the user-lease reference and use-case docs so every published lease example keeps password expiry aligned with the principal boundary and explicitly warns that setting `password_expiration_matches_principal: false` is generally unsafe
+- expanded the AAP and user-lease docs with the validated manual demo flow and defense-in-depth guidance showing why `user_lease` plus IdM vault is stronger than treating Controller as the only guardrail around a leased-user password
+
 ## 1.10.5
 
 - hardened `eigenstate.ipa.vault` against Ansible and Jinja string-wrapper inputs by collapsing server, principal, scope, criteria, and decryption-related options to native built-in `str` values before connection setup and IPA calls
