@@ -1,3 +1,12 @@
+const siteBaseUrl = document.body?.dataset.baseurl || "";
+
+const withBaseUrl = (path) => {
+  if (!siteBaseUrl) {
+    return path;
+  }
+  return `${siteBaseUrl}${path}`;
+};
+
 const renderAdmonitions = () => {
   document.querySelectorAll("blockquote").forEach((blockquote) => {
     const firstParagraph = blockquote.querySelector("p");
@@ -155,8 +164,8 @@ const renderAsciinemaPlayers = async () => {
     return;
   }
 
-  ensureStylesheet("/eigenstate-ipa/assets/vendor/asciinema-player.css");
-  await loadScript("/eigenstate-ipa/assets/vendor/asciinema-player.min.js");
+  ensureStylesheet(withBaseUrl("/assets/vendor/asciinema-player.css"));
+  await loadScript(withBaseUrl("/assets/vendor/asciinema-player.min.js"));
 
   players.forEach((container) => {
     if (container.dataset.rendered === "true") {
@@ -221,9 +230,58 @@ const renderToc = () => {
   });
 };
 
+const activateTocOnScroll = () => {
+  const links = Array.from(document.querySelectorAll(".toc-block a[href^='#']"));
+  if (!links.length || !("IntersectionObserver" in window)) {
+    return;
+  }
+
+  const linkById = new Map(
+    links.map((link) => [decodeURIComponent(link.getAttribute("href").slice(1)), link])
+  );
+
+  let activeId = "";
+
+  const setActive = (id) => {
+    if (!id || id === activeId) {
+      return;
+    }
+    activeId = id;
+    links.forEach((link) => {
+      link.classList.toggle("is-active", link === linkById.get(id));
+    });
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries
+      .filter((entry) => entry.isIntersecting)
+      .sort((left, right) => left.boundingClientRect.top - right.boundingClientRect.top);
+
+    if (visible.length) {
+      setActive(visible[0].target.id);
+    }
+  }, {
+    rootMargin: "-20% 0px -65% 0px",
+    threshold: [0, 1]
+  });
+
+  linkById.forEach((_, id) => {
+    const heading = document.getElementById(id);
+    if (heading) {
+      observer.observe(heading);
+    }
+  });
+
+  if (links[0]) {
+    const initialId = decodeURIComponent(links[0].getAttribute("href").slice(1));
+    setActive(initialId);
+  }
+};
+
 window.addEventListener("DOMContentLoaded", async () => {
   renderAdmonitions();
   renderToc();
+  activateTocOnScroll();
   await renderMermaid();
   await renderAsciinemaPlayers();
 });

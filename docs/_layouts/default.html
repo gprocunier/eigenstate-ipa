@@ -1,4 +1,34 @@
 <!DOCTYPE html>
+{% assign page_kind = "Guide" %}
+{% assign page_kind_summary = "Collection-wide guidance and operator framing." %}
+{% if page.path contains 'index.md' %}
+  {% assign page_kind = "Overview" %}
+  {% assign page_kind_summary = "Entry point for the collection, its doc model, and the main workflow branches." %}
+{% elsif page.path contains 'documentation-map.md' %}
+  {% assign page_kind = "Navigation" %}
+  {% assign page_kind_summary = "Route by intent when you know the problem but not yet the right page." %}
+{% elsif page.path contains '-plugin.md' %}
+  {% assign page_kind = "Reference" %}
+  {% assign page_kind_summary = "Exact syntax, authentication behavior, return fields, and option details." %}
+{% elsif page.path contains '-capabilities.md' %}
+  {% assign page_kind = "Capabilities" %}
+  {% assign page_kind_summary = "Decision boundary guidance for when the plugin family fits the job." %}
+{% elsif page.path contains '-use-cases.md' %}
+  {% assign page_kind = "Use Cases" %}
+  {% assign page_kind_summary = "Worked playbook patterns and cross-plugin workflow examples." %}
+{% elsif page.path contains '-demo.md' %}
+  {% assign page_kind = "Demo" %}
+  {% assign page_kind_summary = "Recorded or operator-visible proof of a workflow boundary." %}
+{% elsif page.path contains '-rbac-setup.md' %}
+  {% assign page_kind = "Setup Guide" %}
+  {% assign page_kind_summary = "Bootstrap and delegation steps required before the workflow is usable." %}
+{% elsif page.path contains 'primer.md' %}
+  {% assign page_kind = "Primer" %}
+  {% assign page_kind_summary = "Collection-wide framing for a broader platform or product space." %}
+{% elsif page.path contains 'integration.md' %}
+  {% assign page_kind = "Integration Guide" %}
+  {% assign page_kind_summary = "Controller, execution-environment, or cross-system integration guidance." %}
+{% endif %}
 <html lang="{{ site.lang | default: 'en-US' }}">
   <head>
     <meta charset="UTF-8">
@@ -12,7 +42,7 @@
     <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
     <script type="module" src="{{ '/assets/site.js' | relative_url }}"></script>
   </head>
-  <body>
+  <body data-baseurl="{{ site.baseurl | default: '' }}">
     <div class="site-shell">
       <header class="site-header">
         <div class="site-header__inner">
@@ -24,7 +54,7 @@
             </div>
           </div>
           <div class="site-header__actions">
-            <a href="{{ '/documentation-map.html' | relative_url }}"><kbd>DOCS MAP</kbd></a>
+            <a href="{{ '/documentation-map.html' | relative_url }}"{% if page.path contains 'documentation-map.md' %} aria-current="page"{% endif %}><kbd>DOCS MAP</kbd></a>
             <a href="{{ site.repo_url }}"><kbd>TOP README</kbd></a>
             <a href="{{ site.galaxy_url }}"><kbd>ANSIBLE GALAXY</kbd></a>
           </div>
@@ -33,19 +63,68 @@
       <main class="page-shell">
         <div class="content-column">
           <article class="markdown-body">
+            <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+              <a href="{{ '/' | relative_url }}">Docs</a>
+              {% unless page.path contains 'index.md' %}
+                <span>/</span>
+                <a href="{{ '/documentation-map.html' | relative_url }}">Documentation Map</a>
+                <span>/</span>
+                <span aria-current="page">{{ page_kind }}</span>
+              {% endunless %}
+            </nav>
+            {% unless page.path contains 'index.md' %}
+              <div class="page-meta">
+                <p class="page-kind">{{ page_kind }}</p>
+                <p class="page-summary">{{ page_kind_summary }}</p>
+              </div>
+            {% endunless %}
             {{ content }}
           </article>
         </div>
         <aside class="side-column">
+          <section class="context-block context-block--meta">
+            <h2>Page Type</h2>
+            <p class="context-kicker">{{ page_kind }}</p>
+            <p class="context-copy">{{ page_kind_summary }}</p>
+          </section>
           <section class="context-block">
-            <h2>Collection Guides</h2>
+            <h2>Start Here</h2>
             <ul class="path-list">
               <li>
-                <a href="{{ '/documentation-map.html' | relative_url }}">
+                <a href="{{ '/documentation-map.html' | relative_url }}"{% if page.path contains 'documentation-map.md' %} aria-current="page"{% endif %}>
                   <strong>Documentation Map</strong>
                   <span>Route by intent when you know the problem but not the right page.</span>
                 </a>
               </li>
+              <li>
+                <a href="{{ '/vault-cyberark-primer.html' | relative_url }}"{% if page.path contains 'vault-cyberark-primer.md' %} aria-current="page"{% endif %}>
+                  <strong>Vault/CyberArk Primer</strong>
+                  <span>Translate vault-manager expectations into the IdM-native model.</span>
+                </a>
+              </li>
+              <li>
+                <a href="{{ '/aap-integration.html' | relative_url }}"{% if page.path contains 'aap-integration.md' %} aria-current="page"{% endif %}>
+                  <strong>AAP Integration</strong>
+                  <span>Controller and execution-environment guidance for real automation runs.</span>
+                </a>
+              </li>
+              <li>
+                <a href="{{ '/ephemeral-access-capabilities.html' | relative_url }}"{% if page.path contains 'ephemeral-access-capabilities.md' %} aria-current="page"{% endif %}>
+                  <strong>Ephemeral Access</strong>
+                  <span>Temporary-access boundaries, leases, and cutoff behavior.</span>
+                </a>
+              </li>
+              <li>
+                <a href="{{ '/openshift-primer.html' | relative_url }}"{% if page.path contains 'openshift-primer.md' %} aria-current="page"{% endif %}>
+                  <strong>OpenShift Primer</strong>
+                  <span>Start here for OpenShift, RHOSO, RHACM, RHACS, and Quay branches.</span>
+                </a>
+              </li>
+            </ul>
+          </section>
+          <section class="context-block">
+            <h2>Project Links</h2>
+            <ul class="path-list">
               <li>
                 <a href="{{ site.repo_url }}">
                   <strong>Top README</strong>

@@ -2,6 +2,7 @@
   --rh-red: #ee0000;
   --rh-red-dark: #a30000;
   --rh-red-light: #fce3e3;
+  --rh-sand: #f9f7f4;
   --rh-gray-10: #f5f5f5;
   --rh-gray-20: #e0e0e0;
   --rh-gray-30: #c7c7c7;
@@ -19,7 +20,8 @@
 html { font-size: 16px; scroll-behavior: smooth; }
 body {
   margin: 0;
-  background: #ffffff;
+  background:
+    linear-gradient(180deg, #ffffff 0, #ffffff 8rem, var(--rh-sand) 8rem, var(--rh-sand) 100%);
   color: var(--rh-gray-90);
   font-family: "Red Hat Text", "Helvetica Neue", Arial, sans-serif;
   line-height: 1.5;
@@ -38,7 +40,11 @@ a {
 .site-header {
   border-top: 4px solid var(--rh-red);
   border-bottom: 1px solid var(--rh-gray-20);
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.96);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(10px);
 }
 
 .site-header__inner,
@@ -103,6 +109,12 @@ a {
   text-decoration: none;
 }
 
+.site-header__actions a[aria-current="page"] kbd {
+  color: #ffffff;
+  background: var(--rh-gray-90);
+  border-color: var(--rh-gray-90);
+}
+
 .site-header__actions kbd,
 .markdown-body a kbd,
 .markdown-body kbd {
@@ -139,11 +151,23 @@ a {
   gap: 3rem;
   padding-top: 2rem;
   padding-bottom: 4rem;
+  align-items: start;
 }
 
 .content-column,
 .side-column {
   min-width: 0;
+}
+
+.content-column {
+  padding: 2rem 2.4rem 3rem;
+  background: #ffffff;
+  border: 1px solid var(--rh-gray-20);
+}
+
+.side-column {
+  position: sticky;
+  top: 7rem;
 }
 
 .eyebrow {
@@ -157,9 +181,10 @@ a {
 .context-block,
 .toc-block,
 .source-block {
-  border-top: 1px solid var(--rh-gray-20);
-  padding-top: 1rem;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1rem;
+  padding: 1rem 1rem 1.1rem;
+  border: 1px solid var(--rh-gray-20);
+  background: #ffffff;
 }
 
 .context-block h2,
@@ -178,6 +203,24 @@ a {
   font-size: 0.95rem;
 }
 
+.context-block--meta {
+  border-top: 3px solid var(--rh-red);
+}
+
+.context-kicker {
+  margin: 0 0 0.3rem;
+  color: var(--rh-red-dark);
+  font-family: "Red Hat Display", "Red Hat Text", Arial, sans-serif;
+  font-size: 1.15rem;
+  line-height: 1.15;
+}
+
+.context-copy {
+  margin: 0;
+  color: var(--rh-gray-80);
+  font-size: 0.95rem;
+}
+
 .path-list {
   list-style: none;
   margin: 0;
@@ -185,12 +228,26 @@ a {
 }
 
 .path-list li {
-  margin: 0 0 0.8rem;
+  margin: 0 0 0.6rem;
 }
 
 .path-list a {
   display: block;
   color: inherit;
+  padding: 0.5rem 0.55rem;
+  border: 1px solid transparent;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.path-list a:hover,
+.path-list a:focus {
+  background: var(--rh-gray-10);
+  border-color: var(--rh-gray-20);
+}
+
+.path-list a[aria-current="page"] {
+  background: var(--rh-gray-10);
+  border-color: var(--rh-gray-30);
 }
 
 .path-list strong {
@@ -213,15 +270,74 @@ a {
 
 .toc-block li {
   margin: 0.35rem 0;
+  list-style: none;
 }
 
 .toc-block li.toc-h3 {
   margin-left: 0.75rem;
 }
 
+.toc-block a {
+  color: var(--rh-gray-80);
+  text-decoration: none;
+}
+
+.toc-block a:hover,
+.toc-block a:focus,
+.toc-block a.is-active {
+  color: var(--rh-gray-90);
+  text-decoration: underline;
+}
+
 .markdown-body {
   color: var(--rh-gray-90);
   background: #ffffff;
+}
+
+.page-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 1rem;
+  color: var(--rh-gray-70);
+  font-size: 0.93rem;
+}
+
+.page-breadcrumbs a {
+  color: var(--rh-gray-70);
+  text-decoration: none;
+}
+
+.page-breadcrumbs a:hover,
+.page-breadcrumbs a:focus {
+  color: var(--rh-link);
+  text-decoration: underline;
+}
+
+.page-meta {
+  margin: 0 0 1.25rem;
+  padding: 0 0 1.1rem;
+  border-bottom: 1px solid var(--rh-gray-20);
+}
+
+.page-kind {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 0.45rem;
+  padding: 0.2rem 0.55rem;
+  background: var(--rh-red-light);
+  color: var(--rh-red-dark);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.page-summary {
+  margin: 0;
+  max-width: 48rem;
+  color: var(--rh-gray-80);
+  font-size: 1rem;
 }
 
 .markdown-body h1,
@@ -402,6 +518,8 @@ a {
 
   .side-column {
     order: -1;
+    position: static;
+    top: auto;
   }
 }
 
@@ -411,5 +529,9 @@ a {
   .page-shell {
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+
+  .content-column {
+    padding: 1.4rem 1rem 2rem;
   }
 }
