@@ -113,6 +113,76 @@ const renderMermaid = async () => {
   await mermaid.run({ querySelector: ".mermaid" });
 };
 
+const loadScript = (src) => new Promise((resolve, reject) => {
+  const existing = document.querySelector(`script[data-src="${src}"]`);
+  if (existing) {
+    if (existing.dataset.loaded === "true") {
+      resolve();
+      return;
+    }
+    existing.addEventListener("load", () => resolve(), { once: true });
+    existing.addEventListener("error", (event) => reject(event), { once: true });
+    return;
+  }
+
+  const script = document.createElement("script");
+  script.src = src;
+  script.defer = true;
+  script.dataset.src = src;
+  script.addEventListener("load", () => {
+    script.dataset.loaded = "true";
+    resolve();
+  }, { once: true });
+  script.addEventListener("error", (event) => reject(event), { once: true });
+  document.head.appendChild(script);
+});
+
+const ensureStylesheet = (href) => {
+  if (document.querySelector(`link[data-href="${href}"]`)) {
+    return;
+  }
+
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = href;
+  link.dataset.href = href;
+  document.head.appendChild(link);
+};
+
+const renderAsciinemaPlayers = async () => {
+  const players = document.querySelectorAll("[data-asciinema-src]");
+  if (!players.length) {
+    return;
+  }
+
+  ensureStylesheet("/eigenstate-ipa/assets/vendor/asciinema-player.css");
+  await loadScript("/eigenstate-ipa/assets/vendor/asciinema-player.min.js");
+
+  players.forEach((container) => {
+    if (container.dataset.rendered === "true") {
+      return;
+    }
+
+    const src = container.dataset.asciinemaSrc;
+    const poster = container.dataset.asciinemaPoster || "npt:0:08";
+    const speed = Number(container.dataset.asciinemaSpeed || "1.3");
+    const cols = Number(container.dataset.asciinemaCols || "132");
+    const rows = Number(container.dataset.asciinemaRows || "40");
+
+    window.AsciinemaPlayer.create(src, container, {
+      autoPlay: false,
+      controls: true,
+      fit: "width",
+      speed,
+      poster,
+      cols,
+      rows
+    });
+
+    container.dataset.rendered = "true";
+  });
+};
+
 const renderToc = () => {
   const tocList = document.querySelector("[data-generated-toc]");
   if (!tocList) {
@@ -155,4 +225,5 @@ window.addEventListener("DOMContentLoaded", async () => {
   renderAdmonitions();
   renderToc();
   await renderMermaid();
+  await renderAsciinemaPlayers();
 });
