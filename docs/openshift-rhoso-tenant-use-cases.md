@@ -153,6 +153,73 @@ The operator still benefits from:
 So the tenant domain can vary without making the surrounding cloud operations
 turn back into shell scripts and static lists.
 
+## 5. Tenant Handoff Is Easier When The Controller Proves The Pieces First
+
+The practical tenant flow is usually not “log in and hope the federation path is
+correct.” It is:
+
+1. confirm the tenant-side identity source exists
+2. confirm the service identity or app-facing principal exists
+3. open any short-lived operator window needed for the handoff
+4. archive the resulting support material where the operator can recover it later
+
+That keeps the cloud team from handing off a partially assembled tenant setup.
+
+```yaml
+---
+- name: Prove a tenant handoff boundary before opening access
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    ipa_server: idm-01.corp.example.com
+    ipa_keytab: /runner/env/ipa/admin.keytab
+    ipa_ca: /etc/ipa/ca.crt
+    tenant_domain: tenant-a.example.com
+    tenant_app: image-api
+    tenant_principal: "HTTP/{{ tenant_app }}.{{ tenant_domain }}"
+    tenant_operator: svc-tenant-a-support
+
+  tasks:
+    - name: Confirm the tenant-facing service principal exists
+      ansible.builtin.set_fact:
+        principal_state: "{{ lookup('eigenstate.ipa.principal',
+                              tenant_principal,
+                              server=ipa_server,
+                              kerberos_keytab=ipa_keytab,
+                              verify=ipa_ca) }}"
+
+    - name: Confirm the operator can reach the support path
+      ansible.builtin.set_fact:
+        access_state: "{{ lookup('eigenstate.ipa.hbacrule',
+                           tenant_operator,
+                           operation='test',
+                           targethost='bastion-01.corp.example.com',
+                           service='sshd',
+                           server=ipa_server,
+                           kerberos_keytab=ipa_keytab,
+                           verify=ipa_ca) }}"
+
+    - name: Open a temporary operator window when the tenant boundary is ready
+      eigenstate.ipa.user_lease:
+        username: "{{ tenant_operator }}"
+        principal_expiration: "01:00"
+        password_expiration_matches_principal: true
+        require_groups:
+          - tenant-a-lease-targets
+        server: "{{ ipa_server }}"
+        kerberos_keytab: "{{ ipa_keytab }}"
+        ipaadmin_principal: lease-operator
+        verify: "{{ ipa_ca }}"
+      when:
+        - principal_state.exists
+        - not access_state.denied
+```
+
+This version is more useful than a generic support ticket because the tenant
+handoff is tied to a visible identity boundary and the temporary access dies
+with the work.
+
 ## Read Next
 
 - for the RHOSO branch overview:

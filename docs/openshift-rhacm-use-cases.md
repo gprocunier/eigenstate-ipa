@@ -183,6 +183,67 @@ Use `otp` to generate the enrollment password, then let the official IdM
 modules consume it.
 That keeps RHACM, AAP, and IdM lined up around the same source of truth.
 
+The more practical version of the same idea is:
+
+1. RHACM emits the lifecycle event.
+2. AAP checks the support identity and policy path first.
+3. IdM provides the enrollment token or host-side policy.
+4. The workflow only then lets the guest or support node join the estate.
+
+```yaml
+---
+- name: RHACM lifecycle hook prepares a new support node
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    ipa_server: idm-01.corp.example.com
+    ipa_keytab: /runner/env/ipa/admin.keytab
+    ipa_ca: /etc/ipa/ca.crt
+    support_host: support-gw-01.corp.example.com
+    support_identity: svc-rhacm-support
+
+  tasks:
+    - name: Confirm the support host name exists
+      ansible.builtin.set_fact:
+        dns_record: "{{ lookup('eigenstate.ipa.dns',
+                        'support-gw-01',
+                        zone='corp.example.com',
+                        server=ipa_server,
+                        kerberos_keytab=ipa_keytab,
+                        verify=ipa_ca) }}"
+
+    - name: Confirm the service principal exists
+      ansible.builtin.set_fact:
+        principal_state: "{{ lookup('eigenstate.ipa.principal',
+                              'HTTP/{{ support_host }}',
+                              server=ipa_server,
+                              kerberos_keytab=ipa_keytab,
+                              verify=ipa_ca) }}"
+
+    - name: Confirm the support path is allowed
+      ansible.builtin.set_fact:
+        access_state: "{{ lookup('eigenstate.ipa.hbacrule',
+                           support_identity,
+                           operation='test',
+                           targethost=support_host,
+                           service='sshd',
+                           server=ipa_server,
+                           kerberos_keytab=ipa_keytab,
+                           verify=ipa_ca) }}"
+
+    - name: Refuse the hook if the node is not ready for the RHACM event
+      ansible.builtin.assert:
+        that:
+          - dns_record.exists
+          - principal_state.exists
+          - not access_state.denied
+        fail_msg: "RHACM support-node preparation is not ready yet."
+```
+
+That keeps the RHACM event from producing a partially built host that the
+operator then has to repair by hand.
+
 ## Read Next
 
 - for the broader OpenShift framing:

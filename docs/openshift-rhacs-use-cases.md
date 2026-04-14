@@ -223,6 +223,58 @@ validation work can be controlled:
 That turns RHACS network policy output into something closer to a governed
 change workflow instead of a one-off export from the UI.
 
+The controller-side shape looks more like this:
+
+1. RHACS produces the finding or generated policy.
+2. AAP validates the supporting identity path first.
+3. A temporary operator lease is opened only for the review window.
+4. The policy is applied or rejected while the lease is still active.
+5. IdM closes the operator path when the review ends.
+
+```yaml
+---
+- name: RHACS policy promotion gate
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    ipa_server: idm-01.corp.example.com
+    ipa_keytab: /runner/env/ipa/admin.keytab
+    ipa_ca: /etc/ipa/ca.crt
+    remediation_identity: svc-rhacs-remediation
+    review_identity: appsec-review
+    target_host: bastion-01.corp.example.com
+
+  tasks:
+    - name: Confirm the review host path is allowed
+      ansible.builtin.set_fact:
+        access_state: "{{ lookup('eigenstate.ipa.hbacrule',
+                           review_identity,
+                           operation='test',
+                           targethost=target_host,
+                           service='sshd',
+                           server=ipa_server,
+                           kerberos_keytab=ipa_keytab,
+                           verify=ipa_ca) }}"
+
+    - name: Open a temporary review window for the policy change
+      eigenstate.ipa.user_lease:
+        username: "{{ review_identity }}"
+        principal_expiration: "00:30"
+        password_expiration_matches_principal: true
+        require_groups:
+          - rhacs-reviewers
+        server: "{{ ipa_server }}"
+        kerberos_keytab: "{{ ipa_keytab }}"
+        ipaadmin_principal: lease-operator
+        verify: "{{ ipa_ca }}"
+      when:
+        - not access_state.denied
+```
+
+That gives RHACS a real human-review boundary instead of an always-on exception
+path.
+
 ## Read Next
 
 - for the broader OpenShift framing:
