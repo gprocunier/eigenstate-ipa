@@ -43,7 +43,7 @@ boundary rather than just see one green playbook.
 <div
   data-asciinema-src="/eigenstate-ipa/user-lease.cast"
   data-asciinema-poster="npt:0:08"
-  data-asciinema-speed="1.3"
+  data-asciinema-speed="1.5"
   data-asciinema-cols="132"
   data-asciinema-rows="40"
 ></div>
