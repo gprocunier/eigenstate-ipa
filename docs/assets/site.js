@@ -45,81 +45,96 @@ const renderMermaid = async () => {
     pre.replaceWith(container);
   });
 
-  const mermaid = (await import("https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs")).default;
+  try {
+    await loadScript(withBaseUrl("/assets/vendor/mermaid.min.js"));
+    const mermaid = window.mermaid || globalThis.mermaid;
+    if (!mermaid) {
+      throw new Error("Mermaid global not available after loading local vendor asset.");
+    }
 
-  mermaid.initialize({
-    startOnLoad: false,
-    securityLevel: "loose",
-    theme: "base",
-    flowchart: {
-      curve: "linear",
-      htmlLabels: true
-    },
-    themeVariables: {
-      primaryColor: "#ffffff",
-      primaryTextColor: "#151515",
-      primaryBorderColor: "#c7c7c7",
-      lineColor: "#4d4d4d",
-      secondaryColor: "#f2f2f2",
-      secondaryTextColor: "#151515",
-      secondaryBorderColor: "#c7c7c7",
-      tertiaryColor: "#fce3e3",
-      tertiaryTextColor: "#151515",
-      tertiaryBorderColor: "#ee0000",
-      background: "#ffffff",
-      mainBkg: "#ffffff",
-      clusterBkg: "#ffffff",
-      clusterBorder: "#c7c7c7",
-      actorBkg: "#ffffff",
-      actorBorder: "#c7c7c7",
-      actorTextColor: "#151515",
-      labelBoxBkgColor: "#ffffff",
-      labelTextColor: "#151515",
-      edgeLabelBackground: "#ffffff",
-      signalColor: "#4d4d4d",
-      signalTextColor: "#151515",
-      noteBkgColor: "#f2f2f2",
-      noteBorderColor: "#c7c7c7",
-      noteTextColor: "#151515",
-      sequenceNumberColor: "#151515",
-      fontFamily: "Red Hat Text"
-    },
-    themeCSS: `
-      .node rect,
-      .node polygon,
-      .node path,
-      .node circle {
-        stroke-width: 1.5px;
-      }
-      .nodeLabel,
-      .label foreignObject div,
-      .edgeLabel {
-        font-family: 'Red Hat Text', Helvetica, Arial, sans-serif !important;
-        color: #151515 !important;
-      }
-      .cluster-label text,
-      .cluster-label span {
-        font-family: 'Red Hat Text', Helvetica, Arial, sans-serif !important;
-        font-weight: 500;
-        color: #151515 !important;
-      }
-      .edgePath .path,
-      .flowchart-link {
-        stroke: #4d4d4d !important;
-        stroke-width: 1.5px !important;
-        stroke-linecap: square;
-      }
-      .marker path {
-        fill: #4d4d4d !important;
-        stroke: #4d4d4d !important;
-      }
-      .actor {
-        stroke-width: 1.5px !important;
-      }
-    `
-  });
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "loose",
+      theme: "base",
+      flowchart: {
+        curve: "linear",
+        htmlLabels: true
+      },
+      themeVariables: {
+        primaryColor: "#ffffff",
+        primaryTextColor: "#151515",
+        primaryBorderColor: "#c7c7c7",
+        lineColor: "#4d4d4d",
+        secondaryColor: "#f2f2f2",
+        secondaryTextColor: "#151515",
+        secondaryBorderColor: "#c7c7c7",
+        tertiaryColor: "#fce3e3",
+        tertiaryTextColor: "#151515",
+        tertiaryBorderColor: "#ee0000",
+        background: "#ffffff",
+        mainBkg: "#ffffff",
+        clusterBkg: "#ffffff",
+        clusterBorder: "#c7c7c7",
+        actorBkg: "#ffffff",
+        actorBorder: "#c7c7c7",
+        actorTextColor: "#151515",
+        labelBoxBkgColor: "#ffffff",
+        labelTextColor: "#151515",
+        edgeLabelBackground: "#ffffff",
+        signalColor: "#4d4d4d",
+        signalTextColor: "#151515",
+        noteBkgColor: "#f2f2f2",
+        noteBorderColor: "#c7c7c7",
+        noteTextColor: "#151515",
+        sequenceNumberColor: "#151515",
+        fontFamily: "Red Hat Text"
+      },
+      themeCSS: `
+        .node rect,
+        .node polygon,
+        .node path,
+        .node circle {
+          stroke-width: 1.5px;
+        }
+        .nodeLabel,
+        .label foreignObject div,
+        .edgeLabel {
+          font-family: 'Red Hat Text', Helvetica, Arial, sans-serif !important;
+          color: #151515 !important;
+        }
+        .cluster-label text,
+        .cluster-label span {
+          font-family: 'Red Hat Text', Helvetica, Arial, sans-serif !important;
+          font-weight: 500;
+          color: #151515 !important;
+        }
+        .edgePath .path,
+        .flowchart-link {
+          stroke: #4d4d4d !important;
+          stroke-width: 1.5px !important;
+          stroke-linecap: square;
+        }
+        .marker path {
+          fill: #4d4d4d !important;
+          stroke: #4d4d4d !important;
+        }
+        .actor {
+          stroke-width: 1.5px !important;
+        }
+      `
+    });
 
-  await mermaid.run({ querySelector: ".mermaid" });
+    await mermaid.run({ querySelector: ".mermaid" });
+    document.querySelectorAll(".mermaid").forEach((node) => {
+      node.dataset.mermaidState = "rendered";
+    });
+  } catch (error) {
+    console.error("Mermaid render failed", error);
+    document.querySelectorAll(".mermaid").forEach((node) => {
+      node.dataset.mermaidState = "fallback";
+      node.title = "Diagram source shown because Mermaid could not render in this browser.";
+    });
+  }
 };
 
 const loadScript = (src) => new Promise((resolve, reject) => {

@@ -490,6 +490,12 @@ a {
   padding: 0.85rem;
 }
 
+.markdown-body .mermaid[data-mermaid-state="fallback"] {
+  background: var(--rh-gray-10);
+  font-family: "Red Hat Mono", Consolas, monospace;
+  white-space: pre;
+}
+
 .markdown-body [data-asciinema-src] {
   margin: 1.5rem 0;
 }
