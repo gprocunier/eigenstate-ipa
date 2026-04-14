@@ -105,6 +105,61 @@ That keeps the story honest:
 - AAP runs the governed job
 - IdM provides the identity, policy, and service-state truth that the job needs
 
+## 4. RHOSO Maintenance Jobs Should Prove The Support Boundary First
+
+A RHOSO support job is cleaner when the controller proves the operator path
+before it opens a maintenance window.
+
+That usually looks like:
+
+1. test whether the bastion or data-plane login path is allowed
+2. open a short lease only for the approved maintenance window
+3. let the job complete while the IdM cutoff is still active
+4. let the lease expire when the work ends
+
+```yaml
+---
+- name: Gate a RHOSO maintenance window through IdM first
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    ipa_server: idm-01.corp.example.com
+    ipa_keytab: /runner/env/ipa/admin.keytab
+    ipa_ca: /etc/ipa/ca.crt
+    operator_identity: svc-rhoso-maint
+    target_host: compute-17.example.com
+
+  tasks:
+    - name: Confirm the support login path is allowed
+      ansible.builtin.set_fact:
+        access_state: "{{ lookup('eigenstate.ipa.hbacrule',
+                           operator_identity,
+                           operation='test',
+                           targethost=target_host,
+                           service='sshd',
+                           server=ipa_server,
+                           kerberos_keytab=ipa_keytab,
+                           verify=ipa_ca) }}"
+
+    - name: Open a short maintenance lease when the path is ready
+      eigenstate.ipa.user_lease:
+        username: "{{ operator_identity }}"
+        principal_expiration: "01:00"
+        password_expiration_matches_principal: true
+        require_groups:
+          - rhoso-maint-targets
+        server: "{{ ipa_server }}"
+        kerberos_keytab: "{{ ipa_keytab }}"
+        ipaadmin_principal: lease-operator
+        verify: "{{ ipa_ca }}"
+      when:
+        - not access_state.denied
+```
+
+That keeps the broad RHOSO branch tied to a real operator action instead of
+only describing the surrounding identity model.
+
 ## Read Next
 
 - for the cloud-operator side:

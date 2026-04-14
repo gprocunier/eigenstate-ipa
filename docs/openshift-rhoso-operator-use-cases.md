@@ -172,6 +172,89 @@ The stronger operator pattern is:
 That is particularly useful for helper services and bastion-side automation
 that should look like a real machine identity rather than a borrowed admin user.
 
+## 6. Maintenance Bundles Should Be Archived As Part Of The Workflow
+
+Operators usually need more than access to finish a support or maintenance job.
+They also need the supporting artifacts to be recoverable after the work ends:
+
+- the service identity that ran the job
+- the certificate or bootstrap secret tied to that identity
+- the approval or handoff boundary that made the access temporary
+
+That is a good fit for a controller-side path that proves the support bundle
+exists before it archives anything.
+
+```yaml
+---
+- name: Prepare a recoverable RHOSO maintenance bundle
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    ipa_server: idm-01.corp.example.com
+    ipa_keytab: /runner/env/ipa/admin.keytab
+    ipa_ca: /etc/ipa/ca.crt
+    support_identity: svc-rhoso-maint
+    support_fqdn: support-gw-01.corp.example.com
+
+  tasks:
+    - name: Confirm the support identity exists
+      ansible.builtin.set_fact:
+        principal_state: "{{ lookup('eigenstate.ipa.principal',
+                              'HTTP/{{ support_fqdn }}',
+                              server=ipa_server,
+                              kerberos_keytab=ipa_keytab,
+                              verify=ipa_ca) }}"
+
+    - name: Confirm the support path is allowed
+      ansible.builtin.set_fact:
+        access_state: "{{ lookup('eigenstate.ipa.hbacrule',
+                           support_identity,
+                           operation='test',
+                           targethost='bastion-01.corp.example.com',
+                           service='sshd',
+                           server=ipa_server,
+                           kerberos_keytab=ipa_keytab,
+                           verify=ipa_ca) }}"
+
+    - name: Open a short maintenance lease when the boundary is valid
+      eigenstate.ipa.user_lease:
+        username: "{{ support_identity }}"
+        principal_expiration: "01:00"
+        password_expiration_matches_principal: true
+        require_groups:
+          - rhoso-maint-targets
+        server: "{{ ipa_server }}"
+        kerberos_keytab: "{{ ipa_keytab }}"
+        ipaadmin_principal: lease-operator
+        verify: "{{ ipa_ca }}"
+      when:
+        - principal_state.exists
+        - not access_state.denied
+
+    - name: Archive the maintenance bundle once the window is open
+      eigenstate.ipa.vault_write:
+        name: "{{ support_identity }}-bundle"
+        state: archived
+        data: >-
+          {{
+            {
+              'principal': 'HTTP/' ~ support_fqdn,
+              'support_identity': support_identity,
+              'lease_window': '01:00'
+            } | to_nice_yaml
+          }}
+        server: "{{ ipa_server }}"
+        kerberos_keytab: "{{ ipa_keytab }}"
+        verify: "{{ ipa_ca }}"
+      when:
+        - principal_state.exists
+        - not access_state.denied
+```
+
+That keeps the operator support path repeatable without leaving the recovery
+material scattered across tickets or shell history.
+
 ## Read Next
 
 - for the RHOSO branch overview:

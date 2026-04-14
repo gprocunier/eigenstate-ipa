@@ -220,6 +220,61 @@ This version is more useful than a generic support ticket because the tenant
 handoff is tied to a visible identity boundary and the temporary access dies
 with the work.
 
+## 6. Tenant Support Windows Should Be Time-Boxed Too
+
+Tenant support is not the same as tenant service onboarding.
+When a hosted tenant needs a repair or migration window, the support identity
+should still expire when the work ends.
+
+That gives the tenant team a clean answer to the usual question:
+
+- who is allowed to touch the tenant support path
+- whether the operator access is temporary or standing
+- whether the tenant handoff can be repeated without re-creating the whole workflow
+
+```yaml
+---
+- name: Open a time-boxed tenant support window
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    ipa_server: idm-01.corp.example.com
+    ipa_keytab: /runner/env/ipa/admin.keytab
+    ipa_ca: /etc/ipa/ca.crt
+    tenant_support_identity: svc-tenant-a-support
+    tenant_support_host: bastion-01.corp.example.com
+
+  tasks:
+    - name: Confirm the support host path is allowed
+      ansible.builtin.set_fact:
+        access_state: "{{ lookup('eigenstate.ipa.hbacrule',
+                           tenant_support_identity,
+                           operation='test',
+                           targethost=tenant_support_host,
+                           service='sshd',
+                           server=ipa_server,
+                           kerberos_keytab=ipa_keytab,
+                           verify=ipa_ca) }}"
+
+    - name: Open a one-hour support lease for the tenant window
+      eigenstate.ipa.user_lease:
+        username: "{{ tenant_support_identity }}"
+        principal_expiration: "01:00"
+        password_expiration_matches_principal: true
+        require_groups:
+          - tenant-a-lease-targets
+        server: "{{ ipa_server }}"
+        kerberos_keytab: "{{ ipa_keytab }}"
+        ipaadmin_principal: lease-operator
+        verify: "{{ ipa_ca }}"
+      when:
+        - not access_state.denied
+```
+
+This keeps support access aligned with the tenant event instead of letting it
+become a permanent exception path.
+
 ## Read Next
 
 - for the RHOSO branch overview:
