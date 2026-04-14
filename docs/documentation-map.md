@@ -56,7 +56,7 @@ reference pages from wandering into broad architectural prose.
 
 ### I already know the plugin and just need syntax
 
-Go straight to [Reference By Area](#reference-by-area).
+Go straight to [Plugin Family Index](#plugin-family-index).
 
 ## High-Value Workflows
 
@@ -78,76 +78,7 @@ These are the collection combinations worth learning as flows.
 | RHACS findings and enforcement | [OpenShift RHACS Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html) | RHACS alerts, admission controls, and network-policy output become governed workflows instead of generic follow-up tickets |
 | Quay identity and repo automation | [OpenShift Quay Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html) | Quay team access, mirroring, notifications, and registry onboarding become IdM-aware workflows instead of local credential sprawl |
 
-## Choose By Problem
-
-### Inventory and targeting
-
-- [Inventory Plugin](https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html)
-- [Inventory Capabilities](https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html)
-- [Inventory Use Cases](https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html)
-
-### Static secrets and vault lifecycle
-
-- [Vault Plugin](https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html)
-- [Vault Capabilities](https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html)
-- [Vault Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html)
-- [Vault Write Module](https://gprocunier.github.io/eigenstate-ipa/vault-write-plugin.html)
-- [Vault Write Capabilities](https://gprocunier.github.io/eigenstate-ipa/vault-write-capabilities.html)
-- [Vault Write Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html)
-
-### Kerberos, certificates, and enrollment
-
-- [Principal Plugin](https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html)
-- [Principal Capabilities](https://gprocunier.github.io/eigenstate-ipa/principal-capabilities.html)
-- [Principal Use Cases](https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html)
-- [Keytab Plugin](https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html)
-- [Keytab Capabilities](https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html)
-- [Keytab Use Cases](https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html)
-- [User Lease Module](https://gprocunier.github.io/eigenstate-ipa/user-lease-plugin.html)
-- [User Lease Capabilities](https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html)
-- [User Lease Use Cases](https://gprocunier.github.io/eigenstate-ipa/user-lease-use-cases.html)
-- [User Lease Demo](https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html)
-- [User Lease RBAC Setup](https://gprocunier.github.io/eigenstate-ipa/user-lease-rbac-setup.html)
-- [Cert Plugin](https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html)
-- [Cert Capabilities](https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html)
-- [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html)
-- [OTP Plugin](https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html)
-- [OTP Capabilities](https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html)
-- [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html)
-
-### DNS and policy validation
-
-- [DNS Plugin](https://gprocunier.github.io/eigenstate-ipa/dns-plugin.html)
-- [DNS Capabilities](https://gprocunier.github.io/eigenstate-ipa/dns-capabilities.html)
-- [DNS Use Cases](https://gprocunier.github.io/eigenstate-ipa/dns-use-cases.html)
-- [Sudo Plugin](https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html)
-- [Sudo Capabilities](https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html)
-- [Sudo Use Cases](https://gprocunier.github.io/eigenstate-ipa/sudo-use-cases.html)
-- [SELinux Map Plugin](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html)
-- [SELinux Map Capabilities](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html)
-- [SELinux Map Use Cases](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html)
-- [HBAC Rule Plugin](https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html)
-- [HBAC Rule Capabilities](https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html)
-- [HBAC Rule Use Cases](https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html)
-
-### Controller workflows and comparison framing
-
-- [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html)
-- [Rotation Capabilities](https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html)
-- [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html)
-- [Vault/CyberArk Primer](https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html)
-- [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html)
-- [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html)
-- [OpenShift Operator Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html)
-- [OpenShift RHOSO Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html)
-- [RHOSO Operator Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-operator-use-cases.html)
-- [RHOSO Tenant Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-tenant-use-cases.html)
-- [OpenShift RHACM Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html)
-- [OpenShift RHACS Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html)
-- [OpenShift Quay Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html)
-- [OpenShift Developer Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html)
-
-## Reference By Area
+## Plugin Family Index
 
 | Area | Reference | Capabilities | Use cases |
 | --- | --- | --- | --- |
@@ -164,11 +95,35 @@ These are the collection combinations worth learning as flows.
 | Sudo policy | [Sudo Plugin](https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html) | [Sudo Capabilities](https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html) | [Sudo Use Cases](https://gprocunier.github.io/eigenstate-ipa/sudo-use-cases.html) |
 | HBAC rules | [HBAC Rule Plugin](https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html) | [HBAC Rule Capabilities](https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html) | [HBAC Rule Use Cases](https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html) |
 
+Use this table when you already know the plugin family and need the exact
+three-page lane. For collection-wide questions, stay in the intent routes and
+workflow guides above.
+
+## Collection-Wide Guides
+
+| Question | Best page |
+| --- | --- |
+| How does this compare to Vault or CyberArk? | [Vault/CyberArk Primer](https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html) |
+| How does this fit into Controller and execution environments? | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) |
+| How should I think about rotation workflows? | [Rotation Capabilities](https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html) |
+| What is the temporary-access / lease boundary? | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) |
+| Where do the OpenShift and RHOSO branches begin? | [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html) |
+
+## OpenShift Workflow Branches
+
+- [OpenShift Operator Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html)
+- [OpenShift RHOSO Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html)
+- [RHOSO Operator Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-operator-use-cases.html)
+- [RHOSO Tenant Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-tenant-use-cases.html)
+- [OpenShift RHACM Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html)
+- [OpenShift RHACS Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html)
+- [OpenShift Quay Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html)
+- [OpenShift Developer Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html)
+
 ## Demo And Validation
 
 - [User Lease Demo](https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html)
-  explains the recorded manual flow in `user-lease.svg` and shows the exact
-  boundary the demo proves: fresh `kinit` and SSH succeed during the lease,
+  shows the exact boundary the demo proves: fresh `kinit` and SSH succeed during the lease,
   then a fresh `kinit` fails after expiry
 
 ## Keep The Flow Clean
