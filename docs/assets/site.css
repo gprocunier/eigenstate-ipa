@@ -231,6 +231,15 @@ a {
   margin: 0 0 0.6rem;
 }
 
+.path-list--compact li:last-child {
+  margin-bottom: 0;
+}
+
+.path-list--compact a {
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+}
+
 .path-list a {
   display: block;
   color: inherit;

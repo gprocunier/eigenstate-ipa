@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% assign page_kind = "Guide" %}
 {% assign page_kind_summary = "Collection-wide guidance and operator framing." %}
+{% assign family_slug = "" %}
 {% if page.path contains 'index.md' %}
   {% assign page_kind = "Overview" %}
   {% assign page_kind_summary = "Entry point for the collection, its doc model, and the main workflow branches." %}
@@ -10,12 +11,15 @@
 {% elsif page.path contains '-plugin.md' %}
   {% assign page_kind = "Reference" %}
   {% assign page_kind_summary = "Exact syntax, authentication behavior, return fields, and option details." %}
+  {% assign family_slug = page.path | remove: '-plugin.md' %}
 {% elsif page.path contains '-capabilities.md' %}
   {% assign page_kind = "Capabilities" %}
   {% assign page_kind_summary = "Decision boundary guidance for when the plugin family fits the job." %}
+  {% assign family_slug = page.path | remove: '-capabilities.md' %}
 {% elsif page.path contains '-use-cases.md' %}
   {% assign page_kind = "Use Cases" %}
   {% assign page_kind_summary = "Worked playbook patterns and cross-plugin workflow examples." %}
+  {% assign family_slug = page.path | remove: '-use-cases.md' %}
 {% elsif page.path contains '-demo.md' %}
   {% assign page_kind = "Demo" %}
   {% assign page_kind_summary = "Recorded or operator-visible proof of a workflow boundary." %}
@@ -28,6 +32,35 @@
 {% elsif page.path contains 'integration.md' %}
   {% assign page_kind = "Integration Guide" %}
   {% assign page_kind_summary = "Controller, execution-environment, or cross-system integration guidance." %}
+{% endif %}
+{% assign family_reference_doc = family_slug | append: '-plugin.md' %}
+{% assign family_capabilities_doc = family_slug | append: '-capabilities.md' %}
+{% assign family_use_cases_doc = family_slug | append: '-use-cases.md' %}
+{% assign family_reference_exists = false %}
+{% assign family_capabilities_exists = false %}
+{% assign family_use_cases_exists = false %}
+{% assign family_doc_count = 0 %}
+{% if family_slug != "" %}
+  {% for candidate in site.pages %}
+    {% if candidate.path == family_reference_doc %}
+      {% assign family_reference_exists = true %}
+    {% endif %}
+    {% if candidate.path == family_capabilities_doc %}
+      {% assign family_capabilities_exists = true %}
+    {% endif %}
+    {% if candidate.path == family_use_cases_doc %}
+      {% assign family_use_cases_exists = true %}
+    {% endif %}
+  {% endfor %}
+  {% if family_reference_exists %}
+    {% assign family_doc_count = family_doc_count | plus: 1 %}
+  {% endif %}
+  {% if family_capabilities_exists %}
+    {% assign family_doc_count = family_doc_count | plus: 1 %}
+  {% endif %}
+  {% if family_use_cases_exists %}
+    {% assign family_doc_count = family_doc_count | plus: 1 %}
+  {% endif %}
 {% endif %}
 <html lang="{{ site.lang | default: 'en-US' }}">
   <head>
@@ -87,6 +120,37 @@
             <p class="context-kicker">{{ page_kind }}</p>
             <p class="context-copy">{{ page_kind_summary }}</p>
           </section>
+          {% if family_reference_exists and family_doc_count > 1 %}
+            <section class="context-block">
+              <h2>This Plugin Family</h2>
+              <ul class="path-list path-list--compact">
+                {% if family_reference_exists %}
+                  <li>
+                    <a href="{{ family_reference_doc | replace: '.md', '.html' | relative_url }}"{% if page.path == family_reference_doc %} aria-current="page"{% endif %}>
+                      <strong>Reference</strong>
+                      <span>Exact syntax and plugin behavior.</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% if family_capabilities_exists %}
+                  <li>
+                    <a href="{{ family_capabilities_doc | replace: '.md', '.html' | relative_url }}"{% if page.path == family_capabilities_doc %} aria-current="page"{% endif %}>
+                      <strong>Capabilities</strong>
+                      <span>Decision boundaries and fit.</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% if family_use_cases_exists %}
+                  <li>
+                    <a href="{{ family_use_cases_doc | replace: '.md', '.html' | relative_url }}"{% if page.path == family_use_cases_doc %} aria-current="page"{% endif %}>
+                      <strong>Use Cases</strong>
+                      <span>Worked operator patterns.</span>
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </section>
+          {% endif %}
           <section class="context-block">
             <h2>Start Here</h2>
             <ul class="path-list">
