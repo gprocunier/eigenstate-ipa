@@ -19,20 +19,49 @@ Current release: `1.10.6`
 
 ## Start Here
 
-Use the collection-wide pages in this order when you are orienting yourself:
+Pick the lane that matches the problem first, then branch into the deeper docs:
 
-- <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>DOCUMENTATION MAP</kbd></a>
-  for reading order and problem-based navigation
-- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
-  if you are translating Vault or CyberArk expectations into an IdM-native model
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>
-  if OpenShift, RHOSO, or adjacent platform products already sit on top of IdM-backed trust and the question is the workflow around the platform
-- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
-  if the workflow runs in Controller or an execution environment
-- <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
-  if the question is scheduled lifecycle management rather than one lookup call
-- <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
-  if the question is temporary access or lease-like behavior inside IdM
+<table>
+  <thead>
+    <tr>
+      <th>Problem</th>
+      <th>Start here</th>
+      <th>Why this page first</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Need reading order or the full doc map</td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>DOCUMENTATION MAP</kbd></a></td>
+      <td>Routes by intent and keeps the three-page model visible.</td>
+    </tr>
+    <tr>
+      <td>Translating Vault or CyberArk expectations</td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a></td>
+      <td>Explains the IdM-native boundary before you pick a workflow.</td>
+    </tr>
+    <tr>
+      <td>Working around OpenShift, RHOSO, RHACM, RHACS, or Quay</td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a></td>
+      <td>Gives the platform-wide framing before the branch-specific pages.</td>
+    </tr>
+    <tr>
+      <td>Running Controller or execution-environment jobs</td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a></td>
+      <td>Shows the non-interactive auth and scheduling boundary.</td>
+    </tr>
+    <tr>
+      <td>Managing static secrets or scheduled rotation</td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a></td>
+      <td>Separates scheduled lifecycle work from one-off lookups.</td>
+    </tr>
+    <tr>
+      <td>Opening or closing temporary access windows</td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a></td>
+      <td>Explains the lease-like boundary before you read the workflow pages.</td>
+    </tr>
+  </tbody>
+</table>
 
 ## How The Docs Work
 
