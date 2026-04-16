@@ -71,6 +71,22 @@
     {% seo %}
     <link rel="icon" href="{{ '/favicon.ico' | relative_url }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ '/favicon.ico' | relative_url }}" type="image/x-icon">
+    <script>
+      (function() {
+        var href = "{{ '/favicon.ico' | relative_url }}";
+        var rels = ["icon", "shortcut icon"];
+        for (var i = 0; i < rels.length; i += 1) {
+          if (document.querySelector('link[rel="' + rels[i] + '"]')) {
+            continue;
+          }
+          var link = document.createElement("link");
+          link.rel = rels[i];
+          link.href = href;
+          link.type = "image/x-icon";
+          document.head.appendChild(link);
+        }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;700&family=Red+Hat+Mono:wght@400;500&family=Red+Hat+Text:wght@400;500;700&display=swap" rel="stylesheet">
