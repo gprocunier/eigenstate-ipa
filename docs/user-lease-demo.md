@@ -252,6 +252,46 @@ This recording addresses two common practical questions about `user_lease`:
 The recording answers that by showing both a real SSH login and a real ad hoc
 Ansible action before expiry, then a failed fresh `kinit` after expiry.
 
+## Appendix: `open-lease` Playbook
+
+The recorded lease-open step is driven by a very small local playbook. This is
+the helper shape used to open the short `user_lease` window and print the lease
+boundary before vault retrieval, leased-user `kinit`, SSH, and the ad hoc
+Ansible check:
+
+```yaml
+#!/usr/bin/ansible-playbook
+---
+- name: Open the demo lease
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    lease_duration: "{{ lookup('env', 'LEASE_DURATION') | default('00:02', true) }}"
+    lease_user: "{{ lookup('env', 'LEASE_USER') | default('jdoe-autobot', true) }}"
+    operator_user: "{{ lookup('env', 'OPERATOR_USER') | default('jdoe', true) }}"
+    lease_group: "{{ lookup('env', 'GROUP') | default('doe-corp-services', true) }}"
+    ipa_server: "{{ lookup('env', 'IPA_SERVER') | default('idm-01.workshop.lan', true) }}"
+
+  tasks:
+    - name: Open a short user lease
+      eigenstate.ipa.user_lease:
+        username: "{{ lease_user }}"
+        principal_expiration: "{{ lease_duration }}"
+        password_expiration_matches_principal: true
+        require_groups:
+          - "{{ lease_group }}"
+        server: "{{ ipa_server }}"
+        ipaadmin_principal: "{{ operator_user }}"
+        verify: /etc/ipa/ca.crt
+      register: lease_state
+
+    - name: Show the lease boundary
+      ansible.builtin.debug:
+        msg: "Lease for {{ lease_user }} ends at {{ lease_state.lease_end }}"
+```
+
 ## Where To Go Next
 
 - read <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html"><kbd>USER LEASE CAPABILITIES</kbd></a>
