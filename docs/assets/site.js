@@ -192,8 +192,8 @@ const renderAsciinemaPlayers = async () => {
     const speed = Number(container.dataset.asciinemaSpeed || "1.3");
     const cols = Number(container.dataset.asciinemaCols || "132");
     const rows = Number(container.dataset.asciinemaRows || "40");
-
-    window.AsciinemaPlayer.create(src, container, {
+    const idleTimeLimit = Number(container.dataset.asciinemaIdleTimeLimit || "");
+    const playerOptions = {
       autoPlay: false,
       controls: true,
       fit: "width",
@@ -201,7 +201,13 @@ const renderAsciinemaPlayers = async () => {
       poster,
       cols,
       rows
-    });
+    };
+
+    if (Number.isFinite(idleTimeLimit) && idleTimeLimit > 0) {
+      playerOptions.idleTimeLimit = idleTimeLimit;
+    }
+
+    window.AsciinemaPlayer.create(src, container, playerOptions);
 
     container.dataset.rendered = "true";
   });

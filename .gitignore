@@ -27,6 +27,7 @@ dist/
 _site/
 .jekyll-cache/
 .sass-cache/
+scripts/user-lease-demo/
 
 # Local environment files
 .env
