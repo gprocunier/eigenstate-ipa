@@ -16,6 +16,17 @@
   --rh-sidebar-width: 280px;
 }
 
+@font-face {
+  font-family: "MesloGL Nerd Font Mono";
+  src:
+    local("MesloGL Nerd Font Mono"),
+    local("MesloLGL Nerd Font Mono"),
+    url("./fonts/MesloLGLNerdFontMono-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 * { box-sizing: border-box; }
 html { font-size: 16px; scroll-behavior: smooth; }
 body {

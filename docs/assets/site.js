@@ -173,6 +173,32 @@ const ensureStylesheet = (href) => {
   document.head.appendChild(link);
 };
 
+const readDatasetString = (value) => {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  return value.trim();
+};
+
+const loadTerminalFont = async (fontFamily, fontSize) => {
+  const requestedFamily = readDatasetString(fontFamily);
+  if (!requestedFamily || !document.fonts?.load) {
+    return;
+  }
+
+  const primaryFamily = requestedFamily.split(",")[0]?.trim();
+  if (!primaryFamily) {
+    return;
+  }
+
+  try {
+    await document.fonts.load(`${readDatasetString(fontSize) || "10pt"} ${primaryFamily}`);
+  } catch (error) {
+    console.warn("Unable to preload terminal font", error);
+  }
+};
+
 const renderAsciinemaPlayers = async () => {
   const players = document.querySelectorAll("[data-asciinema-src]");
   if (!players.length) {
@@ -182,9 +208,9 @@ const renderAsciinemaPlayers = async () => {
   ensureStylesheet(withBaseUrl("/assets/vendor/asciinema-player.css"));
   await loadScript(withBaseUrl("/assets/vendor/asciinema-player.min.js"));
 
-  players.forEach((container) => {
+  for (const container of players) {
     if (container.dataset.rendered === "true") {
-      return;
+      continue;
     }
 
     const src = container.dataset.asciinemaSrc;
@@ -193,6 +219,8 @@ const renderAsciinemaPlayers = async () => {
     const cols = Number(container.dataset.asciinemaCols || "132");
     const rows = Number(container.dataset.asciinemaRows || "40");
     const idleTimeLimit = Number(container.dataset.asciinemaIdleTimeLimit || "");
+    const terminalFontFamily = readDatasetString(container.dataset.asciinemaTerminalFontFamily);
+    const terminalFontSize = readDatasetString(container.dataset.asciinemaTerminalFontSize);
     const playerOptions = {
       autoPlay: false,
       controls: true,
@@ -207,10 +235,19 @@ const renderAsciinemaPlayers = async () => {
       playerOptions.idleTimeLimit = idleTimeLimit;
     }
 
+    if (terminalFontFamily) {
+      playerOptions.terminalFontFamily = terminalFontFamily;
+    }
+
+    if (terminalFontSize) {
+      playerOptions.terminalFontSize = terminalFontSize;
+    }
+
+    await loadTerminalFont(terminalFontFamily, terminalFontSize);
     window.AsciinemaPlayer.create(src, container, playerOptions);
 
     container.dataset.rendered = "true";
-  });
+  }
 };
 
 const renderToc = () => {

@@ -51,6 +51,8 @@ The observable flow is:
   data-asciinema-poster="npt:0:08"
   data-asciinema-speed="1.5"
   data-asciinema-idle-time-limit="5"
+  data-asciinema-terminal-font-family="'MesloGL Nerd Font Mono', 'MesloLGL Nerd Font Mono', 'Red Hat Mono', Consolas, monospace"
+  data-asciinema-terminal-font-size="10pt"
   data-asciinema-cols="132"
   data-asciinema-rows="40"
 ></div>
