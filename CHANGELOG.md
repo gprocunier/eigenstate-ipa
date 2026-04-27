@@ -2,9 +2,10 @@
 
 ## 1.10.7
 
-- centralized lookup plugin Kerberos authentication, TLS verification, and ipalib connection setup through the shared `IPAClient` helper while keeping compatibility wrappers for existing helper-level tests and private calls
-- fixed ipalib bootstrap behavior for controller-side and bastion-side demo use by avoiding the problematic server override while still passing explicit TLS CA paths through to bootstrap
-- corrected sudo rule lookup handling when legacy IdM responses omit `ipaenabledflag` and tightened Galaxy build excludes so tests, scripts, caches, and GitHub metadata stay out of the published collection artifact
+- centralized Kerberos authentication, TLS verification, credential-cache cleanup, and ipalib connection setup for the `cert`, `dns`, `hbacrule`, `keytab`, `otp`, `principal`, `selinuxmap`, `sudo`, and `vault` lookup plugins through the shared `IPAClient` helper
+- fixed ipalib bootstrap behavior needed by controller-side and bastion-side automation by avoiding the problematic server override while still passing explicit TLS CA paths through to bootstrap
+- corrected sudo rule lookup handling when legacy IdM responses omit `ipaenabledflag` and added regression coverage for that record shape
+- tightened the Galaxy collection artifact boundary for this release: `.github`, tests, scripts, Python caches, and pytest caches are excluded, and the standalone OpenShift/AAP demo scripts remain separate work outside the published collection
 
 ## 1.10.6
 
