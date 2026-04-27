@@ -97,13 +97,11 @@ jobs:
 
       - name: Install collection inside container
         run: |
-          docker exec ipa-server mkdir -p /root/eigenstate-ipa
-          docker cp plugins ipa-server:/root/eigenstate-ipa/plugins
-          docker cp galaxy.yml ipa-server:/root/eigenstate-ipa/galaxy.yml
-          docker cp meta ipa-server:/root/eigenstate-ipa/meta
-          docker cp README.md ipa-server:/root/eigenstate-ipa/README.md
-          docker exec ipa-server \
-            ansible-galaxy collection install /root/eigenstate-ipa --force
+          COLL_PATH=/usr/share/ansible/collections/ansible_collections/eigenstate/ipa
+          docker exec ipa-server mkdir -p "$COLL_PATH"
+          docker cp plugins ipa-server:"$COLL_PATH/plugins"
+          docker cp galaxy.yml ipa-server:"$COLL_PATH/galaxy.yml"
+          docker cp meta ipa-server:"$COLL_PATH/meta"
           docker cp tests/integration ipa-server:/root/integration-tests
 
       - name: Seed test data
