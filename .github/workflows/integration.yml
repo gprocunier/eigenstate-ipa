@@ -72,14 +72,14 @@ jobs:
       - name: Wait for FreeIPA readiness
         run: |
           echo "Waiting for FreeIPA server to be ready..."
-          for i in $(seq 1 60); do
+          for i in $(seq 1 90); do
             if podman exec ipa-server \
               bash -c 'echo AdminPass123 | kinit admin 2>/dev/null && ipa ping 2>/dev/null'; then
               echo "FreeIPA ready after ~$((i * 10)) seconds"
               podman exec ipa-server kdestroy 2>/dev/null || true
               exit 0
             fi
-            echo "  attempt $i/60 — not ready yet"
+            echo "  attempt $i/90 — not ready yet"
             sleep 10
           done
           echo "FreeIPA did not become ready in time"
@@ -93,34 +93,34 @@ jobs:
           echo "${IPA_IP} ipa.test.lan" >> /etc/hosts
 
           cat > /etc/krb5.conf <<'EOF'
-          [libdefaults]
-            default_realm = TEST.LAN
-            dns_canonicalize_hostname = false
-            rdns = false
+[libdefaults]
+  default_realm = TEST.LAN
+  dns_canonicalize_hostname = false
+  rdns = false
 
-          [realms]
-            TEST.LAN = {
-              kdc = ipa.test.lan
-              admin_server = ipa.test.lan
-            }
+[realms]
+  TEST.LAN = {
+    kdc = ipa.test.lan
+    admin_server = ipa.test.lan
+  }
 
-          [domain_realm]
-            .test.lan = TEST.LAN
-            test.lan = TEST.LAN
-          EOF
+[domain_realm]
+  .test.lan = TEST.LAN
+  test.lan = TEST.LAN
+EOF
 
           mkdir -p /etc/ipa
           podman cp ipa-server:/etc/ipa/ca.crt /etc/ipa/ca.crt
 
-          cat > /etc/ipa/default.conf <<IPAEOF
-          [global]
-          basedn = dc=test,dc=lan
-          realm = TEST.LAN
-          domain = test.lan
-          xmlrpc_uri = https://ipa.test.lan/ipa/xml
-          server = ipa.test.lan
-          enable_ra = True
-          IPAEOF
+          cat > /etc/ipa/default.conf <<'IPAEOF'
+[global]
+basedn = dc=test,dc=lan
+realm = TEST.LAN
+domain = test.lan
+xmlrpc_uri = https://ipa.test.lan/ipa/xml
+server = ipa.test.lan
+enable_ra = True
+IPAEOF
 
           echo "Controller configured — verifying kinit works..."
           echo AdminPass123 | kinit admin
