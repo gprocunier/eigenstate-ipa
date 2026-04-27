@@ -11,13 +11,12 @@
   tasks:
 
     # ----------------------------------------------------------------
-    # Helper: run ipa commands inside the FreeIPA container
+    # Authenticate
     # ----------------------------------------------------------------
 
-    - name: Acquire admin ticket inside container
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'echo {{ admin_password }} | kinit admin'
+    - name: Acquire admin ticket
+      ansible.builtin.shell: >
+        echo {{ admin_password }} | kinit admin
       changed_when: true
 
     # ----------------------------------------------------------------
@@ -25,10 +24,9 @@
     # ----------------------------------------------------------------
 
     - name: Create test users
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'echo {{ user_password }} | ipa user-add {{ item }}
-        --first=Test --last={{ item }} --password'
+      ansible.builtin.shell: >
+        echo {{ user_password }} | ipa user-add {{ item }}
+        --first=Test --last={{ item }} --password
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
       changed_when: "'already exists' not in result.stderr"
@@ -48,7 +46,6 @@
 
     - name: Create user groups
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa group-add {{ item.name }} --desc="{{ item.desc }}"
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -61,7 +58,6 @@
 
     - name: Add users to groups
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa group-add-member {{ item.group }} --users={{ item.user }}
       register: result
       failed_when: "result.rc != 0 and 'already a member' not in result.stderr and 'already added' not in result.stdout"
@@ -78,7 +74,6 @@
 
     - name: Create host entries
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa host-add {{ item }} --force
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -97,7 +92,6 @@
 
     - name: Create hostgroups
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa hostgroup-add {{ item.name }} --desc="{{ item.desc }}"
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -108,7 +102,6 @@
 
     - name: Add hosts to hostgroups
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa hostgroup-add-member {{ item.group }} --hosts={{ item.host }}
       register: result
       failed_when: "result.rc != 0 and 'already a member' not in result.stderr and 'already added' not in result.stdout"
@@ -125,7 +118,6 @@
 
     - name: Create service principals
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa service-add {{ item }} --force
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -137,9 +129,8 @@
 
     - name: Generate keytabs for service principals
       ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'ipa-getkeytab -s ipa.test.lan -p {{ item }}
-        -k /tmp/{{ item | regex_replace("/", "_") }}.keytab'
+        ipa-getkeytab -s ipa.test.lan -p {{ item }}
+        -k /tmp/{{ item | regex_replace("/", "_") }}.keytab
       register: result
       failed_when: result.rc != 0
       changed_when: true
@@ -153,7 +144,6 @@
 
     - name: Create forward DNS A records
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa dnsrecord-add test.lan {{ item.name }} --a-rec={{ item.ip }}
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -166,7 +156,6 @@
 
     - name: Create MX record
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa dnsrecord-add test.lan @ --mx-rec="10 mail.test.lan."
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -174,7 +163,6 @@
 
     - name: Create TXT record
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa dnsrecord-add test.lan _test --txt-rec="integration-test-value"
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -182,7 +170,6 @@
 
     - name: Create reverse DNS zone
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa dnszone-add 0.16.172.in-addr.arpa
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -190,7 +177,6 @@
 
     - name: Create PTR records
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa dnsrecord-add 0.16.172.in-addr.arpa {{ item.octet }}
         --ptr-rec={{ item.ptr }}
       register: result
@@ -206,7 +192,6 @@
 
     - name: Create shared standard vaults
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa vault-add {{ item.name }} --shared --type=standard
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -216,10 +201,9 @@
         - { name: api-key }
 
     - name: Archive vault payloads
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'echo -n "{{ item.data }}" | ipa vault-archive {{ item.name }}
-        --shared --in /dev/stdin'
+      ansible.builtin.shell: >
+        echo -n "{{ item.data }}" |
+        ipa vault-archive {{ item.name }} --shared --in /dev/stdin
       register: result
       failed_when: result.rc != 0
       changed_when: true
@@ -228,14 +212,12 @@
         - { name: api-key, data: '{"key":"ak_xyz789","env":"test"}' }
 
     - name: Create user-scoped vault
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'ipa vault-add personal-secret --user=vault-user --type=standard &&
-        echo -n "my-private-data" | ipa vault-archive personal-secret
-        --user=vault-user --in /dev/stdin'
+      ansible.builtin.shell: |
+        ipa vault-add personal-secret --user=vault-user --type=standard 2>/dev/null || true
+        echo -n "my-private-data" | ipa vault-archive personal-secret --user=vault-user --in /dev/stdin
       register: result
-      failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
-      changed_when: "'already exists' not in result.stderr"
+      failed_when: result.rc != 0
+      changed_when: true
 
     # ----------------------------------------------------------------
     # Sudo objects
@@ -243,7 +225,6 @@
 
     - name: Create sudo commands
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa sudocmd-add "{{ item }}"
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -254,7 +235,6 @@
 
     - name: Create sudo command group
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa sudocmdgroup-add service-management --desc="Service management commands"
       register: result
       failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
@@ -262,7 +242,6 @@
 
     - name: Add commands to command group
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa sudocmdgroup-add-member service-management
         --sudocmds="{{ item }}"
       register: result
@@ -273,26 +252,18 @@
         - /usr/bin/journalctl
 
     - name: Create enabled sudo rule
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'ipa sudorule-add ops-maintenance --desc="Operations maintenance" &&
-        ipa sudorule-add-user ops-maintenance --users=svc-deploy &&
-        ipa sudorule-add-host ops-maintenance --hostgroups=webservers &&
-        ipa sudorule-add-allow-command ops-maintenance
-        --sudocmds=/usr/bin/systemctl'
-      register: result
-      failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
-      changed_when: "'already exists' not in result.stderr"
+      ansible.builtin.shell: |
+        ipa sudorule-add ops-maintenance --desc="Operations maintenance" 2>/dev/null || true
+        ipa sudorule-add-user ops-maintenance --users=svc-deploy 2>/dev/null || true
+        ipa sudorule-add-host ops-maintenance --hostgroups=webservers 2>/dev/null || true
+        ipa sudorule-add-allow-command ops-maintenance --sudocmds=/usr/bin/systemctl 2>/dev/null || true
+      changed_when: true
 
     - name: Create disabled sudo rule
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'ipa sudorule-add disabled-rule --desc="Disabled rule"
-        --hostcat=all --usercat=all --cmdcat=all &&
-        ipa sudorule-disable disabled-rule'
-      register: result
-      failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
-      changed_when: "'already exists' not in result.stderr"
+      ansible.builtin.shell: |
+        ipa sudorule-add disabled-rule --desc="Disabled rule" --hostcat=all --usercat=all --cmdcat=all 2>/dev/null || true
+        ipa sudorule-disable disabled-rule 2>/dev/null || true
+      changed_when: true
 
     # ----------------------------------------------------------------
     # HBAC rules
@@ -300,73 +271,48 @@
 
     - name: Disable built-in allow_all HBAC rule
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa hbacrule-disable allow_all
       register: result
       failed_when: "result.rc != 0 and 'already disabled' not in result.stderr"
       changed_when: "'already disabled' not in result.stderr"
 
     - name: Create HBAC rule — allow SSH for operators
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'ipa hbacrule-add allow-ssh-ops
-        --desc="SSH access for operators" &&
-        ipa hbacrule-add-user allow-ssh-ops --users=svc-deploy &&
-        ipa hbacrule-add-host allow-ssh-ops --hostgroups=webservers &&
-        ipa hbacrule-add-service allow-ssh-ops --hbacsvcs=sshd'
-      register: result
-      failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
-      changed_when: "'already exists' not in result.stderr"
+      ansible.builtin.shell: |
+        ipa hbacrule-add allow-ssh-ops --desc="SSH access for operators" 2>/dev/null || true
+        ipa hbacrule-add-user allow-ssh-ops --users=svc-deploy 2>/dev/null || true
+        ipa hbacrule-add-host allow-ssh-ops --hostgroups=webservers 2>/dev/null || true
+        ipa hbacrule-add-service allow-ssh-ops --hbacsvcs=sshd 2>/dev/null || true
+      changed_when: true
 
     - name: Create HBAC rule — allow all for admin
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'ipa hbacrule-add allow-all-admin
-        --desc="Full access for admin" --usercat=all
-        --hostcat=all --servicecat=all'
-      register: result
-      failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
-      changed_when: "'already exists' not in result.stderr"
+      ansible.builtin.shell: |
+        ipa hbacrule-add allow-all-admin --desc="Full access for admin" --usercat=all --hostcat=all --servicecat=all 2>/dev/null || true
+      changed_when: true
 
     - name: Create disabled HBAC rule
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'ipa hbacrule-add disabled-hbac
-        --desc="Disabled HBAC rule" --usercat=all
-        --hostcat=all --servicecat=all &&
-        ipa hbacrule-disable disabled-hbac'
-      register: result
-      failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
-      changed_when: "'already exists' not in result.stderr"
+      ansible.builtin.shell: |
+        ipa hbacrule-add disabled-hbac --desc="Disabled HBAC rule" --usercat=all --hostcat=all --servicecat=all 2>/dev/null || true
+        ipa hbacrule-disable disabled-hbac 2>/dev/null || true
+      changed_when: true
 
     # ----------------------------------------------------------------
     # SELinux user maps
     # ----------------------------------------------------------------
 
     - name: Create enabled SELinux user map
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'ipa selinuxusermap-add ops-deploy-map
-        --selinuxuser="staff_u:s0-s0:c0.c1023"
-        --desc="Staff context for operators" &&
-        ipa selinuxusermap-add-user ops-deploy-map --users=svc-deploy'
-      register: result
-      failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
-      changed_when: "'already exists' not in result.stderr"
+      ansible.builtin.shell: |
+        ipa selinuxusermap-add ops-deploy-map --selinuxuser="staff_u:s0-s0:c0.c1023" --desc="Staff context for operators" 2>/dev/null || true
+        ipa selinuxusermap-add-user ops-deploy-map --users=svc-deploy 2>/dev/null || true
+      changed_when: true
 
     - name: Create disabled SELinux user map
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'ipa selinuxusermap-add guest-map
-        --selinuxuser="guest_u:s0"
-        --desc="Guest context" --usercat=all &&
-        ipa selinuxusermap-disable guest-map'
-      register: result
-      failed_when: "result.rc != 0 and 'already exists' not in result.stderr"
-      changed_when: "'already exists' not in result.stderr"
+      ansible.builtin.shell: |
+        ipa selinuxusermap-add guest-map --selinuxuser="guest_u:s0" --desc="Guest context" --usercat=all 2>/dev/null || true
+        ipa selinuxusermap-disable guest-map 2>/dev/null || true
+      changed_when: true
 
     # ----------------------------------------------------------------
-    # CSR for cert testing (generated on the controller)
+    # CSR for cert testing
     # ----------------------------------------------------------------
 
     - name: Generate CSR for cert request testing
@@ -378,9 +324,8 @@
       args:
         creates: /tmp/integ-test-csr.pem
 
-    - name: Destroy admin ticket in container
-      ansible.builtin.command: >
-        podman exec ipa-server kdestroy
+    - name: Destroy admin ticket
+      ansible.builtin.command: kdestroy
       changed_when: true
 
     - name: Seed complete

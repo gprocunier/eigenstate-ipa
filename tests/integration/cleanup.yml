@@ -10,25 +10,21 @@
   tasks:
 
     - name: Acquire admin ticket
-      ansible.builtin.command: >
-        podman exec ipa-server
-        bash -c 'echo {{ admin_password }} | kinit admin'
-      changed_when: true
+      ansible.builtin.shell: >
+        echo {{ admin_password }} | kinit admin
       ignore_errors: true
+      changed_when: true
 
     - name: Remove integration test vault
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa vault-del integ-test-vault --shared
       ignore_errors: true
       changed_when: true
 
     - name: Clear lease expirations
-      ansible.builtin.command: >
-        podman exec ipa-server
+      ansible.builtin.shell: >
         ipa user-mod {{ item }}
-        --delattr=krbprincipalexpiration=*
-      ignore_errors: true
+        --delattr=krbprincipalexpiration=* 2>/dev/null || true
       changed_when: true
       loop:
         - lease-user-01
@@ -36,14 +32,12 @@
 
     - name: Re-enable built-in allow_all HBAC rule
       ansible.builtin.command: >
-        podman exec ipa-server
         ipa hbacrule-enable allow_all
       ignore_errors: true
       changed_when: true
 
     - name: Destroy admin ticket
-      ansible.builtin.command: >
-        podman exec ipa-server kdestroy
+      ansible.builtin.command: kdestroy
       ignore_errors: true
       changed_when: true
 
