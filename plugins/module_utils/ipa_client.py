@@ -190,7 +190,7 @@ class IPAClient(object):
                 'log': None,
             }
             if resolved_verify:
-                bootstrap_args['tls_ca_cert'] = resolved_verify
+                bootstrap_args['tls_ca_cert'] = self._plain_text(resolved_verify)
             try:
                 _ipa_api.bootstrap(**bootstrap_args)
             except Exception as exc:
@@ -205,6 +205,9 @@ class IPAClient(object):
                                 raise IPAClientError(
                                     "ipalib bootstrap failed: %s"
                                     % to_native(retry_exc))
+                    elif not self._bootstrap_env_complete(_ipa_api):
+                        raise IPAClientError(
+                            "ipalib bootstrap failed: %s" % to_native(exc))
                 else:
                     raise IPAClientError(
                         "ipalib bootstrap failed: %s" % to_native(exc))
@@ -273,6 +276,16 @@ class IPAClient(object):
         if len(args) == 1 and isinstance(args[0], tuple):
             args = args[0]
         return bool(args and args[0] == 'tls_ca_cert')
+
+    @staticmethod
+    def _plain_text(value):
+        """Return a plain str, not an Ansible unsafe text subclass."""
+        return ''.join([to_text(value)])
+
+    @staticmethod
+    def _bootstrap_env_complete(ipa_api):
+        env = getattr(ipa_api, 'env', None)
+        return env is None or hasattr(env, 'mode')
 
     # ------------------------------------------------------------------
     # Scope helpers

@@ -1001,6 +1001,38 @@ class TestIPAClient(unittest.TestCase):
         backend.connect.assert_called_once_with(
             ccache=os.environ.get('KRB5CCNAME', None))
 
+    def test_connect_normalizes_unsafe_tls_ca_to_plain_text(self):
+        from ansible.utils.unsafe_proxy import AnsibleUnsafeText
+
+        client = self.ipa_client_mod.IPAClient()
+        bootstrap = mock.Mock()
+        backend = types.SimpleNamespace(
+            isconnected=mock.Mock(return_value=False),
+            connect=mock.Mock(),
+        )
+        fake_api = types.SimpleNamespace(
+            isdone=mock.Mock(return_value=False),
+            bootstrap=bootstrap,
+            finalize=mock.Mock(),
+            Backend=types.SimpleNamespace(rpcclient=backend),
+        )
+
+        with mock.patch.object(self.ipa_client_mod, '_ipa_api', fake_api):
+            with mock.patch.object(
+                client, 'resolve_verify',
+                return_value=AnsibleUnsafeText('/tmp/demo/ipa-ca.crt')
+            ), mock.patch.object(client, 'authenticate'):
+                client.connect(
+                    server='idm-01.example.com',
+                    principal='admin',
+                    password='secret',
+                    verify='/tmp/demo/ipa-ca.crt',
+                )
+
+        tls_ca_cert = bootstrap.call_args.kwargs['tls_ca_cert']
+        self.assertIs(type(tls_ca_cert), str)
+        self.assertEqual(tls_ca_cert, '/tmp/demo/ipa-ca.crt')
+
     def test_connect_omits_tls_ca_when_verify_is_disabled(self):
         client = self.ipa_client_mod.IPAClient()
         bootstrap = mock.Mock()
@@ -1087,6 +1119,7 @@ class TestIPAClient(unittest.TestCase):
             isdone=mock.Mock(side_effect=[False, True, False]),
             bootstrap=bootstrap,
             finalize=finalize,
+            env=types.SimpleNamespace(mode='production'),
             Backend=types.SimpleNamespace(rpcclient=backend),
         )
 
@@ -1111,6 +1144,38 @@ class TestIPAClient(unittest.TestCase):
         backend.connect.assert_called_once_with(
             ccache=os.environ.get('KRB5CCNAME', None))
 
+    def test_connect_rejects_incomplete_bootstrap_after_tls_ca_error(self):
+        client = self.ipa_client_mod.IPAClient()
+        bootstrap = mock.Mock(
+            side_effect=Exception(('tls_ca_cert', '/tmp/demo/ipa-ca.crt')))
+        fake_api = types.SimpleNamespace(
+            isdone=mock.Mock(side_effect=[False, True]),
+            bootstrap=bootstrap,
+            finalize=mock.Mock(),
+            env=types.SimpleNamespace(),
+            Backend=types.SimpleNamespace(
+                rpcclient=types.SimpleNamespace(
+                    isconnected=mock.Mock(return_value=False),
+                    connect=mock.Mock(),
+                )
+            ),
+        )
+
+        with mock.patch.object(self.ipa_client_mod, '_ipa_api', fake_api):
+            with mock.patch.object(
+                client, 'resolve_verify',
+                return_value='/tmp/demo/ipa-ca.crt'
+            ), mock.patch.object(client, 'authenticate'):
+                with self.assertRaises(self.ipa_client_mod.IPAClientError) as ctx:
+                    client.connect(
+                        server='idm-01.example.com',
+                        principal='admin',
+                        password='secret',
+                        verify='/tmp/demo/ipa-ca.crt',
+                    )
+
+        self.assertIn('ipalib bootstrap failed', exception_text(ctx.exception))
+        fake_api.finalize.assert_not_called()
 
     def test_kinit_password_fallback_normalizes_stdin_newline(self):
         client = self.ipa_client_mod.IPAClient()

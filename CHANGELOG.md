@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.13 - 2026-04-27
+
+- normalized Ansible unsafe text values before passing `tls_ca_cert` to FreeIPA bootstrap so AAP-provided certificate paths satisfy FreeIPA's exact primitive type checks
+- guarded against finalizing a partially initialized FreeIPA environment when bootstrap has failed before core defaults are available
+- added regression coverage for unsafe text certificate paths and incomplete bootstrap state
+
 ## 1.10.12 - 2026-04-27
 
 - refined the FreeIPA bootstrap compatibility path so a `tls_ca_cert` override rejection that still leaves bootstrap complete is treated as successful bootstrap before finalization
