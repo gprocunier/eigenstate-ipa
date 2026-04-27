@@ -54,7 +54,7 @@ jobs:
               --ds-password=DirManager123 --admin-password=AdminPass123 \
               --no-ntp --setup-dns --no-forwarders --no-reverse \
               --setup-kra --no-host-dns" \
-            quay.io/freeipa/freeipa-server:fedora-43
+            quay.io/freeipa/freeipa-server:fedora-42
 
       - name: Wait for FreeIPA readiness
         run: |
@@ -97,11 +97,13 @@ jobs:
 
       - name: Install collection inside container
         run: |
-          COLL_PATH=/usr/share/ansible/collections/ansible_collections/eigenstate/ipa
-          docker exec ipa-server mkdir -p "$COLL_PATH"
-          docker cp plugins ipa-server:"$COLL_PATH/plugins"
-          docker cp galaxy.yml ipa-server:"$COLL_PATH/galaxy.yml"
-          docker cp meta ipa-server:"$COLL_PATH/meta"
+          docker exec ipa-server mkdir -p /root/eigenstate-ipa
+          docker cp plugins ipa-server:/root/eigenstate-ipa/plugins
+          docker cp galaxy.yml ipa-server:/root/eigenstate-ipa/galaxy.yml
+          docker cp meta ipa-server:/root/eigenstate-ipa/meta
+          docker cp README.md ipa-server:/root/eigenstate-ipa/README.md
+          docker exec ipa-server \
+            ansible-galaxy collection install /root/eigenstate-ipa --force
           docker cp tests/integration ipa-server:/root/integration-tests
 
       - name: Seed test data
