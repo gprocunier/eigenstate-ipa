@@ -680,7 +680,7 @@
     - name: "otp: show token by ID"
       ansible.builtin.set_fact:
         otp_show: >-
-          {{ lookup('eigenstate.ipa.otp', saved_token_id,
+          {{ lookup('eigenstate.ipa.otp', saved_token_id | string,
              operation='show',
              server=server,
              ipaadmin_password=password,
@@ -712,7 +712,7 @@
     - name: "otp: revoke token"
       ansible.builtin.set_fact:
         otp_revoke: >-
-          {{ lookup('eigenstate.ipa.otp', saved_token_id,
+          {{ lookup('eigenstate.ipa.otp', saved_token_id | string,
              operation='revoke',
              server=server,
              ipaadmin_password=password,
