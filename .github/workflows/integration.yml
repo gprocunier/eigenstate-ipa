@@ -112,16 +112,6 @@ jobs:
           mkdir -p /etc/ipa
           podman cp ipa-server:/etc/ipa/ca.crt /etc/ipa/ca.crt
 
-          printf '%s\n' \
-            '[global]' \
-            'basedn = dc=test,dc=lan' \
-            'realm = TEST.LAN' \
-            'domain = test.lan' \
-            'xmlrpc_uri = https://ipa.test.lan/ipa/xml' \
-            'server = ipa.test.lan' \
-            'enable_ra = True' \
-            > /etc/ipa/default.conf
-
           echo "Controller configured — verifying kinit works..."
           echo AdminPass123 | kinit admin
           klist
