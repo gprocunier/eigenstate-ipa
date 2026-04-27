@@ -33,31 +33,24 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker cgroups
+      - name: Set up Docker user namespace remapping
         run: |
-          echo '{ "userns-remap": "default" }' | sudo tee /etc/docker/daemon.json
           echo -e "dockremap:$(id -u):1\ndockremap:200001:65535" | sudo tee -a /etc/subuid
           echo -e "dockremap:$(id -g):1\ndockremap:200001:65535" | sudo tee -a /etc/subgid
+          echo '{ "userns-remap": "default" }' | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker
 
       - name: Start FreeIPA server
         run: |
           docker run -d --name ipa-server \
             -h ipa.test.lan \
-            --sysctl net.ipv6.conf.all.disable_ipv6=0 \
             --tmpfs /run --tmpfs /tmp \
-            -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
-            quay.io/freeipa/freeipa-server:fedora-43 \
-            ipa-server-install -U \
-              --realm=TEST.LAN \
-              --domain=test.lan \
-              --ds-password=DirManager123 \
-              --admin-password=AdminPass123 \
-              --no-ntp \
-              --setup-dns \
-              --no-forwarders \
-              --no-reverse \
-              --setup-kra
+            --sysctl net.ipv6.conf.all.disable_ipv6=0 \
+            -e IPA_SERVER_INSTALL_OPTS="-U \
+              --realm=TEST.LAN --domain=test.lan \
+              --ds-password=DirManager123 --admin-password=AdminPass123 \
+              --no-ntp --setup-dns --no-forwarders --no-reverse --setup-kra" \
+            quay.io/freeipa/freeipa-server:fedora-43
 
       - name: Wait for FreeIPA readiness
         run: |
