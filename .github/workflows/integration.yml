@@ -72,6 +72,8 @@ jobs:
       - name: Install Ansible and collection inside container
         run: |
           docker exec ipa-server \
+            bash -c 'echo "nameserver 8.8.8.8" >> /etc/resolv.conf'
+          docker exec ipa-server \
             dnf install -y --setopt=install_weak_deps=False python3-pip openssl
           docker exec ipa-server \
             pip install --break-system-packages "ansible-core~=2.18.0"
