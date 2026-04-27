@@ -22,9 +22,8 @@
 """Shared IPA client infrastructure for eigenstate.ipa modules.
 
 Provides Kerberos authentication, ipalib connection management, and
-common helpers used by action modules in this collection.  Lookup
-plugins embed their own copy of this logic for historical reasons; new
-action modules should import from here.
+common helpers used by action modules and lookup plugins in this
+collection.
 """
 
 from __future__ import (absolute_import, division, print_function)
@@ -182,23 +181,12 @@ class IPAClient(object):
                 "  RHEL/Fedora: dnf install python3-ipalib "
                 "python3-ipaclient")
 
-        resolved_verify = self._resolve_verify(verify)
-
-        if keytab:
-            self._kinit_keytab(keytab, principal)
-        elif password:
-            self._kinit_password(principal, password)
-        else:
-            if 'KRB5CCNAME' not in os.environ:
-                self._warn(
-                    "No password or keytab provided and KRB5CCNAME is "
-                    "not set. Assuming a valid Kerberos ticket exists "
-                    "in the default ccache.")
+        resolved_verify = self.resolve_verify(verify)
+        self.authenticate(principal=principal, password=password, keytab=keytab)
 
         if not _ipa_api.isdone('bootstrap'):
             bootstrap_args = {
                 'context': 'cli',
-                'server': server,
                 'log': None,
             }
             if resolved_verify:
@@ -229,6 +217,13 @@ class IPAClient(object):
 
     def cleanup(self):
         """Remove any managed ccache and restore the ``KRB5CCNAME`` env var."""
+        if HAS_IPALIB:
+            try:
+                backend = _ipa_api.Backend.rpcclient
+                if backend.isconnected():
+                    backend.disconnect()
+            except Exception:
+                pass
         if self._ccache_path and os.path.exists(self._ccache_path):
             os.remove(self._ccache_path)
         if self._managing_ccache:
@@ -239,6 +234,23 @@ class IPAClient(object):
         self._ccache_path = None
         self._previous_ccache = None
         self._managing_ccache = False
+
+    def authenticate(self, principal='admin', password=None, keytab=None):
+        """Prepare Kerberos credentials without opening an ipalib session."""
+        if keytab:
+            self._kinit_keytab(keytab, principal)
+        elif password:
+            self._kinit_password(principal, password)
+        else:
+            if 'KRB5CCNAME' not in os.environ:
+                self._warn(
+                    "No password or keytab provided and KRB5CCNAME is "
+                    "not set. Assuming a valid Kerberos ticket exists "
+                    "in the default ccache.")
+
+    def resolve_verify(self, verify):
+        """Resolve TLS verification setting for callers that need the path."""
+        return self._resolve_verify(verify)
 
     # ------------------------------------------------------------------
     # Scope helpers

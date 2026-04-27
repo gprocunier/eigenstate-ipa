@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.7
+
+- centralized lookup plugin Kerberos authentication, TLS verification, and ipalib connection setup through the shared `IPAClient` helper while keeping compatibility wrappers for existing helper-level tests and private calls
+- fixed ipalib bootstrap behavior for controller-side and bastion-side demo use by avoiding the problematic server override while still passing explicit TLS CA paths through to bootstrap
+- corrected sudo rule lookup handling when legacy IdM responses omit `ipaenabledflag` and tightened Galaxy build excludes so tests, scripts, caches, and GitHub metadata stay out of the published collection artifact
+
 ## 1.10.6
 
 - changed `eigenstate.ipa.user_lease` so `password_expiration_matches_principal` now defaults to `true`, updated validation around the safer default, and added unit coverage for the explicit unsafe opt-out path

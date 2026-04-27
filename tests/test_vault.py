@@ -103,14 +103,16 @@ class VaultLookupTests(unittest.TestCase):
 
     def test_lookup_prefers_usr_bin_kinit(self):
         lookup = self.mod.LookupModule()
-        with mock.patch.object(self.mod.os.path, 'exists', side_effect=lambda path: path == '/usr/bin/kinit'):
-            with mock.patch.object(self.mod.shutil, 'which', return_value='/custom/bin/kinit'):
+        client_globals = lookup._ipa_client._resolve_kinit_command.__globals__
+        with mock.patch.object(client_globals['os'].path, 'exists', side_effect=lambda path: path == '/usr/bin/kinit'):
+            with mock.patch.object(client_globals['shutil'], 'which', return_value='/custom/bin/kinit'):
                 self.assertEqual(lookup._resolve_kinit_command(), '/usr/bin/kinit')
 
     def test_lookup_falls_back_to_path_kinit(self):
         lookup = self.mod.LookupModule()
-        with mock.patch.object(self.mod.os.path, 'exists', return_value=False):
-            with mock.patch.object(self.mod.shutil, 'which', return_value='/custom/bin/kinit'):
+        client_globals = lookup._ipa_client._resolve_kinit_command.__globals__
+        with mock.patch.object(client_globals['os'].path, 'exists', return_value=False):
+            with mock.patch.object(client_globals['shutil'], 'which', return_value='/custom/bin/kinit'):
                 self.assertEqual(lookup._resolve_kinit_command(), '/custom/bin/kinit')
 
     def test_lookup_formats_subprocess_stderr(self):
@@ -367,10 +369,10 @@ class VaultLookupTests(unittest.TestCase):
 
     def test_password_fallback_normalizes_stdin_newline(self):
         lookup = self.mod.LookupModule()
-        self.mod.HAS_KINIT_PASSWORD = False
-        with mock.patch.object(self.mod.subprocess, 'run') as run_mock,                 mock.patch.object(self.mod.tempfile, 'mkstemp', return_value=(12, '/tmp/ccache-vault')),                 mock.patch.object(self.mod.os, 'close'),                 mock.patch.object(self.mod.os, 'remove'),                 mock.patch.object(lookup, '_activate_ccache') as activate_mock:
+        client_globals = lookup._ipa_client._kinit_password.__globals__
+        with mock.patch.dict(client_globals, {'HAS_KINIT_PASSWORD': False}),                 mock.patch.object(client_globals['subprocess'], 'run') as run_mock,                 mock.patch.object(client_globals['tempfile'], 'mkstemp', return_value=(12, '/tmp/ccache-vault')),                 mock.patch.object(client_globals['os'], 'close'),                 mock.patch.object(client_globals['os'], 'remove'),                 mock.patch.object(lookup._ipa_client, '_activate_ccache') as activate_mock:
             run_mock.return_value = types.SimpleNamespace(returncode=0, stderr='')
-            lookup._kinit_password('admin', 'secret')
+            lookup._ipa_client._kinit_password('admin', 'secret')
         self.assertEqual(run_mock.call_args.kwargs['input'], 'secret\n')
         activate_mock.assert_called_once_with('/tmp/ccache-vault', 'FILE:/tmp/ccache-vault')
 

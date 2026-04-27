@@ -239,24 +239,29 @@ _raw:
 import base64
 import os
 import shutil
-import stat
 import subprocess
 import tempfile
 
 from ansible.errors import AnsibleLookupError
-from ansible.module_utils.common.text.converters import to_native, to_text
+from ansible.module_utils.common.text.converters import to_text
 from ansible.plugins.lookup import LookupBase
 from ansible.utils.display import Display
 
 try:
-    from ipalib.install.kinit import kinit_password as _kinit_password
-    HAS_KINIT_PASSWORD = True
+    from ansible_collections.eigenstate.ipa.plugins.module_utils.ipa_client import (
+        IPAClient, IPAClientError)
 except ImportError:
-    try:
-        from ipalib.kinit import kinit_password as _kinit_password
-        HAS_KINIT_PASSWORD = True
-    except ImportError:
-        HAS_KINIT_PASSWORD = False
+    import importlib.util
+    import pathlib
+    _ipa_client_path = (
+        pathlib.Path(__file__).resolve().parents[1]
+        / 'module_utils' / 'ipa_client.py')
+    _ipa_client_spec = importlib.util.spec_from_file_location(
+        'eigenstate_ipa_lookup_ipa_client', _ipa_client_path)
+    _ipa_client_mod = importlib.util.module_from_spec(_ipa_client_spec)
+    _ipa_client_spec.loader.exec_module(_ipa_client_mod)
+    IPAClient = _ipa_client_mod.IPAClient
+    IPAClientError = _ipa_client_mod.IPAClientError
 
 display = Display()
 
@@ -266,9 +271,8 @@ class LookupModule(LookupBase):
 
     def __init__(self, *args, **kwargs):
         super(LookupModule, self).__init__(*args, **kwargs)
-        self._ccache_path = None
-        self._previous_ccache = None
-        self._managing_ccache = False
+        self._ipa_client = IPAClient(
+            warn_callback=lambda msg: display.warning(msg))
 
     # ------------------------------------------------------------------
     # Dependency checks
@@ -330,206 +334,43 @@ class LookupModule(LookupBase):
     # Kerberos credential acquisition
     # ------------------------------------------------------------------
 
-    @staticmethod
-    def _resolve_kinit_command():
-        preferred = '/usr/bin/kinit'
-        if os.path.exists(preferred):
-            return preferred
-
-        resolved = shutil.which('kinit')
-        if resolved:
-            return resolved
-
-        return preferred
-
-
-    @staticmethod
-    def _format_subprocess_stderr(stderr, limit=200):
-        text = to_native(stderr or '').strip()
-        if not text:
-            return 'no stderr output'
-
-        lines = [line.strip() for line in text.splitlines() if line.strip()]
-        if not lines:
-            return 'no stderr output'
-
-        summary = ' | '.join(lines[:2])
-        if len(summary) > limit:
-            return summary[:limit - 3].rstrip() + '...'
-
-        return summary
-
-    def _kinit_keytab(self, keytab, principal):
-        """Obtain a Kerberos ticket from a keytab file."""
-        if not os.path.isfile(keytab):
-            raise AnsibleLookupError(
-                "Kerberos keytab file not found: %s" % keytab)
-
-        self._warn_if_sensitive_file_permissive(keytab, "kerberos_keytab")
-
-        ccache_fd, ccache_path = tempfile.mkstemp(
-            prefix='krb5cc_ipa_keytab_')
-        os.close(ccache_fd)
-        ccache_env = 'FILE:%s' % ccache_path
-
-        env = os.environ.copy()
-        env['KRB5CCNAME'] = ccache_env
-
+    def _resolve_verify(self, verify):
         try:
-            result = subprocess.run(
-                [self._resolve_kinit_command(), '-kt', keytab, principal],
-                capture_output=True, text=True, timeout=30,
-                env=env)
-        except FileNotFoundError:
-            os.remove(ccache_path)
-            raise AnsibleLookupError(
-                "'kinit' not found. Expected /usr/bin/kinit from krb5-workstation or a PATH-resolved kinit. Install krb5-workstation:\n"
-                "  dnf install krb5-workstation")
-        except subprocess.TimeoutExpired:
-            os.remove(ccache_path)
-            raise AnsibleLookupError(
-                "'kinit' timed out. Check KDC connectivity and "
-                "/etc/krb5.conf.")
+            return self._ipa_client.resolve_verify(verify)
+        except IPAClientError as exc:
+            raise AnsibleLookupError(str(exc))
 
-        if result.returncode != 0:
-            os.remove(ccache_path)
-            raise AnsibleLookupError(
-                "kinit with keytab failed (exit %d): %s\n"
-                "Verify the keytab with: klist -kt %s"
-                % (result.returncode, self._format_subprocess_stderr(result.stderr),
-                   keytab))
-
-        self._activate_ccache(ccache_path, ccache_env)
-        return ccache_path
-
-    def _kinit_password(self, principal, password):
-        """Obtain a Kerberos ticket from a password."""
-        ccache_fd, ccache_path = tempfile.mkstemp(
-            prefix='krb5cc_ipa_keytab_')
-        os.close(ccache_fd)
-        ccache_env = 'FILE:%s' % ccache_path
-
-        if HAS_KINIT_PASSWORD:
-            try:
-                _kinit_password(principal, password, ccache_path)
-            except Exception as exc:
-                os.remove(ccache_path)
-                raise AnsibleLookupError(
-                    "kinit_password failed for '%s': %s"
-                    % (principal, to_native(exc)))
-        else:
-            password_input = to_text(
-                password, errors='surrogate_or_strict')
-            if not password_input.endswith('\n'):
-                password_input += '\n'
-            env = os.environ.copy()
-            env['KRB5CCNAME'] = ccache_env
-            try:
-                result = subprocess.run(
-                    [self._resolve_kinit_command(), principal],
-                    input=password_input, capture_output=True, text=True,
-                    timeout=30, env=env)
-            except FileNotFoundError:
-                os.remove(ccache_path)
-                raise AnsibleLookupError(
-                    "'kinit' not found and ipalib.kinit_password is "
-                    "not available. Expected /usr/bin/kinit from krb5-workstation or a PATH-resolved kinit. Install one of:\n"
-                    "  dnf install krb5-workstation\n"
-                    "  dnf install python3-ipaclient")
-            except subprocess.TimeoutExpired:
-                os.remove(ccache_path)
-                raise AnsibleLookupError(
-                    "'kinit' timed out. Check KDC connectivity.")
-            if result.returncode != 0:
-                os.remove(ccache_path)
-                raise AnsibleLookupError(
-                    "kinit failed for '%s' (exit %d): %s"
-                    % (principal, result.returncode,
-                       self._format_subprocess_stderr(result.stderr)))
-
-        self._activate_ccache(ccache_path, ccache_env)
-        return ccache_path
-
-    # ------------------------------------------------------------------
-    # Credential cache lifecycle
-    # ------------------------------------------------------------------
-
-    def _activate_ccache(self, ccache_path, ccache_env):
-        """Track and activate a managed Kerberos credential cache."""
-        if not self._managing_ccache:
-            self._previous_ccache = os.environ.get('KRB5CCNAME')
-            self._managing_ccache = True
-        self._ccache_path = ccache_path
-        os.environ['KRB5CCNAME'] = ccache_env
+    def _authenticate(self, principal, password, keytab):
+        try:
+            self._ipa_client.authenticate(
+                principal=principal, password=password, keytab=keytab)
+        except IPAClientError as exc:
+            raise AnsibleLookupError(str(exc))
 
     def _cleanup_ccache(self):
-        """Remove any managed Kerberos credential cache and restore env."""
-        if self._ccache_path and os.path.exists(self._ccache_path):
-            os.remove(self._ccache_path)
-        if self._managing_ccache:
-            if self._previous_ccache is None:
-                os.environ.pop('KRB5CCNAME', None)
-            else:
-                os.environ['KRB5CCNAME'] = self._previous_ccache
-        self._ccache_path = None
-        self._previous_ccache = None
-        self._managing_ccache = False
+        for attr in ('_ccache_path', '_previous_ccache', '_managing_ccache'):
+            if hasattr(self, attr):
+                setattr(self._ipa_client, attr, getattr(self, attr))
+        self._ipa_client.cleanup()
+        self._sync_legacy_ccache_state()
 
-    # ------------------------------------------------------------------
-    # TLS verification
-    # ------------------------------------------------------------------
+    def _sync_legacy_ccache_state(self):
+        self._ccache_path = self._ipa_client._ccache_path
+        self._previous_ccache = self._ipa_client._previous_ccache
+        self._managing_ccache = self._ipa_client._managing_ccache
 
-    def _default_verify_path(self):
-        """Return the conventional IPA CA path when it exists locally."""
-        default_path = '/etc/ipa/ca.crt'
-        if os.path.exists(default_path):
-            return default_path
-        return None
+    def _resolve_kinit_command(self):
+        return self._ipa_client._resolve_kinit_command()
 
-    def _resolve_verify(self, verify):
-        """Resolve TLS verification behavior for ipa-getkeytab requests."""
-        if verify is False:
-            return False
+    def _format_subprocess_stderr(self, stderr, limit=200):
+        return self._ipa_client._format_subprocess_stderr(stderr, limit)
 
-        if isinstance(verify, str):
-            candidate = verify.strip()
-            if candidate.lower() in ('false', 'no', 'off', '0'):
-                return False
-            if not candidate:
-                raise AnsibleLookupError(
-                    "Invalid verify value ''. Set a CA certificate path or false.")
-            if not os.path.exists(candidate):
-                raise AnsibleLookupError(
-                    "TLS certificate file not found: %s" % candidate)
-            return candidate
-
-        if verify is not None:
-            raise AnsibleLookupError(
-                "Invalid verify value %r. Set a CA certificate path or false."
-                % verify)
-
-        default_verify = self._default_verify_path()
-        if default_verify is not None:
-            return default_verify
-
-        display.warning(
-            "No explicit IPA CA certificate configured for "
-            "eigenstate.ipa.keytab. Falling back to the system trust store."
-        )
-        return False
-
-    # ------------------------------------------------------------------
-    # File security
-    # ------------------------------------------------------------------
+    def _activate_ccache(self, ccache_path, ccache_env):
+        self._ipa_client._activate_ccache(ccache_path, ccache_env)
+        self._sync_legacy_ccache_state()
 
     def _warn_if_sensitive_file_permissive(self, path, option_name):
-        """Warn when sensitive local files are readable by non-owners."""
-        mode = stat.S_IMODE(os.stat(path).st_mode)
-        if mode & 0o077:
-            display.warning(
-                "%s '%s' has permissions %s which are more permissive "
-                "than 0600." % (option_name, path, oct(mode))
-            )
+        self._ipa_client.warn_if_permissive(path, option_name)
 
     # ------------------------------------------------------------------
     # Validation
@@ -669,16 +510,7 @@ class LookupModule(LookupBase):
                     "existing keytabs for those principals will be "
                     "immediately invalidated.")
 
-            if keytab:
-                self._kinit_keytab(keytab, principal)
-            elif password:
-                self._kinit_password(principal, password)
-            else:
-                if 'KRB5CCNAME' not in os.environ:
-                    display.warning(
-                        "eigenstate.ipa.keytab: no password or keytab "
-                        "provided and KRB5CCNAME is not set. Assuming a "
-                        "valid Kerberos ticket exists in the default ccache.")
+            self._authenticate(principal, password, keytab)
 
             results = []
             for target_principal in terms:

@@ -200,6 +200,15 @@ class SudoLookupTests(unittest.TestCase):
         self.assertEqual(rec["runasusers"], ["root"])
         self.assertEqual(rec["order"], 10)
 
+    def test_rule_record_without_enabled_flag_returns_record(self):
+        lookup = self._make_lookup({})
+        rec = lookup._rule_record("legacy-rule", {"cn": ["legacy-rule"]})
+
+        self.assertEqual(rec["name"], "legacy-rule")
+        self.assertEqual(rec["object_type"], "rule")
+        self.assertTrue(rec["exists"])
+        self.assertIsNone(rec["enabled"])
+
     def test_show_missing_rule_returns_exists_false(self):
         lookup = self._make_lookup({
             "server": "idm-01.example.com",

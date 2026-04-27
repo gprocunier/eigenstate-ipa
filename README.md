@@ -3,7 +3,7 @@
 **An Ansible collection for Red Hat IdM / FreeIPA with dynamic inventory, IdM vault retrieval and lifecycle automation, Kerberos principal state, keytab delivery, delegated user-lease control, certificate automation, OTP workflows, DNS record inspection, sudo policy inspection, SELinux user map inspection, and HBAC rule inspection and access testing.**
 
 [![License: GPL-3.0](https://img.shields.io/github/license/gprocunier/eigenstate-ipa)](COPYING)
-![Ansible 2.14+](https://img.shields.io/badge/Ansible-2.14%2B-blue)
+![Ansible 2.15+](https://img.shields.io/badge/Ansible-2.15%2B-blue)
 ![FreeIPA 4.6+](https://img.shields.io/badge/FreeIPA-4.6%2B-blue)
 ![RHEL](https://img.shields.io/badge/RHEL-9%20%7C%2010-red)
 
@@ -156,7 +156,7 @@ If the comparison translates into an IdM-native workflow for you, these are the 
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.10.6.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.10.7.tar.gz
 ```
 
 Verify the main surfaces you plan to use. For example:

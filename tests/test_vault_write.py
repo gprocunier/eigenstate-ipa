@@ -950,6 +950,70 @@ class TestIPAClient(unittest.TestCase):
         self.assertIn('verify', exception_text(ctx.exception))
         self.assertEqual(warnings, [])
 
+    def test_connect_passes_resolved_tls_ca_to_bootstrap(self):
+        client = self.ipa_client_mod.IPAClient()
+        bootstrap = mock.Mock()
+        finalize = mock.Mock()
+        backend = types.SimpleNamespace(
+            isconnected=mock.Mock(return_value=False),
+            connect=mock.Mock(),
+        )
+        fake_api = types.SimpleNamespace(
+            isdone=mock.Mock(return_value=False),
+            bootstrap=bootstrap,
+            finalize=finalize,
+            Backend=types.SimpleNamespace(rpcclient=backend),
+        )
+
+        with mock.patch.object(self.ipa_client_mod, '_ipa_api', fake_api):
+            with mock.patch.object(
+                client, 'resolve_verify',
+                return_value='/etc/ipa/custom-ca.crt'
+            ), mock.patch.object(client, 'authenticate'):
+                client.connect(
+                    server='idm-01.example.com',
+                    principal='admin',
+                    password='secret',
+                    verify='/etc/ipa/custom-ca.crt',
+                )
+
+        bootstrap.assert_called_once_with(
+            context='cli',
+            log=None,
+            tls_ca_cert='/etc/ipa/custom-ca.crt',
+        )
+        finalize.assert_called_once_with()
+        backend.connect.assert_called_once_with(
+            ccache=os.environ.get('KRB5CCNAME', None))
+
+    def test_connect_omits_tls_ca_when_verify_is_disabled(self):
+        client = self.ipa_client_mod.IPAClient()
+        bootstrap = mock.Mock()
+        backend = types.SimpleNamespace(
+            isconnected=mock.Mock(return_value=False),
+            connect=mock.Mock(),
+        )
+        fake_api = types.SimpleNamespace(
+            isdone=mock.Mock(return_value=False),
+            bootstrap=bootstrap,
+            finalize=mock.Mock(),
+            Backend=types.SimpleNamespace(rpcclient=backend),
+        )
+
+        with mock.patch.object(self.ipa_client_mod, '_ipa_api', fake_api):
+            with mock.patch.object(
+                client, 'resolve_verify',
+                return_value=False
+            ), mock.patch.object(client, 'authenticate'):
+                client.connect(
+                    server='idm-01.example.com',
+                    principal='admin',
+                    password='secret',
+                    verify=False,
+                )
+
+        bootstrap.assert_called_once_with(context='cli', log=None)
+
 
     def test_kinit_password_fallback_normalizes_stdin_newline(self):
         client = self.ipa_client_mod.IPAClient()
