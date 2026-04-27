@@ -40,6 +40,7 @@ jobs:
         run: |
           dnf install -y --setopt=install_weak_deps=False \
             python3-ipalib python3-ipaclient \
+            ipa-client \
             krb5-workstation \
             podman fuse-overlayfs \
             python3-pip openssl
@@ -86,33 +87,22 @@ jobs:
           podman logs ipa-server | tail -50
           exit 1
 
-      - name: Configure controller Kerberos and TLS
+      - name: Configure controller as IPA client
         run: |
           IPA_IP=$(podman inspect ipa-server \
             --format '{{ .NetworkSettings.IPAddress }}')
           echo "${IPA_IP} ipa.test.lan" >> /etc/hosts
 
-          printf '%s\n' \
-            '[libdefaults]' \
-            '  default_realm = TEST.LAN' \
-            '  dns_canonicalize_hostname = false' \
-            '  rdns = false' \
-            '' \
-            '[realms]' \
-            '  TEST.LAN = {' \
-            '    kdc = ipa.test.lan' \
-            '    admin_server = ipa.test.lan' \
-            '  }' \
-            '' \
-            '[domain_realm]' \
-            '  .test.lan = TEST.LAN' \
-            '  test.lan = TEST.LAN' \
-            > /etc/krb5.conf
+          ipa-client-install --unattended \
+            --server=ipa.test.lan \
+            --domain=test.lan \
+            --realm=TEST.LAN \
+            --principal=admin \
+            --password=AdminPass123 \
+            --no-ntp \
+            --force-join
 
-          mkdir -p /etc/ipa
-          podman cp ipa-server:/etc/ipa/ca.crt /etc/ipa/ca.crt
-
-          echo "Controller configured — verifying kinit works..."
+          echo "IPA client enrolled — verifying kinit works..."
           echo AdminPass123 | kinit admin
           klist
           kdestroy
