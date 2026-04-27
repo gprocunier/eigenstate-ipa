@@ -1029,6 +1029,51 @@ class TestIPAClient(unittest.TestCase):
 
         bootstrap.assert_called_once_with(context='cli', log=None)
 
+    def test_connect_retries_bootstrap_without_tls_ca_on_override_error(self):
+        client = self.ipa_client_mod.IPAClient()
+        bootstrap = mock.Mock(side_effect=[
+            Exception(('tls_ca_cert', '/tmp/demo/ipa-ca.crt')),
+            None,
+        ])
+        finalize = mock.Mock()
+        backend = types.SimpleNamespace(
+            isconnected=mock.Mock(return_value=False),
+            connect=mock.Mock(),
+        )
+        fake_api = types.SimpleNamespace(
+            isdone=mock.Mock(return_value=False),
+            bootstrap=bootstrap,
+            finalize=finalize,
+            Backend=types.SimpleNamespace(rpcclient=backend),
+        )
+
+        with mock.patch.object(self.ipa_client_mod, '_ipa_api', fake_api):
+            with mock.patch.object(
+                client, 'resolve_verify',
+                return_value='/tmp/demo/ipa-ca.crt'
+            ), mock.patch.object(client, 'authenticate'):
+                client.connect(
+                    server='idm-01.example.com',
+                    principal='admin',
+                    password='secret',
+                    verify='/tmp/demo/ipa-ca.crt',
+                )
+
+        self.assertEqual(
+            bootstrap.call_args_list,
+            [
+                mock.call(
+                    context='cli',
+                    log=None,
+                    tls_ca_cert='/tmp/demo/ipa-ca.crt',
+                ),
+                mock.call(context='cli', log=None),
+            ],
+        )
+        finalize.assert_called_once_with()
+        backend.connect.assert_called_once_with(
+            ccache=os.environ.get('KRB5CCNAME', None))
+
 
     def test_kinit_password_fallback_normalizes_stdin_newline(self):
         client = self.ipa_client_mod.IPAClient()

@@ -194,8 +194,17 @@ class IPAClient(object):
             try:
                 _ipa_api.bootstrap(**bootstrap_args)
             except Exception as exc:
-                raise IPAClientError(
-                    "ipalib bootstrap failed: %s" % to_native(exc))
+                if self._is_tls_ca_cert_bootstrap_override_error(exc):
+                    retry_args = dict(bootstrap_args)
+                    retry_args.pop('tls_ca_cert', None)
+                    try:
+                        _ipa_api.bootstrap(**retry_args)
+                    except Exception as retry_exc:
+                        raise IPAClientError(
+                            "ipalib bootstrap failed: %s" % to_native(retry_exc))
+                else:
+                    raise IPAClientError(
+                        "ipalib bootstrap failed: %s" % to_native(exc))
 
         if not _ipa_api.isdone('finalize'):
             try:
@@ -253,6 +262,14 @@ class IPAClient(object):
     def resolve_verify(self, verify):
         """Resolve TLS verification setting for callers that need the path."""
         return self._resolve_verify(verify)
+
+    @staticmethod
+    def _is_tls_ca_cert_bootstrap_override_error(exc):
+        """Return True for FreeIPA bootstrap rejecting a tls_ca_cert override."""
+        args = getattr(exc, 'args', ())
+        if len(args) == 1 and isinstance(args[0], tuple):
+            args = args[0]
+        return bool(args and args[0] == 'tls_ca_cert')
 
     # ------------------------------------------------------------------
     # Scope helpers

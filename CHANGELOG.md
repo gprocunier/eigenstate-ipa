@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.11 - 2026-04-27
+
+- made `IPAClient.connect()` retry FreeIPA bootstrap without a `tls_ca_cert` override when upstream FreeIPA rejects the override after loading controller-provided `/etc/ipa` configuration
+- added regression coverage for the bootstrap retry path used by AAP execution environments that provide `/etc/ipa/ca.crt`
+
 ## 1.10.10 - 2026-04-27
 
 - fixed ipalib-backed lookup plugin import fallback handling so cleanup does not mask missing or failed `ipalib` imports as `_ipa_api` `NameError` failures

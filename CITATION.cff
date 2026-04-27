@@ -3,7 +3,7 @@ message: >-
   If you use this Ansible collection in a publication or internal report,
   please cite it using the metadata below.
 title: "eigenstate.ipa: Ansible plugins for Red Hat Identity Management"
-version: "1.10.10"
+version: "1.10.11"
 date-released: "2026-04-27"
 abstract: >-
   eigenstate.ipa is an Ansible collection for Red Hat Identity Management
@@ -40,7 +40,7 @@ license: "GPL-3.0-or-later"
 preferred-citation:
   type: software
   title: "eigenstate.ipa: Ansible plugins for Red Hat Identity Management"
-  version: "1.10.10"
+  version: "1.10.11"
   date-released: "2026-04-27"
   authors:
     - family-names: Procunier
