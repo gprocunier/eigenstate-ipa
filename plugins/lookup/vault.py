@@ -705,7 +705,6 @@ class LookupModule(LookupBase):
         show_args.update({
             'all': True,
             'raw': False,
-            'no_members': False,
         })
 
         try:
@@ -739,7 +738,6 @@ class LookupModule(LookupBase):
         find_args.update({
             'all': True,
             'raw': False,
-            'no_members': True,
             'sizelimit': 0,
         })
         find_terms = []

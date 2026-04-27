@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.8
+
+- fixed live IdM vault metadata lookups by removing the unsupported `no_members` option from `vault_show` and `vault_find` API calls
+- added regression coverage proving `eigenstate.ipa.vault` omits that option while preserving `all`, `raw`, scope, and `sizelimit` arguments
+- validated the 1.10.8 artifact against the real Calabi IdM server from bastion across the refactored lookup plugin set before Galaxy publication
+
 ## 1.10.7
 
 - centralized Kerberos authentication, TLS verification, credential-cache cleanup, and ipalib connection setup for the `cert`, `dns`, `hbacrule`, `keytab`, `otp`, `principal`, `selinuxmap`, `sudo`, and `vault` lookup plugins through the shared `IPAClient` helper

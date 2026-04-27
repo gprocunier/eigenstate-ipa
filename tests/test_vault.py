@@ -287,6 +287,52 @@ class VaultLookupTests(unittest.TestCase):
         self.assertIsInstance(seen["name"], str)
         self.assertEqual(type(seen["name"]), str)
 
+    def test_show_vault_omits_unsupported_no_members_option(self):
+        lookup = self.mod.LookupModule()
+        seen = {}
+
+        def fake_show(name, **kwargs):
+            seen["kwargs"] = kwargs
+            return {"result": {"cn": ["db-pass"], "ipavaulttype": ["standard"]}}
+
+        self.mod._ipa_api.Command = types.SimpleNamespace(
+            vault_show=fake_show
+        )
+
+        lookup._show_vault("db-pass", "shared", shared=True)
+
+        self.assertNotIn("no_members", seen["kwargs"])
+        self.assertEqual(seen["kwargs"]["all"], True)
+        self.assertEqual(seen["kwargs"]["raw"], False)
+        self.assertEqual(seen["kwargs"]["shared"], True)
+
+    def test_find_vaults_omits_unsupported_no_members_option(self):
+        lookup = self.mod.LookupModule()
+        seen = {}
+
+        def fake_find(*args, **kwargs):
+            seen["args"] = args
+            seen["kwargs"] = kwargs
+            return {
+                "result": [
+                    {"cn": ["db-pass"], "ipavaulttype": ["standard"]},
+                ]
+            }
+
+        self.mod._ipa_api.Command = types.SimpleNamespace(
+            vault_find=fake_find
+        )
+
+        result = lookup._find_vaults("db", "shared", shared=True)
+
+        self.assertEqual(result[0]["name"], "db-pass")
+        self.assertEqual(seen["args"], ("db",))
+        self.assertNotIn("no_members", seen["kwargs"])
+        self.assertEqual(seen["kwargs"]["all"], True)
+        self.assertEqual(seen["kwargs"]["raw"], False)
+        self.assertEqual(seen["kwargs"]["sizelimit"], 0)
+        self.assertEqual(seen["kwargs"]["shared"], True)
+
     def test_run_collapses_string_subclasses_before_retrieval(self):
         class UnsafeText(str):
             pass
