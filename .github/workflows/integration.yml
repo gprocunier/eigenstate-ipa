@@ -33,15 +33,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Build test image with Ansible pre-installed
-        run: |
-          DOCKER_BUILDKIT=0 docker build -t freeipa-test -f - . <<'DEOF'
-          FROM quay.io/freeipa/freeipa-server:fedora-43
-          RUN update-ca-trust extract && \
-              dnf install -y --setopt=install_weak_deps=False python3-pip openssl && \
-              pip install --break-system-packages "ansible-core~=2.18.0" && \
-              dnf clean all
-          DEOF
+      - name: Download ansible-core wheel for offline install
+        run: pip download "ansible-core~=2.18.0" -d /tmp/ansible-wheels
 
       - name: Start FreeIPA server
         run: |
@@ -55,7 +48,7 @@ jobs:
               --ds-password=DirManager123 --admin-password=AdminPass123 \
               --no-ntp --setup-dns --no-forwarders --no-reverse \
               --setup-kra --no-host-dns" \
-            freeipa-test
+            quay.io/freeipa/freeipa-server:fedora-43
 
       - name: Wait for FreeIPA readiness
         run: |
@@ -79,8 +72,12 @@ jobs:
           docker logs ipa-server | tail -80
           exit 1
 
-      - name: Install collection inside container
+      - name: Install Ansible and collection inside container
         run: |
+          docker cp /tmp/ansible-wheels ipa-server:/tmp/ansible-wheels
+          docker exec ipa-server \
+            pip install --break-system-packages --no-index \
+              --find-links /tmp/ansible-wheels ansible-core
           docker cp . ipa-server:/root/eigenstate-ipa
           docker exec ipa-server \
             ansible-galaxy collection install /root/eigenstate-ipa --force
