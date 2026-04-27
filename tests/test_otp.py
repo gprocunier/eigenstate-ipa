@@ -355,6 +355,31 @@ class OtpLookupTests(unittest.TestCase):
         self.assertEqual(result[0]["password"], "EnrollP@ss2")
         self.assertEqual(result[0]["type"], "host")
 
+    def test_type_alias_selects_token_type(self):
+        seen = {}
+
+        def fake_host(fqdn):
+            seen["fqdn"] = fqdn
+            return {
+                "fqdn": fqdn, "type": "host",
+                "password": "EnrollP@ss3", "exists": True,
+            }
+
+        lookup = self._make_lookup(add_host_enroll=fake_host)
+        result = lookup.run(["web-02.example.com"], variables={}, type="host")
+        self.assertEqual(result, ["EnrollP@ss3"])
+        self.assertEqual(seen["fqdn"], "web-02.example.com")
+
+    def test_variable_type_alias_selects_token_type(self):
+        lookup = self._make_lookup(
+            add_host_enroll=lambda fqdn: {
+                "fqdn": fqdn, "type": "host",
+                "password": "EnrollP@ss4", "exists": True,
+            }
+        )
+        result = lookup.run(["web-03.example.com"], variables={"type": "host"})
+        self.assertEqual(result, ["EnrollP@ss4"])
+
     # ------------------------------------------------------------------
     # find
     # ------------------------------------------------------------------

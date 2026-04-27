@@ -368,9 +368,7 @@ class LookupModule(LookupBase):
         for attr in ('_ccache_path', '_previous_ccache', '_managing_ccache'):
             if hasattr(self, attr):
                 setattr(self._ipa_client, attr, getattr(self, attr))
-        self._ipa_client.cleanup.__globals__['_ipa_api'] = _ipa_api
-        self._ipa_client.cleanup.__globals__['HAS_IPALIB'] = HAS_IPALIB
-        self._ipa_client.cleanup()
+        self._ipa_client.cleanup(ipa_api=_ipa_api, has_ipalib=HAS_IPALIB)
         self._sync_legacy_ccache_state()
 
     def _sync_legacy_ccache_state(self):

@@ -75,6 +75,7 @@ options:
     type: str
     default: totp
     choices: ["totp", "hotp", "host"]
+    aliases: ["type"]
   algorithm:
     description: >-
       HMAC algorithm used to generate the OTP value. Only applies to
@@ -407,9 +408,7 @@ class LookupModule(LookupBase):
         for attr in ('_ccache_path', '_previous_ccache', '_managing_ccache'):
             if hasattr(self, attr):
                 setattr(self._ipa_client, attr, getattr(self, attr))
-        self._ipa_client.cleanup.__globals__['_ipa_api'] = _ipa_api
-        self._ipa_client.cleanup.__globals__['HAS_IPALIB'] = HAS_IPALIB
-        self._ipa_client.cleanup()
+        self._ipa_client.cleanup(ipa_api=_ipa_api, has_ipalib=HAS_IPALIB)
         self._sync_legacy_ccache_state()
 
     def _sync_legacy_ccache_state(self):
@@ -764,65 +763,41 @@ class LookupModule(LookupBase):
     def run(self, terms, variables=None, **kwargs):
         try:
             self._ensure_ipalib()
+            if (isinstance(variables, dict) and
+                    'type' in variables and
+                    variables['type'] is not None and
+                    'token_type' not in variables and
+                    'token_type' not in kwargs):
+                variables = dict(variables)
+                variables['token_type'] = variables['type']
+            if ('type' in kwargs and
+                    kwargs['type'] is not None and
+                    'token_type' not in kwargs):
+                kwargs['token_type'] = kwargs['type']
+
             self.set_options(var_options=variables, direct=kwargs)
 
-            instance_get_option = self.__dict__.get('get_option')
+            operation = self.get_option('operation')
+            token_type = self.get_option('token_type')
+            algorithm = self.get_option('algorithm')
+            digits = int(self.get_option('digits'))
+            interval = int(self.get_option('interval'))
+            owner = self.get_option('owner')
+            description = self.get_option('description')
 
-            def _option(name, default=None, aliases=(), allow_plugin=False):
-                for key in (name,) + tuple(aliases):
-                    if key in kwargs and kwargs[key] is not None:
-                        return kwargs[key]
-                if callable(instance_get_option):
-                    try:
-                        value = instance_get_option(name)
-                    except Exception:
-                        value = None
-                    if value is not None:
-                        return value
-                    for alias in aliases:
-                        try:
-                            value = instance_get_option(alias)
-                        except Exception:
-                            value = None
-                        if value is not None:
-                            return value
-                if allow_plugin:
-                    try:
-                        value = self.get_option(name)
-                    except KeyError:
-                        value = None
-                    if value is not None:
-                        return value
-                    for alias in aliases:
-                        try:
-                            value = self.get_option(alias)
-                        except KeyError:
-                            value = None
-                        if value is not None:
-                            return value
-                return default
-
-            operation = _option('operation', default='add')
-            token_type = _option('token_type', default='totp', aliases=('type',))
-            algorithm = _option('algorithm', default='sha1')
-            digits = int(_option('digits', default=6))
-            interval = int(_option('interval', default=30))
-            owner = _option('owner')
-            description = _option('description')
-
-            server = _option('server', allow_plugin=True)
+            server = self.get_option('server')
             if not server:
                 raise AnsibleLookupError(
                     "'server' is required. Set it directly or via the "
                     "IPA_SERVER environment variable.")
 
-            principal = _option('ipaadmin_principal', default='admin', allow_plugin=True)
-            password = _option('ipaadmin_password', allow_plugin=True)
-            keytab = _option('kerberos_keytab', allow_plugin=True)
-            verify = self._resolve_verify(_option('verify', allow_plugin=True))
+            principal = self.get_option('ipaadmin_principal')
+            password = self.get_option('ipaadmin_password')
+            keytab = self.get_option('kerberos_keytab')
+            verify = self._resolve_verify(self.get_option('verify'))
 
             # result_format: caller may not specify it; apply operation default
-            result_format = _option('result_format')
+            result_format = self.get_option('result_format')
             if result_format is None:
                 result_format = 'value' if operation == 'add' else 'record'
 

@@ -182,7 +182,7 @@ For the full plugin index, use <a href="https://gprocunier.github.io/eigenstate-
 > provides `ipa-getkeytab` on the control node or EE. The cert plugin uses
 > `ipalib` like the vault plugin and can request, retrieve, and search IdM CA
 > certificates without `certmonger` on the target. The OTP, selinuxmap,
-> sudo, hbacrule, and user_lease module use the same IdM client Python stack as the
+> sudo, hbacrule, and user_lease surfaces use the same IdM client Python stack as the
 > vault, principal, and cert lookups.
 
 ## Repository Layout

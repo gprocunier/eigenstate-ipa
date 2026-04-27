@@ -895,6 +895,21 @@ class TestIPAClient(unittest.TestCase):
             if os.path.exists(ccache_path):
                 os.unlink(ccache_path)
 
+    def test_cleanup_accepts_explicit_ipalib_context(self):
+        client = self.ipa_client_mod.IPAClient()
+        backend = types.SimpleNamespace(
+            isconnected=mock.Mock(return_value=True),
+            disconnect=mock.Mock(),
+        )
+        fake_api = types.SimpleNamespace(
+            Backend=types.SimpleNamespace(rpcclient=backend),
+        )
+
+        client.cleanup(ipa_api=fake_api, has_ipalib=True)
+
+        backend.isconnected.assert_called_once_with()
+        backend.disconnect.assert_called_once_with()
+
     def test_warn_if_permissive_fires_on_0644(self):
         """warn_if_permissive emits warning for group-readable files."""
         warnings = []

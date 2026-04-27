@@ -215,11 +215,13 @@ class IPAClient(object):
                     "Check that a valid Kerberos ticket exists (klist) "
                     "and the server is reachable." % (server, to_native(exc)))
 
-    def cleanup(self):
+    def cleanup(self, ipa_api=None, has_ipalib=None):
         """Remove any managed ccache and restore the ``KRB5CCNAME`` env var."""
-        if HAS_IPALIB:
+        active_has_ipalib = HAS_IPALIB if has_ipalib is None else has_ipalib
+        active_ipa_api = _ipa_api if ipa_api is None else ipa_api
+        if active_has_ipalib and active_ipa_api is not None:
             try:
-                backend = _ipa_api.Backend.rpcclient
+                backend = active_ipa_api.Backend.rpcclient
                 if backend.isconnected():
                     backend.disconnect()
             except Exception:
