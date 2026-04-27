@@ -92,35 +92,35 @@ jobs:
             --format '{{ .NetworkSettings.IPAddress }}')
           echo "${IPA_IP} ipa.test.lan" >> /etc/hosts
 
-          cat > /etc/krb5.conf <<'EOF'
-[libdefaults]
-  default_realm = TEST.LAN
-  dns_canonicalize_hostname = false
-  rdns = false
-
-[realms]
-  TEST.LAN = {
-    kdc = ipa.test.lan
-    admin_server = ipa.test.lan
-  }
-
-[domain_realm]
-  .test.lan = TEST.LAN
-  test.lan = TEST.LAN
-EOF
+          printf '%s\n' \
+            '[libdefaults]' \
+            '  default_realm = TEST.LAN' \
+            '  dns_canonicalize_hostname = false' \
+            '  rdns = false' \
+            '' \
+            '[realms]' \
+            '  TEST.LAN = {' \
+            '    kdc = ipa.test.lan' \
+            '    admin_server = ipa.test.lan' \
+            '  }' \
+            '' \
+            '[domain_realm]' \
+            '  .test.lan = TEST.LAN' \
+            '  test.lan = TEST.LAN' \
+            > /etc/krb5.conf
 
           mkdir -p /etc/ipa
           podman cp ipa-server:/etc/ipa/ca.crt /etc/ipa/ca.crt
 
-          cat > /etc/ipa/default.conf <<'IPAEOF'
-[global]
-basedn = dc=test,dc=lan
-realm = TEST.LAN
-domain = test.lan
-xmlrpc_uri = https://ipa.test.lan/ipa/xml
-server = ipa.test.lan
-enable_ra = True
-IPAEOF
+          printf '%s\n' \
+            '[global]' \
+            'basedn = dc=test,dc=lan' \
+            'realm = TEST.LAN' \
+            'domain = test.lan' \
+            'xmlrpc_uri = https://ipa.test.lan/ipa/xml' \
+            'server = ipa.test.lan' \
+            'enable_ra = True' \
+            > /etc/ipa/default.conf
 
           echo "Controller configured — verifying kinit works..."
           echo AdminPass123 | kinit admin
