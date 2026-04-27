@@ -35,7 +35,7 @@ jobs:
 
       - name: Download ansible-core wheels and pip bootstrap
         run: |
-          pip download "ansible-core~=2.18.0" -d /tmp/ansible-wheels
+          pip download pip setuptools wheel "ansible-core~=2.18.0" -d /tmp/ansible-wheels
           curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
 
       - name: Start FreeIPA server
