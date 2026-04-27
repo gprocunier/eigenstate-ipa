@@ -93,13 +93,19 @@ jobs:
             --format '{{ .NetworkSettings.IPAddress }}')
           echo "${IPA_IP} ipa.test.lan" >> /etc/hosts
 
+          CTRL_HOST="controller.test.lan"
+          hostnamectl set-hostname "${CTRL_HOST}" || hostname "${CTRL_HOST}"
+          echo "127.0.0.1 ${CTRL_HOST}" >> /etc/hosts
+
           ipa-client-install --unattended \
+            --hostname="${CTRL_HOST}" \
             --server=ipa.test.lan \
             --domain=test.lan \
             --realm=TEST.LAN \
             --principal=admin \
             --password=AdminPass123 \
             --no-ntp \
+            --no-dns-sshfp \
             --force-join
 
           echo "IPA client enrolled — verifying kinit works..."
