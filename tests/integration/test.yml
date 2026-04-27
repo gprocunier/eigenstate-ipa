@@ -1140,6 +1140,7 @@
       eigenstate.ipa.user_lease:
         username: lease-user-01
         state: cleared
+        clear_password_expiration: true
         server: "{{ server }}"
         ipaadmin_password: "{{ password }}"
         verify: "{{ ca_cert }}"
