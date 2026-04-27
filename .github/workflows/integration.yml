@@ -89,7 +89,11 @@ jobs:
           docker exec ipa-server \
             python3 -m pip install --break-system-packages --no-index \
               --find-links /root/ci-staging/wheels \
-              ansible-core resolvelib packaging
+              --no-deps resolvelib packaging
+          docker exec ipa-server \
+            python3 -m pip install --break-system-packages --no-index \
+              --find-links /root/ci-staging/wheels \
+              --no-deps ansible-core
           docker cp . ipa-server:/root/eigenstate-ipa
           docker exec ipa-server \
             ansible-galaxy collection install /root/eigenstate-ipa --force
