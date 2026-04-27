@@ -195,13 +195,16 @@ class IPAClient(object):
                 _ipa_api.bootstrap(**bootstrap_args)
             except Exception as exc:
                 if self._is_tls_ca_cert_bootstrap_override_error(exc):
-                    retry_args = dict(bootstrap_args)
-                    retry_args.pop('tls_ca_cert', None)
-                    try:
-                        _ipa_api.bootstrap(**retry_args)
-                    except Exception as retry_exc:
-                        raise IPAClientError(
-                            "ipalib bootstrap failed: %s" % to_native(retry_exc))
+                    if not _ipa_api.isdone('bootstrap'):
+                        retry_args = dict(bootstrap_args)
+                        retry_args.pop('tls_ca_cert', None)
+                        try:
+                            _ipa_api.bootstrap(**retry_args)
+                        except Exception as retry_exc:
+                            if not _ipa_api.isdone('bootstrap'):
+                                raise IPAClientError(
+                                    "ipalib bootstrap failed: %s"
+                                    % to_native(retry_exc))
                 else:
                     raise IPAClientError(
                         "ipalib bootstrap failed: %s" % to_native(exc))

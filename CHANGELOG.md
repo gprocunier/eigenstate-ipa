@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.12 - 2026-04-27
+
+- refined the FreeIPA bootstrap compatibility path so a `tls_ca_cert` override rejection that still leaves bootstrap complete is treated as successful bootstrap before finalization
+- added regression coverage for the partially completed bootstrap case observed in AAP execution environments
+
 ## 1.10.11 - 2026-04-27
 
 - made `IPAClient.connect()` retry FreeIPA bootstrap without a `tls_ca_cert` override when upstream FreeIPA rejects the override after loading controller-provided `/etc/ipa` configuration
