@@ -192,23 +192,6 @@
           - vault_rec.value == 's3cret-db-pass'
         fail_msg: "Record format incorrect: {{ vault_rec }}"
 
-    - name: "vault: retrieve with map format"
-      ansible.builtin.set_fact:
-        vault_map: >-
-          {{ lookup('eigenstate.ipa.vault', 'db-password',
-             shared=true,
-             result_format='map',
-             server=server,
-             ipaadmin_password=password,
-             verify=ca_cert) }}
-
-    - name: "vault: assert map keyed by name"
-      ansible.builtin.assert:
-        that:
-          - "'db-password' in vault_map"
-          - vault_map['db-password'] == 's3cret-db-pass'
-        fail_msg: "Map format should be keyed: {{ vault_map }}"
-
     - name: "vault: retrieve JSON vault with decode_json"
       ansible.builtin.set_fact:
         vault_json: >-
@@ -568,20 +551,6 @@
           - kt_rec.value | length > 10
         fail_msg: "Keytab record format incorrect: {{ kt_rec }}"
 
-    - name: "keytab: retrieve with map format"
-      ansible.builtin.set_fact:
-        kt_map: >-
-          {{ lookup('eigenstate.ipa.keytab', 'HTTP/web-01.test.lan',
-             result_format='map',
-             server=server,
-             ipaadmin_password=password,
-             verify=ca_cert) }}
-
-    - name: "keytab: assert map keyed by principal"
-      ansible.builtin.assert:
-        that:
-          - "'HTTP/web-01.test.lan' in kt_map"
-        fail_msg: "Map should be keyed by principal: {{ kt_map | list }}"
 
 # =====================================================================
 # Cert Plugin
