@@ -97,14 +97,18 @@ jobs:
 
       - name: Install collection inside container
         run: |
-          docker cp . ipa-server:/root/eigenstate-ipa
+          pip install "ansible-core~=2.18.0" 2>/dev/null || true
+          ansible-galaxy collection build . --output-path /tmp --force
+          TARBALL=$(ls /tmp/eigenstate-ipa-*.tar.gz | head -1)
+          docker cp "$TARBALL" ipa-server:/root/collection.tar.gz
           docker exec ipa-server \
-            ansible-galaxy collection install /root/eigenstate-ipa --force
+            ansible-galaxy collection install /root/collection.tar.gz --force
+          docker cp tests/integration ipa-server:/root/integration-tests
 
       - name: Seed test data
         run: |
           docker exec ipa-server \
-            ansible-playbook /root/eigenstate-ipa/tests/integration/seed.yml \
+            ansible-playbook /root/integration-tests/seed.yml \
               -e ipa_server=ipa.test.lan \
               -e ipa_password=AdminPass123 \
               -e ipa_ca_cert=/etc/ipa/ca.crt
@@ -112,7 +116,7 @@ jobs:
       - name: Run integration tests
         run: |
           docker exec ipa-server \
-            ansible-playbook /root/eigenstate-ipa/tests/integration/test.yml \
+            ansible-playbook /root/integration-tests/test.yml \
               -e ipa_server=ipa.test.lan \
               -e ipa_password=AdminPass123 \
               -e ipa_ca_cert=/etc/ipa/ca.crt
@@ -121,7 +125,7 @@ jobs:
         if: always()
         run: |
           docker exec ipa-server \
-            ansible-playbook /root/eigenstate-ipa/tests/integration/cleanup.yml \
+            ansible-playbook /root/integration-tests/cleanup.yml \
               -e ipa_server=ipa.test.lan \
               -e ipa_password=AdminPass123 \
               -e ipa_ca_cert=/etc/ipa/ca.crt || true
