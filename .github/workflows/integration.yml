@@ -76,7 +76,7 @@ jobs:
         run: |
           docker cp /tmp/ansible-wheels ipa-server:/tmp/ansible-wheels
           docker exec ipa-server \
-            pip install --break-system-packages --no-index \
+            python3 -m pip install --break-system-packages --no-index \
               --find-links /tmp/ansible-wheels ansible-core
           docker cp . ipa-server:/root/eigenstate-ipa
           docker exec ipa-server \
