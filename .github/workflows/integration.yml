@@ -93,11 +93,28 @@ jobs:
             --format '{{ .NetworkSettings.IPAddress }}')
           echo "${IPA_IP} ipa.test.lan" >> /etc/hosts
 
-          podman cp ipa-server:/etc/ipa/ca.crt /tmp/ipa-ca.crt
-          podman cp ipa-server:/etc/krb5.conf /etc/krb5.conf
           mkdir -p /etc/ipa
-          cp /tmp/ipa-ca.crt /etc/ipa/ca.crt
+          podman cp ipa-server:/etc/ipa/ca.crt /etc/ipa/ca.crt
           podman cp ipa-server:/etc/ipa/default.conf /etc/ipa/default.conf
+
+          printf '%s\n' \
+            '[libdefaults]' \
+            '  default_realm = TEST.LAN' \
+            '  dns_canonicalize_hostname = false' \
+            '  rdns = false' \
+            '  dns_lookup_kdc = false' \
+            '  dns_lookup_realm = false' \
+            '' \
+            '[realms]' \
+            '  TEST.LAN = {' \
+            "    kdc = ${IPA_IP}" \
+            "    admin_server = ${IPA_IP}" \
+            '  }' \
+            '' \
+            '[domain_realm]' \
+            '  .test.lan = TEST.LAN' \
+            '  test.lan = TEST.LAN' \
+            > /etc/krb5.conf
 
           echo "Controller configured — verifying kinit works..."
           echo AdminPass123 | kinit admin
