@@ -200,16 +200,25 @@
         - { name: db-password }
         - { name: api-key }
 
-    - name: Archive vault payloads
-      ansible.builtin.shell: >
-        echo -n "{{ item.data }}" |
-        ipa vault-archive {{ item.name }} --shared --in /dev/stdin
+    - name: Archive db-password vault
+      ansible.builtin.shell: |
+        printf '%s' 's3cret-db-pass' | ipa vault-archive db-password --shared --in /dev/stdin
       register: result
       failed_when: result.rc != 0
       changed_when: true
-      loop:
-        - { name: db-password, data: "s3cret-db-pass" }
-        - { name: api-key, data: '{"key":"ak_xyz789","env":"test"}' }
+
+    - name: Write api-key JSON payload to file
+      ansible.builtin.copy:
+        dest: /tmp/api-key-payload.json
+        content: '{"key":"ak_xyz789","env":"test"}'
+        mode: "0600"
+
+    - name: Archive api-key vault from file
+      ansible.builtin.command: >
+        ipa vault-archive api-key --shared --in /tmp/api-key-payload.json
+      register: result
+      failed_when: result.rc != 0
+      changed_when: true
 
     - name: Create user-scoped vault
       ansible.builtin.shell: |
