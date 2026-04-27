@@ -175,7 +175,7 @@ The collection treats IdM as both:
 
 ## Runtime Notes
 
-- target Ansible floor: `2.14.0`
+- target Ansible floor: `2.15.0`
 - RHEL 9 compatibility is intentional
 - vault lookup and vault write operations require `python3-ipalib` and `python3-ipaclient`
 - principal, cert, otp, selinuxmap, hbacrule, dns, and sudo lookups require `python3-ipalib` and `python3-ipaclient`
@@ -207,7 +207,7 @@ The collection treats IdM as both:
 
 - collection name: `eigenstate.ipa`
 - namespace: `eigenstate`
-- current version: `1.10.6`
+- current version: `1.10.8`
 - author: Greg Procunier
 - license: GPL-3.0-or-later
 - repository: https://github.com/gprocunier/eigenstate-ipa
