@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.10.9 - 2026-04-27
+
+- replaced fragile lookup-level `IPAClient.cleanup.__globals__` mutation with explicit cleanup context passing through the shared `IPAClient` helper
+- normalized the OTP lookup option path by documenting the `type` compatibility alias and using standard `self.get_option()` handling in `run()`
+- refreshed release hygiene by adding changelog date stamps, keeping `COPYING` and `LICENSE` byte-identical, and correcting README wording around the user-lease surface
+- added focused regression coverage for the OTP compatibility alias and the explicit `IPAClient.cleanup(ipa_api=..., has_ipalib=...)` path
+
 ## 1.10.8 - 2026-04-27
 
 - fixed live IdM vault metadata lookups by removing the unsupported `no_members` option from `vault_show` and `vault_find` API calls

@@ -13,7 +13,7 @@ description: >-
 Use this page when you know the problem category but do not yet know which
 collection page should be your first stop.
 
-Current release: `1.10.8`
+Current release: `1.10.9`
 
 ## Reading Model
 
