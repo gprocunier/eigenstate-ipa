@@ -37,7 +37,8 @@ jobs:
         run: |
           DOCKER_BUILDKIT=0 docker build -t freeipa-test -f - . <<'DEOF'
           FROM quay.io/freeipa/freeipa-server:fedora-43
-          RUN dnf install -y --setopt=install_weak_deps=False python3-pip openssl && \
+          RUN update-ca-trust extract && \
+              dnf install -y --setopt=install_weak_deps=False python3-pip openssl && \
               pip install --break-system-packages "ansible-core~=2.18.0" && \
               dnf clean all
           DEOF
