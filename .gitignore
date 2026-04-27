@@ -28,6 +28,7 @@ _site/
 .jekyll-cache/
 .sass-cache/
 scripts/user-lease-demo/
+scripts/openshift-app-demo/
 
 # Local environment files
 .env
