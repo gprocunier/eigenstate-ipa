@@ -108,24 +108,23 @@
           - dns_ptr | length >= 2
         fail_msg: "Should find PTR records in reverse zone: {{ dns_ptr }}"
 
-    - name: "dns: show with map_record format"
+    - name: "dns: show multiple records"
       ansible.builtin.set_fact:
-        dns_map: >-
+        dns_multi: >-
           {{ lookup('eigenstate.ipa.dns',
              'web-01', 'db-01',
              zone='test.lan',
-             result_format='map_record',
              server=server,
              ipaadmin_password=password,
-             verify=ca_cert) }}
+             verify=ca_cert, wantlist=true) }}
 
-    - name: "dns: assert map_record is keyed dict"
+    - name: "dns: assert multiple records returned"
       ansible.builtin.assert:
         that:
-          - "'web-01' in dns_map"
-          - "'db-01' in dns_map"
-          - dns_map['web-01'].exists
-        fail_msg: "map_record should be keyed by name: {{ dns_map }}"
+          - dns_multi | length == 2
+          - dns_multi[0].exists
+          - dns_multi[1].exists
+        fail_msg: "Should return 2 records: {{ dns_multi | length }}"
 
 # =====================================================================
 # Vault Plugin (read-only lookups)
@@ -235,17 +234,17 @@
           {{ lookup('eigenstate.ipa.vault',
              operation='find',
              shared=true,
-             result_format='map_record',
+             result_format='record',
              server=server,
              ipaadmin_password=password,
-             verify=ca_cert) }}
+             verify=ca_cert, wantlist=true) }}
 
     - name: "vault: assert find results"
       ansible.builtin.assert:
         that:
-          - "'db-password' in vault_find"
-          - "'api-key' in vault_find"
-        fail_msg: "Find should include seeded vaults: {{ vault_find | list }}"
+          - vault_find | length >= 2
+          - vault_find | map(attribute='name') | list is superset(['db-password', 'api-key'])
+        fail_msg: "Find should include seeded vaults: {{ vault_find | map(attribute='name') | list }}"
 
     - name: "vault: retrieve user-scoped vault"
       ansible.builtin.set_fact:
@@ -489,22 +488,22 @@
         that: princ_find | length >= 3
         fail_msg: "Should find test-user-01..03: {{ princ_find | length }}"
 
-    - name: "principal: map_record format"
+    - name: "principal: show multiple principals"
       ansible.builtin.set_fact:
-        princ_map: >-
+        princ_multi: >-
           {{ lookup('eigenstate.ipa.principal',
              'test-user-01', 'svc-deploy',
-             result_format='map_record',
              server=server,
              ipaadmin_password=password,
-             verify=ca_cert) }}
+             verify=ca_cert, wantlist=true) }}
 
-    - name: "principal: assert map_record"
+    - name: "principal: assert multiple results"
       ansible.builtin.assert:
         that:
-          - "'test-user-01' in princ_map"
-          - "'svc-deploy' in princ_map"
-        fail_msg: "map_record should be keyed: {{ princ_map }}"
+          - princ_multi | length == 2
+          - princ_multi[0].exists
+          - princ_multi[1].exists
+        fail_msg: "Should return 2 principals: {{ princ_multi | length }}"
 
 # =====================================================================
 # Keytab Plugin
