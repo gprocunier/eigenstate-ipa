@@ -72,14 +72,14 @@ jobs:
       - name: Wait for FreeIPA readiness
         run: |
           echo "Waiting for FreeIPA server to be ready..."
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             if podman exec ipa-server \
               bash -c 'echo AdminPass123 | kinit admin 2>/dev/null && ipa ping 2>/dev/null'; then
               echo "FreeIPA ready after ~$((i * 10)) seconds"
               podman exec ipa-server kdestroy 2>/dev/null || true
               exit 0
             fi
-            echo "  attempt $i/30 — not ready yet"
+            echo "  attempt $i/60 — not ready yet"
             sleep 10
           done
           echo "FreeIPA did not become ready in time"
