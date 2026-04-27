@@ -432,6 +432,7 @@
       ansible.builtin.set_fact:
         princ_host: >-
           {{ lookup('eigenstate.ipa.principal', 'web-01.test.lan',
+             principal_type='host',
              server=server,
              ipaadmin_password=password,
              verify=ca_cert) }}
