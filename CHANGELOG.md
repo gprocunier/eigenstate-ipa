@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.10 - 2026-04-27
+
+- fixed ipalib-backed lookup plugin import fallback handling so cleanup does not mask missing or failed `ipalib` imports as `_ipa_api` `NameError` failures
+- added DNS lookup regression coverage proving a missing `ipalib` dependency reports the real dependency error instead of a cleanup-time variable failure
+
 ## 1.10.9 - 2026-04-27
 
 - replaced fragile lookup-level `IPAClient.cleanup.__globals__` mutation with explicit cleanup context passing through the shared `IPAClient` helper

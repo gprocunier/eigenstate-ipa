@@ -316,6 +316,8 @@ try:
     from ipalib import errors as ipalib_errors
     HAS_IPALIB = True
 except ImportError:
+    _ipa_api = None
+    ipalib_errors = None
     HAS_IPALIB = False
 
 try:

@@ -1,4 +1,5 @@
 import importlib.util
+import importlib.abc
 import pathlib
 import sys
 import types
@@ -250,6 +251,73 @@ class DnsLookupTests(unittest.TestCase):
 
         with self.assertRaises(self.mod.AnsibleLookupError):
             lookup.run(["idm-01"], variables={})
+
+    def test_missing_ipalib_reports_requirement_without_cleanup_nameerror(self):
+        class BlockIpalib(importlib.abc.MetaPathFinder):
+            def find_spec(self, fullname, path=None, target=None):
+                if fullname == "ipalib" or fullname.startswith("ipalib."):
+                    raise ImportError("blocked ipalib for test")
+                return None
+
+        module_name = "eigenstate_ipa_test_dns_no_ipalib"
+        module_path = (
+            pathlib.Path(__file__).resolve().parents[1]
+            / "plugins" / "lookup" / "dns.py"
+        )
+        saved_ipalib = {
+            name: module
+            for name, module in list(sys.modules.items())
+            if name == "ipalib" or name.startswith("ipalib.")
+        }
+        for name in saved_ipalib:
+            sys.modules.pop(name, None)
+
+        blocker = BlockIpalib()
+        sys.meta_path.insert(0, blocker)
+        try:
+            spec = importlib.util.spec_from_file_location(module_name, module_path)
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[module_name] = module
+            assert spec.loader is not None
+            spec.loader.exec_module(module)
+
+            lookup = module.LookupModule()
+            options = {
+                "server": "idm-01.example.com",
+                "zone": "workshop.lan",
+                "ipaadmin_password": "secret",
+                "verify": "/etc/ipa/ca.crt",
+            }
+            defaults = {
+                "operation": "show",
+                "result_format": "record",
+                "ipaadmin_principal": "admin",
+                "criteria": None,
+                "record_type": None,
+            }
+
+            def set_options(var_options=None, direct=None):
+                if var_options:
+                    options.update(var_options)
+                if direct:
+                    options.update(direct)
+
+            lookup.set_options = set_options
+            lookup.get_option = lambda key: options.get(key, defaults.get(key))
+
+            with self.assertRaises(module.AnsibleLookupError) as ctx:
+                lookup.run(["idm-01"], variables={})
+
+            self.assertIn("ipalib", str(ctx.exception))
+            self.assertNotIn("_ipa_api", str(ctx.exception))
+        finally:
+            if blocker in sys.meta_path:
+                sys.meta_path.remove(blocker)
+            sys.modules.pop(module_name, None)
+            for name in list(sys.modules):
+                if name == "ipalib" or name.startswith("ipalib."):
+                    sys.modules.pop(name, None)
+            sys.modules.update(saved_ipalib)
 
 
 if __name__ == "__main__":
