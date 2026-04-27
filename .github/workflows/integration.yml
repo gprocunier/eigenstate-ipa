@@ -78,7 +78,7 @@ jobs:
           docker logs ipa-server | tail -80
           exit 1
 
-      - name: Install Ansible and collection inside container
+      - name: Install Ansible inside container
         run: |
           docker exec ipa-server mkdir -p /root/ci-staging
           docker cp /tmp/get-pip.py ipa-server:/root/ci-staging/get-pip.py
@@ -94,6 +94,9 @@ jobs:
             python3 -m pip install --break-system-packages --no-index \
               --find-links /root/ci-staging/wheels \
               --no-deps ansible-core
+
+      - name: Install collection inside container
+        run: |
           docker cp . ipa-server:/root/eigenstate-ipa
           docker exec ipa-server \
             ansible-galaxy collection install /root/eigenstate-ipa --force
