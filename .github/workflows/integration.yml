@@ -87,28 +87,19 @@ jobs:
           podman logs ipa-server | tail -50
           exit 1
 
-      - name: Configure controller as IPA client
+      - name: Configure controller Kerberos and TLS
         run: |
           IPA_IP=$(podman inspect ipa-server \
             --format '{{ .NetworkSettings.IPAddress }}')
           echo "${IPA_IP} ipa.test.lan" >> /etc/hosts
 
-          CTRL_HOST="controller.test.lan"
-          hostnamectl set-hostname "${CTRL_HOST}" || hostname "${CTRL_HOST}"
-          echo "127.0.0.1 ${CTRL_HOST}" >> /etc/hosts
+          podman cp ipa-server:/etc/ipa/ca.crt /tmp/ipa-ca.crt
+          podman cp ipa-server:/etc/krb5.conf /etc/krb5.conf
+          mkdir -p /etc/ipa
+          cp /tmp/ipa-ca.crt /etc/ipa/ca.crt
+          podman cp ipa-server:/etc/ipa/default.conf /etc/ipa/default.conf
 
-          ipa-client-install --unattended \
-            --hostname="${CTRL_HOST}" \
-            --server=ipa.test.lan \
-            --domain=test.lan \
-            --realm=TEST.LAN \
-            --principal=admin \
-            --password=AdminPass123 \
-            --no-ntp \
-            --no-dns-sshfp \
-            --force-join
-
-          echo "IPA client enrolled — verifying kinit works..."
+          echo "Controller configured — verifying kinit works..."
           echo AdminPass123 | kinit admin
           klist
           kdestroy
