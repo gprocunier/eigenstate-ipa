@@ -1,0 +1,13 @@
+---
+# Reference inventory config for eigenstate.ipa.idm integration testing.
+#
+# The actual test dynamically writes a temp config with CI-provided
+# credentials. This file documents the expected structure.
+plugin: eigenstate.ipa.idm
+server: ipa.test.lan
+ipaadmin_password: AdminPass123
+verify: /etc/ipa/ca.crt
+sources:
+  - hosts
+  - hostgroups
+hostvars_enabled: true

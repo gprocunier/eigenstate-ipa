@@ -1,0 +1,58 @@
+---
+- name: Clean up integration test artifacts
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    admin_password: "{{ ipa_password }}"
+
+  tasks:
+
+    - name: Acquire admin ticket
+      ansible.builtin.command: >
+        podman exec ipa-server
+        bash -c 'echo {{ admin_password }} | kinit admin'
+      changed_when: true
+      ignore_errors: true
+
+    - name: Remove integration test vault
+      ansible.builtin.command: >
+        podman exec ipa-server
+        ipa vault-del integ-test-vault --shared
+      ignore_errors: true
+      changed_when: true
+
+    - name: Clear lease expirations
+      ansible.builtin.command: >
+        podman exec ipa-server
+        ipa user-mod {{ item }}
+        --delattr=krbprincipalexpiration=*
+      ignore_errors: true
+      changed_when: true
+      loop:
+        - lease-user-01
+        - lease-user-02
+
+    - name: Re-enable built-in allow_all HBAC rule
+      ansible.builtin.command: >
+        podman exec ipa-server
+        ipa hbacrule-enable allow_all
+      ignore_errors: true
+      changed_when: true
+
+    - name: Destroy admin ticket
+      ansible.builtin.command: >
+        podman exec ipa-server kdestroy
+      ignore_errors: true
+      changed_when: true
+
+    - name: Remove temporary files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/integ-test-csr.pem
+        - /tmp/integ-test-key.pem
+        - /tmp/integ-test-inventory.eigenstate_ipa.yml
+      ignore_errors: true

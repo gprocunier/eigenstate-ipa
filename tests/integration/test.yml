@@ -1,0 +1,1201 @@
+---
+# =====================================================================
+# eigenstate.ipa — Integration test suite
+#
+# Exercises every plugin operation against a live FreeIPA server.
+# Each play is tagged by plugin name for selective execution:
+#   ansible-playbook test.yml --tags dns
+#   ansible-playbook test.yml --tags vault,vault_write
+# =====================================================================
+
+# =====================================================================
+# DNS Plugin
+# =====================================================================
+- name: "Integration: eigenstate.ipa.dns"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [dns]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "dns: show A record"
+      ansible.builtin.set_fact:
+        dns_a: >-
+          {{ lookup('eigenstate.ipa.dns', 'web-01',
+             zone='test.lan',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "dns: assert A record exists with correct IP"
+      ansible.builtin.assert:
+        that:
+          - dns_a.exists
+          - dns_a.name == 'web-01'
+          - dns_a.zone == 'test.lan'
+          - dns_a.fqdn == 'web-01.test.lan'
+          - "'arecord' in dns_a.records"
+          - "'172.16.0.10' in dns_a.records.arecord"
+        fail_msg: "DNS A record lookup failed: {{ dns_a }}"
+
+    - name: "dns: show nonexistent record returns exists=false"
+      ansible.builtin.set_fact:
+        dns_missing: >-
+          {{ lookup('eigenstate.ipa.dns', 'does-not-exist',
+             zone='test.lan',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "dns: assert nonexistent record shape"
+      ansible.builtin.assert:
+        that:
+          - not dns_missing.exists
+          - dns_missing.name == 'does-not-exist'
+        fail_msg: "Missing DNS record should have exists=false: {{ dns_missing }}"
+
+    - name: "dns: show zone apex"
+      ansible.builtin.set_fact:
+        dns_apex: >-
+          {{ lookup('eigenstate.ipa.dns', '@',
+             zone='test.lan',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "dns: assert zone apex metadata"
+      ansible.builtin.assert:
+        that:
+          - dns_apex.exists
+          - dns_apex.is_zone_apex
+          - dns_apex.zone_active is not none
+        fail_msg: "Zone apex should expose metadata: {{ dns_apex }}"
+
+    - name: "dns: find all records in zone"
+      ansible.builtin.set_fact:
+        dns_find: >-
+          {{ lookup('eigenstate.ipa.dns',
+             operation='find',
+             zone='test.lan',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "dns: assert find returns multiple records"
+      ansible.builtin.assert:
+        that:
+          - dns_find | length > 3
+        fail_msg: "DNS find should return seeded records: {{ dns_find | length }}"
+
+    - name: "dns: find PTR records in reverse zone"
+      ansible.builtin.set_fact:
+        dns_ptr: >-
+          {{ lookup('eigenstate.ipa.dns',
+             operation='find',
+             zone='0.16.172.in-addr.arpa',
+             record_type='ptrrecord',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "dns: assert PTR records found"
+      ansible.builtin.assert:
+        that:
+          - dns_ptr | length >= 2
+        fail_msg: "Should find PTR records in reverse zone: {{ dns_ptr }}"
+
+    - name: "dns: show with map_record format"
+      ansible.builtin.set_fact:
+        dns_map: >-
+          {{ lookup('eigenstate.ipa.dns',
+             'web-01', 'db-01',
+             zone='test.lan',
+             result_format='map_record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "dns: assert map_record is keyed dict"
+      ansible.builtin.assert:
+        that:
+          - "'web-01' in dns_map"
+          - "'db-01' in dns_map"
+          - dns_map['web-01'].exists
+        fail_msg: "map_record should be keyed by name: {{ dns_map }}"
+
+# =====================================================================
+# Vault Plugin (read-only lookups)
+# =====================================================================
+- name: "Integration: eigenstate.ipa.vault"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [vault]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "vault: retrieve shared standard vault"
+      ansible.builtin.set_fact:
+        vault_plain: >-
+          {{ lookup('eigenstate.ipa.vault', 'db-password',
+             shared=true,
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "vault: assert plaintext payload"
+      ansible.builtin.assert:
+        that:
+          - vault_plain == 's3cret-db-pass'
+        fail_msg: "Vault payload mismatch: {{ vault_plain }}"
+
+    - name: "vault: retrieve with base64 encoding"
+      ansible.builtin.set_fact:
+        vault_b64: >-
+          {{ lookup('eigenstate.ipa.vault', 'db-password',
+             shared=true,
+             encoding='base64',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "vault: assert base64 encoded"
+      ansible.builtin.assert:
+        that:
+          - vault_b64 | length > 0
+          - vault_b64 != 's3cret-db-pass'
+        fail_msg: "Should be base64 encoded: {{ vault_b64 }}"
+
+    - name: "vault: retrieve with record format"
+      ansible.builtin.set_fact:
+        vault_rec: >-
+          {{ lookup('eigenstate.ipa.vault', 'db-password',
+             shared=true,
+             result_format='record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "vault: assert record structure"
+      ansible.builtin.assert:
+        that:
+          - vault_rec.name == 'db-password'
+          - vault_rec.scope == 'shared'
+          - vault_rec.encoding == 'utf-8'
+          - vault_rec.value == 's3cret-db-pass'
+        fail_msg: "Record format incorrect: {{ vault_rec }}"
+
+    - name: "vault: retrieve with map format"
+      ansible.builtin.set_fact:
+        vault_map: >-
+          {{ lookup('eigenstate.ipa.vault', 'db-password',
+             shared=true,
+             result_format='map',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "vault: assert map keyed by name"
+      ansible.builtin.assert:
+        that:
+          - "'db-password' in vault_map"
+          - vault_map['db-password'] == 's3cret-db-pass'
+        fail_msg: "Map format should be keyed: {{ vault_map }}"
+
+    - name: "vault: retrieve JSON vault with decode_json"
+      ansible.builtin.set_fact:
+        vault_json: >-
+          {{ lookup('eigenstate.ipa.vault', 'api-key',
+             shared=true,
+             result_format='record',
+             decode_json=true,
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "vault: assert decoded JSON structure"
+      ansible.builtin.assert:
+        that:
+          - vault_json.value.key == 'ak_xyz789'
+          - vault_json.value.env == 'test'
+        fail_msg: "JSON decode failed: {{ vault_json }}"
+
+    - name: "vault: show metadata"
+      ansible.builtin.set_fact:
+        vault_meta: >-
+          {{ lookup('eigenstate.ipa.vault', 'db-password',
+             shared=true,
+             operation='show',
+             result_format='record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "vault: assert metadata"
+      ansible.builtin.assert:
+        that:
+          - vault_meta.name == 'db-password'
+          - vault_meta.type == 'standard'
+          - vault_meta.scope == 'shared'
+        fail_msg: "Vault metadata incorrect: {{ vault_meta }}"
+
+    - name: "vault: find shared vaults"
+      ansible.builtin.set_fact:
+        vault_find: >-
+          {{ lookup('eigenstate.ipa.vault',
+             operation='find',
+             shared=true,
+             result_format='map_record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "vault: assert find results"
+      ansible.builtin.assert:
+        that:
+          - "'db-password' in vault_find"
+          - "'api-key' in vault_find"
+        fail_msg: "Find should include seeded vaults: {{ vault_find | list }}"
+
+    - name: "vault: retrieve user-scoped vault"
+      ansible.builtin.set_fact:
+        vault_user: >-
+          {{ lookup('eigenstate.ipa.vault', 'personal-secret',
+             username='vault-user',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "vault: assert user-scoped payload"
+      ansible.builtin.assert:
+        that:
+          - vault_user == 'my-private-data'
+        fail_msg: "User vault payload mismatch: {{ vault_user }}"
+
+# =====================================================================
+# Vault Write Module
+# =====================================================================
+- name: "Integration: eigenstate.ipa.vault_write"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [vault_write]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "vault_write: create shared standard vault"
+      eigenstate.ipa.vault_write:
+        name: integ-test-vault
+        state: present
+        shared: true
+        description: "Integration test vault"
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: vw_create
+
+    - name: "vault_write: assert created"
+      ansible.builtin.assert:
+        that: vw_create.changed
+        fail_msg: "Vault creation should be changed=true"
+
+    - name: "vault_write: idempotent create"
+      eigenstate.ipa.vault_write:
+        name: integ-test-vault
+        state: present
+        shared: true
+        description: "Integration test vault"
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: vw_idem
+
+    - name: "vault_write: assert idempotent"
+      ansible.builtin.assert:
+        that: not vw_idem.changed
+        fail_msg: "Idempotent create should be changed=false"
+
+    - name: "vault_write: archive payload"
+      eigenstate.ipa.vault_write:
+        name: integ-test-vault
+        state: archived
+        shared: true
+        data: "test-data-123"
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: vw_archive
+
+    - name: "vault_write: assert archive changed"
+      ansible.builtin.assert:
+        that: vw_archive.changed
+        fail_msg: "Archive should be changed=true"
+
+    - name: "vault_write: verify archived payload via retrieve"
+      ansible.builtin.set_fact:
+        vw_verify: >-
+          {{ lookup('eigenstate.ipa.vault', 'integ-test-vault',
+             shared=true,
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "vault_write: assert payload matches"
+      ansible.builtin.assert:
+        that: vw_verify == 'test-data-123'
+        fail_msg: "Retrieved payload should match: {{ vw_verify }}"
+
+    - name: "vault_write: idempotent archive same payload"
+      eigenstate.ipa.vault_write:
+        name: integ-test-vault
+        state: archived
+        shared: true
+        data: "test-data-123"
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: vw_arch_idem
+
+    - name: "vault_write: assert idempotent archive"
+      ansible.builtin.assert:
+        that: not vw_arch_idem.changed
+        fail_msg: "Same payload should be changed=false"
+
+    - name: "vault_write: archive different payload"
+      eigenstate.ipa.vault_write:
+        name: integ-test-vault
+        state: archived
+        shared: true
+        data: "updated-data-456"
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: vw_arch_new
+
+    - name: "vault_write: assert changed on different payload"
+      ansible.builtin.assert:
+        that: vw_arch_new.changed
+        fail_msg: "Different payload should be changed=true"
+
+    - name: "vault_write: delete vault"
+      eigenstate.ipa.vault_write:
+        name: integ-test-vault
+        state: absent
+        shared: true
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: vw_del
+
+    - name: "vault_write: assert deleted"
+      ansible.builtin.assert:
+        that: vw_del.changed
+        fail_msg: "Delete should be changed=true"
+
+    - name: "vault_write: idempotent delete"
+      eigenstate.ipa.vault_write:
+        name: integ-test-vault
+        state: absent
+        shared: true
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: vw_del_idem
+
+    - name: "vault_write: assert idempotent delete"
+      ansible.builtin.assert:
+        that: not vw_del_idem.changed
+        fail_msg: "Absent vault delete should be changed=false"
+
+# =====================================================================
+# Principal Plugin
+# =====================================================================
+- name: "Integration: eigenstate.ipa.principal"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [principal]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "principal: show user principal"
+      ansible.builtin.set_fact:
+        princ_user: >-
+          {{ lookup('eigenstate.ipa.principal', 'test-user-01',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "principal: assert user exists"
+      ansible.builtin.assert:
+        that:
+          - princ_user.exists
+          - princ_user.type == 'user'
+        fail_msg: "User principal should exist: {{ princ_user }}"
+
+    - name: "principal: show host principal"
+      ansible.builtin.set_fact:
+        princ_host: >-
+          {{ lookup('eigenstate.ipa.principal', 'web-01.test.lan',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "principal: assert host exists"
+      ansible.builtin.assert:
+        that:
+          - princ_host.exists
+          - princ_host.type == 'host'
+        fail_msg: "Host principal should exist: {{ princ_host }}"
+
+    - name: "principal: show service principal"
+      ansible.builtin.set_fact:
+        princ_svc: >-
+          {{ lookup('eigenstate.ipa.principal', 'HTTP/web-01.test.lan',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "principal: assert service exists with keytab"
+      ansible.builtin.assert:
+        that:
+          - princ_svc.exists
+          - princ_svc.type == 'service'
+          - princ_svc.has_keytab
+        fail_msg: "Service principal should exist with keytab: {{ princ_svc }}"
+
+    - name: "principal: show nonexistent"
+      ansible.builtin.set_fact:
+        princ_none: >-
+          {{ lookup('eigenstate.ipa.principal', 'nonexistent-user',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "principal: assert not found"
+      ansible.builtin.assert:
+        that: not princ_none.exists
+        fail_msg: "Nonexistent principal should have exists=false"
+
+    - name: "principal: find users"
+      ansible.builtin.set_fact:
+        princ_find: >-
+          {{ lookup('eigenstate.ipa.principal',
+             operation='find',
+             criteria='test-user',
+             principal_type='user',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "principal: assert find returns results"
+      ansible.builtin.assert:
+        that: princ_find | length >= 3
+        fail_msg: "Should find test-user-01..03: {{ princ_find | length }}"
+
+    - name: "principal: map_record format"
+      ansible.builtin.set_fact:
+        princ_map: >-
+          {{ lookup('eigenstate.ipa.principal',
+             'test-user-01', 'svc-deploy',
+             result_format='map_record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "principal: assert map_record"
+      ansible.builtin.assert:
+        that:
+          - "'test-user-01' in princ_map"
+          - "'svc-deploy' in princ_map"
+        fail_msg: "map_record should be keyed: {{ princ_map }}"
+
+# =====================================================================
+# Keytab Plugin
+# =====================================================================
+- name: "Integration: eigenstate.ipa.keytab"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [keytab]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "keytab: retrieve service keytab"
+      ansible.builtin.set_fact:
+        kt_value: >-
+          {{ lookup('eigenstate.ipa.keytab', 'HTTP/web-01.test.lan',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "keytab: assert base64 keytab non-empty"
+      ansible.builtin.assert:
+        that:
+          - kt_value | length > 10
+        fail_msg: "Keytab should be a non-empty base64 string: {{ kt_value[:20] }}..."
+
+    - name: "keytab: retrieve with record format"
+      ansible.builtin.set_fact:
+        kt_rec: >-
+          {{ lookup('eigenstate.ipa.keytab', 'HTTP/web-01.test.lan',
+             result_format='record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "keytab: assert record structure"
+      ansible.builtin.assert:
+        that:
+          - kt_rec.principal == 'HTTP/web-01.test.lan'
+          - kt_rec.encoding == 'base64'
+          - kt_rec.value | length > 10
+        fail_msg: "Keytab record format incorrect: {{ kt_rec }}"
+
+    - name: "keytab: retrieve with map format"
+      ansible.builtin.set_fact:
+        kt_map: >-
+          {{ lookup('eigenstate.ipa.keytab', 'HTTP/web-01.test.lan',
+             result_format='map',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "keytab: assert map keyed by principal"
+      ansible.builtin.assert:
+        that:
+          - "'HTTP/web-01.test.lan' in kt_map"
+        fail_msg: "Map should be keyed by principal: {{ kt_map | list }}"
+
+# =====================================================================
+# Cert Plugin
+# =====================================================================
+- name: "Integration: eigenstate.ipa.cert"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [cert]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "cert: read CSR from seed phase"
+      ansible.builtin.slurp:
+        src: /tmp/integ-test-csr.pem
+      register: csr_content
+
+    - name: "cert: request certificate for HTTP/web-02"
+      ansible.builtin.set_fact:
+        cert_pem: >-
+          {{ lookup('eigenstate.ipa.cert', 'HTTP/web-02.test.lan',
+             operation='request',
+             csr=csr_content.content | b64decode,
+             add=true,
+             result_format='record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "cert: assert PEM certificate returned"
+      ansible.builtin.assert:
+        that:
+          - "'-----BEGIN CERTIFICATE-----' in cert_pem.value"
+          - cert_pem.metadata.serial_number is defined
+          - cert_pem.metadata.subject is defined
+        fail_msg: "Cert request should return PEM: {{ cert_pem.value[:40] }}..."
+
+    - name: "cert: retrieve by serial number"
+      ansible.builtin.set_fact:
+        cert_serial: >-
+          {{ lookup('eigenstate.ipa.cert',
+             cert_pem.metadata.serial_number | string,
+             operation='retrieve',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "cert: assert retrieve returns PEM"
+      ansible.builtin.assert:
+        that:
+          - "'-----BEGIN CERTIFICATE-----' in cert_serial"
+        fail_msg: "Cert retrieve should return PEM"
+
+    - name: "cert: find certificates"
+      ansible.builtin.set_fact:
+        cert_find: >-
+          {{ lookup('eigenstate.ipa.cert',
+             operation='find',
+             result_format='record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "cert: assert find returns results"
+      ansible.builtin.assert:
+        that:
+          - cert_find | length > 0
+        fail_msg: "Cert find should return results"
+
+    - name: "cert: find with principal filter"
+      ansible.builtin.set_fact:
+        cert_find_svc: >-
+          {{ lookup('eigenstate.ipa.cert',
+             operation='find',
+             principal='HTTP/web-02.test.lan',
+             result_format='record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "cert: assert filtered find"
+      ansible.builtin.assert:
+        that:
+          - cert_find_svc | length >= 1
+        fail_msg: "Filtered cert find should return the requested cert"
+
+# =====================================================================
+# OTP Plugin
+# =====================================================================
+- name: "Integration: eigenstate.ipa.otp"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [otp]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "otp: add TOTP token"
+      ansible.builtin.set_fact:
+        otp_add: >-
+          {{ lookup('eigenstate.ipa.otp', 'otp-user',
+             operation='add',
+             token_type='totp',
+             result_format='record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "otp: assert TOTP token created"
+      ansible.builtin.assert:
+        that:
+          - otp_add.token_id is defined
+          - otp_add.type == 'totp'
+          - "'otpauth://' in otp_add.uri"
+        fail_msg: "TOTP add should return token record: {{ otp_add }}"
+
+    - name: "otp: save token ID for later"
+      ansible.builtin.set_fact:
+        saved_token_id: "{{ otp_add.token_id }}"
+
+    - name: "otp: show token by ID"
+      ansible.builtin.set_fact:
+        otp_show: >-
+          {{ lookup('eigenstate.ipa.otp', saved_token_id,
+             operation='show',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "otp: assert show returns metadata"
+      ansible.builtin.assert:
+        that:
+          - otp_show.exists
+          - otp_show.token_id == saved_token_id
+        fail_msg: "OTP show should return token: {{ otp_show }}"
+
+    - name: "otp: find tokens for owner"
+      ansible.builtin.set_fact:
+        otp_find: >-
+          {{ lookup('eigenstate.ipa.otp',
+             operation='find',
+             owner='otp-user',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "otp: assert find returns results"
+      ansible.builtin.assert:
+        that:
+          - otp_find | length >= 1
+        fail_msg: "OTP find should return tokens"
+
+    - name: "otp: revoke token"
+      ansible.builtin.set_fact:
+        otp_revoke: >-
+          {{ lookup('eigenstate.ipa.otp', saved_token_id,
+             operation='revoke',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "otp: assert revoke succeeded"
+      ansible.builtin.assert:
+        that:
+          - otp_revoke | length > 0
+        fail_msg: "OTP revoke should return token ID"
+
+    - name: "otp: add host enrollment password"
+      ansible.builtin.set_fact:
+        otp_host: >-
+          {{ lookup('eigenstate.ipa.otp', 'app-01.test.lan',
+             operation='add',
+             token_type='host',
+             result_format='record',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "otp: assert host enrollment password"
+      ansible.builtin.assert:
+        that:
+          - otp_host.password is defined
+          - otp_host.password | length > 0
+          - otp_host.fqdn == 'app-01.test.lan'
+        fail_msg: "Host enrollment should return password: {{ otp_host }}"
+
+# =====================================================================
+# HBAC Rule Plugin
+# =====================================================================
+- name: "Integration: eigenstate.ipa.hbacrule"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [hbacrule]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "hbacrule: show enabled rule"
+      ansible.builtin.set_fact:
+        hbac_show: >-
+          {{ lookup('eigenstate.ipa.hbacrule', 'allow-ssh-ops',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "hbacrule: assert enabled rule"
+      ansible.builtin.assert:
+        that:
+          - hbac_show.exists
+          - hbac_show.enabled
+          - "'svc-deploy' in hbac_show.users"
+        fail_msg: "HBAC rule should be enabled with svc-deploy: {{ hbac_show }}"
+
+    - name: "hbacrule: show nonexistent"
+      ansible.builtin.set_fact:
+        hbac_missing: >-
+          {{ lookup('eigenstate.ipa.hbacrule', 'nonexistent-rule',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "hbacrule: assert not found"
+      ansible.builtin.assert:
+        that: not hbac_missing.exists
+        fail_msg: "Missing HBAC rule should have exists=false"
+
+    - name: "hbacrule: show disabled rule"
+      ansible.builtin.set_fact:
+        hbac_disabled: >-
+          {{ lookup('eigenstate.ipa.hbacrule', 'disabled-hbac',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "hbacrule: assert disabled"
+      ansible.builtin.assert:
+        that:
+          - hbac_disabled.exists
+          - not hbac_disabled.enabled
+        fail_msg: "Disabled HBAC rule should have enabled=false"
+
+    - name: "hbacrule: find all rules"
+      ansible.builtin.set_fact:
+        hbac_find: >-
+          {{ lookup('eigenstate.ipa.hbacrule',
+             operation='find',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "hbacrule: assert multiple found"
+      ansible.builtin.assert:
+        that: hbac_find | length >= 3
+        fail_msg: "Should find seeded HBAC rules: {{ hbac_find | length }}"
+
+    - name: "hbacrule: test access decision"
+      ansible.builtin.set_fact:
+        hbac_test: >-
+          {{ lookup('eigenstate.ipa.hbacrule',
+             'svc-deploy',
+             operation='test',
+             targethost='web-01.test.lan',
+             service='sshd',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "hbacrule: assert access test result"
+      ansible.builtin.assert:
+        that:
+          - hbac_test.denied is defined
+          - hbac_test.user == 'svc-deploy'
+          - hbac_test.targethost == 'web-01.test.lan'
+        fail_msg: "HBAC test should return access decision: {{ hbac_test }}"
+
+# =====================================================================
+# Sudo Plugin
+# =====================================================================
+- name: "Integration: eigenstate.ipa.sudo"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [sudo]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "sudo: show rule"
+      ansible.builtin.set_fact:
+        sudo_rule: >-
+          {{ lookup('eigenstate.ipa.sudo', 'ops-maintenance',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "sudo: assert rule fields"
+      ansible.builtin.assert:
+        that:
+          - sudo_rule.exists
+          - sudo_rule.enabled
+          - sudo_rule.object_type == 'rule'
+          - "'svc-deploy' in sudo_rule.users"
+          - "'/usr/bin/systemctl' in sudo_rule.allow_sudocmds"
+        fail_msg: "Sudo rule should match seed data: {{ sudo_rule }}"
+
+    - name: "sudo: show nonexistent"
+      ansible.builtin.set_fact:
+        sudo_missing: >-
+          {{ lookup('eigenstate.ipa.sudo', 'nonexistent-rule',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "sudo: assert not found"
+      ansible.builtin.assert:
+        that: not sudo_missing.exists
+        fail_msg: "Nonexistent sudo rule should have exists=false"
+
+    - name: "sudo: show command"
+      ansible.builtin.set_fact:
+        sudo_cmd: >-
+          {{ lookup('eigenstate.ipa.sudo', '/usr/bin/systemctl',
+             sudo_object='command',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "sudo: assert command"
+      ansible.builtin.assert:
+        that:
+          - sudo_cmd.object_type == 'command'
+          - sudo_cmd.command == '/usr/bin/systemctl'
+        fail_msg: "Sudo command lookup failed: {{ sudo_cmd }}"
+
+    - name: "sudo: show command group"
+      ansible.builtin.set_fact:
+        sudo_grp: >-
+          {{ lookup('eigenstate.ipa.sudo', 'service-management',
+             sudo_object='commandgroup',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "sudo: assert command group"
+      ansible.builtin.assert:
+        that:
+          - sudo_grp.object_type == 'commandgroup'
+          - sudo_grp.commands | length >= 2
+        fail_msg: "Sudo command group should have members: {{ sudo_grp }}"
+
+    - name: "sudo: find rules"
+      ansible.builtin.set_fact:
+        sudo_find: >-
+          {{ lookup('eigenstate.ipa.sudo',
+             operation='find',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "sudo: assert find returns multiple"
+      ansible.builtin.assert:
+        that: sudo_find | length >= 2
+        fail_msg: "Should find seeded sudo rules"
+
+# =====================================================================
+# SELinux User Map Plugin
+# =====================================================================
+- name: "Integration: eigenstate.ipa.selinuxmap"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [selinuxmap]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "selinuxmap: show enabled map"
+      ansible.builtin.set_fact:
+        semap_show: >-
+          {{ lookup('eigenstate.ipa.selinuxmap', 'ops-deploy-map',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "selinuxmap: assert map fields"
+      ansible.builtin.assert:
+        that:
+          - semap_show.exists
+          - semap_show.enabled
+          - "'staff_u' in semap_show.selinuxuser"
+        fail_msg: "SELinux map should match seed: {{ semap_show }}"
+
+    - name: "selinuxmap: show nonexistent"
+      ansible.builtin.set_fact:
+        semap_missing: >-
+          {{ lookup('eigenstate.ipa.selinuxmap', 'nonexistent-map',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "selinuxmap: assert not found"
+      ansible.builtin.assert:
+        that: not semap_missing.exists
+        fail_msg: "Nonexistent map should have exists=false"
+
+    - name: "selinuxmap: show disabled map"
+      ansible.builtin.set_fact:
+        semap_disabled: >-
+          {{ lookup('eigenstate.ipa.selinuxmap', 'guest-map',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "selinuxmap: assert disabled"
+      ansible.builtin.assert:
+        that:
+          - semap_disabled.exists
+          - not semap_disabled.enabled
+          - "'guest_u' in semap_disabled.selinuxuser"
+        fail_msg: "Disabled map should have enabled=false"
+
+    - name: "selinuxmap: find all maps"
+      ansible.builtin.set_fact:
+        semap_find: >-
+          {{ lookup('eigenstate.ipa.selinuxmap',
+             operation='find',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "selinuxmap: assert find count"
+      ansible.builtin.assert:
+        that: semap_find | length >= 2
+        fail_msg: "Should find seeded SELinux maps"
+
+# =====================================================================
+# Inventory Plugin
+# =====================================================================
+- name: "Integration: eigenstate.ipa.idm inventory"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [inventory]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "inventory: write temporary inventory config"
+      ansible.builtin.copy:
+        dest: /tmp/integ-test-inventory.eigenstate_ipa.yml
+        content: |
+          plugin: eigenstate.ipa.idm
+          server: {{ server }}
+          ipaadmin_password: {{ password }}
+          verify: {{ ca_cert }}
+          sources:
+            - hosts
+            - hostgroups
+          hostvars_enabled: true
+        mode: "0600"
+
+    - name: "inventory: run ansible-inventory"
+      ansible.builtin.command: >
+        ansible-inventory -i /tmp/integ-test-inventory.eigenstate_ipa.yml
+        --list
+      register: inv_output
+
+    - name: "inventory: parse JSON output"
+      ansible.builtin.set_fact:
+        inv_data: "{{ inv_output.stdout | from_json }}"
+
+    - name: "inventory: assert hosts present"
+      ansible.builtin.assert:
+        that:
+          - "'web-01.test.lan' in (inv_data._meta.hostvars | default({}))"
+          - "'db-01.test.lan' in (inv_data._meta.hostvars | default({}))"
+        fail_msg: "Inventory should contain seeded hosts: {{ inv_data._meta.hostvars | default({}) | list }}"
+
+    - name: "inventory: assert hostgroup becomes Ansible group"
+      ansible.builtin.assert:
+        that:
+          - "'idm_hostgroup_webservers' in inv_data"
+        fail_msg: "Hostgroups should become Ansible groups: {{ inv_data | list }}"
+
+    - name: "inventory: assert hostvars exported"
+      ansible.builtin.assert:
+        that:
+          - inv_data._meta.hostvars['web-01.test.lan'].idm_fqdn is defined
+        fail_msg: "Hostvars should include idm_fqdn"
+
+    - name: "inventory: clean up temp file"
+      ansible.builtin.file:
+        path: /tmp/integ-test-inventory.eigenstate_ipa.yml
+        state: absent
+
+# =====================================================================
+# User Lease Module
+# =====================================================================
+- name: "Integration: eigenstate.ipa.user_lease"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tags: [user_lease]
+  vars:
+    server: "{{ ipa_server }}"
+    password: "{{ ipa_password }}"
+    ca_cert: "{{ ipa_ca_cert }}"
+  tasks:
+
+    - name: "user_lease: set 2-hour lease"
+      eigenstate.ipa.user_lease:
+        username: lease-user-01
+        state: present
+        principal_expiration: "02:00"
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: lease_set
+
+    - name: "user_lease: assert lease set"
+      ansible.builtin.assert:
+        that:
+          - lease_set.changed
+          - lease_set.principal_expiration_after is defined
+          - lease_set.principal_expiration_after | length > 0
+        fail_msg: "Lease should be set: {{ lease_set }}"
+
+    - name: "user_lease: check_mode on lease-user-02"
+      eigenstate.ipa.user_lease:
+        username: lease-user-02
+        state: present
+        principal_expiration: "01:00"
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      check_mode: true
+      register: lease_check
+
+    - name: "user_lease: assert check_mode reports changed"
+      ansible.builtin.assert:
+        that: lease_check.changed
+        fail_msg: "Check mode should report changed=true"
+
+    - name: "user_lease: verify check_mode did not mutate"
+      ansible.builtin.set_fact:
+        lease_verify: >-
+          {{ lookup('eigenstate.ipa.principal', 'lease-user-02',
+             server=server,
+             ipaadmin_password=password,
+             verify=ca_cert) }}
+
+    - name: "user_lease: assert no actual expiration set"
+      ansible.builtin.assert:
+        that: not (lease_verify.disabled | default(false))
+        fail_msg: "Check mode should not have changed the principal"
+
+    - name: "user_lease: expire immediately"
+      eigenstate.ipa.user_lease:
+        username: lease-user-01
+        state: expired
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: lease_expire
+
+    - name: "user_lease: assert expired"
+      ansible.builtin.assert:
+        that: lease_expire.changed
+        fail_msg: "Expire should be changed=true"
+
+    - name: "user_lease: clear expiration"
+      eigenstate.ipa.user_lease:
+        username: lease-user-01
+        state: cleared
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: lease_clear
+
+    - name: "user_lease: assert cleared"
+      ansible.builtin.assert:
+        that: lease_clear.changed
+        fail_msg: "Clear should be changed=true"
+
+    - name: "user_lease: require_groups validation"
+      eigenstate.ipa.user_lease:
+        username: lease-user-01
+        state: present
+        principal_expiration: "01:00"
+        require_groups:
+          - lease-targets
+        server: "{{ server }}"
+        ipaadmin_password: "{{ password }}"
+        verify: "{{ ca_cert }}"
+      register: lease_group
+
+    - name: "user_lease: assert group-gated lease succeeded"
+      ansible.builtin.assert:
+        that:
+          - lease_group.changed
+          - "'lease-targets' in lease_group.groups_checked"
+        fail_msg: "Group-gated lease should succeed: {{ lease_group }}"

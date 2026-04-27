@@ -1,0 +1,141 @@
+---
+name: Integration Tests
+
+on:
+  push:
+    branches:
+      - main
+      - 'integration/**'
+    paths:
+      - 'plugins/**'
+      - 'tests/**'
+      - '.github/workflows/integration.yml'
+  pull_request:
+    paths:
+      - 'plugins/**'
+      - 'tests/**'
+      - '.github/workflows/integration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integration-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    container:
+      image: registry.fedoraproject.org/fedora:43
+      options: --privileged
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          dnf install -y --setopt=install_weak_deps=False \
+            python3-ipalib python3-ipaclient \
+            krb5-workstation \
+            podman fuse-overlayfs \
+            python3-pip openssl
+
+      - name: Install Ansible
+        run: pip install --break-system-packages "ansible-core~=2.18.0"
+
+      - name: Install collection from source
+        run: ansible-galaxy collection install . --force
+
+      - name: Start FreeIPA server
+        run: |
+          podman run -d --name ipa-server \
+            --hostname ipa.test.lan \
+            --cap-add SYS_ADMIN \
+            --read-only-tmpfs=false \
+            --memory 3g \
+            quay.io/freeipa/freeipa-server:fedora-43 \
+            ipa-server-install -U \
+              --realm=TEST.LAN \
+              --domain=test.lan \
+              --ds-password=DirManager123 \
+              --admin-password=AdminPass123 \
+              --no-ntp \
+              --setup-dns \
+              --no-forwarders \
+              --no-reverse
+
+      - name: Wait for FreeIPA readiness
+        run: |
+          echo "Waiting for FreeIPA server to be ready..."
+          for i in $(seq 1 30); do
+            if podman exec ipa-server \
+              bash -c 'echo AdminPass123 | kinit admin 2>/dev/null && ipa ping 2>/dev/null'; then
+              echo "FreeIPA ready after ~$((i * 10)) seconds"
+              podman exec ipa-server kdestroy 2>/dev/null || true
+              exit 0
+            fi
+            echo "  attempt $i/30 — not ready yet"
+            sleep 10
+          done
+          echo "FreeIPA did not become ready in time"
+          podman logs ipa-server | tail -50
+          exit 1
+
+      - name: Configure controller Kerberos and TLS
+        run: |
+          IPA_IP=$(podman inspect ipa-server \
+            --format '{{ .NetworkSettings.IPAddress }}')
+          echo "${IPA_IP} ipa.test.lan" >> /etc/hosts
+
+          cat > /etc/krb5.conf <<'EOF'
+          [libdefaults]
+            default_realm = TEST.LAN
+            dns_canonicalize_hostname = false
+            rdns = false
+
+          [realms]
+            TEST.LAN = {
+              kdc = ipa.test.lan
+              admin_server = ipa.test.lan
+            }
+
+          [domain_realm]
+            .test.lan = TEST.LAN
+            test.lan = TEST.LAN
+          EOF
+
+          mkdir -p /etc/ipa
+          podman cp ipa-server:/etc/ipa/ca.crt /etc/ipa/ca.crt
+
+          echo "Controller configured — verifying kinit works..."
+          echo AdminPass123 | kinit admin
+          klist
+          kdestroy
+
+      - name: Seed test data
+        run: |
+          ansible-playbook tests/integration/seed.yml \
+            -e ipa_server=ipa.test.lan \
+            -e ipa_password=AdminPass123 \
+            -e ipa_ca_cert=/etc/ipa/ca.crt
+
+      - name: Run integration tests
+        run: |
+          ansible-playbook tests/integration/test.yml \
+            -e ipa_server=ipa.test.lan \
+            -e ipa_password=AdminPass123 \
+            -e ipa_ca_cert=/etc/ipa/ca.crt
+
+      - name: Cleanup
+        if: always()
+        run: |
+          ansible-playbook tests/integration/cleanup.yml \
+            -e ipa_server=ipa.test.lan \
+            -e ipa_password=AdminPass123 \
+            -e ipa_ca_cert=/etc/ipa/ca.crt || true
+          podman stop ipa-server 2>/dev/null || true
+          podman rm ipa-server 2>/dev/null || true
