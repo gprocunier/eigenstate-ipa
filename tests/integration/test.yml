@@ -1141,6 +1141,7 @@
         username: lease-user-01
         state: cleared
         clear_password_expiration: true
+        password_expiration_matches_principal: false
         server: "{{ server }}"
         ipaadmin_password: "{{ password }}"
         verify: "{{ ca_cert }}"
