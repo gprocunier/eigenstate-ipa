@@ -33,14 +33,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Download ansible-core wheels and pip bootstrap
-        run: |
-          pip download pip setuptools wheel -d /tmp/ansible-wheels
-          pip download "ansible-core~=2.18.0" -d /tmp/ansible-wheels \
-            --no-deps
-          pip download resolvelib packaging -d /tmp/ansible-wheels \
-            --no-deps
-          curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+      - name: Prepare offline ansible-core install
+        run: curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
 
       - name: Start FreeIPA server
         run: |
@@ -80,20 +74,14 @@ jobs:
 
       - name: Install Ansible inside container
         run: |
-          docker exec ipa-server mkdir -p /root/ci-staging
-          docker cp /tmp/get-pip.py ipa-server:/root/ci-staging/get-pip.py
-          docker cp /tmp/ansible-wheels ipa-server:/root/ci-staging/wheels
           docker exec ipa-server \
-            python3 /root/ci-staging/get-pip.py --break-system-packages \
-              --no-index --find-links /root/ci-staging/wheels
+            bash -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf.ci && \
+                     cat /etc/resolv.conf >> /etc/resolv.conf.ci && \
+                     cp /etc/resolv.conf.ci /etc/resolv.conf'
+          docker cp /tmp/get-pip.py ipa-server:/root/get-pip.py
+          docker exec ipa-server python3 /root/get-pip.py --break-system-packages
           docker exec ipa-server \
-            python3 -m pip install --break-system-packages --no-index \
-              --find-links /root/ci-staging/wheels \
-              --no-deps resolvelib packaging
-          docker exec ipa-server \
-            python3 -m pip install --break-system-packages --no-index \
-              --find-links /root/ci-staging/wheels \
-              --no-deps ansible-core
+            python3 -m pip install --break-system-packages "ansible-core~=2.18.0"
 
       - name: Install collection inside container
         run: |
