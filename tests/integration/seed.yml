@@ -138,6 +138,13 @@
         - HTTP/web-01.test.lan
         - nfs/app-01.test.lan
 
+    - name: Allow admin to retrieve service keytabs
+      ansible.builtin.shell: |
+        ipa service-allow-retrieve-keytab {{ item }} --users=admin 2>/dev/null || true
+      loop:
+        - HTTP/web-01.test.lan
+        - nfs/app-01.test.lan
+
     # ----------------------------------------------------------------
     # DNS records
     # ----------------------------------------------------------------
