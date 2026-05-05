@@ -2,7 +2,7 @@
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
 (IdM / FreeIPA). It exposes one inventory plugin, nine lookup plugins,
-four modules, and AAP/OpenShift validation roles for live inventory,
+four modules, and AAP/OpenShift/Kubernetes validation roles for live inventory,
 vault-backed secret retrieval and storage,
 Kerberos principal state, Kerberos keytab delivery, IdM CA certificate
 automation, OTP workflows, SELinux user map inspection, HBAC rule inspection
@@ -50,6 +50,8 @@ The collection treats IdM as both:
 - supports text and binary payload handling for Ansible and AAP workflows
 - renders and validates OpenShift OIDC, Keycloak federation, and breakglass
   readiness artifacts without mutating live clusters by default
+- renders review-first Kubernetes Secret manifests for IdM vault material,
+  certificate material, and keytab delivery without applying to clusters by default
 
 ## Best Entry Points
 
@@ -71,6 +73,10 @@ The collection treats IdM as both:
 - [docs/openshift-identity-validation-walkthrough.md](docs/openshift-identity-validation-walkthrough.md)
 - [docs/openshift-breakglass-validation.md](docs/openshift-breakglass-validation.md)
 - [docs/openshift-ldap-fallback.md](docs/openshift-ldap-fallback.md)
+- [docs/kubernetes-secret-delivery-threat-model.md](docs/kubernetes-secret-delivery-threat-model.md)
+- [docs/kubernetes-secret-from-idm-vault.md](docs/kubernetes-secret-from-idm-vault.md)
+- [docs/kubernetes-tls-from-idm-cert.md](docs/kubernetes-tls-from-idm-cert.md)
+- [docs/keytab-delivery-to-workloads.md](docs/keytab-delivery-to-workloads.md)
 - [docs/ephemeral-access-capabilities.md](docs/ephemeral-access-capabilities.md)
 - [docs/inventory-plugin.md](docs/inventory-plugin.md)
 - [docs/vault-plugin.md](docs/vault-plugin.md)
@@ -247,9 +253,13 @@ The collection treats IdM as both:
 - `roles/openshift_idm_oidc_validation/` - role to render OpenShift OAuth/OIDC examples and validate local IdM group evidence
 - `roles/keycloak_idm_federation_validation/` - role to validate Keycloak federation and OIDC claim evidence
 - `roles/openshift_breakglass_validation/` - role to validate OpenShift breakglass groups, controls, and RBAC evidence
+- `roles/kubernetes_secret_from_idm_vault/` - role to render review-first Kubernetes Secret manifests from IdM vault material
+- `roles/kubernetes_tls_from_idm_cert/` - role to render review-first Kubernetes TLS Secret manifests from certificate material
+- `roles/keytab_secret_render/` - role to render review-first Kubernetes Secret manifests for Kerberos keytab delivery
 - `playbooks/aap-ee-*.yml` - wrapper playbooks for the AAP EE workflow
 - `playbooks/sealed-artifact-delivery.yml`, `playbooks/temporary-access-window.yml`, and `playbooks/cert-expiry-report.yml` - wrapper playbooks for AAP golden-path roles
 - `playbooks/render-openshift-oidc-config.yml`, `playbooks/validate-openshift-idm-groups.yml`, `playbooks/validate-keycloak-idm-claims.yml`, and `playbooks/validate-openshift-breakglass-path.yml` - wrapper playbooks for Phase 4 OpenShift identity validation
+- `playbooks/render-kubernetes-secret-from-idm-vault.yml`, `playbooks/render-kubernetes-tls-secret-from-idm-cert.yml`, and `playbooks/render-keytab-secret.yml` - wrapper playbooks for Phase 5 workload Secret delivery review
 - `tests/` - unit coverage for inventory, vault, vault_write, keytab_manage, cert_request, principal, keytab, cert, otp, selinuxmap, hbacrule, dns, sudo, and user_lease
 - `scripts/validate-collection.sh` - repo validation path
 - `Makefile` - convenience wrapper for validation

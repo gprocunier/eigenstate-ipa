@@ -1,0 +1,82 @@
+---
+- name: Retrieve shared IdM vault material for Kubernetes Secret
+  ansible.builtin.set_fact:
+    eigenstate_k8s_secret_vault_record: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_k8s_secret_vault_name,
+                server=(eigenstate_k8s_secret_server or none),
+                kerberos_keytab=(eigenstate_k8s_secret_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_k8s_secret_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_k8s_secret_ipaadmin_password or none),
+                shared=true,
+                result_format='record',
+                include_metadata=true,
+                verify=(eigenstate_k8s_secret_verify or none)) }}
+  delegate_to: "{{ eigenstate_k8s_secret_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_k8s_secret_no_log }}"
+  when: eigenstate_k8s_secret_vault_scope == 'shared'
+
+- name: Retrieve user IdM vault material for Kubernetes Secret
+  ansible.builtin.set_fact:
+    eigenstate_k8s_secret_vault_record: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_k8s_secret_vault_name,
+                server=(eigenstate_k8s_secret_server or none),
+                kerberos_keytab=(eigenstate_k8s_secret_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_k8s_secret_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_k8s_secret_ipaadmin_password or none),
+                username=eigenstate_k8s_secret_username,
+                result_format='record',
+                include_metadata=true,
+                verify=(eigenstate_k8s_secret_verify or none)) }}
+  delegate_to: "{{ eigenstate_k8s_secret_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_k8s_secret_no_log }}"
+  when: eigenstate_k8s_secret_vault_scope == 'user'
+
+- name: Retrieve service IdM vault material for Kubernetes Secret
+  ansible.builtin.set_fact:
+    eigenstate_k8s_secret_vault_record: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_k8s_secret_vault_name,
+                server=(eigenstate_k8s_secret_server or none),
+                kerberos_keytab=(eigenstate_k8s_secret_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_k8s_secret_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_k8s_secret_ipaadmin_password or none),
+                service=eigenstate_k8s_secret_service,
+                result_format='record',
+                include_metadata=true,
+                verify=(eigenstate_k8s_secret_verify or none)) }}
+  delegate_to: "{{ eigenstate_k8s_secret_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_k8s_secret_no_log }}"
+  when: eigenstate_k8s_secret_vault_scope == 'service'
+
+- name: Retrieve default-scope IdM vault material for Kubernetes Secret
+  ansible.builtin.set_fact:
+    eigenstate_k8s_secret_vault_record: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_k8s_secret_vault_name,
+                server=(eigenstate_k8s_secret_server or none),
+                kerberos_keytab=(eigenstate_k8s_secret_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_k8s_secret_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_k8s_secret_ipaadmin_password or none),
+                result_format='record',
+                include_metadata=true,
+                verify=(eigenstate_k8s_secret_verify or none)) }}
+  delegate_to: "{{ eigenstate_k8s_secret_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_k8s_secret_no_log }}"
+  when: eigenstate_k8s_secret_vault_scope == 'default'
+
+- name: Normalize live IdM vault payload for Kubernetes Secret
+  ansible.builtin.set_fact:
+    eigenstate_k8s_secret_data: >-
+      {{ {
+          eigenstate_k8s_secret_vault_key:
+            (eigenstate_k8s_secret_vault_record.content
+             | default(eigenstate_k8s_secret_vault_record.value)
+             | default(eigenstate_k8s_secret_vault_record))
+        } }}
+  no_log: "{{ eigenstate_k8s_secret_no_log }}"

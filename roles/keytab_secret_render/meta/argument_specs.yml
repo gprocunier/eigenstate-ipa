@@ -1,0 +1,72 @@
+---
+argument_specs:
+  main:
+    short_description: Render Kubernetes Secret manifests for Kerberos keytab delivery.
+    options:
+      eigenstate_keytab_secret_name:
+        type: str
+        required: true
+        description: Kubernetes Secret name for the keytab.
+      eigenstate_keytab_secret_namespace:
+        type: str
+        required: true
+        description: Kubernetes namespace for the rendered Secret.
+      eigenstate_keytab_secret_key:
+        type: str
+        default: service.keytab
+        description: Data key that stores the keytab bytes.
+      eigenstate_keytab_secret_keytab_b64:
+        type: str
+        no_log: true
+        description: Base64-encoded keytab payload.
+      eigenstate_keytab_secret_render_only:
+        type: bool
+        default: true
+        description: Refuse cluster apply behavior when true.
+      eigenstate_keytab_secret_apply:
+        type: bool
+        default: false
+        description: Apply the protected manifest with kubectl when explicitly enabled.
+      eigenstate_keytab_secret_render_review_manifest:
+        type: bool
+        default: true
+        description: Render a review manifest with payload values redacted.
+      eigenstate_keytab_secret_write_payload_manifest:
+        type: bool
+        default: false
+        description: Write a protected manifest containing the keytab payload.
+      eigenstate_keytab_secret_no_log:
+        type: bool
+        default: true
+        description: Hide secret-bearing task output.
+      eigenstate_keytab_secret_output_dir:
+        type: str
+        default: ./artifacts
+        description: Directory for rendered artifacts.
+      eigenstate_keytab_secret_basename:
+        type: str
+        default: keytab-secret
+        description: Basename for rendered artifacts.
+      eigenstate_keytab_secret_labels:
+        type: dict
+        description: Additional safe labels for rendered manifests.
+      eigenstate_keytab_secret_annotations:
+        type: dict
+        description: Additional safe annotations for rendered manifests.
+      eigenstate_keytab_secret_principal:
+        type: str
+        description: Optional non-secret Kerberos principal label for review.
+      eigenstate_keytab_secret_correlation_id:
+        type: str
+        description: Optional non-secret correlation identifier.
+      eigenstate_keytab_secret_kubeconfig:
+        type: str
+        no_log: true
+        description: Kubeconfig path required when apply is enabled.
+      eigenstate_keytab_secret_context:
+        type: str
+        description: Kubernetes context required when apply is enabled.
+      eigenstate_keytab_secret_kubectl:
+        type: str
+        default: kubectl
+        description: kubectl command path.

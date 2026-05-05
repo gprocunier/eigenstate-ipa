@@ -1,0 +1,73 @@
+---
+argument_specs:
+  main:
+    short_description: Render Kubernetes TLS Secret manifests from IdM certificate material.
+    options:
+      eigenstate_k8s_tls_secret_name:
+        type: str
+        required: true
+        description: Kubernetes TLS Secret name.
+      eigenstate_k8s_tls_namespace:
+        type: str
+        required: true
+        description: Kubernetes namespace for the TLS Secret.
+      eigenstate_k8s_tls_certificate:
+        type: str
+        no_log: true
+        description: PEM certificate material for tls.crt.
+      eigenstate_k8s_tls_private_key:
+        type: str
+        no_log: true
+        description: PEM private key material for tls.key.
+      eigenstate_k8s_tls_ca_certificate:
+        type: str
+        no_log: true
+        description: Optional PEM CA certificate material.
+      eigenstate_k8s_tls_render_only:
+        type: bool
+        default: true
+        description: Refuse cluster apply behavior when true.
+      eigenstate_k8s_tls_apply:
+        type: bool
+        default: false
+        description: Apply the protected manifest with kubectl when explicitly enabled.
+      eigenstate_k8s_tls_render_review_manifest:
+        type: bool
+        default: true
+        description: Render a review manifest with payload values redacted.
+      eigenstate_k8s_tls_write_payload_manifest:
+        type: bool
+        default: false
+        description: Write a protected manifest containing encoded TLS payloads.
+      eigenstate_k8s_tls_no_log:
+        type: bool
+        default: true
+        description: Hide secret-bearing task output.
+      eigenstate_k8s_tls_output_dir:
+        type: str
+        default: ./artifacts
+        description: Directory for rendered artifacts.
+      eigenstate_k8s_tls_basename:
+        type: str
+        default: kubernetes-tls-from-idm-cert
+        description: Basename for rendered artifacts.
+      eigenstate_k8s_tls_labels:
+        type: dict
+        description: Additional safe labels for rendered manifests.
+      eigenstate_k8s_tls_annotations:
+        type: dict
+        description: Additional safe annotations for rendered manifests.
+      eigenstate_k8s_tls_correlation_id:
+        type: str
+        description: Optional non-secret correlation identifier.
+      eigenstate_k8s_tls_kubeconfig:
+        type: str
+        no_log: true
+        description: Kubeconfig path required when apply is enabled.
+      eigenstate_k8s_tls_context:
+        type: str
+        description: Kubernetes context required when apply is enabled.
+      eigenstate_k8s_tls_kubectl:
+        type: str
+        default: kubectl
+        description: kubectl command path.

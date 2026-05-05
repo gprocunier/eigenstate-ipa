@@ -1,0 +1,24 @@
+---
+eigenstate_keytab_secret_name: idm-keytab-secret
+eigenstate_keytab_secret_namespace: default
+eigenstate_keytab_secret_key: service.keytab
+eigenstate_keytab_secret_keytab_b64: c3RhdGljLXZhbGlkYXRpb24ta2V5dGFi
+
+eigenstate_keytab_secret_render_only: true
+eigenstate_keytab_secret_apply: false
+eigenstate_keytab_secret_render_review_manifest: true
+eigenstate_keytab_secret_write_payload_manifest: false
+eigenstate_keytab_secret_no_log: true
+
+eigenstate_keytab_secret_output_dir: ./artifacts
+eigenstate_keytab_secret_basename: keytab-secret
+eigenstate_keytab_secret_labels:
+  app.kubernetes.io/managed-by: eigenstate.ipa
+  app.kubernetes.io/component: workload-keytab-delivery
+eigenstate_keytab_secret_annotations: {}
+eigenstate_keytab_secret_principal: ""
+eigenstate_keytab_secret_correlation_id: ""
+
+eigenstate_keytab_secret_kubeconfig: ""
+eigenstate_keytab_secret_context: ""
+eigenstate_keytab_secret_kubectl: kubectl

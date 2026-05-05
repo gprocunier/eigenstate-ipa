@@ -1,0 +1,14 @@
+---
+- name: Apply protected keytab Secret manifest
+  ansible.builtin.command:
+    argv:
+      - "{{ eigenstate_keytab_secret_kubectl }}"
+      - "--kubeconfig"
+      - "{{ eigenstate_keytab_secret_kubeconfig }}"
+      - "--context"
+      - "{{ eigenstate_keytab_secret_context }}"
+      - "apply"
+      - "-f"
+      - "{{ eigenstate_keytab_secret_output_dir }}/{{ eigenstate_keytab_secret_basename }}.secret.yaml"
+  changed_when: true
+  no_log: "{{ eigenstate_keytab_secret_no_log }}"

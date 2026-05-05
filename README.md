@@ -63,8 +63,8 @@ The collection has three practical layers:
 - controller-side lookup plugins for Kerberos, vaults, certificates, OTP, DNS, and policy state
 - narrow write modules for vault lifecycle, keytab management, certificate
   issuance, and delegated temporary-user expiry
-- render-only validation roles for OpenShift OIDC, Keycloak federation, and
-  breakglass readiness evidence
+- render-only validation roles for OpenShift OIDC, Keycloak federation,
+  breakglass readiness evidence, and workload secret delivery review
 
 The table below is the authoritative surface summary.
 
@@ -84,6 +84,11 @@ The table below is the authoritative surface summary.
 | SELinux user map state | lookup | `eigenstate.ipa.selinuxmap` | Reads SELinux user map configuration and HBAC-linked scope from IdM |
 | Sudo policy state | lookup | `eigenstate.ipa.sudo` | Reads sudo rules, sudo commands, and sudo command groups from IdM |
 | HBAC rule state and access test | lookup | `eigenstate.ipa.hbacrule` | Reads HBAC rule configuration and runs live access tests via the FreeIPA hbactest engine |
+
+The collection also includes render-first roles for OpenShift and Kubernetes
+workload delivery. These roles create reviewable manifests by default and do
+not apply cluster changes unless explicitly configured with kubeconfig and
+context inputs.
 
 ## Start Here
 
@@ -121,6 +126,7 @@ For collection-wide workflow guidance:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>&nbsp;&nbsp;ROTATION CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>&nbsp;&nbsp;ROTATION USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html"><kbd>&nbsp;&nbsp;KUBERNETES SECRET THREAT MODEL&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>&nbsp;&nbsp;AAP EE QUICKSTART&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>&nbsp;&nbsp;EPHEMERAL ACCESS CAPABILITIES&nbsp;&nbsp;</kbd></a>
@@ -220,10 +226,14 @@ For the full plugin index, use <a href="https://gprocunier.github.io/eigenstate-
 | `roles/openshift_idm_oidc_validation/` | Role that renders OpenShift OAuth/OIDC examples and validates IdM group evidence |
 | `roles/keycloak_idm_federation_validation/` | Role that validates Keycloak federation and OIDC claim evidence |
 | `roles/openshift_breakglass_validation/` | Role that validates OpenShift breakglass groups, controls, and RBAC evidence |
+| `roles/kubernetes_secret_from_idm_vault/` | Role that renders review-first Kubernetes Secret manifests from IdM vault material |
+| `roles/kubernetes_tls_from_idm_cert/` | Role that renders review-first Kubernetes TLS Secret manifests from certificate material |
+| `roles/keytab_secret_render/` | Role that renders review-first Kubernetes Secret manifests for Kerberos keytab delivery |
 | `playbooks/aap-ee-*.yml` | Wrapper playbooks for the AAP EE render, build, smoke, push, and Controller registration path |
 | `playbooks/render-openshift-oidc-config.yml` | Render-only OpenShift OAuth/OIDC validation wrapper |
 | `playbooks/validate-openshift-*.yml` | Validation-only OpenShift identity and breakglass wrappers |
 | `playbooks/validate-keycloak-idm-claims.yml` | Validation-only Keycloak federation wrapper |
+| `playbooks/render-kubernetes-*.yml` and `playbooks/render-keytab-secret.yml` | Render-only workload Secret delivery wrappers |
 | `docs/` | Operator and maintainer documentation aligned with the collection interface |
 | `scripts/validate-collection.sh` | Lightweight repo validation for YAML, plugin syntax, and collection build hygiene |
 | `Makefile` | Wrapper for repo validation targets |

@@ -1,0 +1,10 @@
+---
+- name: Validate keytab Secret render inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Render keytab Secret manifests
+  ansible.builtin.import_tasks: render.yml
+
+- name: Apply keytab Secret manifest
+  ansible.builtin.import_tasks: apply.yml
+  when: eigenstate_keytab_secret_apply | bool

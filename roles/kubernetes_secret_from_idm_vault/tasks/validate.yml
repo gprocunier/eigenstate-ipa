@@ -1,0 +1,44 @@
+---
+- name: Validate Kubernetes Secret delivery variables
+  ansible.builtin.assert:
+    that:
+      - eigenstate_k8s_secret_name is match('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$')
+      - eigenstate_k8s_secret_namespace is match('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$')
+      - eigenstate_k8s_secret_type | length > 0
+      - eigenstate_k8s_secret_output_dir | length > 0
+      - eigenstate_k8s_secret_basename is match('^[A-Za-z0-9_.-]+$')
+      - eigenstate_k8s_secret_labels is mapping
+      - eigenstate_k8s_secret_annotations is mapping
+      - eigenstate_k8s_secret_data is mapping
+      - eigenstate_k8s_secret_vault_scope in ['shared', 'user', 'service', 'default']
+      - not (eigenstate_k8s_secret_apply | bool and eigenstate_k8s_secret_render_only | bool)
+    fail_msg: Invalid Kubernetes Secret from IdM vault role configuration.
+
+- name: Validate live IdM vault lookup inputs
+  ansible.builtin.assert:
+    that:
+      - eigenstate_k8s_secret_vault_name | length > 0
+      - eigenstate_k8s_secret_vault_key is match('^[A-Za-z0-9_.-]+$')
+      - eigenstate_k8s_secret_username | length > 0 or eigenstate_k8s_secret_vault_scope != 'user'
+      - eigenstate_k8s_secret_service | length > 0 or eigenstate_k8s_secret_vault_scope != 'service'
+    fail_msg: Invalid live IdM vault lookup configuration.
+  when: eigenstate_k8s_secret_live_lookup_enabled | bool
+
+- name: Validate static payload inputs
+  ansible.builtin.assert:
+    that:
+      - eigenstate_k8s_secret_data | length > 0
+      - eigenstate_k8s_secret_data.keys() | map('regex_search', '^[A-Za-z0-9_.-]+$') | list | min
+    fail_msg: Static Kubernetes Secret data must contain safe key names.
+  no_log: "{{ eigenstate_k8s_secret_no_log }}"
+  when: not (eigenstate_k8s_secret_live_lookup_enabled | bool)
+
+- name: Validate Kubernetes apply inputs
+  ansible.builtin.assert:
+    that:
+      - eigenstate_k8s_secret_kubeconfig | length > 0
+      - eigenstate_k8s_secret_context | length > 0
+      - eigenstate_k8s_secret_kubectl | length > 0
+    fail_msg: Kubernetes apply requires explicit kubeconfig, context, and kubectl inputs.
+  no_log: "{{ eigenstate_k8s_secret_no_log }}"
+  when: eigenstate_k8s_secret_apply | bool

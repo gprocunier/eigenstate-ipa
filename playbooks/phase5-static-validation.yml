@@ -1,0 +1,35 @@
+---
+- name: Validate Phase 5 workload delivery roles without a live cluster
+  hosts: localhost
+  gather_facts: false
+  check_mode: true
+  tasks:
+    - name: Render review manifest for IdM vault-backed Kubernetes Secret
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.kubernetes_secret_from_idm_vault
+      vars:
+        eigenstate_k8s_secret_output_dir: "{{ playbook_dir }}/../build/phase5-static"
+        eigenstate_k8s_secret_data:
+          application.conf: static-validation-value
+        eigenstate_k8s_secret_correlation_id: phase5-static
+      tags: vault_secret
+
+    - name: Render review manifest for IdM certificate-backed TLS Secret
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.kubernetes_tls_from_idm_cert
+      vars:
+        eigenstate_k8s_tls_output_dir: "{{ playbook_dir }}/../build/phase5-static"
+        eigenstate_k8s_tls_certificate: static-validation-certificate
+        eigenstate_k8s_tls_private_key: static-validation-private-key
+        eigenstate_k8s_tls_correlation_id: phase5-static
+      tags: tls_secret
+
+    - name: Render review manifest for keytab Secret
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.keytab_secret_render
+      vars:
+        eigenstate_keytab_secret_output_dir: "{{ playbook_dir }}/../build/phase5-static"
+        eigenstate_keytab_secret_keytab_b64: c3RhdGljLXZhbGlkYXRpb24ta2V5dGFi
+        eigenstate_keytab_secret_principal: HTTP/app.example.com@EXAMPLE.COM
+        eigenstate_keytab_secret_correlation_id: phase5-static
+      tags: keytab_secret

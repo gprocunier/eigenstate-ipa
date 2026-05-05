@@ -1,0 +1,40 @@
+---
+- name: Create Kubernetes TLS Secret output directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_k8s_tls_output_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Build Kubernetes TLS Secret safe metadata
+  ansible.builtin.set_fact:
+    eigenstate_k8s_tls_effective_annotations: >-
+      {{ eigenstate_k8s_tls_annotations | combine({
+          'eigenstate.ipa/source': 'idm-cert',
+          'eigenstate.ipa/generated-at': lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ'),
+          'eigenstate.ipa/payload': 'redacted-in-review-manifest'
+        }) }}
+
+- name: Add Kubernetes TLS Secret correlation annotation
+  ansible.builtin.set_fact:
+    eigenstate_k8s_tls_effective_annotations: >-
+      {{ eigenstate_k8s_tls_effective_annotations | combine({
+          'eigenstate.ipa/correlation-id': eigenstate_k8s_tls_correlation_id
+        }) }}
+  when: eigenstate_k8s_tls_correlation_id | length > 0
+
+- name: Render reviewable Kubernetes TLS Secret manifest
+  ansible.builtin.template:
+    src: tls-secret-review.yaml.j2
+    dest: "{{ eigenstate_k8s_tls_output_dir }}/{{ eigenstate_k8s_tls_basename }}.review.yaml"
+    mode: "0640"
+  when: eigenstate_k8s_tls_render_review_manifest | bool
+
+- name: Render protected Kubernetes TLS Secret manifest with payload
+  ansible.builtin.template:
+    src: tls-secret-payload.yaml.j2
+    dest: "{{ eigenstate_k8s_tls_output_dir }}/{{ eigenstate_k8s_tls_basename }}.secret.yaml"
+    mode: "0600"
+  no_log: "{{ eigenstate_k8s_tls_no_log }}"
+  when: >-
+    (eigenstate_k8s_tls_write_payload_manifest | bool) or
+    (eigenstate_k8s_tls_apply | bool)

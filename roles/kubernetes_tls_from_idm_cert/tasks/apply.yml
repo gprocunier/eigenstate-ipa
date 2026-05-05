@@ -1,0 +1,14 @@
+---
+- name: Apply protected Kubernetes TLS Secret manifest
+  ansible.builtin.command:
+    argv:
+      - "{{ eigenstate_k8s_tls_kubectl }}"
+      - "--kubeconfig"
+      - "{{ eigenstate_k8s_tls_kubeconfig }}"
+      - "--context"
+      - "{{ eigenstate_k8s_tls_context }}"
+      - "apply"
+      - "-f"
+      - "{{ eigenstate_k8s_tls_output_dir }}/{{ eigenstate_k8s_tls_basename }}.secret.yaml"
+  changed_when: true
+  no_log: "{{ eigenstate_k8s_tls_no_log }}"

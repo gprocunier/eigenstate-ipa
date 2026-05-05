@@ -1,0 +1,113 @@
+---
+argument_specs:
+  main:
+    short_description: Render Kubernetes Secret manifests from IdM vault material.
+    options:
+      eigenstate_k8s_secret_name:
+        type: str
+        required: true
+        description: Kubernetes Secret name.
+      eigenstate_k8s_secret_namespace:
+        type: str
+        required: true
+        description: Kubernetes namespace for the rendered Secret.
+      eigenstate_k8s_secret_type:
+        type: str
+        default: Opaque
+        description: Kubernetes Secret type.
+      eigenstate_k8s_secret_data:
+        type: dict
+        no_log: true
+        description: Secret key/value data used when live IdM vault lookup is disabled.
+      eigenstate_k8s_secret_render_only:
+        type: bool
+        default: true
+        description: Refuse cluster apply behavior when true.
+      eigenstate_k8s_secret_apply:
+        type: bool
+        default: false
+        description: Apply the protected manifest with kubectl when explicitly enabled.
+      eigenstate_k8s_secret_render_review_manifest:
+        type: bool
+        default: true
+        description: Render a review manifest with payload values redacted.
+      eigenstate_k8s_secret_write_payload_manifest:
+        type: bool
+        default: false
+        description: Write a protected manifest containing encoded payload values.
+      eigenstate_k8s_secret_no_log:
+        type: bool
+        default: true
+        description: Hide secret-bearing task output.
+      eigenstate_k8s_secret_output_dir:
+        type: str
+        default: ./artifacts
+        description: Directory for rendered artifacts.
+      eigenstate_k8s_secret_basename:
+        type: str
+        default: kubernetes-secret-from-idm-vault
+        description: Basename for rendered artifacts.
+      eigenstate_k8s_secret_labels:
+        type: dict
+        description: Additional safe labels for rendered manifests.
+      eigenstate_k8s_secret_annotations:
+        type: dict
+        description: Additional safe annotations for rendered manifests.
+      eigenstate_k8s_secret_correlation_id:
+        type: str
+        description: Optional non-secret correlation identifier.
+      eigenstate_k8s_secret_live_lookup_enabled:
+        type: bool
+        default: false
+        description: Retrieve payload from IdM vault using the collection vault lookup.
+      eigenstate_k8s_secret_vault_name:
+        type: str
+        description: IdM vault name for live lookup.
+      eigenstate_k8s_secret_vault_scope:
+        type: str
+        default: shared
+        choices: [shared, user, service, default]
+        description: IdM vault scope for live lookup.
+      eigenstate_k8s_secret_vault_key:
+        type: str
+        default: artifact
+        description: Kubernetes Secret data key used for live lookup payloads.
+      eigenstate_k8s_secret_server:
+        type: str
+        description: IdM server for live lookup.
+      eigenstate_k8s_secret_kerberos_keytab:
+        type: str
+        no_log: true
+        description: Kerberos keytab path for live lookup.
+      eigenstate_k8s_secret_ipaadmin_principal:
+        type: str
+        default: admin
+        description: Principal used for IdM live lookup.
+      eigenstate_k8s_secret_ipaadmin_password:
+        type: str
+        no_log: true
+        description: Password used for IdM live lookup.
+      eigenstate_k8s_secret_verify:
+        type: str
+        description: IPA CA certificate path or verification mode.
+      eigenstate_k8s_secret_username:
+        type: str
+        description: User vault owner for user-scoped live lookup.
+      eigenstate_k8s_secret_service:
+        type: str
+        description: Service vault owner for service-scoped live lookup.
+      eigenstate_k8s_secret_delegate_to:
+        type: str
+        default: localhost
+        description: Host that performs live IdM lookup.
+      eigenstate_k8s_secret_kubeconfig:
+        type: str
+        no_log: true
+        description: Kubeconfig path required when apply is enabled.
+      eigenstate_k8s_secret_context:
+        type: str
+        description: Kubernetes context required when apply is enabled.
+      eigenstate_k8s_secret_kubectl:
+        type: str
+        default: kubectl
+        description: kubectl command path.
