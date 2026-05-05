@@ -1,8 +1,9 @@
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
-(IdM / FreeIPA). It exposes one inventory plugin, nine lookup plugins, and
-two modules for live inventory, vault-backed secret retrieval and storage,
+(IdM / FreeIPA). It exposes one inventory plugin, nine lookup plugins,
+two modules, and an AAP execution-environment role for live inventory,
+vault-backed secret retrieval and storage,
 Kerberos principal state, Kerberos keytab delivery, IdM CA certificate
 automation, OTP workflows, SELinux user map inspection, HBAC rule inspection
 and access testing, DNS inspection, sudo object inspection, and delegated
@@ -53,6 +54,7 @@ The collection treats IdM as both:
 - [docs/index.md](docs/index.md)
 - [docs/documentation-map.md](docs/documentation-map.md)
 - [docs/vault-cyberark-primer.md](docs/vault-cyberark-primer.md)
+- [docs/aap-ee-quickstart.md](docs/aap-ee-quickstart.md)
 - [docs/aap-integration.md](docs/aap-integration.md)
 - [docs/openshift-primer.md](docs/openshift-primer.md)
 - [docs/ephemeral-access-capabilities.md](docs/ephemeral-access-capabilities.md)
@@ -199,6 +201,9 @@ The collection treats IdM as both:
 - `plugins/modules/user_lease.py` - temporary user access lease module
 - `plugins/module_utils/ipa_client.py` - shared Kerberos auth and `ipalib` connection layer for IPA operations
 - `docs/` - operator-facing documentation
+- `execution-environment/eigenstate-idm/` - ready-to-build AAP execution environment scaffold
+- `roles/aap_execution_environment/` - role to render, build, smoke-test, push, and optionally register the AAP EE
+- `playbooks/aap-ee-*.yml` - wrapper playbooks for the AAP EE workflow
 - `tests/` - unit coverage for inventory, vault, vault_write, principal, keytab, cert, otp, selinuxmap, hbacrule, dns, sudo, and user_lease
 - `scripts/validate-collection.sh` - repo validation path
 - `Makefile` - convenience wrapper for validation
@@ -207,7 +212,7 @@ The collection treats IdM as both:
 
 - collection name: `eigenstate.ipa`
 - namespace: `eigenstate`
-- current version: `1.10.13`
+- current version: `1.11.0`
 - author: Greg Procunier
 - license: GPL-3.0-or-later
 - repository: https://github.com/gprocunier/eigenstate-ipa
