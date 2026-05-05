@@ -172,7 +172,7 @@ If the comparison translates into an IdM-native workflow for you, these are the 
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.13.0.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.14.0.tar.gz
 ```
 
 Verify the main surfaces you plan to use. For example:

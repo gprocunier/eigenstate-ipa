@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.14.0 - 2026-05-05
+
+- added `kubernetes_secret_from_idm_vault` for render-first Kubernetes Secret
+  manifests from IdM vault material with redacted review output by default
+- added `kubernetes_tls_from_idm_cert` for render-first TLS Secret manifests
+  from certificate material governed by an IdM-centered process
+- added `keytab_secret_render` for review-first Kerberos keytab Secret
+  delivery to Kubernetes and OpenShift workloads
+- documented the Kubernetes Secret delivery threat model, including etcd
+  encryption, RBAC, namespace scope, audit, and rotation limitations
+- wired Phase 5 playbook syntax checks, static validation, rendered-output
+  tests, argument spec checks, and secret-safety tests into the standard
+  validation path
+
 ## 1.13.0 - 2026-05-05
 
 - added OpenShift OIDC validation workflows for rendering OAuth/OIDC examples

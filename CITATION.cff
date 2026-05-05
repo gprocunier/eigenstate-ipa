@@ -3,7 +3,7 @@ message: >-
   If you use this Ansible collection in a publication or internal report,
   please cite it using the metadata below.
 title: "eigenstate.ipa: Ansible plugins for Red Hat Identity Management"
-version: "1.13.0"
+version: "1.14.0"
 date-released: "2026-05-05"
 abstract: >-
   eigenstate.ipa is an Ansible collection for Red Hat Identity Management
@@ -13,8 +13,8 @@ abstract: >-
   request automation, OTP
   token workflows, SELinux user map inspection, HBAC rule inspection and
   access testing, DNS and sudo inspection, temporary user access leasing,
-  AAP execution environment scaffolding, and controller-friendly automation
-  patterns.
+  AAP execution environment scaffolding, render-first Kubernetes workload
+  Secret delivery review, and controller-friendly automation patterns.
 keywords:
   - ansible
   - freeipa
@@ -25,6 +25,8 @@ keywords:
   - vault management
   - principal
   - secrets
+  - kubernetes
+  - openshift
   - keytab
   - certificate
   - otp
@@ -42,7 +44,7 @@ license: "GPL-3.0-or-later"
 preferred-citation:
   type: software
   title: "eigenstate.ipa: Ansible plugins for Red Hat Identity Management"
-  version: "1.13.0"
+  version: "1.14.0"
   date-released: "2026-05-05"
   authors:
     - family-names: Procunier

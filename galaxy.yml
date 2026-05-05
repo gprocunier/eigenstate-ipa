@@ -1,12 +1,13 @@
 ---
 namespace: "eigenstate"
 name: "ipa"
-version: "1.13.0"
+version: "1.14.0"
 description: >-
   An Ansible collection for Red Hat IdM / FreeIPA with dynamic
   inventory plus IdM vault retrieval and lifecycle automation,
   Kerberos principal state, Kerberos keytab retrieval and management,
-  certificate request workflows, OTP workflows, delegated user-lease control, DNS
+  certificate request workflows, OTP workflows, delegated user-lease control,
+  Kubernetes workload Secret delivery review, DNS
   record inspection, sudo policy inspection, SELinux user map inspection, and
   HBAC rule inspection and access testing for Kerberos-friendly automation,
   AAP, and secure secret delivery.
