@@ -1,0 +1,50 @@
+---
+- name: Create policy drift report output directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_policy_drift_report_output_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Build policy drift report object
+  ansible.builtin.set_fact:
+    eigenstate_policy_drift_report:
+      schema: "eigenstate.ipa/policy_drift_report/v1"
+      schema_version: "{{ eigenstate_policy_drift_report_schema_version }}"
+      role: policy_drift_report
+      generated_at_utc: "{{ eigenstate_policy_drift_report_generated_at_utc }}"
+      site: "{{ eigenstate_policy_drift_report_site }}"
+      context: "{{ eigenstate_policy_drift_report_context }}"
+      read_only: true
+      mutation_phase: "separate opt-in remediation"
+      summary:
+        expected_policies: "{{ eigenstate_policy_drift_report_expected_policies | length }}"
+        observed_policies: "{{ eigenstate_policy_drift_report_observed_policies | length }}"
+        findings: "{{ eigenstate_policy_drift_report_findings | length }}"
+        in_sync: "{{ eigenstate_policy_drift_report_findings | selectattr('status', 'equalto', 'in_sync') | list | length }}"
+        drifted: "{{ eigenstate_policy_drift_report_findings | selectattr('status', 'equalto', 'drifted') | list | length }}"
+        missing: "{{ eigenstate_policy_drift_report_findings | selectattr('status', 'equalto', 'missing') | list | length }}"
+        extra: "{{ eigenstate_policy_drift_report_findings | selectattr('status', 'equalto', 'extra') | list | length }}"
+      expected_policies: "{{ eigenstate_policy_drift_report_expected_policies }}"
+      observed_policies: "{{ eigenstate_policy_drift_report_observed_policies }}"
+      findings: "{{ eigenstate_policy_drift_report_findings }}"
+
+- name: Render policy drift JSON report
+  ansible.builtin.template:
+    src: report.json.j2
+    dest: "{{ eigenstate_policy_drift_report_output_dir }}/{{ eigenstate_policy_drift_report_basename }}.json"
+    mode: "0640"
+  when: "'json' in eigenstate_policy_drift_report_formats"
+
+- name: Render policy drift YAML report
+  ansible.builtin.template:
+    src: report.yaml.j2
+    dest: "{{ eigenstate_policy_drift_report_output_dir }}/{{ eigenstate_policy_drift_report_basename }}.yaml"
+    mode: "0640"
+  when: "'yaml' in eigenstate_policy_drift_report_formats"
+
+- name: Render policy drift Markdown report
+  ansible.builtin.template:
+    src: report.md.j2
+    dest: "{{ eigenstate_policy_drift_report_output_dir }}/{{ eigenstate_policy_drift_report_basename }}.md"
+    mode: "0640"
+  when: "'md' in eigenstate_policy_drift_report_formats"

@@ -1,0 +1,20 @@
+---
+- name: Validate IdM readiness report format choices
+  ansible.builtin.assert:
+    that:
+      - eigenstate_idm_readiness_report_formats | difference(['json', 'yaml', 'md']) | length == 0
+      - eigenstate_idm_readiness_report_basename is match('^[A-Za-z0-9_.-]+$')
+      - eigenstate_idm_readiness_report_checks is sequence
+    fail_msg: >-
+      IdM readiness reports support json, yaml, and md formats, a safe basename,
+      and a list of check records.
+
+- name: Validate IdM readiness check states
+  ansible.builtin.assert:
+    that:
+      - item.status in ['pass', 'warn', 'fail', 'info']
+      - item.id is match('^[A-Za-z0-9_.:-]+$')
+    fail_msg: "IdM readiness checks require a stable id and pass/warn/fail/info status."
+  loop: "{{ eigenstate_idm_readiness_report_checks }}"
+  loop_control:
+    label: "{{ item.id | default('unnamed-check') }}"

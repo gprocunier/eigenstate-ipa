@@ -1,0 +1,8 @@
+---
+- name: Render keytab rotation candidate report
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Render keytab rotation candidate report artifacts
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.keytab_rotation_candidates

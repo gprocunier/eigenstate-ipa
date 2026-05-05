@@ -1,0 +1,7 @@
+---
+- name: Validate certificate inventory report inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Render certificate inventory report
+  ansible.builtin.import_tasks: render.yml
+  when: eigenstate_certificate_inventory_report_formats | length > 0

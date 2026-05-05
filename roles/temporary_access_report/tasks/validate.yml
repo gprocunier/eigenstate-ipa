@@ -1,0 +1,21 @@
+---
+- name: Validate temporary access report format choices
+  ansible.builtin.assert:
+    that:
+      - eigenstate_temporary_access_report_formats | difference(['json', 'yaml', 'md']) | length == 0
+      - eigenstate_temporary_access_report_basename is match('^[A-Za-z0-9_.-]+$')
+      - eigenstate_temporary_access_report_windows is sequence
+    fail_msg: >-
+      Temporary access reports support json, yaml, and md formats, a safe
+      basename, and a list of access window records.
+
+- name: Validate temporary access window records
+  ansible.builtin.assert:
+    that:
+      - item.principal is defined
+      - item.target is defined
+      - item.status | default('unknown') in ['active', 'expired', 'scheduled', 'revoked', 'unknown']
+    fail_msg: "Temporary access records require principal, target, and a known status."
+  loop: "{{ eigenstate_temporary_access_report_windows }}"
+  loop_control:
+    label: "{{ item.principal | default('unnamed-principal') }}"

@@ -1,0 +1,25 @@
+# Temporary Access Report
+
+- schema: `{{ eigenstate_temporary_access_report.schema }}`
+- generated_at_utc: `{{ eigenstate_temporary_access_report.generated_at_utc }}`
+- site: `{{ eigenstate_temporary_access_report.site }}`
+- context: {{ eigenstate_temporary_access_report.context }}
+- read_only: `{{ eigenstate_temporary_access_report.read_only }}`
+
+## Summary
+
+| Metric | Count |
+| --- | ---: |
+| Total windows | {{ eigenstate_temporary_access_report.summary.total_windows }} |
+| Active | {{ eigenstate_temporary_access_report.summary.active_windows }} |
+| Expired | {{ eigenstate_temporary_access_report.summary.expired_windows }} |
+| Scheduled | {{ eigenstate_temporary_access_report.summary.scheduled_windows }} |
+| Revoked | {{ eigenstate_temporary_access_report.summary.revoked_windows }} |
+
+## Access Windows
+
+| Principal | Target | Status | Opens | Expires |
+| --- | --- | --- | --- | --- |
+{% for window in eigenstate_temporary_access_report.windows %}
+| `{{ window.principal }}` | `{{ window.target }}` | `{{ window.status }}` | `{{ window.opened_at | default('unknown') }}` | `{{ window.expires_at | default('unknown') }}` |
+{% endfor %}

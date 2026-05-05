@@ -1,0 +1,7 @@
+---
+- name: Validate temporary access report inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Render temporary access report
+  ansible.builtin.import_tasks: render.yml
+  when: eigenstate_temporary_access_report_formats | length > 0

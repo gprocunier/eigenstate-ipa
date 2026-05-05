@@ -139,6 +139,23 @@ if command -v ansible-playbook >/dev/null 2>&1; then
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ANSIBLE_LOCALHOST_WARNING=false \
     ansible-playbook "${PROJECT_ROOT}/playbooks/phase5-static-validation.yml"
+
+  echo "==> Checking Phase 6 reporting playbook syntax"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/report-idm-readiness.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/report-certificate-inventory.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/report-keytab-rotation-candidates.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/report-temporary-access.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/report-policy-drift.yml"
+
+  echo "==> Running Phase 6 static validation playbook"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ANSIBLE_LOCALHOST_WARNING=false \
+    ansible-playbook "${PROJECT_ROOT}/playbooks/phase6-static-validation.yml"
 else
   echo "==> ansible-playbook not installed; skipping AAP EE role checks"
 fi

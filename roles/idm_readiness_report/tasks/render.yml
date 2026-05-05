@@ -1,0 +1,45 @@
+---
+- name: Create IdM readiness report output directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_idm_readiness_report_output_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Build IdM readiness report object
+  ansible.builtin.set_fact:
+    eigenstate_idm_readiness_report:
+      schema: "eigenstate.ipa/idm_readiness_report/v1"
+      schema_version: "{{ eigenstate_idm_readiness_report_schema_version }}"
+      role: idm_readiness_report
+      generated_at_utc: "{{ eigenstate_idm_readiness_report_generated_at_utc }}"
+      site: "{{ eigenstate_idm_readiness_report_site }}"
+      context: "{{ eigenstate_idm_readiness_report_context }}"
+      read_only: true
+      summary:
+        total_checks: "{{ eigenstate_idm_readiness_report_checks | length }}"
+        passed_checks: "{{ eigenstate_idm_readiness_report_checks | selectattr('status', 'equalto', 'pass') | list | length }}"
+        warning_checks: "{{ eigenstate_idm_readiness_report_checks | selectattr('status', 'equalto', 'warn') | list | length }}"
+        failed_checks: "{{ eigenstate_idm_readiness_report_checks | selectattr('status', 'equalto', 'fail') | list | length }}"
+        informational_checks: "{{ eigenstate_idm_readiness_report_checks | selectattr('status', 'equalto', 'info') | list | length }}"
+      checks: "{{ eigenstate_idm_readiness_report_checks }}"
+
+- name: Render IdM readiness JSON report
+  ansible.builtin.template:
+    src: report.json.j2
+    dest: "{{ eigenstate_idm_readiness_report_output_dir }}/{{ eigenstate_idm_readiness_report_basename }}.json"
+    mode: "0640"
+  when: "'json' in eigenstate_idm_readiness_report_formats"
+
+- name: Render IdM readiness YAML report
+  ansible.builtin.template:
+    src: report.yaml.j2
+    dest: "{{ eigenstate_idm_readiness_report_output_dir }}/{{ eigenstate_idm_readiness_report_basename }}.yaml"
+    mode: "0640"
+  when: "'yaml' in eigenstate_idm_readiness_report_formats"
+
+- name: Render IdM readiness Markdown report
+  ansible.builtin.template:
+    src: report.md.j2
+    dest: "{{ eigenstate_idm_readiness_report_output_dir }}/{{ eigenstate_idm_readiness_report_basename }}.md"
+    mode: "0640"
+  when: "'md' in eigenstate_idm_readiness_report_formats"

@@ -1,0 +1,24 @@
+---
+eigenstate_certificate_inventory_report_output_dir: "./artifacts"
+eigenstate_certificate_inventory_report_basename: "certificate-inventory-report"
+eigenstate_certificate_inventory_report_formats:
+  - json
+  - yaml
+  - md
+eigenstate_certificate_inventory_report_schema_version: "1.0"
+eigenstate_certificate_inventory_report_generated_at_utc: "1970-01-01T00:00:00Z"
+eigenstate_certificate_inventory_report_site: "example"
+eigenstate_certificate_inventory_report_context: "static validation"
+eigenstate_certificate_inventory_report_certificates:
+  - principal: HTTP/app.example.com@EXAMPLE.COM
+    serial_number: "1001"
+    subject: "CN=app.example.com,O=EXAMPLE.COM"
+    issuer: "CN=Certificate Authority,O=EXAMPLE.COM"
+    not_before: "2026-01-01T00:00:00Z"
+    not_after: "2026-12-31T23:59:59Z"
+    state: valid
+    profile_id: caIPAserviceCert
+    san_names:
+      - app.example.com
+    rotation_required: false
+    evidence: Certificate is present and inside the expected renewal window.

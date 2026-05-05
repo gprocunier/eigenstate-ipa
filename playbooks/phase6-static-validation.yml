@@ -1,0 +1,51 @@
+---
+- name: Validate Phase 6 reporting roles without live systems
+  hosts: localhost
+  gather_facts: false
+  vars:
+    eigenstate_phase6_output_dir: "{{ playbook_dir }}/../build/phase6-static"
+  tasks:
+    - name: Render IdM readiness report from fixture records
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.idm_readiness_report
+      vars:
+        eigenstate_idm_readiness_report_output_dir: "{{ eigenstate_phase6_output_dir }}"
+        eigenstate_idm_readiness_report_site: phase6-static
+        eigenstate_idm_readiness_report_context: fixture schema validation
+      tags: idm_readiness
+
+    - name: Render certificate inventory report from fixture records
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.certificate_inventory_report
+      vars:
+        eigenstate_certificate_inventory_report_output_dir: "{{ eigenstate_phase6_output_dir }}"
+        eigenstate_certificate_inventory_report_site: phase6-static
+        eigenstate_certificate_inventory_report_context: fixture schema validation
+      tags: certificate_inventory
+
+    - name: Render keytab rotation candidate report from fixture records
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.keytab_rotation_candidates
+      vars:
+        eigenstate_keytab_rotation_candidates_output_dir: "{{ eigenstate_phase6_output_dir }}"
+        eigenstate_keytab_rotation_candidates_site: phase6-static
+        eigenstate_keytab_rotation_candidates_context: fixture schema validation
+      tags: keytab_rotation
+
+    - name: Render temporary access report from fixture records
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.temporary_access_report
+      vars:
+        eigenstate_temporary_access_report_output_dir: "{{ eigenstate_phase6_output_dir }}"
+        eigenstate_temporary_access_report_site: phase6-static
+        eigenstate_temporary_access_report_context: fixture schema validation
+      tags: temporary_access
+
+    - name: Render policy drift report from fixture records
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.policy_drift_report
+      vars:
+        eigenstate_policy_drift_report_output_dir: "{{ eigenstate_phase6_output_dir }}"
+        eigenstate_policy_drift_report_site: phase6-static
+        eigenstate_policy_drift_report_context: fixture schema validation
+      tags: policy_drift

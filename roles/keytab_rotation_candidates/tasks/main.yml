@@ -1,0 +1,7 @@
+---
+- name: Validate keytab rotation candidate report inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Render keytab rotation candidate report
+  ansible.builtin.import_tasks: render.yml
+  when: eigenstate_keytab_rotation_candidates_formats | length > 0

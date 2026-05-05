@@ -1,0 +1,8 @@
+---
+- name: Render IdM readiness report
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Render IdM readiness report artifacts
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.idm_readiness_report

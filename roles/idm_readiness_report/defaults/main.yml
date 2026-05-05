@@ -1,0 +1,24 @@
+---
+eigenstate_idm_readiness_report_output_dir: "./artifacts"
+eigenstate_idm_readiness_report_basename: "idm-readiness-report"
+eigenstate_idm_readiness_report_formats:
+  - json
+  - yaml
+  - md
+eigenstate_idm_readiness_report_schema_version: "1.0"
+eigenstate_idm_readiness_report_generated_at_utc: "1970-01-01T00:00:00Z"
+eigenstate_idm_readiness_report_site: "example"
+eigenstate_idm_readiness_report_context: "static validation"
+eigenstate_idm_readiness_report_checks:
+  - id: kerberos-auth
+    title: Kerberos authentication path
+    status: pass
+    severity: high
+    evidence: Controller has a documented Kerberos authentication method.
+    recommendation: Keep keytab or credential refresh under normal rotation control.
+  - id: idm-api
+    title: IdM API reachability
+    status: pass
+    severity: high
+    evidence: IdM JSON-RPC endpoint is represented in the automation inventory.
+    recommendation: Monitor API availability from the execution environment subnet.

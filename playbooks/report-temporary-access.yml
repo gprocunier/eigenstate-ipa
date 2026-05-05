@@ -1,0 +1,8 @@
+---
+- name: Render temporary access report
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Render temporary access report artifacts
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.temporary_access_report

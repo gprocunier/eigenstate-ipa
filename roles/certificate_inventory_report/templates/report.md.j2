@@ -1,0 +1,26 @@
+# Certificate Inventory Report
+
+- schema: `{{ eigenstate_certificate_inventory_report.schema }}`
+- generated_at_utc: `{{ eigenstate_certificate_inventory_report.generated_at_utc }}`
+- site: `{{ eigenstate_certificate_inventory_report.site }}`
+- context: {{ eigenstate_certificate_inventory_report.context }}
+- read_only: `{{ eigenstate_certificate_inventory_report.read_only }}`
+
+## Summary
+
+| Metric | Count |
+| --- | ---: |
+| Total certificates | {{ eigenstate_certificate_inventory_report.summary.total_certificates }} |
+| Valid | {{ eigenstate_certificate_inventory_report.summary.valid_certificates }} |
+| Expiring | {{ eigenstate_certificate_inventory_report.summary.expiring_certificates }} |
+| Expired | {{ eigenstate_certificate_inventory_report.summary.expired_certificates }} |
+| Revoked | {{ eigenstate_certificate_inventory_report.summary.revoked_certificates }} |
+| Rotation required | {{ eigenstate_certificate_inventory_report.summary.rotation_required }} |
+
+## Certificates
+
+| Principal | Serial | State | Not After | Rotation |
+| --- | --- | --- | --- | --- |
+{% for cert in eigenstate_certificate_inventory_report.certificates %}
+| `{{ cert.principal }}` | `{{ cert.serial_number }}` | `{{ cert.state }}` | `{{ cert.not_after }}` | `{{ cert.rotation_required | default(false) }}` |
+{% endfor %}
