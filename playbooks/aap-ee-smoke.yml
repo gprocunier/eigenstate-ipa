@@ -1,0 +1,12 @@
+---
+- name: Smoke test an eigenstate.ipa AAP execution environment image
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: "{{ playbook_dir }}/../roles/aap_execution_environment"
+      vars:
+        eigenstate_ee_render: false
+        eigenstate_ee_build: false
+        eigenstate_ee_smoke: true
+        eigenstate_ee_push: false
+        eigenstate_ee_register_controller: false

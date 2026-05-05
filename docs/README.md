@@ -32,6 +32,8 @@ Use these entry points instead of reading the files as a flat list:
   if Quay workflows need cleaner identity, mirroring, and repository-event automation
 - <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
   if the workflow runs in Controller or an execution environment
+- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>AAP EE QUICKSTART</kbd></a>
+  if you need the ready-to-build execution environment path first
 - <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
   if the question is temporary access or lease-like behavior inside IdM
 

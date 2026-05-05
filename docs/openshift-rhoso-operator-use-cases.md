@@ -226,7 +226,7 @@ exists before it archives anything.
           - rhoso-maint-targets
         server: "{{ ipa_server }}"
         kerberos_keytab: "{{ ipa_keytab }}"
-        ipaadmin_principal: lease-operator
+        ipaadmin_principal: admin
         verify: "{{ ipa_ca }}"
       when:
         - principal_state.exists

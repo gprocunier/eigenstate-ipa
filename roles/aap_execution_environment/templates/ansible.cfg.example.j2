@@ -1,0 +1,8 @@
+[defaults]
+stdout_callback = yaml
+collections_path = /usr/share/ansible/collections:/home/runner/.ansible/collections
+host_key_checking = True
+retry_files_enabled = False
+
+[inventory]
+enable_plugins = eigenstate.ipa.idm, yaml, ini, auto

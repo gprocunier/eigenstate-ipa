@@ -1,0 +1,21 @@
+---
+- name: Verify ansible-builder is available
+  ansible.builtin.command:
+    argv:
+      - "{{ eigenstate_ee_builder_binary }}"
+      - --version
+  changed_when: false
+
+- name: Build execution environment image
+  ansible.builtin.command:
+    argv:
+      - "{{ eigenstate_ee_builder_binary }}"
+      - build
+      - -t
+      - "{{ eigenstate_ee_image }}"
+      - --container-runtime
+      - "{{ eigenstate_ee_container_runtime }}"
+      - --context
+      - "{{ eigenstate_ee_build_context }}"
+    chdir: "{{ eigenstate_ee_output_dir }}"
+  changed_when: true

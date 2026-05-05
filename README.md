@@ -114,6 +114,7 @@ For collection-wide workflow guidance:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>&nbsp;&nbsp;ROTATION CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>&nbsp;&nbsp;ROTATION USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>&nbsp;&nbsp;AAP EE QUICKSTART&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>&nbsp;&nbsp;EPHEMERAL ACCESS CAPABILITIES&nbsp;&nbsp;</kbd></a>
 
@@ -156,7 +157,7 @@ If the comparison translates into an IdM-native workflow for you, these are the 
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.10.13.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.11.0.tar.gz
 ```
 
 Verify the main surfaces you plan to use. For example:
@@ -201,6 +202,9 @@ For the full plugin index, use <a href="https://gprocunier.github.io/eigenstate-
 | `plugins/lookup/selinuxmap.py` | Lookup plugin for SELinux user map state inspection |
 | `plugins/lookup/sudo.py` | Lookup plugin for sudo rules, commands, and command groups |
 | `plugins/lookup/hbacrule.py` | Lookup plugin for HBAC rule state inspection and access testing |
+| `execution-environment/eigenstate-idm/` | Ready-to-build AAP execution environment scaffold for IdM-backed automation |
+| `roles/aap_execution_environment/` | Role that renders, builds, smokes, pushes, and optionally registers the AAP EE |
+| `playbooks/aap-ee-*.yml` | Wrapper playbooks for the AAP EE render, build, smoke, push, and Controller registration path |
 | `docs/` | Operator and maintainer documentation aligned with the collection interface |
 | `scripts/validate-collection.sh` | Lightweight repo validation for YAML, plugin syntax, and collection build hygiene |
 | `Makefile` | Wrapper for repo validation targets |

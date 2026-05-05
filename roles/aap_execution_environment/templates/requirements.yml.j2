@@ -1,0 +1,22 @@
+---
+collections:
+  - name: eigenstate.ipa
+    version: "{{ eigenstate_ee_collection_version }}"
+{% if eigenstate_ee_include_freeipa_collection | bool %}
+  - name: freeipa.ansible_freeipa
+{% endif %}
+{% if eigenstate_ee_include_community_general | bool %}
+  - name: community.general
+{% endif %}
+{% if eigenstate_ee_include_community_crypto | bool %}
+  - name: community.crypto
+{% endif %}
+{% if eigenstate_ee_include_kubernetes | bool %}
+  - name: kubernetes.core
+{% endif %}
+{% if eigenstate_ee_include_okd | bool %}
+  - name: community.okd
+{% endif %}
+{% if eigenstate_ee_include_ansible_controller | bool %}
+  - name: ansible.controller
+{% endif %}

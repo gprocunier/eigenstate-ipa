@@ -1,0 +1,12 @@
+---
+- name: Render and build eigenstate.ipa AAP execution environment
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: "{{ playbook_dir }}/../roles/aap_execution_environment"
+      vars:
+        eigenstate_ee_render: true
+        eigenstate_ee_build: true
+        eigenstate_ee_smoke: false
+        eigenstate_ee_push: false
+        eigenstate_ee_register_controller: false
