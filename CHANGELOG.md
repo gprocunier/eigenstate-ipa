@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.16.0 - 2026-05-05
+
+- added release engineering maturity gates with an ansible-core 2.15 through
+  2.18 CI matrix aligned to `meta/runtime.yml`
+- added blocking collection metadata lint, `ansible-test sanity`, public
+  documentation language validation, Markdown example checks, and AAP EE
+  scaffold validation to the standard validation path
+- added release workflow version/tag checks, artifact checksum generation,
+  manifest inspection, and clean-install documentation smoke tests before
+  GitHub release publication
+- added release process, test strategy, and support matrix documentation with
+  explicit separation between fast CI, optional integration tests, and private
+  lab validation
+- kept public documentation language neutral and removed release gates that
+  would depend on byte-identical Galaxy tarball output across builds
+
 ## 1.15.0 - 2026-05-05
 
 - added `idm_readiness_report` for deterministic IdM automation readiness

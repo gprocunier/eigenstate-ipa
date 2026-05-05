@@ -18,6 +18,12 @@ Use these entry points instead of reading the files as a flat list:
   for the collection overview and plugin-family index
 - <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>DOCUMENTATION MAP</kbd></a>
   for reading order and problem-based navigation
+- <a href="https://gprocunier.github.io/eigenstate-ipa/support-matrix.html"><kbd>SUPPORT MATRIX</kbd></a>
+  for release-gated ansible-core, Python, IdM, and execution-environment boundaries
+- <a href="https://gprocunier.github.io/eigenstate-ipa/test-strategy.html"><kbd>TEST STRATEGY</kbd></a>
+  for fast CI, optional integration tests, documentation checks, and lab validation
+- <a href="https://gprocunier.github.io/eigenstate-ipa/release-process.html"><kbd>RELEASE PROCESS</kbd></a>
+  for version hygiene, release gates, artifact checks, and Galaxy publication
 - <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
   if you are comparing the collection to Vault or CyberArk
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>

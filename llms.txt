@@ -71,6 +71,9 @@ The collection treats IdM as both:
 - [docs/cert-expiry-report-role.md](docs/cert-expiry-report-role.md)
 - [docs/phase2-validation-walkthrough.md](docs/phase2-validation-walkthrough.md)
 - [docs/aap-integration.md](docs/aap-integration.md)
+- [docs/support-matrix.md](docs/support-matrix.md)
+- [docs/test-strategy.md](docs/test-strategy.md)
+- [docs/release-process.md](docs/release-process.md)
 - [docs/openshift-primer.md](docs/openshift-primer.md)
 - [docs/openshift-keycloak-idm-reference.md](docs/openshift-keycloak-idm-reference.md)
 - [docs/openshift-identity-validation-walkthrough.md](docs/openshift-identity-validation-walkthrough.md)
@@ -283,7 +286,7 @@ The collection treats IdM as both:
 
 - collection name: `eigenstate.ipa`
 - namespace: `eigenstate`
-- current version: `1.15.0`
+- current version: `1.16.0`
 - author: Greg Procunier
 - license: GPL-3.0-or-later
 - repository: https://github.com/gprocunier/eigenstate-ipa

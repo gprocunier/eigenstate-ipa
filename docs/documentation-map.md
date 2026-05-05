@@ -13,7 +13,7 @@ description: >-
 Use this page when you know the problem category but do not yet know which
 collection page should be your first stop.
 
-Current release: `1.15.0`
+Current release: `1.16.0`
 
 ## Reading Model
 
@@ -130,6 +130,9 @@ workflow guides above.
 | How do I validate OpenShift OIDC without mutating a cluster? | [OpenShift Identity Validation](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html) |
 | How do I deliver IdM-backed material to workloads safely? | [Kubernetes Secret Threat Model](https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html) |
 | How do I produce safe operational evidence? | [Reporting Overview](https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html) |
+| Which versions are release-gated? | [Support Matrix](https://gprocunier.github.io/eigenstate-ipa/support-matrix.html) |
+| What does CI validate? | [Test Strategy](https://gprocunier.github.io/eigenstate-ipa/test-strategy.html) |
+| How is a release cut and published? | [Release Process](https://gprocunier.github.io/eigenstate-ipa/release-process.html) |
 
 ## OpenShift Workflow Branches
 
@@ -170,6 +173,15 @@ workflow guides above.
 - [User Lease Demo](https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html)
   shows the exact boundary the demo proves: fresh `kinit` and SSH succeed during the lease,
   then a fresh `kinit` fails after expiry
+
+## Release Engineering
+
+- [Support Matrix](https://gprocunier.github.io/eigenstate-ipa/support-matrix.html)
+  lists release-gated ansible-core, Python, IdM, and execution-environment boundaries
+- [Test Strategy](https://gprocunier.github.io/eigenstate-ipa/test-strategy.html)
+  explains fast CI, optional integration tests, documentation checks, and lab validation
+- [Release Process](https://gprocunier.github.io/eigenstate-ipa/release-process.html)
+  documents version hygiene, release gates, artifact checks, and Galaxy publication
 
 ## Keep The Flow Clean
 

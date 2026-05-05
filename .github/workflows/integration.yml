@@ -16,6 +16,11 @@ on:
       - 'tests/**'
       - '.github/workflows/integration.yml'
   workflow_dispatch:
+    inputs:
+      ansible-core-version:
+        description: ansible-core minor version to test
+        required: false
+        default: '2.18'
 
 permissions:
   contents: read
@@ -28,6 +33,8 @@ jobs:
   integration:
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    env:
+      ANSIBLE_CORE_VERSION: ${{ inputs.ansible-core-version || '2.18' }}
 
     steps:
       - name: Check out repository
@@ -60,7 +67,10 @@ jobs:
               docker exec ipa-server kdestroy 2>/dev/null || true
               exit 0
             fi
-            if ! docker inspect ipa-server --format '{{.State.Running}}' 2>/dev/null | grep -q true; then
+            running="$(
+              docker inspect ipa-server --format '{{.State.Running}}' 2>/dev/null || true
+            )"
+            if [[ "${running}" != "true" ]]; then
               echo "Container died — dumping logs:"
               docker logs ipa-server 2>&1 | tail -80
               exit 1
@@ -81,7 +91,8 @@ jobs:
           docker cp /tmp/get-pip.py ipa-server:/root/get-pip.py
           docker exec ipa-server python3 /root/get-pip.py --break-system-packages
           docker exec ipa-server \
-            python3 -m pip install --break-system-packages "ansible-core~=2.18.0"
+            python3 -m pip install --break-system-packages \
+              "ansible-core~=${ANSIBLE_CORE_VERSION}.0"
 
       - name: Install collection inside container
         run: |

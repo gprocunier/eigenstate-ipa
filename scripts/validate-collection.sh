@@ -12,6 +12,32 @@ COLLECTIONS_ROOT="${TEMP_BUILD_DIR}/collections"
 mkdir -p "${COLLECTIONS_ROOT}/ansible_collections/eigenstate"
 ln -s "${PROJECT_ROOT}" "${COLLECTIONS_ROOT}/ansible_collections/eigenstate/ipa"
 
+echo "==> Checking support matrix metadata"
+python3 - "${PROJECT_ROOT}" <<'PY2'
+import sys
+from pathlib import Path
+
+import yaml
+
+project_root = Path(sys.argv[1])
+runtime = yaml.safe_load((project_root / "meta/runtime.yml").read_text())
+requires_ansible = runtime.get("requires_ansible")
+if requires_ansible != ">=2.15.0":
+    raise SystemExit(
+        "meta/runtime.yml requires_ansible must remain aligned with the "
+        "documented and tested lower bound >=2.15.0"
+    )
+
+docs = {
+    "docs/support-matrix.md",
+    "docs/test-strategy.md",
+    "docs/release-process.md",
+}
+missing = [path for path in docs if not (project_root / path).is_file()]
+if missing:
+    raise SystemExit(f"missing release engineering docs: {', '.join(sorted(missing))}")
+PY2
+
 echo "==> Parsing YAML sources"
 python3 - "${PROJECT_ROOT}" <<'PY2'
 import sys
@@ -59,11 +85,28 @@ fi
 
 if command -v ansible-lint >/dev/null 2>&1; then
   echo "==> Running ansible-lint on collection metadata"
-  if ! ansible-lint     "${PROJECT_ROOT}/galaxy.yml"     "${PROJECT_ROOT}/meta/runtime.yml"; then
-    echo "ansible-lint reported issues; continuing because this validation path is advisory." >&2
-  fi
+  ansible-lint     "${PROJECT_ROOT}/galaxy.yml"     "${PROJECT_ROOT}/meta/runtime.yml"
 else
   echo "==> ansible-lint not installed; skipping"
+fi
+
+if command -v ansible-test >/dev/null 2>&1; then
+  echo "==> Running ansible-test sanity"
+  test_python="${EIGENSTATE_ANSIBLE_TEST_PYTHON:-3.11}"
+  require_ansible_test="${EIGENSTATE_REQUIRE_ANSIBLE_TEST:-0}"
+  if command -v "python${test_python}" >/dev/null 2>&1 || [[ "${require_ansible_test}" == "1" ]]; then
+    (
+      cd "${COLLECTIONS_ROOT}/ansible_collections/eigenstate/ipa"
+      ansible-test sanity --python "${test_python}" --color no --truncate 0
+    )
+  else
+    echo "python${test_python} not installed; skipping ansible-test sanity"
+  fi
+elif [[ "${EIGENSTATE_REQUIRE_ANSIBLE_TEST:-0}" == "1" ]]; then
+  echo "ansible-test not installed but EIGENSTATE_REQUIRE_ANSIBLE_TEST=1" >&2
+  exit 1
+else
+  echo "==> ansible-test not installed; skipping sanity"
 fi
 
 if command -v ansible-doc >/dev/null 2>&1; then
@@ -86,18 +129,16 @@ else
   echo "==> ansible-doc not installed; skipping"
 fi
 
-if command -v ansible-playbook >/dev/null 2>&1; then
-  echo "==> Checking AAP EE role playbook syntax"
-  ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/aap-ee-render.yml"
-  ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/aap-ee-build.yml"
-  ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/aap-ee-smoke.yml"
+echo "==> Validating public documentation language"
+"${PROJECT_ROOT}/scripts/validate-doc-language.sh"
 
-  echo "==> Rendering AAP EE scaffold"
-  ansible-playbook "${PROJECT_ROOT}/playbooks/aap-ee-render.yml" \
-    -e "eigenstate_ee_output_dir=${TEMP_BUILD_DIR}/eigenstate-idm-ee"
-  test -f "${TEMP_BUILD_DIR}/eigenstate-idm-ee/execution-environment.yml"
-  test -f "${TEMP_BUILD_DIR}/eigenstate-idm-ee/requirements.yml"
-  test -f "${TEMP_BUILD_DIR}/eigenstate-idm-ee/bindep.txt"
+echo "==> Validating documentation examples"
+"${PROJECT_ROOT}/scripts/validate-doc-examples.sh"
+
+if command -v ansible-playbook >/dev/null 2>&1; then
+  echo "==> Validating AAP EE scaffold"
+  EIGENSTATE_EE_VALIDATE_OUTPUT_DIR="${TEMP_BUILD_DIR}/eigenstate-idm-ee" \
+    "${PROJECT_ROOT}/scripts/validate-ee-scaffold.sh"
 
   echo "==> Checking Phase 2 role playbook syntax"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
