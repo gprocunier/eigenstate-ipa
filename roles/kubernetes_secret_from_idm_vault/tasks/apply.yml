@@ -1,0 +1,14 @@
+---
+- name: Apply protected Kubernetes Secret manifest
+  ansible.builtin.command:
+    argv:
+      - "{{ eigenstate_k8s_secret_kubectl }}"
+      - "--kubeconfig"
+      - "{{ eigenstate_k8s_secret_kubeconfig }}"
+      - "--context"
+      - "{{ eigenstate_k8s_secret_context }}"
+      - "apply"
+      - "-f"
+      - "{{ eigenstate_k8s_secret_output_dir }}/{{ eigenstate_k8s_secret_basename }}.secret.yaml"
+  changed_when: true
+  no_log: "{{ eigenstate_k8s_secret_no_log }}"

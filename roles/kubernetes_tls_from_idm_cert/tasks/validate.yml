@@ -1,0 +1,25 @@
+---
+- name: Validate Kubernetes TLS Secret variables
+  ansible.builtin.assert:
+    that:
+      - eigenstate_k8s_tls_secret_name is match('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$')
+      - eigenstate_k8s_tls_namespace is match('^[a-z0-9]([-a-z0-9]*[a-z0-9])?$')
+      - eigenstate_k8s_tls_certificate | length > 0
+      - eigenstate_k8s_tls_private_key | length > 0
+      - eigenstate_k8s_tls_output_dir | length > 0
+      - eigenstate_k8s_tls_basename is match('^[A-Za-z0-9_.-]+$')
+      - eigenstate_k8s_tls_labels is mapping
+      - eigenstate_k8s_tls_annotations is mapping
+      - not (eigenstate_k8s_tls_apply | bool and eigenstate_k8s_tls_render_only | bool)
+    fail_msg: Invalid Kubernetes TLS Secret role configuration.
+  no_log: "{{ eigenstate_k8s_tls_no_log }}"
+
+- name: Validate Kubernetes TLS apply inputs
+  ansible.builtin.assert:
+    that:
+      - eigenstate_k8s_tls_kubeconfig | length > 0
+      - eigenstate_k8s_tls_context | length > 0
+      - eigenstate_k8s_tls_kubectl | length > 0
+    fail_msg: Kubernetes apply requires explicit kubeconfig, context, and kubectl inputs.
+  no_log: "{{ eigenstate_k8s_tls_no_log }}"
+  when: eigenstate_k8s_tls_apply | bool

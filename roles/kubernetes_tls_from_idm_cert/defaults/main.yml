@@ -1,0 +1,24 @@
+---
+eigenstate_k8s_tls_secret_name: idm-tls-secret
+eigenstate_k8s_tls_namespace: default
+eigenstate_k8s_tls_certificate: static-validation-certificate
+eigenstate_k8s_tls_private_key: static-validation-private-key
+eigenstate_k8s_tls_ca_certificate: ""
+
+eigenstate_k8s_tls_render_only: true
+eigenstate_k8s_tls_apply: false
+eigenstate_k8s_tls_render_review_manifest: true
+eigenstate_k8s_tls_write_payload_manifest: false
+eigenstate_k8s_tls_no_log: true
+
+eigenstate_k8s_tls_output_dir: ./artifacts
+eigenstate_k8s_tls_basename: kubernetes-tls-from-idm-cert
+eigenstate_k8s_tls_labels:
+  app.kubernetes.io/managed-by: eigenstate.ipa
+  app.kubernetes.io/component: workload-tls-delivery
+eigenstate_k8s_tls_annotations: {}
+eigenstate_k8s_tls_correlation_id: ""
+
+eigenstate_k8s_tls_kubeconfig: ""
+eigenstate_k8s_tls_context: ""
+eigenstate_k8s_tls_kubectl: kubectl

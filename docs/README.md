@@ -30,6 +30,14 @@ Use these entry points instead of reading the files as a flat list:
   if emergency access evidence and RBAC bindings are the review target
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-ldap-fallback.html"><kbd>OPENSHIFT LDAP FALLBACK</kbd></a>
   if direct LDAP is required as a documented exception
+- <a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html"><kbd>KUBERNETES SECRET THREAT MODEL</kbd></a>
+  if IdM-backed material will be rendered into Kubernetes or OpenShift Secret manifests
+- <a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-from-idm-vault.html"><kbd>KUBERNETES SECRET FROM IDM VAULT</kbd></a>
+  if vault material needs a review-first workload Secret delivery path
+- <a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-tls-from-idm-cert.html"><kbd>KUBERNETES TLS FROM IDM CERT</kbd></a>
+  if certificate material needs a review-first TLS Secret delivery path
+- <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-delivery-to-workloads.html"><kbd>KEYTAB DELIVERY TO WORKLOADS</kbd></a>
+  if keytab material needs a review-first workload Secret delivery path
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>OPENSHIFT RHOSO USE CASES</kbd></a>
   if RHOSO cloud-operator or tenant identity boundaries are part of the workflow
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>OPENSHIFT RHACM USE CASES</kbd></a>

@@ -1,0 +1,10 @@
+---
+- name: Validate Kubernetes TLS Secret inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Render Kubernetes TLS Secret manifests
+  ansible.builtin.import_tasks: render.yml
+
+- name: Apply Kubernetes TLS Secret manifest
+  ansible.builtin.import_tasks: apply.yml
+  when: eigenstate_k8s_tls_apply | bool

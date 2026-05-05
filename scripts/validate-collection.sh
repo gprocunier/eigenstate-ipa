@@ -126,6 +126,19 @@ if command -v ansible-playbook >/dev/null 2>&1; then
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ANSIBLE_LOCALHOST_WARNING=false \
     ansible-playbook "${PROJECT_ROOT}/playbooks/phase4-static-validation.yml"
+
+  echo "==> Checking Phase 5 workload delivery playbook syntax"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/render-kubernetes-secret-from-idm-vault.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/render-kubernetes-tls-secret-from-idm-cert.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/render-keytab-secret.yml"
+
+  echo "==> Running Phase 5 static validation playbook"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ANSIBLE_LOCALHOST_WARNING=false \
+    ansible-playbook "${PROJECT_ROOT}/playbooks/phase5-static-validation.yml"
 else
   echo "==> ansible-playbook not installed; skipping AAP EE role checks"
 fi

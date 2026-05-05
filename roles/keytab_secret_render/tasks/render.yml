@@ -1,0 +1,48 @@
+---
+- name: Create keytab Secret output directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_keytab_secret_output_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Build keytab Secret safe metadata
+  ansible.builtin.set_fact:
+    eigenstate_keytab_secret_effective_annotations: >-
+      {{ eigenstate_keytab_secret_annotations | combine({
+          'eigenstate.ipa/source': 'idm-keytab',
+          'eigenstate.ipa/generated-at': lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ'),
+          'eigenstate.ipa/payload': 'redacted-in-review-manifest'
+        }) }}
+
+- name: Add keytab Secret principal annotation
+  ansible.builtin.set_fact:
+    eigenstate_keytab_secret_effective_annotations: >-
+      {{ eigenstate_keytab_secret_effective_annotations | combine({
+          'eigenstate.ipa/principal': eigenstate_keytab_secret_principal
+        }) }}
+  when: eigenstate_keytab_secret_principal | length > 0
+
+- name: Add keytab Secret correlation annotation
+  ansible.builtin.set_fact:
+    eigenstate_keytab_secret_effective_annotations: >-
+      {{ eigenstate_keytab_secret_effective_annotations | combine({
+          'eigenstate.ipa/correlation-id': eigenstate_keytab_secret_correlation_id
+        }) }}
+  when: eigenstate_keytab_secret_correlation_id | length > 0
+
+- name: Render reviewable keytab Secret manifest
+  ansible.builtin.template:
+    src: keytab-secret-review.yaml.j2
+    dest: "{{ eigenstate_keytab_secret_output_dir }}/{{ eigenstate_keytab_secret_basename }}.review.yaml"
+    mode: "0640"
+  when: eigenstate_keytab_secret_render_review_manifest | bool
+
+- name: Render protected keytab Secret manifest with payload
+  ansible.builtin.template:
+    src: keytab-secret-payload.yaml.j2
+    dest: "{{ eigenstate_keytab_secret_output_dir }}/{{ eigenstate_keytab_secret_basename }}.secret.yaml"
+    mode: "0600"
+  no_log: "{{ eigenstate_keytab_secret_no_log }}"
+  when: >-
+    (eigenstate_keytab_secret_write_payload_manifest | bool) or
+    (eigenstate_keytab_secret_apply | bool)

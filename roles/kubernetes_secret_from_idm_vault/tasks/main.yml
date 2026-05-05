@@ -1,0 +1,14 @@
+---
+- name: Validate Kubernetes Secret from IdM vault inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Retrieve Kubernetes Secret payload from IdM vault
+  ansible.builtin.import_tasks: retrieve.yml
+  when: eigenstate_k8s_secret_live_lookup_enabled | bool
+
+- name: Render Kubernetes Secret manifests
+  ansible.builtin.import_tasks: render.yml
+
+- name: Apply Kubernetes Secret manifest
+  ansible.builtin.import_tasks: apply.yml
+  when: eigenstate_k8s_secret_apply | bool
