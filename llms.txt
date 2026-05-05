@@ -2,7 +2,7 @@
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
 (IdM / FreeIPA). It exposes one inventory plugin, nine lookup plugins,
-two modules, and an AAP execution-environment role for live inventory,
+four modules, and an AAP execution-environment role for live inventory,
 vault-backed secret retrieval and storage,
 Kerberos principal state, Kerberos keytab delivery, IdM CA certificate
 automation, OTP workflows, SELinux user map inspection, HBAC rule inspection
@@ -12,6 +12,8 @@ temporary user access leasing:
 - `eigenstate.ipa.idm`
 - `eigenstate.ipa.vault`
 - `eigenstate.ipa.vault_write`
+- `eigenstate.ipa.keytab_manage`
+- `eigenstate.ipa.cert_request`
 - `eigenstate.ipa.principal`
 - `eigenstate.ipa.keytab`
 - `eigenstate.ipa.cert`
@@ -67,6 +69,10 @@ The collection treats IdM as both:
 - [docs/inventory-plugin.md](docs/inventory-plugin.md)
 - [docs/vault-plugin.md](docs/vault-plugin.md)
 - [docs/vault-write-plugin.md](docs/vault-write-plugin.md)
+- [docs/keytab-manage-module.md](docs/keytab-manage-module.md)
+- [docs/cert-request-module.md](docs/cert-request-module.md)
+- [docs/compatibility-policy.md](docs/compatibility-policy.md)
+- [docs/mutation-surface-migration.md](docs/mutation-surface-migration.md)
 - [docs/principal-plugin.md](docs/principal-plugin.md)
 - [docs/keytab-plugin.md](docs/keytab-plugin.md)
 - [docs/cert-plugin.md](docs/cert-plugin.md)
@@ -105,6 +111,24 @@ The collection treats IdM as both:
 - standard vault archives are idempotent; symmetric and asymmetric archives are write-always
 - supports delta-only member management via `members` and `members_absent`
 - supports Ansible check mode
+
+### `eigenstate.ipa.keytab_manage`
+
+- module
+- retrieves existing Kerberos keytabs or rotates principal keys through `ipa-getkeytab`
+- requires `confirm_rotation: true` before key rotation
+- writes keytabs to an optional destination with mode, owner, and group controls
+- returns metadata by default and returns base64 keytab content only with `return_content: true`
+- supports Ansible check mode
+
+### `eigenstate.ipa.cert_request`
+
+- module
+- requests IdM CA certificates from inline CSR content or a CSR file
+- writes issued certificates to an optional destination with mode, owner, and group controls
+- returns safe certificate metadata by default
+- returns certificate content only with `return_content: true`
+- keeps private key handling outside the module
 
 ### `eigenstate.ipa.principal`
 
@@ -196,6 +220,8 @@ The collection treats IdM as both:
 - `plugins/inventory/idm.py` - dynamic inventory plugin
 - `plugins/lookup/vault.py` - vault lookup plugin
 - `plugins/modules/vault_write.py` - vault write module
+- `plugins/modules/keytab_manage.py` - keytab retrieval, deployment, and guarded rotation module
+- `plugins/modules/cert_request.py` - certificate request module
 - `plugins/lookup/principal.py` - Kerberos principal state lookup plugin
 - `plugins/lookup/keytab.py` - keytab lookup plugin
 - `plugins/lookup/cert.py` - IdM certificate lookup plugin
@@ -214,7 +240,7 @@ The collection treats IdM as both:
 - `roles/cert_expiry_report/` - role to find IdM certificates and render JSON, Markdown, and CSV expiry reports
 - `playbooks/aap-ee-*.yml` - wrapper playbooks for the AAP EE workflow
 - `playbooks/sealed-artifact-delivery.yml`, `playbooks/temporary-access-window.yml`, and `playbooks/cert-expiry-report.yml` - wrapper playbooks for AAP golden-path roles
-- `tests/` - unit coverage for inventory, vault, vault_write, principal, keytab, cert, otp, selinuxmap, hbacrule, dns, sudo, and user_lease
+- `tests/` - unit coverage for inventory, vault, vault_write, keytab_manage, cert_request, principal, keytab, cert, otp, selinuxmap, hbacrule, dns, sudo, and user_lease
 - `scripts/validate-collection.sh` - repo validation path
 - `Makefile` - convenience wrapper for validation
 

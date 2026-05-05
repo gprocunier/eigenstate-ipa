@@ -116,10 +116,10 @@ options:
     default: false
   vault_type:
     description: >-
-      Vault encryption type. Only used when C(state=present) and the
-      vault is being created. Has no effect when the vault already exists
-      (changing the type of an existing vault is not supported by this
-      module).
+      Vault encryption type. Used when creating the vault and validated when
+      the vault already exists. The module fails if the existing vault type
+      does not match this value because changing vault type in place is not
+      supported.
     type: str
     default: standard
     choices: [standard, symmetric, asymmetric]
@@ -136,7 +136,7 @@ options:
     description: >-
       Path to a file containing the RSA public key (PEM format) for an
       asymmetric vault. Mutually exclusive with C(vault_public_key).
-    type: str
+    type: path
   data:
     description: >-
       Secret payload to archive. Required when C(state=archived) and
@@ -147,7 +147,7 @@ options:
     description: >-
       Path to a file whose contents will be archived as the secret
       payload. Mutually exclusive with C(data).
-    type: str
+    type: path
   vault_password:
     description: >-
       Password for a symmetric vault. Required when creating or archiving
@@ -159,7 +159,7 @@ options:
     description: >-
       Path to a file containing the symmetric vault password. Mutually
       exclusive with C(vault_password).
-    type: str
+    type: path
   members:
     description: >-
       List of users, groups, or service principals to ensure are vault
@@ -181,7 +181,8 @@ notes:
   - Sensitive files (C(kerberos_keytab), C(vault_password_file)) should
     have mode C(0600) or more restrictive.
   - Changing the vault type of an existing vault is not supported. Delete
-    and recreate the vault to change its type.
+    and recreate the vault to change its type. Existing vaults fail closed
+    when C(vault_type) does not match the IdM record.
   - For symmetric vaults, C(vault_password) or C(vault_password_file) is
     required when creating or archiving the vault.
   - For asymmetric vaults, C(vault_public_key) or
@@ -588,6 +589,14 @@ def _ensure_present(module, api, name, scope_args, scope_label, check_mode):
         mod_args = dict(scope_args)
         need_mod = False
 
+        if current_type != vault_type:
+            module.fail_json(
+                msg="Existing vault '%s' has type '%s', but vault_type='%s' "
+                    "was requested. Changing vault type in place is not "
+                    "supported; set vault_type to the existing type or "
+                    "delete and recreate the vault." %
+                    (name, current_type, vault_type))
+
         if description is not None and description != current_desc:
             mod_args['description'] = description
             need_mod = True
@@ -674,9 +683,11 @@ def _ensure_archived(module, api, name, scope_args, scope_label, check_mode):
                 archive_needed = False
         except ipalib_errors.NotFound:
             archive_needed = True
-        except Exception:
-            # If retrieval fails for any reason, proceed with archive
-            archive_needed = True
+        except Exception as exc:
+            module.fail_json(
+                msg="Failed to compare current payload for standard vault "
+                    "'%s'; refusing to archive because idempotency could not "
+                    "be established: %s" % (name, to_native(exc)))
 
     archive_changed = False
     if archive_needed:
@@ -717,6 +728,12 @@ def _reconcile_members(module, api, name, scope_args, entry, check_mode):
         _canonicalize_member_for_compare(api, principal)
         for principal in desired_remove
     }
+    conflicts = desired_add_canonical & desired_remove_canonical
+    if conflicts:
+        module.fail_json(
+            msg="'members' and 'members_absent' conflict after "
+                "canonicalization: %s" % ', '.join(sorted(conflicts)))
+
     to_add = desired_add_canonical - current_members
     to_remove = desired_remove_canonical & current_members
 
@@ -792,7 +809,7 @@ def run_module():
             ipaadmin_password=dict(type='str', no_log=True,
                                    fallback=(os.environ.get,
                                              ['IPA_ADMIN_PASSWORD'])),
-            kerberos_keytab=dict(type='str',
+            kerberos_keytab=dict(type='path',
                                  fallback=(os.environ.get, ['IPA_KEYTAB'])),
             verify=dict(type='str',
                         fallback=(os.environ.get, ['IPA_CERT'])),
@@ -803,11 +820,11 @@ def run_module():
                             choices=['standard', 'symmetric', 'asymmetric']),
             description=dict(type='str'),
             vault_public_key=dict(type='str'),
-            vault_public_key_file=dict(type='str'),
+            vault_public_key_file=dict(type='path'),
             data=dict(type='str', no_log=True),
-            data_file=dict(type='str'),
+            data_file=dict(type='path'),
             vault_password=dict(type='str', no_log=True),
-            vault_password_file=dict(type='str'),
+            vault_password_file=dict(type='path'),
             members=dict(type='list', elements='str', default=[]),
             members_absent=dict(type='list', elements='str', default=[]),
         ),
