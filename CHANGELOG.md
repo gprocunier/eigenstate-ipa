@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.12.0 - 2026-05-05
+
+- added `keytab_manage` for explicit keytab generation, retrieval, and
+  removal workflows with `check_mode` support and structured change reporting
+- added `cert_request` for IdM certificate request workflows with CSR input,
+  principal targeting, and fail-closed validation semantics
+- documented the compatibility policy and migration path from lookup-only
+  mutation surfaces to module-backed workflows
+- hardened `vault_write` compatibility handling so deprecated alias use emits
+  warnings while unsafe or unsupported option combinations fail closed
+- refreshed the documentation map, machine-readable context, and module docs
+  for the expanded mutation surface set
+
 ## 1.11.0 - 2026-05-05
 
 - added `roles/aap_execution_environment` to render, build, smoke-test, push,
@@ -45,7 +58,7 @@
 
 - fixed live IdM vault metadata lookups by removing the unsupported `no_members` option from `vault_show` and `vault_find` API calls
 - added regression coverage proving `eigenstate.ipa.vault` omits that option while preserving `all`, `raw`, scope, and `sizelimit` arguments
-- validated the 1.10.8 artifact against the real Calabi IdM server from bastion across the refactored lookup plugin set before Galaxy publication
+- validated the 1.10.8 artifact against a live IdM server from a bastion host across the refactored lookup plugin set before Galaxy publication
 
 ## 1.10.7 - 2026-04-27
 
@@ -69,7 +82,7 @@
 ## 1.10.4 - 2026-04-10
 
 - merged the full devsec hardening branch stack into `main`, covering TLS verification hardening, clearer authorization failures, explicit `kinit` path handling, stderr sanitization, cache-example hygiene, vault output guidance, and password `kinit` fallback validation
-- tightened the collection validation lane so the merged tree now passes both workstation validation and bastion-side source validation against the live Calabi lab through the documented `virt-01` jump boundary
+- tightened the collection validation lane so the merged tree now passes both workstation validation and bastion-side source validation against a live IdM lab through the documented jump-host boundary
 - hardened unit-test exception assertions across ansible-core versions so the validation path stays stable on newer controller environments instead of depending on one local Python and Ansible combination
 - refreshed release references for the `1.10.4` security-hardening release
 

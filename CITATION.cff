@@ -3,13 +3,14 @@ message: >-
   If you use this Ansible collection in a publication or internal report,
   please cite it using the metadata below.
 title: "eigenstate.ipa: Ansible plugins for Red Hat Identity Management"
-version: "1.11.0"
+version: "1.12.0"
 date-released: "2026-05-05"
 abstract: >-
   eigenstate.ipa is an Ansible collection for Red Hat Identity Management
   (IdM / FreeIPA). It provides an inventory plugin for live IdM-backed
   inventory plus IdM vault retrieval and lifecycle automation, Kerberos
-  principal state inspection, keytab delivery, certificate automation, OTP
+  principal state inspection, keytab delivery and management, certificate
+  request automation, OTP
   token workflows, SELinux user map inspection, HBAC rule inspection and
   access testing, DNS and sudo inspection, temporary user access leasing,
   AAP execution environment scaffolding, and controller-friendly automation
@@ -41,7 +42,7 @@ license: "GPL-3.0-or-later"
 preferred-citation:
   type: software
   title: "eigenstate.ipa: Ansible plugins for Red Hat Identity Management"
-  version: "1.11.0"
+  version: "1.12.0"
   date-released: "2026-05-05"
   authors:
     - family-names: Procunier
