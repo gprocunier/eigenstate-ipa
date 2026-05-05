@@ -1,0 +1,94 @@
+---
+- name: Verify Controller registration inputs
+  ansible.builtin.assert:
+    that:
+      - eigenstate_controller_host | length > 0
+      - eigenstate_controller_organization | length > 0
+      - eigenstate_ee_registry_image | length > 0
+      - (eigenstate_controller_oauthtoken | length > 0) or
+        (eigenstate_controller_username | length > 0 and eigenstate_controller_password | length > 0)
+    fail_msg: >-
+      Set Controller host, organization, registry image, and either OAuth token
+      or username/password before enabling eigenstate_ee_register_controller.
+  no_log: true
+
+- name: Look up Automation Controller organization
+  ansible.builtin.uri:
+    url: "{{ eigenstate_controller_host }}/api/v2/organizations/?name={{ eigenstate_controller_organization | urlencode }}"
+    method: GET
+    return_content: true
+    body_format: json
+    headers: "{{ (eigenstate_controller_oauthtoken | length > 0) | ternary({'Authorization': 'Bearer ' ~ eigenstate_controller_oauthtoken}, {}) }}"
+    url_username: "{{ (eigenstate_controller_username | length > 0) | ternary(eigenstate_controller_username, omit) }}"
+    url_password: "{{ (eigenstate_controller_password | length > 0) | ternary(eigenstate_controller_password, omit) }}"
+    force_basic_auth: "{{ eigenstate_controller_oauthtoken | length == 0 }}"
+    validate_certs: "{{ eigenstate_controller_validate_certs }}"
+    status_code:
+      - 200
+  register: eigenstate_controller_org_lookup
+  no_log: true
+
+- name: Verify Automation Controller organization exists
+  ansible.builtin.assert:
+    that:
+      - eigenstate_controller_org_lookup.json.count | int == 1
+    fail_msg: "Expected exactly one matching Automation Controller organization."
+  no_log: true
+
+- name: Look up existing Automation Controller execution environment
+  ansible.builtin.uri:
+    url: "{{ eigenstate_controller_host }}/api/v2/execution_environments/?name={{ eigenstate_controller_ee_name | urlencode }}"
+    method: GET
+    return_content: true
+    body_format: json
+    headers: "{{ (eigenstate_controller_oauthtoken | length > 0) | ternary({'Authorization': 'Bearer ' ~ eigenstate_controller_oauthtoken}, {}) }}"
+    url_username: "{{ (eigenstate_controller_username | length > 0) | ternary(eigenstate_controller_username, omit) }}"
+    url_password: "{{ (eigenstate_controller_password | length > 0) | ternary(eigenstate_controller_password, omit) }}"
+    force_basic_auth: "{{ eigenstate_controller_oauthtoken | length == 0 }}"
+    validate_certs: "{{ eigenstate_controller_validate_certs }}"
+    status_code:
+      - 200
+  register: eigenstate_controller_ee_lookup
+  no_log: true
+
+- name: Create Automation Controller execution environment
+  ansible.builtin.uri:
+    url: "{{ eigenstate_controller_host }}/api/v2/execution_environments/"
+    method: POST
+    return_content: true
+    body_format: json
+    body:
+      name: "{{ eigenstate_controller_ee_name }}"
+      image: "{{ eigenstate_ee_registry_image }}"
+      organization: "{{ eigenstate_controller_org_lookup.json.results[0].id }}"
+      pull: "{{ eigenstate_controller_ee_pull }}"
+    headers: "{{ (eigenstate_controller_oauthtoken | length > 0) | ternary({'Authorization': 'Bearer ' ~ eigenstate_controller_oauthtoken}, {}) }}"
+    url_username: "{{ (eigenstate_controller_username | length > 0) | ternary(eigenstate_controller_username, omit) }}"
+    url_password: "{{ (eigenstate_controller_password | length > 0) | ternary(eigenstate_controller_password, omit) }}"
+    force_basic_auth: "{{ eigenstate_controller_oauthtoken | length == 0 }}"
+    validate_certs: "{{ eigenstate_controller_validate_certs }}"
+    status_code:
+      - 200
+      - 201
+  when: eigenstate_controller_ee_lookup.json.count | int == 0
+  no_log: true
+
+- name: Update Automation Controller execution environment
+  ansible.builtin.uri:
+    url: "{{ eigenstate_controller_host }}/api/v2/execution_environments/{{ eigenstate_controller_ee_lookup.json.results[0].id }}/"
+    method: PATCH
+    return_content: true
+    body_format: json
+    body:
+      image: "{{ eigenstate_ee_registry_image }}"
+      organization: "{{ eigenstate_controller_org_lookup.json.results[0].id }}"
+      pull: "{{ eigenstate_controller_ee_pull }}"
+    headers: "{{ (eigenstate_controller_oauthtoken | length > 0) | ternary({'Authorization': 'Bearer ' ~ eigenstate_controller_oauthtoken}, {}) }}"
+    url_username: "{{ (eigenstate_controller_username | length > 0) | ternary(eigenstate_controller_username, omit) }}"
+    url_password: "{{ (eigenstate_controller_password | length > 0) | ternary(eigenstate_controller_password, omit) }}"
+    force_basic_auth: "{{ eigenstate_controller_oauthtoken | length == 0 }}"
+    validate_certs: "{{ eigenstate_controller_validate_certs }}"
+    status_code:
+      - 200
+  when: eigenstate_controller_ee_lookup.json.count | int > 0
+  no_log: true

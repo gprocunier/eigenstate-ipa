@@ -1,0 +1,43 @@
+# {{ eigenstate_ee_name }}
+
+This directory is a rendered Ansible Builder context for an
+`eigenstate.ipa` IdM execution environment.
+
+Base image:
+
+```text
+{{ eigenstate_ee_base_image }}
+```
+
+Build:
+
+```bash
+ansible-builder build -t {{ eigenstate_ee_image }}
+```
+
+Smoke test from the collection checkout:
+
+```bash
+ansible-playbook playbooks/aap-ee-smoke.yml \
+  -e eigenstate_ee_image={{ eigenstate_ee_image }}
+```
+
+Push after logging in with your container runtime:
+
+```bash
+podman tag {{ eigenstate_ee_image }} registry.example.com/automation/{{ eigenstate_ee_name }}:{{ eigenstate_ee_tag }}
+podman push registry.example.com/automation/{{ eigenstate_ee_name }}:{{ eigenstate_ee_tag }}
+```
+
+Do not commit registry tokens, automation hub tokens, IPA passwords, keytabs,
+vault passwords, or private keys into this directory. Keep them in Controller
+credentials, local environment variables, or untracked configuration.
+
+Expected AAP credential mounts:
+
+- `/etc/ipa/ca.crt` for the IdM CA certificate
+- `/runner/env/ipa/<principal>.keytab` for a service or admin keytab
+- `KRB5CCNAME` only when your workflow manages a custom Kerberos cache
+
+OpenShift, Kubernetes, and Controller collections are not included by default.
+Enable them through the role variables when needed.

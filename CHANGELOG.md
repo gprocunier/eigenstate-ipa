@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.11.0 - 2026-05-05
+
+- added `roles/aap_execution_environment` to render, build, smoke-test, push,
+  and optionally register an AAP execution environment for `eigenstate.ipa`
+- added a static `execution-environment/eigenstate-idm/` scaffold for manual
+  Ansible Builder workflows
+- added AAP EE quickstart, disconnected build, troubleshooting, and seller demo
+  documentation
+- added render-only validation for the EE scaffold and unit coverage for the
+  role render path
+- hardened RHOSO `user_lease` examples so admin keytab examples use the
+  matching `admin` principal
+
 ## 1.10.13 - 2026-04-27
 
 - normalized Ansible unsafe text values before passing `tls_ca_cert` to FreeIPA bootstrap so AAP-provided certificate paths satisfy FreeIPA's exact primitive type checks

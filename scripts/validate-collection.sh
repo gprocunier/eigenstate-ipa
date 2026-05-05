@@ -82,6 +82,25 @@ else
   echo "==> ansible-doc not installed; skipping"
 fi
 
+if command -v ansible-playbook >/dev/null 2>&1; then
+  echo "==> Checking AAP EE role playbook syntax"
+  ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/aap-ee-render.yml"
+  ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/aap-ee-build.yml"
+  ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/aap-ee-smoke.yml"
+
+  echo "==> Rendering AAP EE scaffold"
+  ansible-playbook "${PROJECT_ROOT}/playbooks/aap-ee-render.yml" \
+    -e "eigenstate_ee_output_dir=${TEMP_BUILD_DIR}/eigenstate-idm-ee"
+  test -f "${TEMP_BUILD_DIR}/eigenstate-idm-ee/execution-environment.yml"
+  test -f "${TEMP_BUILD_DIR}/eigenstate-idm-ee/requirements.yml"
+  test -f "${TEMP_BUILD_DIR}/eigenstate-idm-ee/bindep.txt"
+else
+  echo "==> ansible-playbook not installed; skipping AAP EE role checks"
+fi
+
+echo "==> Checking docs for likely secret-bearing examples"
+python3 "${PROJECT_ROOT}/scripts/check-docs-no-secret-debug.py"
+
 if command -v ansible-galaxy >/dev/null 2>&1; then
   echo "==> Building collection tarball"
   ansible-galaxy collection build "${PROJECT_ROOT}"     --output-path "${TEMP_BUILD_DIR}" >/dev/null

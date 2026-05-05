@@ -1,0 +1,30 @@
+---
+- name: Verify container runtime is available
+  ansible.builtin.command:
+    argv:
+      - "{{ eigenstate_ee_container_runtime }}"
+      - --version
+  changed_when: false
+
+- name: Run execution environment smoke commands
+  ansible.builtin.command:
+    argv:
+      - "{{ eigenstate_ee_container_runtime }}"
+      - run
+      - --rm
+      - "{{ eigenstate_ee_image }}"
+      - /bin/sh
+      - -lc
+      - "{{ item }}"
+  loop:
+    - ansible --version
+    - ansible-doc -t inventory eigenstate.ipa.idm
+    - ansible-doc -t lookup eigenstate.ipa.vault
+    - ansible-doc -t lookup eigenstate.ipa.keytab
+    - ansible-doc -t lookup eigenstate.ipa.cert
+    - ansible-doc -t module eigenstate.ipa.vault_write
+    - ansible-doc -t module eigenstate.ipa.user_lease
+    - python3 -c 'import ipalib, ipaclient'
+    - command -v kinit
+    - command -v ipa-getkeytab
+  changed_when: false

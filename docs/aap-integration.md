@@ -9,6 +9,9 @@ title: AAP Integration
 
 Related docs:
 
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>&nbsp;&nbsp;AAP EE QUICKSTART&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-disconnected-build.html"><kbd>&nbsp;&nbsp;DISCONNECTED BUILD&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-troubleshooting.html"><kbd>&nbsp;&nbsp;AAP EE TROUBLESHOOTING&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>&nbsp;&nbsp;VAULT/CYBERARK PRIMER&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>&nbsp;&nbsp;OPENSHIFT ECOSYSTEM PRIMER&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>&nbsp;&nbsp;OPENSHIFT RHOSO USE CASES&nbsp;&nbsp;</kbd></a>
@@ -38,6 +41,12 @@ Use this page for:
 
 Use plugin pages for exact options. Use use-case pages for full playbook detail.
 This page is the control-plane view.
+
+For the ready-to-build image path, start with
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>AAP EE QUICKSTART</kbd></a>.
+That page covers rendering the Ansible Builder v3 context, building the image,
+running smoke checks, pushing to a registry, and registering the image in
+Controller.
 
 ## Controller Model
 

@@ -15,7 +15,7 @@ material, certificates, DNS, and access policy instead of forcing those
 surfaces into separate inventory files, ad hoc shell scripts, or external
 stores.
 
-Current release: `1.10.13`
+Current release: `1.11.0`
 
 ## Start Here
 
@@ -47,8 +47,8 @@ Pick the lane that matches the problem first, then branch into the deeper docs:
     </tr>
     <tr>
       <td>Running Controller or execution-environment jobs</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a></td>
-      <td>Shows the non-interactive auth and scheduling boundary.</td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>AAP EE QUICKSTART</kbd></a></td>
+      <td>Starts with the ready-to-build runtime before the broader Controller model.</td>
     </tr>
     <tr>
       <td>Managing static secrets or scheduled rotation</td>
@@ -86,6 +86,7 @@ as workflows rather than as isolated plugins.
 | Service onboarding | `principal` pre-flight + `keytab` retrieval + optional `cert` issuance | [Principal Use Cases](https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html) |
 | TLS bootstrap and renewal | `cert` + `vault_write` for private key archival + `vault` retrieval | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) |
 | Static secret lifecycle | `vault_write` mutation + `vault` retrieval + AAP scheduling | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) |
+| AAP runtime adoption | EE scaffold + `aap_execution_environment` role + smoke checks | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) |
 | Lease-like temporary access | `user_lease` for delegated temporary users or `principal` + `keytab` retirement for machine identity | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) |
 | Host enrollment | `otp` bootstrap + official IdM enrollment modules + `principal` verification | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) |
 | Policy validation before change | `hbacrule` + `selinuxmap` + `sudo` + optional `dns`/`principal` checks | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) |
@@ -133,6 +134,8 @@ as workflows rather than as isolated plugins.
   focuses on app-team onboarding and developer-facing platform workflows
 - <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
   explains execution-environment dependencies, non-interactive auth, and controller-side patterns
+- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>AAP EE QUICKSTART</kbd></a>
+  gives the render, build, smoke, push, and Controller registration path for the IdM EE
 - <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
   explains the collection-wide rotation model for static assets
 - <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>

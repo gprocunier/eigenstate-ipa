@@ -1,0 +1,34 @@
+---
+- name: Create execution environment build context directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_ee_output_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Render execution environment build context files
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "{{ eigenstate_ee_output_dir }}/{{ item }}"
+    mode: "0644"
+  loop:
+    - execution-environment.yml
+    - requirements.yml
+    - bindep.txt
+    - python-requirements.txt
+    - ansible.cfg.example
+    - README.md
+  register: eigenstate_ee_render_result
+  no_log: false
+
+- name: Record rendered execution environment file list
+  ansible.builtin.set_fact:
+    eigenstate_ee_rendered_files: >-
+      {{
+        eigenstate_ee_render_result.results
+        | map(attribute='dest')
+        | list
+      }}
+
+- name: Show rendered execution environment file list
+  ansible.builtin.debug:
+    var: eigenstate_ee_rendered_files

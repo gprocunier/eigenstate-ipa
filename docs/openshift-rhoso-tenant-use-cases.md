@@ -209,7 +209,7 @@ That keeps the cloud team from handing off a partially assembled tenant setup.
           - tenant-a-lease-targets
         server: "{{ ipa_server }}"
         kerberos_keytab: "{{ ipa_keytab }}"
-        ipaadmin_principal: lease-operator
+        ipaadmin_principal: admin
         verify: "{{ ipa_ca }}"
       when:
         - principal_state.exists
@@ -266,7 +266,7 @@ That gives the tenant team a clean answer to the usual question:
           - tenant-a-lease-targets
         server: "{{ ipa_server }}"
         kerberos_keytab: "{{ ipa_keytab }}"
-        ipaadmin_principal: lease-operator
+        ipaadmin_principal: admin
         verify: "{{ ipa_ca }}"
       when:
         - not access_state.denied

@@ -1,0 +1,6 @@
+# Keep this file intentionally small.
+# Prefer RHEL RPMs for ipalib/ipaclient in AAP-supported builds.
+# Add Python-only packages here only when no suitable RPM is available.
+{% for package in eigenstate_ee_python_packages %}
+{{ package }}
+{% endfor %}

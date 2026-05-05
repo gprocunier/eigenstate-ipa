@@ -1,0 +1,3 @@
+# Keep this file intentionally small.
+# Prefer RHEL RPMs for ipalib/ipaclient in AAP-supported builds.
+# Add Python-only packages here only when no suitable RPM is available.

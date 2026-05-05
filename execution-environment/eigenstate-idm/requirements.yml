@@ -1,0 +1,7 @@
+---
+collections:
+  - name: eigenstate.ipa
+    version: ">=1.10.13"
+  - name: freeipa.ansible_freeipa
+  - name: community.general
+  - name: community.crypto
