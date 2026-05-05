@@ -46,6 +46,11 @@ Pick the lane that matches the problem first, then branch into the deeper docs:
       <td>Gives the platform-wide framing before the branch-specific pages.</td>
     </tr>
     <tr>
+      <td>Validating OpenShift identity through Keycloak and IdM</td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html"><kbd>OPENSHIFT IDENTITY VALIDATION</kbd></a></td>
+      <td>Renders OIDC config examples and readiness reports without mutating a cluster.</td>
+    </tr>
+    <tr>
       <td>Running Controller or execution-environment jobs</td>
       <td><a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>AAP EE QUICKSTART</kbd></a></td>
       <td>Starts with the ready-to-build runtime before the broader Controller model.</td>
@@ -94,6 +99,7 @@ as workflows rather than as isolated plugins.
 | Static secret lifecycle | `vault_write` mutation + `vault` retrieval + AAP scheduling | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) |
 | AAP runtime validation | EE scaffold + `aap_execution_environment` role + smoke checks | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) |
 | AAP packaged workflows | `sealed_artifact_delivery` + `temporary_access_window` + `cert_expiry_report` | [AAP Golden Path Roles](https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html) |
+| OpenShift identity validation | `openshift_idm_oidc_validation` + `keycloak_idm_federation_validation` + `openshift_breakglass_validation` | [OpenShift Identity Validation](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html) |
 | Lease-like temporary access | `user_lease` for delegated temporary users or `principal` + `keytab` retirement for machine identity | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) |
 | Host enrollment | `otp` bootstrap + official IdM enrollment modules + `principal` verification | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) |
 | Policy validation before change | `hbacrule` + `selinuxmap` + `sudo` + optional `dns`/`principal` checks | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) |
@@ -125,6 +131,10 @@ as workflows rather than as isolated plugins.
   explains where the collection overlaps with Vault or CyberArk and where it does not
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>
   frames the collection for OpenShift-adjacent estates using Keycloak and IdM-backed trust
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-keycloak-idm-reference.html"><kbd>OPENSHIFT IDENTITY REFERENCE</kbd></a>
+  defines the IdM, Keycloak, OIDC, RBAC, and breakglass validation boundary
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html"><kbd>OPENSHIFT IDENTITY VALIDATION</kbd></a>
+  walks through render-only and validation-only identity readiness reports
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html"><kbd>OPENSHIFT OPERATOR USE CASES</kbd></a>
   focuses on cluster-admin and OpenShift Virtualization workflows
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>OPENSHIFT RHOSO USE CASES</kbd></a>

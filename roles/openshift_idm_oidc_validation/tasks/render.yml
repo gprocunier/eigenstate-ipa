@@ -1,0 +1,46 @@
+---
+- name: Create OpenShift OIDC output directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_oidc_output_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Build OpenShift OAuth OIDC configuration example
+  ansible.builtin.set_fact:
+    eigenstate_oidc_oauth_config:
+      apiVersion: config.openshift.io/v1
+      kind: OAuth
+      metadata:
+        name: cluster
+      spec:
+        identityProviders:
+          - name: "{{ eigenstate_oidc_client_id }}"
+            mappingMethod: "{{ eigenstate_oidc_mapping_method }}"
+            type: OpenID
+            openID:
+              issuer: "{{ eigenstate_oidc_issuer_url }}"
+              clientID: "{{ eigenstate_oidc_client_id }}"
+              clientSecret:
+                name: "{{ eigenstate_oidc_client_secret_name }}"
+              claims: "{{ eigenstate_oidc_claims }}"
+
+- name: Add issuer CA reference when configured
+  ansible.builtin.set_fact:
+    eigenstate_oidc_oauth_config: >-
+      {{ eigenstate_oidc_oauth_config | combine({
+          'spec': {
+            'identityProviders': [
+              eigenstate_oidc_oauth_config.spec.identityProviders[0] | combine({
+                'openID': eigenstate_oidc_oauth_config.spec.identityProviders[0].openID
+                  | combine({'ca': {'name': eigenstate_oidc_ca_configmap_name}})
+              }, recursive=True)
+            ]
+          }
+        }, recursive=True) }}
+  when: eigenstate_oidc_ca_configmap_name | length > 0
+
+- name: Render OpenShift OAuth OIDC configuration example
+  ansible.builtin.template:
+    src: oauth-oidc.yaml.j2
+    dest: "{{ eigenstate_oidc_output_dir }}/{{ eigenstate_oidc_basename }}.oauth.yaml"
+    mode: "0640"

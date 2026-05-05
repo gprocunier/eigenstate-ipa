@@ -1,0 +1,11 @@
+---
+- name: Validate OpenShift OIDC inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Render OpenShift OIDC config
+  ansible.builtin.import_tasks: render.yml
+  when: eigenstate_oidc_render_config | bool
+
+- name: Render OpenShift OIDC readiness report
+  ansible.builtin.import_tasks: report.yml
+  when: eigenstate_oidc_render_report | bool

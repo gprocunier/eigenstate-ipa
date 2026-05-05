@@ -1,0 +1,80 @@
+---
+- name: Validate Keycloak federation variables
+  ansible.builtin.assert:
+    that:
+      - eigenstate_keycloak_realm | length > 0
+      - eigenstate_keycloak_idm_provider_alias | length > 0
+      - eigenstate_keycloak_group_claim | length > 0
+      - eigenstate_keycloak_username_claim | length > 0
+      - eigenstate_keycloak_expected_groups is sequence
+      - eigenstate_keycloak_known_idm_groups is sequence
+      - eigenstate_keycloak_expected_mappers is sequence
+      - eigenstate_keycloak_configured_mappers is sequence
+      - eigenstate_keycloak_required_protocol_mappers is sequence
+      - eigenstate_keycloak_configured_protocol_mappers is sequence
+      - eigenstate_keycloak_report_formats | difference(['json', 'md']) | length == 0
+    fail_msg: Invalid Keycloak IdM federation validation role configuration.
+
+- name: Calculate Keycloak federation readiness gaps
+  ansible.builtin.set_fact:
+    eigenstate_keycloak_missing_groups: >-
+      {{ eigenstate_keycloak_expected_groups
+         | difference(eigenstate_keycloak_known_idm_groups) }}
+    eigenstate_keycloak_missing_principals: >-
+      {{ eigenstate_keycloak_expected_principals
+         | difference(eigenstate_keycloak_known_idm_principals) }}
+    eigenstate_keycloak_configured_mapper_names: >-
+      {{ eigenstate_keycloak_configured_mappers
+         | map(attribute='name') | list }}
+    eigenstate_keycloak_configured_protocol_mapper_names: >-
+      {{ eigenstate_keycloak_configured_protocol_mappers
+         | map(attribute='name') | list }}
+
+- name: Calculate missing Keycloak mapper names
+  ansible.builtin.set_fact:
+    eigenstate_keycloak_missing_mappers: >-
+      {{ eigenstate_keycloak_expected_mappers | map(attribute='name') | list
+         | difference(eigenstate_keycloak_configured_mapper_names) }}
+    eigenstate_keycloak_missing_protocol_mappers: >-
+      {{ eigenstate_keycloak_required_protocol_mappers | map(attribute='name') | list
+         | difference(eigenstate_keycloak_configured_protocol_mapper_names) }}
+
+- name: Fail when required federation evidence is missing
+  ansible.builtin.assert:
+    that:
+      - eigenstate_keycloak_missing_groups | length == 0
+      - eigenstate_keycloak_missing_principals | length == 0
+      - eigenstate_keycloak_missing_mappers | length == 0
+      - eigenstate_keycloak_missing_protocol_mappers | length == 0
+    fail_msg: Keycloak IdM federation validation is missing required evidence.
+  when: eigenstate_keycloak_fail_on_missing | bool
+
+- name: Build Keycloak IdM federation readiness model
+  ansible.builtin.set_fact:
+    eigenstate_keycloak_readiness_passed: >-
+      {{ (eigenstate_keycloak_missing_groups | length == 0) and
+         (eigenstate_keycloak_missing_principals | length == 0) and
+         (eigenstate_keycloak_missing_mappers | length == 0) and
+         (eigenstate_keycloak_missing_protocol_mappers | length == 0) }}
+
+- name: Build Keycloak IdM federation readiness report
+  ansible.builtin.set_fact:
+    eigenstate_keycloak_readiness_report:
+      role: keycloak_idm_federation_validation
+      generated_at_utc: "{{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}"
+      realm: "{{ eigenstate_keycloak_realm }}"
+      idm_provider_alias: "{{ eigenstate_keycloak_idm_provider_alias }}"
+      ldap_vendor: "{{ eigenstate_keycloak_ldap_vendor }}"
+      kerberos_enabled: "{{ eigenstate_keycloak_kerberos_enabled | bool }}"
+      spnego_enabled: "{{ eigenstate_keycloak_spnego_enabled | bool }}"
+      group_claim: "{{ eigenstate_keycloak_group_claim }}"
+      username_claim: "{{ eigenstate_keycloak_username_claim }}"
+      expected_groups: "{{ eigenstate_keycloak_expected_groups }}"
+      missing_groups: "{{ eigenstate_keycloak_missing_groups }}"
+      expected_principals: "{{ eigenstate_keycloak_expected_principals }}"
+      missing_principals: "{{ eigenstate_keycloak_missing_principals }}"
+      expected_mappers: "{{ eigenstate_keycloak_expected_mappers }}"
+      missing_mappers: "{{ eigenstate_keycloak_missing_mappers }}"
+      required_protocol_mappers: "{{ eigenstate_keycloak_required_protocol_mappers }}"
+      missing_protocol_mappers: "{{ eigenstate_keycloak_missing_protocol_mappers }}"
+      passed: "{{ eigenstate_keycloak_readiness_passed }}"

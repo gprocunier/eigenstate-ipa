@@ -1,0 +1,9 @@
+---
+- name: Render OpenShift OAuth OIDC configuration
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: eigenstate.ipa.openshift_idm_oidc_validation
+      vars:
+        eigenstate_oidc_render_config: true
+        eigenstate_oidc_render_report: true

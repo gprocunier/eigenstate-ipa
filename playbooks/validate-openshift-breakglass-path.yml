@@ -1,0 +1,6 @@
+---
+- name: Validate OpenShift breakglass identity path
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: eigenstate.ipa.openshift_breakglass_validation

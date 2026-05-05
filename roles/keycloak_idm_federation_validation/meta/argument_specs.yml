@@ -1,0 +1,86 @@
+---
+argument_specs:
+  main:
+    short_description: Validate Keycloak federation inputs for IdM-backed OpenShift OIDC.
+    options:
+      eigenstate_keycloak_realm:
+        type: str
+        required: true
+        description: Keycloak realm that backs OpenShift OIDC.
+      eigenstate_keycloak_idm_provider_alias:
+        type: str
+        required: true
+        description: Keycloak user-federation provider alias for IdM or AD.
+      eigenstate_keycloak_ldap_vendor:
+        type: str
+        default: rhds
+        description: LDAP vendor model used for validation notes.
+      eigenstate_keycloak_kerberos_enabled:
+        type: bool
+        default: true
+        description: Whether Kerberos federation is expected.
+      eigenstate_keycloak_spnego_enabled:
+        type: bool
+        default: true
+        description: Whether browser SPNEGO is expected.
+      eigenstate_keycloak_group_claim:
+        type: str
+        default: groups
+        description: OIDC group claim expected by OpenShift.
+      eigenstate_keycloak_username_claim:
+        type: str
+        default: preferred_username
+        description: OIDC username claim expected by OpenShift.
+      eigenstate_keycloak_expected_groups:
+        type: list
+        elements: str
+        description: IdM groups expected to be federated through Keycloak.
+      eigenstate_keycloak_expected_principals:
+        type: list
+        elements: str
+        description: IdM principals expected by the federation design.
+      eigenstate_keycloak_known_idm_groups:
+        type: list
+        elements: str
+        description: Locally supplied evidence of existing IdM groups.
+      eigenstate_keycloak_known_idm_principals:
+        type: list
+        elements: str
+        description: Locally supplied evidence of existing IdM principals.
+      eigenstate_keycloak_expected_mappers:
+        type: list
+        elements: dict
+        description: Required Keycloak LDAP/federation mappers.
+      eigenstate_keycloak_configured_mappers:
+        type: list
+        elements: dict
+        description: Locally supplied evidence of configured federation mappers.
+      eigenstate_keycloak_required_protocol_mappers:
+        type: list
+        elements: dict
+        description: Required Keycloak OIDC protocol mappers.
+      eigenstate_keycloak_configured_protocol_mappers:
+        type: list
+        elements: dict
+        description: Locally supplied evidence of configured protocol mappers.
+      eigenstate_keycloak_fail_on_missing:
+        type: bool
+        default: true
+        description: Fail validation when required evidence is absent.
+      eigenstate_keycloak_output_dir:
+        type: str
+        default: ./artifacts
+        description: Directory for readiness reports.
+      eigenstate_keycloak_basename:
+        type: str
+        default: keycloak-idm-federation
+        description: Basename for rendered artifacts.
+      eigenstate_keycloak_report_formats:
+        type: list
+        elements: str
+        default: [json, md]
+        description: Readiness report formats.
+      eigenstate_keycloak_render_report:
+        type: bool
+        default: true
+        description: Render readiness report artifacts.

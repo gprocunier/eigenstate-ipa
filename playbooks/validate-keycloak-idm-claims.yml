@@ -1,0 +1,6 @@
+---
+- name: Validate Keycloak IdM claim inputs
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: eigenstate.ipa.keycloak_idm_federation_validation

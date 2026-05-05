@@ -1,0 +1,20 @@
+---
+- name: Create OpenShift breakglass report directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_breakglass_output_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Render OpenShift breakglass JSON report
+  ansible.builtin.template:
+    src: readiness-report.json.j2
+    dest: "{{ eigenstate_breakglass_output_dir }}/{{ eigenstate_breakglass_basename }}.json"
+    mode: "0640"
+  when: "'json' in eigenstate_breakglass_report_formats"
+
+- name: Render OpenShift breakglass Markdown report
+  ansible.builtin.template:
+    src: readiness-report.md.j2
+    dest: "{{ eigenstate_breakglass_output_dir }}/{{ eigenstate_breakglass_basename }}.md"
+    mode: "0640"
+  when: "'md' in eigenstate_breakglass_report_formats"

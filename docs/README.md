@@ -22,6 +22,14 @@ Use these entry points instead of reading the files as a flat list:
   if you are comparing the collection to Vault or CyberArk
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>
   if OpenShift uses Keycloak and IdM-backed trust and you want the surrounding workflow model
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-keycloak-idm-reference.html"><kbd>OPENSHIFT IDENTITY REFERENCE</kbd></a>
+  if you need the preferred IdM, Keycloak, OIDC, RBAC, and breakglass boundary
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html"><kbd>OPENSHIFT IDENTITY VALIDATION</kbd></a>
+  if you want render-only and validation-only OpenShift identity reports
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-breakglass-validation.html"><kbd>OPENSHIFT BREAKGLASS VALIDATION</kbd></a>
+  if emergency access evidence and RBAC bindings are the review target
+- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-ldap-fallback.html"><kbd>OPENSHIFT LDAP FALLBACK</kbd></a>
+  if direct LDAP is required as a documented exception
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>OPENSHIFT RHOSO USE CASES</kbd></a>
   if RHOSO cloud-operator or tenant identity boundaries are part of the workflow
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>OPENSHIFT RHACM USE CASES</kbd></a>

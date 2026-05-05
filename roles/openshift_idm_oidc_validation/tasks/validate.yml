@@ -1,0 +1,57 @@
+---
+- name: Validate OpenShift OIDC variables
+  ansible.builtin.assert:
+    that:
+      - eigenstate_oidc_issuer_url | length > 0
+      - eigenstate_oidc_client_id | length > 0
+      - eigenstate_oidc_client_secret_name | length > 0
+      - eigenstate_oidc_mapping_method in ['claim', 'add']
+      - eigenstate_oidc_claims is mapping
+      - "'groups' in eigenstate_oidc_claims"
+      - eigenstate_oidc_expected_groups is sequence
+      - eigenstate_oidc_idm_known_groups is sequence
+      - eigenstate_oidc_expected_rbac_bindings is sequence
+      - eigenstate_oidc_report_formats | difference(['json', 'md']) | length == 0
+    fail_msg: Invalid OpenShift OIDC validation role configuration.
+
+- name: Calculate OpenShift OIDC readiness gaps
+  ansible.builtin.set_fact:
+    eigenstate_oidc_missing_groups: >-
+      {{ eigenstate_oidc_expected_groups | difference(eigenstate_oidc_idm_known_groups) }}
+    eigenstate_oidc_missing_principals: >-
+      {{ eigenstate_oidc_expected_principals | difference(eigenstate_oidc_idm_known_principals) }}
+
+- name: Fail when required IdM evidence is missing
+  ansible.builtin.assert:
+    that:
+      - eigenstate_oidc_missing_groups | length == 0
+      - eigenstate_oidc_missing_principals | length == 0
+    fail_msg: >-
+      OpenShift OIDC validation is missing required IdM evidence.
+  when: eigenstate_oidc_fail_on_missing | bool
+
+- name: Build OpenShift OIDC readiness model
+  ansible.builtin.set_fact:
+    eigenstate_oidc_readiness_passed: >-
+      {{ (eigenstate_oidc_missing_groups | length == 0) and
+         (eigenstate_oidc_missing_principals | length == 0) }}
+
+- name: Build OpenShift OIDC readiness report
+  ansible.builtin.set_fact:
+    eigenstate_oidc_readiness_report:
+      role: openshift_idm_oidc_validation
+      generated_at_utc: "{{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}"
+      identity_provider:
+        type: OpenID
+        issuer_url: "{{ eigenstate_oidc_issuer_url }}"
+        client_id: "{{ eigenstate_oidc_client_id }}"
+        client_secret_name: "{{ eigenstate_oidc_client_secret_name }}"
+        ca_configmap_name: "{{ eigenstate_oidc_ca_configmap_name }}"
+        mapping_method: "{{ eigenstate_oidc_mapping_method }}"
+        claims: "{{ eigenstate_oidc_claims }}"
+      expected_groups: "{{ eigenstate_oidc_expected_groups }}"
+      expected_principals: "{{ eigenstate_oidc_expected_principals }}"
+      missing_groups: "{{ eigenstate_oidc_missing_groups }}"
+      missing_principals: "{{ eigenstate_oidc_missing_principals }}"
+      expected_rbac_bindings: "{{ eigenstate_oidc_expected_rbac_bindings }}"
+      passed: "{{ eigenstate_oidc_readiness_passed }}"

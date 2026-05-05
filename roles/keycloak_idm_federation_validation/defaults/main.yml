@@ -1,0 +1,44 @@
+---
+eigenstate_keycloak_realm: openshift
+eigenstate_keycloak_idm_provider_alias: idm
+eigenstate_keycloak_ldap_vendor: rhds
+eigenstate_keycloak_kerberos_enabled: true
+eigenstate_keycloak_spnego_enabled: true
+eigenstate_keycloak_group_claim: groups
+eigenstate_keycloak_username_claim: preferred_username
+eigenstate_keycloak_expected_groups:
+  - ocp-platform-admins
+  - ocp-developers
+eigenstate_keycloak_expected_principals: []
+eigenstate_keycloak_known_idm_groups:
+  - ocp-platform-admins
+  - ocp-developers
+eigenstate_keycloak_known_idm_principals: []
+eigenstate_keycloak_expected_mappers:
+  - name: idm-groups
+    type: group-ldap-mapper
+  - name: kerberos-principal
+    type: user-attribute-ldap-mapper
+eigenstate_keycloak_configured_mappers:
+  - name: idm-groups
+    type: group-ldap-mapper
+  - name: kerberos-principal
+    type: user-attribute-ldap-mapper
+eigenstate_keycloak_required_protocol_mappers:
+  - name: groups
+    claim: groups
+  - name: preferred_username
+    claim: preferred_username
+eigenstate_keycloak_configured_protocol_mappers:
+  - name: groups
+    claim: groups
+  - name: preferred_username
+    claim: preferred_username
+
+eigenstate_keycloak_fail_on_missing: true
+eigenstate_keycloak_output_dir: "./artifacts"
+eigenstate_keycloak_basename: "keycloak-idm-federation"
+eigenstate_keycloak_report_formats:
+  - json
+  - md
+eigenstate_keycloak_render_report: true

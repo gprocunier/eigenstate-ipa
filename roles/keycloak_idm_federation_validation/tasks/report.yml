@@ -1,0 +1,20 @@
+---
+- name: Create Keycloak federation report directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_keycloak_output_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Render Keycloak federation JSON report
+  ansible.builtin.template:
+    src: readiness-report.json.j2
+    dest: "{{ eigenstate_keycloak_output_dir }}/{{ eigenstate_keycloak_basename }}.json"
+    mode: "0640"
+  when: "'json' in eigenstate_keycloak_report_formats"
+
+- name: Render Keycloak federation Markdown report
+  ansible.builtin.template:
+    src: readiness-report.md.j2
+    dest: "{{ eigenstate_keycloak_output_dir }}/{{ eigenstate_keycloak_basename }}.md"
+    mode: "0640"
+  when: "'md' in eigenstate_keycloak_report_formats"
