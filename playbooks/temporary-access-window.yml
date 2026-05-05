@@ -1,0 +1,6 @@
+---
+- name: Manage temporary access window in IdM
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: eigenstate.ipa.temporary_access_window

@@ -1,0 +1,12 @@
+---
+- name: Run sealed artifact handoff command
+  ansible.builtin.command:
+    argv: "{{ eigenstate_sealed_handoff_argv }}"
+    chdir: "{{ eigenstate_sealed_handoff_chdir | default(omit, true) }}"
+    creates: "{{ eigenstate_sealed_handoff_creates | default(omit, true) }}"
+  delegate_to: >-
+    {{ eigenstate_sealed_target_host
+       if (eigenstate_sealed_target_host | length > 0)
+       else inventory_hostname }}
+  register: eigenstate_sealed_handoff_result
+  no_log: "{{ eigenstate_sealed_no_log }}"

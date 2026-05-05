@@ -1,0 +1,23 @@
+---
+- name: Set sudo preflight placeholder during static validation
+  ansible.builtin.set_fact:
+    eigenstate_taw_sudo_results: []
+  when: ansible_check_mode
+
+- name: Inspect sudo rules for temporary access workflow
+  ansible.builtin.set_fact:
+    eigenstate_taw_sudo_results: >-
+      {{ (eigenstate_taw_sudo_results | default([])) +
+         [lookup('eigenstate.ipa.sudo',
+                 item,
+                 operation='show',
+                 sudo_object='rule',
+                 server=eigenstate_taw_server,
+                 kerberos_keytab=(eigenstate_taw_kerberos_keytab or none),
+                 ipaadmin_principal=eigenstate_taw_ipaadmin_principal,
+                 ipaadmin_password=(eigenstate_taw_ipaadmin_password or none),
+                 verify=(eigenstate_taw_verify or none))] }}
+  delegate_to: localhost
+  loop: "{{ eigenstate_taw_sudo_rules }}"
+  no_log: "{{ eigenstate_taw_no_log }}"
+  when: not ansible_check_mode

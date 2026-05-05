@@ -1,0 +1,32 @@
+---
+- name: Validate sealed artifact delivery inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Run sealed artifact preflight
+  ansible.builtin.import_tasks: preflight.yml
+  when: eigenstate_sealed_state != 'absent'
+
+- name: Retrieve sealed artifact payload
+  ansible.builtin.import_tasks: retrieve.yml
+  when: eigenstate_sealed_state in ['staged', 'handed_off']
+
+- name: Stage sealed artifact payload
+  ansible.builtin.import_tasks: stage.yml
+  when: eigenstate_sealed_state in ['staged', 'handed_off']
+
+- name: Run sealed artifact handoff
+  ansible.builtin.import_tasks: handoff.yml
+  when:
+    - eigenstate_sealed_state == 'handed_off'
+    - eigenstate_sealed_handoff_enabled | bool
+
+- name: Clean up sealed artifact path
+  ansible.builtin.import_tasks: cleanup.yml
+  when: >-
+    eigenstate_sealed_state == 'absent' or
+    (eigenstate_sealed_state == 'handed_off' and
+     (eigenstate_sealed_cleanup_after_handoff | bool))
+
+- name: Render sealed artifact delivery reports
+  ansible.builtin.import_tasks: report.yml
+  when: eigenstate_sealed_report_enabled | bool

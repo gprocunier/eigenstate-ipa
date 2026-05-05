@@ -1,0 +1,89 @@
+---
+argument_specs:
+  main:
+    short_description: Preflight and manage a temporary IdM access window.
+    options:
+      eigenstate_taw_state:
+        type: str
+        default: preflight
+        choices: [preflight, open, expire, clear]
+        description: Temporary access workflow state.
+      eigenstate_taw_username:
+        type: str
+        required: true
+        description: IdM user receiving the temporary access window.
+      eigenstate_taw_principal_expiration:
+        type: raw
+        default: "01:00"
+        description: Principal expiration for open state.
+      eigenstate_taw_password_expiration:
+        type: raw
+        description: Optional explicit password expiration.
+      eigenstate_taw_password_expiration_matches_principal:
+        type: bool
+        default: true
+        description: Set password expiration to the principal lease end.
+      eigenstate_taw_clear_password_expiration:
+        type: bool
+        default: false
+        description: Clear password expiration when state is clear.
+      eigenstate_taw_require_groups:
+        type: list
+        elements: str
+        default: []
+        description: Required direct IdM group memberships.
+      eigenstate_taw_server:
+        type: str
+        required: true
+        description: IdM server FQDN.
+      eigenstate_taw_verify:
+        type: str
+        description: IPA CA certificate path or false-like override.
+      eigenstate_taw_ipaadmin_principal:
+        type: str
+        default: lease-operator
+        description: Kerberos principal used for IdM authentication.
+      eigenstate_taw_ipaadmin_password:
+        type: str
+        no_log: true
+        description: Password for the Kerberos principal.
+      eigenstate_taw_kerberos_keytab:
+        type: str
+        description: Keytab path for non-interactive Kerberos authentication.
+      eigenstate_taw_hbac_preflight_enabled:
+        type: bool
+        default: true
+        description: Run hbactest before mutating lease state.
+      eigenstate_taw_hbac_targethost:
+        type: str
+        description: HBAC target host used by hbactest.
+      eigenstate_taw_hbac_service:
+        type: str
+        default: sshd
+        description: HBAC service name used by hbactest.
+      eigenstate_taw_sudo_preflight_enabled:
+        type: bool
+        default: false
+        description: Inspect named sudo rules before mutation.
+      eigenstate_taw_sudo_rules:
+        type: list
+        elements: str
+        default: []
+        description: Sudo rule names to inspect.
+      eigenstate_taw_selinuxmap_preflight_enabled:
+        type: bool
+        default: false
+        description: Inspect named SELinux user maps before mutation.
+      eigenstate_taw_selinux_maps:
+        type: list
+        elements: str
+        default: []
+        description: SELinux user map names to inspect.
+      eigenstate_taw_report_enabled:
+        type: bool
+        default: true
+        description: Whether to render metadata-only reports.
+      eigenstate_taw_no_log:
+        type: bool
+        default: false
+        description: Hide temporary access module output.

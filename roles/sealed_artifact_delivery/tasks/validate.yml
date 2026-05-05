@@ -1,0 +1,23 @@
+---
+- name: Validate sealed artifact delivery variables
+  ansible.builtin.assert:
+    that:
+      - eigenstate_sealed_vault_name | length > 0
+      - eigenstate_sealed_server | length > 0
+      - eigenstate_sealed_state in ['preflight', 'staged', 'handed_off', 'absent']
+      - eigenstate_sealed_scope in ['shared', 'user', 'service', 'default']
+      - not (eigenstate_sealed_scope == 'shared' and
+             ((eigenstate_sealed_username | length > 0) or
+              (eigenstate_sealed_service | length > 0)))
+      - not (eigenstate_sealed_scope == 'user' and
+             (eigenstate_sealed_username | length == 0))
+      - not (eigenstate_sealed_scope == 'service' and
+             (eigenstate_sealed_service | length == 0))
+      - not (eigenstate_sealed_state in ['staged', 'handed_off'] and
+             (eigenstate_sealed_output_path | length == 0))
+      - not ((eigenstate_sealed_handoff_enabled | bool) and
+             (eigenstate_sealed_handoff_argv | length == 0))
+      - eigenstate_sealed_handoff_argv is not string
+      - eigenstate_sealed_encoding in ['base64', 'utf-8']
+      - eigenstate_sealed_report_formats | difference(['json', 'md']) | length == 0
+    fail_msg: Invalid sealed artifact delivery role configuration.

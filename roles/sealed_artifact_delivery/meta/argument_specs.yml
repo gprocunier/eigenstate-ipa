@@ -1,0 +1,76 @@
+---
+argument_specs:
+  main:
+    short_description: Safely retrieve and hand off a sealed IdM vault artifact.
+    options:
+      eigenstate_sealed_state:
+        type: str
+        default: preflight
+        choices: [preflight, staged, handed_off, absent]
+        description: Role state to run.
+      eigenstate_sealed_vault_name:
+        type: str
+        required: true
+        description: IdM vault name containing the sealed artifact.
+      eigenstate_sealed_scope:
+        type: str
+        default: shared
+        choices: [shared, user, service, default]
+        description: Vault ownership scope.
+      eigenstate_sealed_username:
+        type: str
+        description: User owner for user-scoped vaults.
+      eigenstate_sealed_service:
+        type: str
+        description: Service owner for service-scoped vaults.
+      eigenstate_sealed_server:
+        type: str
+        required: true
+        description: IdM server FQDN.
+      eigenstate_sealed_verify:
+        type: str
+        description: IPA CA certificate path or false-like override.
+      eigenstate_sealed_ipaadmin_principal:
+        type: str
+        default: admin
+        description: Kerberos principal used for IdM authentication.
+      eigenstate_sealed_ipaadmin_password:
+        type: str
+        no_log: true
+        description: Password for the Kerberos principal.
+      eigenstate_sealed_kerberos_keytab:
+        type: str
+        description: Keytab path for non-interactive Kerberos authentication.
+      eigenstate_sealed_encoding:
+        type: str
+        default: base64
+        choices: [base64, utf-8]
+        description: Encoding requested from the vault lookup.
+      eigenstate_sealed_output_path:
+        type: str
+        description: Destination path for staged artifact states.
+      eigenstate_sealed_output_mode:
+        type: str
+        default: "0600"
+        description: File mode for staged artifact.
+      eigenstate_sealed_handoff_enabled:
+        type: bool
+        default: false
+        description: Whether to run a handoff command after staging.
+      eigenstate_sealed_handoff_argv:
+        type: list
+        elements: str
+        default: []
+        description: Command argv for the handoff command.
+      eigenstate_sealed_report_enabled:
+        type: bool
+        default: true
+        description: Whether to render metadata-only reports.
+      eigenstate_sealed_no_log:
+        type: bool
+        default: true
+        description: Hide secret-bearing sealed artifact tasks.
+      eigenstate_sealed_live_lookup_enabled:
+        type: bool
+        default: true
+        description: Whether preflight/retrieve tasks may contact IdM.

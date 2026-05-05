@@ -1,0 +1,72 @@
+---
+argument_specs:
+  main:
+    short_description: Render IdM certificate expiry reports.
+    options:
+      eigenstate_cert_report_state:
+        type: str
+        default: present
+        choices: [present]
+        description: Certificate report state.
+      eigenstate_cert_report_server:
+        type: str
+        required: true
+        description: IdM server FQDN.
+      eigenstate_cert_report_verify:
+        type: str
+        description: IPA CA certificate path or false-like override.
+      eigenstate_cert_report_ipaadmin_principal:
+        type: str
+        default: admin
+        description: Kerberos principal used for IdM authentication.
+      eigenstate_cert_report_ipaadmin_password:
+        type: str
+        no_log: true
+        description: Password for the Kerberos principal.
+      eigenstate_cert_report_kerberos_keytab:
+        type: str
+        description: Keytab path for non-interactive Kerberos authentication.
+      eigenstate_cert_report_valid_not_after_from:
+        type: str
+        description: Lower bound for certificate expiry date.
+      eigenstate_cert_report_valid_not_after_to:
+        type: str
+        description: Upper bound for certificate expiry date.
+      eigenstate_cert_report_principal:
+        type: str
+        description: Host or service principal filter.
+      eigenstate_cert_report_subject:
+        type: str
+        description: Certificate subject substring filter.
+      eigenstate_cert_report_revocation_reason:
+        type: int
+        description: Optional revocation reason filter.
+      eigenstate_cert_report_exactly:
+        type: bool
+        default: false
+        description: Match subject exactly.
+      eigenstate_cert_report_output_dir:
+        type: str
+        default: ./artifacts
+        description: Directory for report artifacts.
+      eigenstate_cert_report_basename:
+        type: str
+        default: cert-expiry-report
+        description: Basename for rendered report files.
+      eigenstate_cert_report_formats:
+        type: list
+        elements: str
+        default: [json, md, csv]
+        description: Report formats to render.
+      eigenstate_cert_report_fail_on_expiring:
+        type: bool
+        default: false
+        description: Fail when count meets or exceeds threshold.
+      eigenstate_cert_report_fail_threshold_count:
+        type: int
+        default: 1
+        description: Failure threshold count.
+      eigenstate_cert_report_live_lookup_enabled:
+        type: bool
+        default: true
+        description: Whether the find task may contact IdM.

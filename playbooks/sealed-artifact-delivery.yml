@@ -1,0 +1,6 @@
+---
+- name: Deliver sealed artifact from IdM vault
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: eigenstate.ipa.sealed_artifact_delivery

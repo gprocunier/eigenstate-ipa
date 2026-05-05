@@ -1,0 +1,42 @@
+---
+eigenstate_sealed_state: preflight
+
+eigenstate_sealed_vault_name: ""
+eigenstate_sealed_scope: shared
+eigenstate_sealed_username: ""
+eigenstate_sealed_service: ""
+
+eigenstate_sealed_server: ""
+eigenstate_sealed_verify: ""
+eigenstate_sealed_ipaadmin_principal: admin
+eigenstate_sealed_ipaadmin_password: ""
+eigenstate_sealed_kerberos_keytab: ""
+
+eigenstate_sealed_encoding: base64
+eigenstate_sealed_result_format: record
+
+eigenstate_sealed_delegate_to: localhost
+eigenstate_sealed_target_host: ""
+eigenstate_sealed_output_path: ""
+eigenstate_sealed_output_mode: "0600"
+eigenstate_sealed_output_owner: ""
+eigenstate_sealed_output_group: ""
+
+eigenstate_sealed_use_tempdir: true
+eigenstate_sealed_tempdir_parent: ""
+eigenstate_sealed_cleanup_after_handoff: true
+
+eigenstate_sealed_handoff_enabled: false
+eigenstate_sealed_handoff_argv: []
+eigenstate_sealed_handoff_chdir: ""
+eigenstate_sealed_handoff_creates: ""
+
+eigenstate_sealed_report_enabled: true
+eigenstate_sealed_report_dir: "./artifacts"
+eigenstate_sealed_report_formats:
+  - json
+  - md
+
+eigenstate_sealed_no_log: true
+eigenstate_sealed_check_mode_retrieve: false
+eigenstate_sealed_live_lookup_enabled: true

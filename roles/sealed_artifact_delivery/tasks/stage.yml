@@ -1,0 +1,25 @@
+---
+- name: Normalize sealed artifact record
+  ansible.builtin.set_fact:
+    eigenstate_sealed_normalized_record: >-
+      {{ (eigenstate_sealed_record
+          if eigenstate_sealed_record is mapping
+          else (eigenstate_sealed_record | first)) }}
+  no_log: "{{ eigenstate_sealed_no_log }}"
+
+- name: Stage sealed artifact content
+  ansible.builtin.copy:
+    dest: "{{ eigenstate_sealed_output_path }}"
+    content: >-
+      {{ (eigenstate_sealed_normalized_record.value | b64decode)
+         if eigenstate_sealed_encoding == 'base64'
+         else eigenstate_sealed_normalized_record.value }}
+    mode: "{{ eigenstate_sealed_output_mode }}"
+    owner: "{{ eigenstate_sealed_output_owner | default(omit, true) }}"
+    group: "{{ eigenstate_sealed_output_group | default(omit, true) }}"
+  delegate_to: >-
+    {{ eigenstate_sealed_target_host
+       if (eigenstate_sealed_target_host | length > 0)
+       else inventory_hostname }}
+  register: eigenstate_sealed_stage_result
+  no_log: "{{ eigenstate_sealed_no_log }}"

@@ -1,0 +1,36 @@
+---
+- name: Set HBAC preflight placeholder during static validation
+  ansible.builtin.set_fact:
+    eigenstate_taw_hbac_result:
+      denied: null
+      matched: []
+      notmatched: []
+  when: ansible_check_mode
+
+- name: Test HBAC access path for temporary access user
+  ansible.builtin.set_fact:
+    eigenstate_taw_hbac_result: >-
+      {{ lookup('eigenstate.ipa.hbacrule',
+                eigenstate_taw_username,
+                operation='test',
+                targethost=eigenstate_taw_hbac_targethost,
+                service=eigenstate_taw_hbac_service,
+                server=eigenstate_taw_server,
+                kerberos_keytab=(eigenstate_taw_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_taw_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_taw_ipaadmin_password or none),
+                verify=(eigenstate_taw_verify or none)) }}
+  delegate_to: localhost
+  no_log: "{{ eigenstate_taw_no_log }}"
+  when: not ansible_check_mode
+
+- name: Fail when HBAC preflight denies access
+  ansible.builtin.fail:
+    msg: >-
+      HBAC preflight denied {{ eigenstate_taw_username }} access to
+      {{ eigenstate_taw_hbac_targethost }} via {{ eigenstate_taw_hbac_service }}.
+      Matched: {{ eigenstate_taw_hbac_result.matched | default([]) }};
+      not matched: {{ eigenstate_taw_hbac_result.notmatched | default([]) }}.
+  when:
+    - eigenstate_taw_fail_on_preflight_denied | bool
+    - eigenstate_taw_hbac_result.denied | default(false) | bool

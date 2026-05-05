@@ -1,0 +1,19 @@
+# Temporary Access Window
+
+| Field | Value |
+| --- | --- |
+| Role | `{{ eigenstate_taw_report.role }}` |
+| Username | `{{ eigenstate_taw_report.username }}` |
+| State | `{{ eigenstate_taw_report.state }}` |
+| Changed | `{{ eigenstate_taw_report.changed }}` |
+| Lease end | `{{ eigenstate_taw_report.lease_end | default("", true) }}` |
+| HBAC preflight | `{{ eigenstate_taw_report.hbac_preflight_enabled }}` |
+| HBAC denied | `{{ eigenstate_taw_report.hbac_denied | default("", true) }}` |
+| Sudo preflight | `{{ eigenstate_taw_report.sudo_preflight_enabled }}` |
+| SELinux map preflight | `{{ eigenstate_taw_report.selinuxmap_preflight_enabled }}` |
+| Generated | `{{ eigenstate_taw_report.timestamp_utc }}` |
+
+## HBAC Evaluation
+
+- Matched: `{{ eigenstate_taw_report.hbac_matched | join(", ") }}`
+- Not matched: `{{ eigenstate_taw_report.hbac_notmatched | join(", ") }}`

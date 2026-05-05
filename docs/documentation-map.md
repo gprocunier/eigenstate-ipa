@@ -70,6 +70,7 @@ These are the collection combinations worth learning as flows.
 | TLS bootstrap and renewal | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) | cert issuance, retrieval, renewal, and vault-backed private-key handling |
 | Static secret lifecycle in Controller | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) | `vault_write`, `vault`, `keytab`, and `cert` in scheduled jobs |
 | AAP execution environment validation | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) | render, build, smoke-test, push, and register the IdM runtime image |
+| AAP packaged workflow roles | [AAP Golden Path Roles](https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html) | run sealed artifact delivery, temporary access windows, and cert expiry reporting as AAP jobs |
 | Lease-like temporary access in IdM | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) | `user_lease` for delegated temporary users plus Kerberos key retirement patterns without pretending they are dynamic secret leases |
 | Host enrollment | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) | OTP bootstrap plus official IdM enrollment modules and post-checks |
 | Policy validation before privileged change | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) | `hbacrule`, `selinuxmap`, `sudo`, `principal`, and `dns` as controller-side gates |
@@ -108,6 +109,7 @@ workflow guides above.
 | How does this compare to Vault or CyberArk? | [Vault/CyberArk Primer](https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html) |
 | How does this fit into Controller and execution environments? | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) |
 | How do I build the AAP EE? | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) |
+| Which packaged AAP workflow role should I use? | [AAP Golden Path Roles](https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html) |
 | How should I think about rotation workflows? | [Rotation Capabilities](https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html) |
 | What is the temporary-access / lease boundary? | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) |
 | Where do the OpenShift and RHOSO branches begin? | [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html) |
@@ -128,6 +130,9 @@ workflow guides above.
 - [AAP EE Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/aap-ee-validation-walkthrough.html)
   validates the EE, Controller registration, smoke job, IdM inventory, vault
   metadata, HBAC checks, and `user_lease` check mode
+- [Phase 2 Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/phase2-validation-walkthrough.html)
+  validates the golden-path AAP roles for certificate reporting, temporary
+  access windows, and sealed artifact delivery
 - [User Lease Demo](https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html)
   shows the exact boundary the demo proves: fresh `kinit` and SSH succeed during the lease,
   then a fresh `kinit` fails after expiry

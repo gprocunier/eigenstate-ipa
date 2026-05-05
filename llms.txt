@@ -56,6 +56,11 @@ The collection treats IdM as both:
 - [docs/vault-cyberark-primer.md](docs/vault-cyberark-primer.md)
 - [docs/aap-ee-quickstart.md](docs/aap-ee-quickstart.md)
 - [docs/aap-ee-validation-walkthrough.md](docs/aap-ee-validation-walkthrough.md)
+- [docs/aap-golden-path-roles.md](docs/aap-golden-path-roles.md)
+- [docs/sealed-artifact-delivery-role.md](docs/sealed-artifact-delivery-role.md)
+- [docs/temporary-access-window-role.md](docs/temporary-access-window-role.md)
+- [docs/cert-expiry-report-role.md](docs/cert-expiry-report-role.md)
+- [docs/phase2-validation-walkthrough.md](docs/phase2-validation-walkthrough.md)
 - [docs/aap-integration.md](docs/aap-integration.md)
 - [docs/openshift-primer.md](docs/openshift-primer.md)
 - [docs/ephemeral-access-capabilities.md](docs/ephemeral-access-capabilities.md)
@@ -204,7 +209,11 @@ The collection treats IdM as both:
 - `docs/` - operator-facing documentation
 - `execution-environment/eigenstate-idm/` - ready-to-build AAP execution environment scaffold
 - `roles/aap_execution_environment/` - role to render, build, smoke-test, push, and optionally register the AAP EE
+- `roles/sealed_artifact_delivery/` - role to preflight, stage, hand off, clean up, and report sealed IdM vault artifacts
+- `roles/temporary_access_window/` - role to preflight and manage IdM temporary access windows through `user_lease`
+- `roles/cert_expiry_report/` - role to find IdM certificates and render JSON, Markdown, and CSV expiry reports
 - `playbooks/aap-ee-*.yml` - wrapper playbooks for the AAP EE workflow
+- `playbooks/sealed-artifact-delivery.yml`, `playbooks/temporary-access-window.yml`, and `playbooks/cert-expiry-report.yml` - wrapper playbooks for AAP golden-path roles
 - `tests/` - unit coverage for inventory, vault, vault_write, principal, keytab, cert, otp, selinuxmap, hbacrule, dns, sudo, and user_lease
 - `scripts/validate-collection.sh` - repo validation path
 - `Makefile` - convenience wrapper for validation

@@ -1,0 +1,5 @@
+serial_number,subject,issuer,valid_not_before,valid_not_after,revoked,revocation_reason
+{% for cert in eigenstate_cert_report.certificates %}
+{% set metadata = cert.metadata | default(cert) %}
+{{ metadata.serial_number | default("") | to_json }},{{ metadata.subject | default("") | to_json }},{{ metadata.issuer | default("") | to_json }},{{ metadata.valid_not_before | default("") | to_json }},{{ metadata.valid_not_after | default("") | to_json }},{{ metadata.revoked | default(false) | to_json }},{{ metadata.revocation_reason | default("") | to_json }}
+{% endfor %}
