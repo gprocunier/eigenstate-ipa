@@ -1,0 +1,23 @@
+---
+eigenstate_temporary_access_report_output_dir: "./artifacts"
+eigenstate_temporary_access_report_basename: "temporary-access-report"
+eigenstate_temporary_access_report_formats:
+  - json
+  - yaml
+  - md
+eigenstate_temporary_access_report_schema_version: "1.0"
+eigenstate_temporary_access_report_generated_at_utc: "1970-01-01T00:00:00Z"
+eigenstate_temporary_access_report_site: "example"
+eigenstate_temporary_access_report_context: "static validation"
+eigenstate_temporary_access_report_windows:
+  - principal: contractor01
+    target: bastion.example.com
+    access_type: ssh
+    opened_at: "2026-05-01T14:00:00Z"
+    expires_at: "2026-05-01T18:00:00Z"
+    status: expired
+    controls:
+      - documented approval
+      - expiry enforced in IdM
+      - audited session path
+    evidence: Principal expiration is before the report timestamp.

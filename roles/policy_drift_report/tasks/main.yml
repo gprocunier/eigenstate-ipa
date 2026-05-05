@@ -1,0 +1,7 @@
+---
+- name: Validate policy drift report inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Render policy drift report
+  ansible.builtin.import_tasks: render.yml
+  when: eigenstate_policy_drift_report_formats | length > 0

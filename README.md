@@ -65,6 +65,8 @@ The collection has three practical layers:
   issuance, and delegated temporary-user expiry
 - render-only validation roles for OpenShift OIDC, Keycloak federation,
   breakglass readiness evidence, and workload secret delivery review
+- read-only reporting roles for readiness, certificate inventory, rotation
+  candidate, temporary access, and policy drift evidence
 
 The table below is the authoritative surface summary.
 
@@ -89,6 +91,10 @@ The collection also includes render-first roles for OpenShift and Kubernetes
 workload delivery. These roles create reviewable manifests by default and do
 not apply cluster changes unless explicitly configured with kubeconfig and
 context inputs.
+
+It also includes read-only reporting roles that render JSON, YAML, and Markdown
+artifacts from explicit records. These roles are evidence producers; any
+remediation remains a separate opt-in workflow.
 
 ## Start Here
 
@@ -126,6 +132,7 @@ For collection-wide workflow guidance:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>&nbsp;&nbsp;ROTATION CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>&nbsp;&nbsp;ROTATION USE CASES&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html"><kbd>&nbsp;&nbsp;REPORTING OVERVIEW&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html"><kbd>&nbsp;&nbsp;KUBERNETES SECRET THREAT MODEL&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>&nbsp;&nbsp;AAP EE QUICKSTART&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
@@ -229,11 +236,17 @@ For the full plugin index, use <a href="https://gprocunier.github.io/eigenstate-
 | `roles/kubernetes_secret_from_idm_vault/` | Role that renders review-first Kubernetes Secret manifests from IdM vault material |
 | `roles/kubernetes_tls_from_idm_cert/` | Role that renders review-first Kubernetes TLS Secret manifests from certificate material |
 | `roles/keytab_secret_render/` | Role that renders review-first Kubernetes Secret manifests for Kerberos keytab delivery |
+| `roles/idm_readiness_report/` | Role that renders read-only IdM readiness evidence in JSON, YAML, and Markdown |
+| `roles/certificate_inventory_report/` | Role that renders certificate inventory evidence without private keys |
+| `roles/keytab_rotation_candidates/` | Role that reports keytab rotation candidates without keytab bytes |
+| `roles/temporary_access_report/` | Role that reports temporary access windows and controls |
+| `roles/policy_drift_report/` | Role that reports policy drift without remediation |
 | `playbooks/aap-ee-*.yml` | Wrapper playbooks for the AAP EE render, build, smoke, push, and Controller registration path |
 | `playbooks/render-openshift-oidc-config.yml` | Render-only OpenShift OAuth/OIDC validation wrapper |
 | `playbooks/validate-openshift-*.yml` | Validation-only OpenShift identity and breakglass wrappers |
 | `playbooks/validate-keycloak-idm-claims.yml` | Validation-only Keycloak federation wrapper |
 | `playbooks/render-kubernetes-*.yml` and `playbooks/render-keytab-secret.yml` | Render-only workload Secret delivery wrappers |
+| `playbooks/report-*.yml` | Wrapper playbooks for read-only reporting workflows |
 | `docs/` | Operator and maintainer documentation aligned with the collection interface |
 | `scripts/validate-collection.sh` | Lightweight repo validation for YAML, plugin syntax, and collection build hygiene |
 | `Makefile` | Wrapper for repo validation targets |

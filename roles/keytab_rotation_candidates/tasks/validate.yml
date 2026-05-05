@@ -1,0 +1,21 @@
+---
+- name: Validate keytab rotation candidate report format choices
+  ansible.builtin.assert:
+    that:
+      - eigenstate_keytab_rotation_candidates_formats | difference(['json', 'yaml', 'md']) | length == 0
+      - eigenstate_keytab_rotation_candidates_basename is match('^[A-Za-z0-9_.-]+$')
+      - eigenstate_keytab_rotation_candidates_records is sequence
+    fail_msg: >-
+      Keytab rotation candidate reports support json, yaml, and md formats, a
+      safe basename, and a list of candidate records.
+
+- name: Validate keytab rotation candidate records
+  ansible.builtin.assert:
+    that:
+      - item.principal is defined
+      - item.candidate is defined
+      - item.remediation_phase | default('') | length > 0
+    fail_msg: "Keytab candidate records require principal, candidate, and remediation_phase."
+  loop: "{{ eigenstate_keytab_rotation_candidates_records }}"
+  loop_control:
+    label: "{{ item.principal | default('unnamed-principal') }}"

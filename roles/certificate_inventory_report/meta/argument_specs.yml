@@ -1,0 +1,38 @@
+---
+argument_specs:
+  main:
+    short_description: Render deterministic certificate inventory reports.
+    options:
+      eigenstate_certificate_inventory_report_output_dir:
+        type: str
+        default: ./artifacts
+        description: Directory for report artifacts.
+      eigenstate_certificate_inventory_report_basename:
+        type: str
+        default: certificate-inventory-report
+        description: Basename for rendered report files.
+      eigenstate_certificate_inventory_report_formats:
+        type: list
+        elements: str
+        default: [json, yaml, md]
+        description: Report formats to render.
+      eigenstate_certificate_inventory_report_schema_version:
+        type: str
+        default: "1.0"
+        description: Stable schema version for report consumers.
+      eigenstate_certificate_inventory_report_generated_at_utc:
+        type: str
+        default: "1970-01-01T00:00:00Z"
+        description: Deterministic UTC timestamp recorded in the report.
+      eigenstate_certificate_inventory_report_site:
+        type: str
+        default: example
+        description: Site or environment label for the report.
+      eigenstate_certificate_inventory_report_context:
+        type: str
+        default: static validation
+        description: Human-readable scope for this report run.
+      eigenstate_certificate_inventory_report_certificates:
+        type: list
+        elements: dict
+        description: Certificate inventory records without private keys or secret payloads.

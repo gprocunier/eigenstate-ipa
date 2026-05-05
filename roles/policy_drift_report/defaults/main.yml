@@ -1,0 +1,29 @@
+---
+eigenstate_policy_drift_report_output_dir: "./artifacts"
+eigenstate_policy_drift_report_basename: "policy-drift-report"
+eigenstate_policy_drift_report_formats:
+  - json
+  - yaml
+  - md
+eigenstate_policy_drift_report_schema_version: "1.0"
+eigenstate_policy_drift_report_generated_at_utc: "1970-01-01T00:00:00Z"
+eigenstate_policy_drift_report_site: "example"
+eigenstate_policy_drift_report_context: "static validation"
+eigenstate_policy_drift_report_expected_policies:
+  - id: hbac-admin-ssh
+    kind: hbacrule
+    desired_state: enabled
+    owner: identity-platform
+eigenstate_policy_drift_report_observed_policies:
+  - id: hbac-admin-ssh
+    kind: hbacrule
+    observed_state: enabled
+    source: idm-fixture
+eigenstate_policy_drift_report_findings:
+  - id: hbac-admin-ssh
+    kind: hbacrule
+    status: in_sync
+    severity: low
+    expected: enabled
+    observed: enabled
+    remediation_phase: none

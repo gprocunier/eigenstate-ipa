@@ -38,6 +38,18 @@ Use these entry points instead of reading the files as a flat list:
   if certificate material needs a review-first TLS Secret delivery path
 - <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-delivery-to-workloads.html"><kbd>KEYTAB DELIVERY TO WORKLOADS</kbd></a>
   if keytab material needs a review-first workload Secret delivery path
+- <a href="https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html"><kbd>REPORTING OVERVIEW</kbd></a>
+  if the workflow needs read-only readiness, inventory, access, or drift evidence
+- <a href="https://gprocunier.github.io/eigenstate-ipa/readiness-report-schema.html"><kbd>READINESS REPORT SCHEMA</kbd></a>
+  if scheduled report consumers need the stable IdM readiness fields
+- <a href="https://gprocunier.github.io/eigenstate-ipa/certificate-inventory-report.html"><kbd>CERTIFICATE INVENTORY REPORT</kbd></a>
+  if certificate lifecycle evidence is the review target
+- <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-rotation-candidate-report.html"><kbd>KEYTAB ROTATION CANDIDATE REPORT</kbd></a>
+  if principal rotation candidates need to be reviewed without exposing keytab bytes
+- <a href="https://gprocunier.github.io/eigenstate-ipa/temporary-access-report.html"><kbd>TEMPORARY ACCESS REPORT</kbd></a>
+  if temporary access windows need safe handoff evidence
+- <a href="https://gprocunier.github.io/eigenstate-ipa/policy-drift-report.html"><kbd>POLICY DRIFT REPORT</kbd></a>
+  if expected and observed policy records need a read-only comparison
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>OPENSHIFT RHOSO USE CASES</kbd></a>
   if RHOSO cloud-operator or tenant identity boundaries are part of the workflow
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>OPENSHIFT RHACM USE CASES</kbd></a>

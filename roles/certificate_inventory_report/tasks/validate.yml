@@ -1,0 +1,22 @@
+---
+- name: Validate certificate inventory report format choices
+  ansible.builtin.assert:
+    that:
+      - eigenstate_certificate_inventory_report_formats | difference(['json', 'yaml', 'md']) | length == 0
+      - eigenstate_certificate_inventory_report_basename is match('^[A-Za-z0-9_.-]+$')
+      - eigenstate_certificate_inventory_report_certificates is sequence
+    fail_msg: >-
+      Certificate inventory reports support json, yaml, and md formats, a safe
+      basename, and a list of certificate records.
+
+- name: Validate certificate inventory records
+  ansible.builtin.assert:
+    that:
+      - item.principal is defined
+      - item.serial_number is defined
+      - item.not_after is defined
+      - item.state | default('unknown') in ['valid', 'expiring', 'expired', 'revoked', 'unknown']
+    fail_msg: "Certificate records require principal, serial_number, not_after, and a known state."
+  loop: "{{ eigenstate_certificate_inventory_report_certificates }}"
+  loop_control:
+    label: "{{ item.principal | default('unnamed-certificate') }}"

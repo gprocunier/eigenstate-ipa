@@ -1,0 +1,24 @@
+# Keytab Rotation Candidate Report
+
+- schema: `{{ eigenstate_keytab_rotation_candidates_report.schema }}`
+- generated_at_utc: `{{ eigenstate_keytab_rotation_candidates_report.generated_at_utc }}`
+- site: `{{ eigenstate_keytab_rotation_candidates_report.site }}`
+- context: {{ eigenstate_keytab_rotation_candidates_report.context }}
+- read_only: `{{ eigenstate_keytab_rotation_candidates_report.read_only }}`
+- mutation_phase: {{ eigenstate_keytab_rotation_candidates_report.mutation_phase }}
+
+## Summary
+
+| Metric | Count |
+| --- | ---: |
+| Total principals | {{ eigenstate_keytab_rotation_candidates_report.summary.total_principals }} |
+| Rotation candidates | {{ eigenstate_keytab_rotation_candidates_report.summary.rotation_candidates }} |
+| Deferred | {{ eigenstate_keytab_rotation_candidates_report.summary.deferred }} |
+
+## Candidates
+
+| Principal | Candidate | Last Rotated | Owner | Remediation Phase |
+| --- | --- | --- | --- | --- |
+{% for candidate in eigenstate_keytab_rotation_candidates_report.candidates %}
+| `{{ candidate.principal }}` | `{{ candidate.candidate }}` | `{{ candidate.last_rotated_at | default('unknown') }}` | {{ candidate.owner | default('unknown') }} | {{ candidate.remediation_phase }} |
+{% endfor %}

@@ -1,0 +1,30 @@
+# IdM Readiness Report
+
+- schema: `{{ eigenstate_idm_readiness_report.schema }}`
+- generated_at_utc: `{{ eigenstate_idm_readiness_report.generated_at_utc }}`
+- site: `{{ eigenstate_idm_readiness_report.site }}`
+- context: {{ eigenstate_idm_readiness_report.context }}
+- read_only: `{{ eigenstate_idm_readiness_report.read_only }}`
+
+## Summary
+
+| Metric | Count |
+| --- | ---: |
+| Total checks | {{ eigenstate_idm_readiness_report.summary.total_checks }} |
+| Passed | {{ eigenstate_idm_readiness_report.summary.passed_checks }} |
+| Warnings | {{ eigenstate_idm_readiness_report.summary.warning_checks }} |
+| Failed | {{ eigenstate_idm_readiness_report.summary.failed_checks }} |
+| Informational | {{ eigenstate_idm_readiness_report.summary.informational_checks }} |
+
+## Checks
+
+{% for check in eigenstate_idm_readiness_report.checks %}
+### {{ check.title }}
+
+- id: `{{ check.id }}`
+- status: `{{ check.status }}`
+- severity: `{{ check.severity }}`
+- evidence: {{ check.evidence }}
+- recommendation: {{ check.recommendation }}
+
+{% endfor %}

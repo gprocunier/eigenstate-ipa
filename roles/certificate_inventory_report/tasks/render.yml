@@ -1,0 +1,46 @@
+---
+- name: Create certificate inventory report output directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_certificate_inventory_report_output_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Build certificate inventory report object
+  ansible.builtin.set_fact:
+    eigenstate_certificate_inventory_report:
+      schema: "eigenstate.ipa/certificate_inventory_report/v1"
+      schema_version: "{{ eigenstate_certificate_inventory_report_schema_version }}"
+      role: certificate_inventory_report
+      generated_at_utc: "{{ eigenstate_certificate_inventory_report_generated_at_utc }}"
+      site: "{{ eigenstate_certificate_inventory_report_site }}"
+      context: "{{ eigenstate_certificate_inventory_report_context }}"
+      read_only: true
+      summary:
+        total_certificates: "{{ eigenstate_certificate_inventory_report_certificates | length }}"
+        valid_certificates: "{{ eigenstate_certificate_inventory_report_certificates | selectattr('state', 'equalto', 'valid') | list | length }}"
+        expiring_certificates: "{{ eigenstate_certificate_inventory_report_certificates | selectattr('state', 'equalto', 'expiring') | list | length }}"
+        expired_certificates: "{{ eigenstate_certificate_inventory_report_certificates | selectattr('state', 'equalto', 'expired') | list | length }}"
+        revoked_certificates: "{{ eigenstate_certificate_inventory_report_certificates | selectattr('state', 'equalto', 'revoked') | list | length }}"
+        rotation_required: "{{ eigenstate_certificate_inventory_report_certificates | selectattr('rotation_required', 'equalto', true) | list | length }}"
+      certificates: "{{ eigenstate_certificate_inventory_report_certificates }}"
+
+- name: Render certificate inventory JSON report
+  ansible.builtin.template:
+    src: report.json.j2
+    dest: "{{ eigenstate_certificate_inventory_report_output_dir }}/{{ eigenstate_certificate_inventory_report_basename }}.json"
+    mode: "0640"
+  when: "'json' in eigenstate_certificate_inventory_report_formats"
+
+- name: Render certificate inventory YAML report
+  ansible.builtin.template:
+    src: report.yaml.j2
+    dest: "{{ eigenstate_certificate_inventory_report_output_dir }}/{{ eigenstate_certificate_inventory_report_basename }}.yaml"
+    mode: "0640"
+  when: "'yaml' in eigenstate_certificate_inventory_report_formats"
+
+- name: Render certificate inventory Markdown report
+  ansible.builtin.template:
+    src: report.md.j2
+    dest: "{{ eigenstate_certificate_inventory_report_output_dir }}/{{ eigenstate_certificate_inventory_report_basename }}.md"
+    mode: "0640"
+  when: "'md' in eigenstate_certificate_inventory_report_formats"

@@ -1,0 +1,20 @@
+---
+eigenstate_keytab_rotation_candidates_output_dir: "./artifacts"
+eigenstate_keytab_rotation_candidates_basename: "keytab-rotation-candidates"
+eigenstate_keytab_rotation_candidates_formats:
+  - json
+  - yaml
+  - md
+eigenstate_keytab_rotation_candidates_schema_version: "1.0"
+eigenstate_keytab_rotation_candidates_generated_at_utc: "1970-01-01T00:00:00Z"
+eigenstate_keytab_rotation_candidates_site: "example"
+eigenstate_keytab_rotation_candidates_context: "static validation"
+eigenstate_keytab_rotation_candidates_records:
+  - principal: HTTP/app.example.com@EXAMPLE.COM
+    owner: platform-services
+    location_hint: controller credential
+    last_rotated_at: "2026-01-01T00:00:00Z"
+    max_age_days: 90
+    candidate: true
+    reason: Rotation review window has been reached.
+    remediation_phase: separate opt-in rotation workflow

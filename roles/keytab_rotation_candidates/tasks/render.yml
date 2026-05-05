@@ -1,0 +1,44 @@
+---
+- name: Create keytab rotation candidate report output directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_keytab_rotation_candidates_output_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Build keytab rotation candidate report object
+  ansible.builtin.set_fact:
+    eigenstate_keytab_rotation_candidates_report:
+      schema: "eigenstate.ipa/keytab_rotation_candidates/v1"
+      schema_version: "{{ eigenstate_keytab_rotation_candidates_schema_version }}"
+      role: keytab_rotation_candidates
+      generated_at_utc: "{{ eigenstate_keytab_rotation_candidates_generated_at_utc }}"
+      site: "{{ eigenstate_keytab_rotation_candidates_site }}"
+      context: "{{ eigenstate_keytab_rotation_candidates_context }}"
+      read_only: true
+      mutation_phase: "not included"
+      summary:
+        total_principals: "{{ eigenstate_keytab_rotation_candidates_records | length }}"
+        rotation_candidates: "{{ eigenstate_keytab_rotation_candidates_records | selectattr('candidate', 'equalto', true) | list | length }}"
+        deferred: "{{ eigenstate_keytab_rotation_candidates_records | selectattr('candidate', 'equalto', false) | list | length }}"
+      candidates: "{{ eigenstate_keytab_rotation_candidates_records }}"
+
+- name: Render keytab rotation candidate JSON report
+  ansible.builtin.template:
+    src: report.json.j2
+    dest: "{{ eigenstate_keytab_rotation_candidates_output_dir }}/{{ eigenstate_keytab_rotation_candidates_basename }}.json"
+    mode: "0640"
+  when: "'json' in eigenstate_keytab_rotation_candidates_formats"
+
+- name: Render keytab rotation candidate YAML report
+  ansible.builtin.template:
+    src: report.yaml.j2
+    dest: "{{ eigenstate_keytab_rotation_candidates_output_dir }}/{{ eigenstate_keytab_rotation_candidates_basename }}.yaml"
+    mode: "0640"
+  when: "'yaml' in eigenstate_keytab_rotation_candidates_formats"
+
+- name: Render keytab rotation candidate Markdown report
+  ansible.builtin.template:
+    src: report.md.j2
+    dest: "{{ eigenstate_keytab_rotation_candidates_output_dir }}/{{ eigenstate_keytab_rotation_candidates_basename }}.md"
+    mode: "0640"
+  when: "'md' in eigenstate_keytab_rotation_candidates_formats"

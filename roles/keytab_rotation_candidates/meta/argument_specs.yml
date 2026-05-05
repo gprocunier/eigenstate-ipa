@@ -1,0 +1,38 @@
+---
+argument_specs:
+  main:
+    short_description: Render read-only keytab rotation candidate reports.
+    options:
+      eigenstate_keytab_rotation_candidates_output_dir:
+        type: str
+        default: ./artifacts
+        description: Directory for report artifacts.
+      eigenstate_keytab_rotation_candidates_basename:
+        type: str
+        default: keytab-rotation-candidates
+        description: Basename for rendered report files.
+      eigenstate_keytab_rotation_candidates_formats:
+        type: list
+        elements: str
+        default: [json, yaml, md]
+        description: Report formats to render.
+      eigenstate_keytab_rotation_candidates_schema_version:
+        type: str
+        default: "1.0"
+        description: Stable schema version for report consumers.
+      eigenstate_keytab_rotation_candidates_generated_at_utc:
+        type: str
+        default: "1970-01-01T00:00:00Z"
+        description: Deterministic UTC timestamp recorded in the report.
+      eigenstate_keytab_rotation_candidates_site:
+        type: str
+        default: example
+        description: Site or environment label for the report.
+      eigenstate_keytab_rotation_candidates_context:
+        type: str
+        default: static validation
+        description: Human-readable scope for this report run.
+      eigenstate_keytab_rotation_candidates_records:
+        type: list
+        elements: dict
+        description: Principal metadata used to identify rotation candidates without keytab bytes.
