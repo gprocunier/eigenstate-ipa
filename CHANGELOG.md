@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.15.0 - 2026-05-05
+
+- added `idm_readiness_report` for deterministic IdM automation readiness
+  evidence in JSON, YAML, and Markdown
+- added `certificate_inventory_report` for certificate lifecycle evidence
+  without private keys or secret payloads
+- added `keytab_rotation_candidates` for read-only keytab rotation planning
+  without exposing keytab bytes
+- added `temporary_access_report` and `policy_drift_report` for access-window
+  review and expected-versus-observed policy drift evidence
+- documented the Phase 6 report schemas and validated the feature set in an
+  on-prem lab from the bastion execution boundary before publication
+- wired Phase 6 playbook syntax checks, static validation, rendered-output
+  tests, argument spec checks, and secret-safety tests into the standard
+  validation path
+
 ## 1.14.0 - 2026-05-05
 
 - added `kubernetes_secret_from_idm_vault` for render-first Kubernetes Secret
