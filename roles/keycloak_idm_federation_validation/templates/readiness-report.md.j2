@@ -1,0 +1,34 @@
+# Keycloak IdM Federation Readiness
+
+- role: `{{ eigenstate_keycloak_readiness_report.role }}`
+- passed: `{{ eigenstate_keycloak_readiness_report.passed }}`
+- realm: `{{ eigenstate_keycloak_readiness_report.realm }}`
+- provider alias: `{{ eigenstate_keycloak_readiness_report.idm_provider_alias }}`
+- group claim: `{{ eigenstate_keycloak_readiness_report.group_claim }}`
+- username claim: `{{ eigenstate_keycloak_readiness_report.username_claim }}`
+- Kerberos expected: `{{ eigenstate_keycloak_readiness_report.kerberos_enabled }}`
+- SPNEGO expected: `{{ eigenstate_keycloak_readiness_report.spnego_enabled }}`
+
+## Missing IdM Groups
+
+{% for group in eigenstate_keycloak_readiness_report.missing_groups %}
+- `{{ group }}`
+{% else %}
+- none
+{% endfor %}
+
+## Missing Federation Mappers
+
+{% for mapper in eigenstate_keycloak_readiness_report.missing_mappers %}
+- `{{ mapper }}`
+{% else %}
+- none
+{% endfor %}
+
+## Missing Protocol Mappers
+
+{% for mapper in eigenstate_keycloak_readiness_report.missing_protocol_mappers %}
+- `{{ mapper }}`
+{% else %}
+- none
+{% endfor %}

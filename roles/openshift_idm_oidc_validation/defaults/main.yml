@@ -1,0 +1,42 @@
+---
+eigenstate_oidc_issuer_url: "https://keycloak.example.com/realms/openshift"
+eigenstate_oidc_client_id: "openshift"
+eigenstate_oidc_client_secret_name: "openid-client-secret"
+eigenstate_oidc_ca_configmap_name: ""
+eigenstate_oidc_mapping_method: claim
+
+eigenstate_oidc_claims:
+  preferred_username:
+    - preferred_username
+  name:
+    - name
+  email:
+    - email
+  groups:
+    - groups
+
+eigenstate_oidc_expected_groups:
+  - ocp-platform-admins
+  - ocp-developers
+eigenstate_oidc_expected_principals: []
+eigenstate_oidc_idm_known_groups:
+  - ocp-platform-admins
+  - ocp-developers
+eigenstate_oidc_idm_known_principals: []
+eigenstate_oidc_expected_rbac_bindings:
+  - name: ocp-platform-admins-cluster-admin
+    kind: ClusterRoleBinding
+    role_ref_kind: ClusterRole
+    role_ref_name: cluster-admin
+    subjects:
+      - kind: Group
+        name: ocp-platform-admins
+
+eigenstate_oidc_fail_on_missing: true
+eigenstate_oidc_output_dir: "./artifacts"
+eigenstate_oidc_basename: "openshift-idm-oidc"
+eigenstate_oidc_report_formats:
+  - json
+  - md
+eigenstate_oidc_render_config: true
+eigenstate_oidc_render_report: true

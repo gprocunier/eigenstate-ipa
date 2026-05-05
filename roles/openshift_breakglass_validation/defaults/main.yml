@@ -1,0 +1,35 @@
+---
+eigenstate_breakglass_expected_groups:
+  - ocp-breakglass-admins
+eigenstate_breakglass_expected_principals:
+  - breakglass-admin
+eigenstate_breakglass_known_idm_groups:
+  - ocp-breakglass-admins
+eigenstate_breakglass_known_idm_principals:
+  - breakglass-admin
+eigenstate_breakglass_expected_rbac_bindings:
+  - name: ocp-breakglass-admins-cluster-admin
+    kind: ClusterRoleBinding
+    role_ref_kind: ClusterRole
+    role_ref_name: cluster-admin
+    subjects:
+      - kind: Group
+        name: ocp-breakglass-admins
+eigenstate_breakglass_required_controls:
+  - named IdM group for emergency administrators
+  - documented approval path
+  - expiry or review process
+  - audited OpenShift RBAC binding
+eigenstate_breakglass_documented_controls:
+  - named IdM group for emergency administrators
+  - documented approval path
+  - expiry or review process
+  - audited OpenShift RBAC binding
+
+eigenstate_breakglass_fail_on_missing: true
+eigenstate_breakglass_output_dir: "./artifacts"
+eigenstate_breakglass_basename: "openshift-breakglass"
+eigenstate_breakglass_report_formats:
+  - json
+  - md
+eigenstate_breakglass_render_report: true

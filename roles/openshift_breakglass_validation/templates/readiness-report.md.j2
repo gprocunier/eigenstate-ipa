@@ -1,0 +1,34 @@
+# OpenShift Breakglass Readiness
+
+- role: `{{ eigenstate_breakglass_readiness_report.role }}`
+- passed: `{{ eigenstate_breakglass_readiness_report.passed }}`
+
+## Missing IdM Groups
+
+{% for group in eigenstate_breakglass_readiness_report.missing_groups %}
+- `{{ group }}`
+{% else %}
+- none
+{% endfor %}
+
+## Missing IdM Principals
+
+{% for principal in eigenstate_breakglass_readiness_report.missing_principals %}
+- `{{ principal }}`
+{% else %}
+- none
+{% endfor %}
+
+## Missing Controls
+
+{% for control in eigenstate_breakglass_readiness_report.missing_controls %}
+- {{ control }}
+{% else %}
+- none
+{% endfor %}
+
+## Expected RBAC Bindings
+
+{% for binding in eigenstate_breakglass_readiness_report.expected_rbac_bindings %}
+- `{{ binding.name }}` -> `{{ binding.role_ref_name }}`
+{% endfor %}

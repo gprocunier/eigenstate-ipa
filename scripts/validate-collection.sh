@@ -111,6 +111,21 @@ if command -v ansible-playbook >/dev/null 2>&1; then
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ANSIBLE_LOCALHOST_WARNING=false \
     ansible-playbook "${PROJECT_ROOT}/playbooks/phase2-static-validation.yml"
+
+  echo "==> Checking Phase 4 role playbook syntax"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/render-openshift-oidc-config.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/validate-openshift-idm-groups.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/validate-keycloak-idm-claims.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/validate-openshift-breakglass-path.yml"
+
+  echo "==> Running Phase 4 static validation playbook"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ANSIBLE_LOCALHOST_WARNING=false \
+    ansible-playbook "${PROJECT_ROOT}/playbooks/phase4-static-validation.yml"
 else
   echo "==> ansible-playbook not installed; skipping AAP EE role checks"
 fi

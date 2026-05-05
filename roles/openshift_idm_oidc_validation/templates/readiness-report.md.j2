@@ -1,0 +1,27 @@
+# OpenShift OIDC Readiness
+
+- role: `{{ eigenstate_oidc_readiness_report.role }}`
+- passed: `{{ eigenstate_oidc_readiness_report.passed }}`
+- issuer: `{{ eigenstate_oidc_readiness_report.identity_provider.issuer_url }}`
+- client id: `{{ eigenstate_oidc_readiness_report.identity_provider.client_id }}`
+- group claim: `{{ eigenstate_oidc_readiness_report.identity_provider.claims.groups | join(', ') }}`
+
+## Required Groups
+
+{% for group in eigenstate_oidc_readiness_report.expected_groups %}
+- `{{ group }}`
+{% endfor %}
+
+## Missing Groups
+
+{% for group in eigenstate_oidc_readiness_report.missing_groups %}
+- `{{ group }}`
+{% else %}
+- none
+{% endfor %}
+
+## Expected RBAC Bindings
+
+{% for binding in eigenstate_oidc_readiness_report.expected_rbac_bindings %}
+- `{{ binding.name }}` -> `{{ binding.role_ref_name }}`
+{% endfor %}

@@ -47,15 +47,17 @@ reference pages from wandering into broad architectural prose.
 ### I run OpenShift, OpenShift Virtualization, or RHOSO
 
 1. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>
-2. <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
-3. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html"><kbd>OPENSHIFT OPERATOR USE CASES</kbd></a>
-4. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>OPENSHIFT RHOSO USE CASES</kbd></a>
-5. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-operator-use-cases.html"><kbd>RHOSO OPERATOR USE CASES</kbd></a>
-6. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-tenant-use-cases.html"><kbd>RHOSO TENANT USE CASES</kbd></a>
-7. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>OPENSHIFT RHACM USE CASES</kbd></a>
-8. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>OPENSHIFT RHACS USE CASES</kbd></a>
-9. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>OPENSHIFT QUAY USE CASES</kbd></a>
-10. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html"><kbd>OPENSHIFT DEVELOPER USE CASES</kbd></a>
+2. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-keycloak-idm-reference.html"><kbd>OPENSHIFT IDENTITY REFERENCE</kbd></a>
+3. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html"><kbd>OPENSHIFT IDENTITY VALIDATION</kbd></a>
+4. <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
+5. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html"><kbd>OPENSHIFT OPERATOR USE CASES</kbd></a>
+6. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>OPENSHIFT RHOSO USE CASES</kbd></a>
+7. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-operator-use-cases.html"><kbd>RHOSO OPERATOR USE CASES</kbd></a>
+8. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-tenant-use-cases.html"><kbd>RHOSO TENANT USE CASES</kbd></a>
+9. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>OPENSHIFT RHACM USE CASES</kbd></a>
+10. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>OPENSHIFT RHACS USE CASES</kbd></a>
+11. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>OPENSHIFT QUAY USE CASES</kbd></a>
+12. <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html"><kbd>OPENSHIFT DEVELOPER USE CASES</kbd></a>
 
 ### I already know the plugin and just need syntax
 
@@ -74,6 +76,7 @@ These are the collection combinations worth learning as flows.
 | Static secret lifecycle in Controller | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) | `vault_write`, `vault`, `keytab`, and `cert` in scheduled jobs |
 | AAP execution environment validation | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) | render, build, smoke-test, push, and register the IdM runtime image |
 | AAP packaged workflow roles | [AAP Golden Path Roles](https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html) | run sealed artifact delivery, temporary access windows, and cert expiry reporting as AAP jobs |
+| OpenShift identity validation | [OpenShift Identity Validation](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html) | render OpenShift OIDC configuration examples and validate IdM, Keycloak, RBAC, and breakglass evidence |
 | Lease-like temporary access in IdM | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) | `user_lease` for delegated temporary users plus Kerberos key retirement patterns without pretending they are dynamic secret leases |
 | Host enrollment | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) | OTP bootstrap plus official IdM enrollment modules and post-checks |
 | Policy validation before privileged change | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) | `hbacrule`, `selinuxmap`, `sudo`, `principal`, and `dns` as controller-side gates |
@@ -120,9 +123,14 @@ workflow guides above.
 | How should I think about rotation workflows? | [Rotation Capabilities](https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html) |
 | What is the temporary-access / lease boundary? | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) |
 | Where do the OpenShift and RHOSO branches begin? | [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html) |
+| How do I validate OpenShift OIDC without mutating a cluster? | [OpenShift Identity Validation](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html) |
 
 ## OpenShift Workflow Branches
 
+- [OpenShift Keycloak IdM Reference](https://gprocunier.github.io/eigenstate-ipa/openshift-keycloak-idm-reference.html)
+- [OpenShift Identity Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html)
+- [OpenShift Breakglass Validation](https://gprocunier.github.io/eigenstate-ipa/openshift-breakglass-validation.html)
+- [OpenShift LDAP Fallback](https://gprocunier.github.io/eigenstate-ipa/openshift-ldap-fallback.html)
 - [OpenShift Operator Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html)
 - [OpenShift RHOSO Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html)
 - [RHOSO Operator Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-operator-use-cases.html)
@@ -140,6 +148,9 @@ workflow guides above.
 - [Phase 2 Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/phase2-validation-walkthrough.html)
   validates the golden-path AAP roles for certificate reporting, temporary
   access windows, and sealed artifact delivery
+- [OpenShift Identity Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html)
+  validates render-only OpenShift OIDC, Keycloak federation, IdM group, and
+  breakglass readiness evidence
 - [User Lease Demo](https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html)
   shows the exact boundary the demo proves: fresh `kinit` and SSH succeed during the lease,
   then a fresh `kinit` fails after expiry

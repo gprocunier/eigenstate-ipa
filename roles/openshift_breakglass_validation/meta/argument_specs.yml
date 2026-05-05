@@ -1,0 +1,54 @@
+---
+argument_specs:
+  main:
+    short_description: Validate OpenShift breakglass identity readiness inputs.
+    options:
+      eigenstate_breakglass_expected_groups:
+        type: list
+        elements: str
+        description: IdM groups expected to hold emergency administrators.
+      eigenstate_breakglass_expected_principals:
+        type: list
+        elements: str
+        description: IdM principals expected in the breakglass model.
+      eigenstate_breakglass_known_idm_groups:
+        type: list
+        elements: str
+        description: Locally supplied evidence of existing IdM groups.
+      eigenstate_breakglass_known_idm_principals:
+        type: list
+        elements: str
+        description: Locally supplied evidence of existing IdM principals.
+      eigenstate_breakglass_expected_rbac_bindings:
+        type: list
+        elements: dict
+        description: Expected OpenShift RBAC bindings for breakglass groups.
+      eigenstate_breakglass_required_controls:
+        type: list
+        elements: str
+        description: Required operational controls for emergency access.
+      eigenstate_breakglass_documented_controls:
+        type: list
+        elements: str
+        description: Controls currently documented by the site operator.
+      eigenstate_breakglass_fail_on_missing:
+        type: bool
+        default: true
+        description: Fail validation when required evidence is absent.
+      eigenstate_breakglass_output_dir:
+        type: str
+        default: ./artifacts
+        description: Directory for readiness reports.
+      eigenstate_breakglass_basename:
+        type: str
+        default: openshift-breakglass
+        description: Basename for rendered artifacts.
+      eigenstate_breakglass_report_formats:
+        type: list
+        elements: str
+        default: [json, md]
+        description: Readiness report formats.
+      eigenstate_breakglass_render_report:
+        type: bool
+        default: true
+        description: Render readiness report artifacts.

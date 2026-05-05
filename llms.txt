@@ -2,7 +2,7 @@
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
 (IdM / FreeIPA). It exposes one inventory plugin, nine lookup plugins,
-four modules, and an AAP execution-environment role for live inventory,
+four modules, and AAP/OpenShift validation roles for live inventory,
 vault-backed secret retrieval and storage,
 Kerberos principal state, Kerberos keytab delivery, IdM CA certificate
 automation, OTP workflows, SELinux user map inspection, HBAC rule inspection
@@ -48,6 +48,8 @@ The collection treats IdM as both:
 - supports standard, symmetric, and asymmetric vault retrieval
 - supports metadata inspection, scoped search, and structured return shapes
 - supports text and binary payload handling for Ansible and AAP workflows
+- renders and validates OpenShift OIDC, Keycloak federation, and breakglass
+  readiness artifacts without mutating live clusters by default
 
 ## Best Entry Points
 
@@ -65,6 +67,10 @@ The collection treats IdM as both:
 - [docs/phase2-validation-walkthrough.md](docs/phase2-validation-walkthrough.md)
 - [docs/aap-integration.md](docs/aap-integration.md)
 - [docs/openshift-primer.md](docs/openshift-primer.md)
+- [docs/openshift-keycloak-idm-reference.md](docs/openshift-keycloak-idm-reference.md)
+- [docs/openshift-identity-validation-walkthrough.md](docs/openshift-identity-validation-walkthrough.md)
+- [docs/openshift-breakglass-validation.md](docs/openshift-breakglass-validation.md)
+- [docs/openshift-ldap-fallback.md](docs/openshift-ldap-fallback.md)
 - [docs/ephemeral-access-capabilities.md](docs/ephemeral-access-capabilities.md)
 - [docs/inventory-plugin.md](docs/inventory-plugin.md)
 - [docs/vault-plugin.md](docs/vault-plugin.md)
@@ -238,8 +244,12 @@ The collection treats IdM as both:
 - `roles/sealed_artifact_delivery/` - role to preflight, stage, hand off, clean up, and report sealed IdM vault artifacts
 - `roles/temporary_access_window/` - role to preflight and manage IdM temporary access windows through `user_lease`
 - `roles/cert_expiry_report/` - role to find IdM certificates and render JSON, Markdown, and CSV expiry reports
+- `roles/openshift_idm_oidc_validation/` - role to render OpenShift OAuth/OIDC examples and validate local IdM group evidence
+- `roles/keycloak_idm_federation_validation/` - role to validate Keycloak federation and OIDC claim evidence
+- `roles/openshift_breakglass_validation/` - role to validate OpenShift breakglass groups, controls, and RBAC evidence
 - `playbooks/aap-ee-*.yml` - wrapper playbooks for the AAP EE workflow
 - `playbooks/sealed-artifact-delivery.yml`, `playbooks/temporary-access-window.yml`, and `playbooks/cert-expiry-report.yml` - wrapper playbooks for AAP golden-path roles
+- `playbooks/render-openshift-oidc-config.yml`, `playbooks/validate-openshift-idm-groups.yml`, `playbooks/validate-keycloak-idm-claims.yml`, and `playbooks/validate-openshift-breakglass-path.yml` - wrapper playbooks for Phase 4 OpenShift identity validation
 - `tests/` - unit coverage for inventory, vault, vault_write, keytab_manage, cert_request, principal, keytab, cert, otp, selinuxmap, hbacrule, dns, sudo, and user_lease
 - `scripts/validate-collection.sh` - repo validation path
 - `Makefile` - convenience wrapper for validation

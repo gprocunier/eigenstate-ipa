@@ -1,0 +1,7 @@
+---
+- name: Validate Keycloak IdM federation inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Render Keycloak IdM federation readiness report
+  ansible.builtin.import_tasks: report.yml
+  when: eigenstate_keycloak_render_report | bool

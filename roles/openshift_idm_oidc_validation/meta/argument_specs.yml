@@ -1,0 +1,73 @@
+---
+argument_specs:
+  main:
+    short_description: Render and validate OpenShift OIDC identity configuration inputs.
+    options:
+      eigenstate_oidc_issuer_url:
+        type: str
+        required: true
+        description: OIDC issuer URL, typically a Keycloak realm endpoint.
+      eigenstate_oidc_client_id:
+        type: str
+        required: true
+        description: OpenShift OAuth OIDC client identifier.
+      eigenstate_oidc_client_secret_name:
+        type: str
+        required: true
+        description: Name of the OpenShift Secret that stores the OIDC client secret.
+      eigenstate_oidc_ca_configmap_name:
+        type: str
+        description: Optional ConfigMap name containing the issuer CA bundle.
+      eigenstate_oidc_mapping_method:
+        type: str
+        default: claim
+        choices: [claim, add]
+        description: OpenShift identity mapping method.
+      eigenstate_oidc_claims:
+        type: dict
+        description: OpenShift OIDC claim mapping.
+      eigenstate_oidc_expected_groups:
+        type: list
+        elements: str
+        description: Group names expected in OIDC group claims.
+      eigenstate_oidc_expected_principals:
+        type: list
+        elements: str
+        description: IdM principals referenced by the identity model.
+      eigenstate_oidc_idm_known_groups:
+        type: list
+        elements: str
+        description: Locally supplied evidence of existing IdM groups.
+      eigenstate_oidc_idm_known_principals:
+        type: list
+        elements: str
+        description: Locally supplied evidence of existing IdM principals.
+      eigenstate_oidc_expected_rbac_bindings:
+        type: list
+        elements: dict
+        description: Expected OpenShift RBAC bindings that consume OIDC groups.
+      eigenstate_oidc_fail_on_missing:
+        type: bool
+        default: true
+        description: Fail validation when required groups or principals are absent.
+      eigenstate_oidc_output_dir:
+        type: str
+        default: ./artifacts
+        description: Directory for rendered config and reports.
+      eigenstate_oidc_basename:
+        type: str
+        default: openshift-idm-oidc
+        description: Basename for rendered artifacts.
+      eigenstate_oidc_report_formats:
+        type: list
+        elements: str
+        default: [json, md]
+        description: Readiness report formats.
+      eigenstate_oidc_render_config:
+        type: bool
+        default: true
+        description: Render an OpenShift OAuth/OIDC configuration example.
+      eigenstate_oidc_render_report:
+        type: bool
+        default: true
+        description: Render readiness report artifacts.

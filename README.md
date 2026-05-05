@@ -13,6 +13,8 @@
 If you are mapping the collection into OpenShift ecosystem workflows:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>&nbsp;&nbsp;OPENSHIFT ECOSYSTEM PRIMER&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-keycloak-idm-reference.html"><kbd>&nbsp;&nbsp;OPENSHIFT IDENTITY REFERENCE&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html"><kbd>&nbsp;&nbsp;OPENSHIFT IDENTITY VALIDATION&nbsp;&nbsp;</kbd></a>
 
 For the adjacent branches off that primer:
 
@@ -61,6 +63,8 @@ The collection has three practical layers:
 - controller-side lookup plugins for Kerberos, vaults, certificates, OTP, DNS, and policy state
 - narrow write modules for vault lifecycle, keytab management, certificate
   issuance, and delegated temporary-user expiry
+- render-only validation roles for OpenShift OIDC, Keycloak federation, and
+  breakglass readiness evidence
 
 The table below is the authoritative surface summary.
 
@@ -213,7 +217,13 @@ For the full plugin index, use <a href="https://gprocunier.github.io/eigenstate-
 | `plugins/lookup/hbacrule.py` | Lookup plugin for HBAC rule state inspection and access testing |
 | `execution-environment/eigenstate-idm/` | Ready-to-build AAP execution environment scaffold for IdM-backed automation |
 | `roles/aap_execution_environment/` | Role that renders, builds, smokes, pushes, and optionally registers the AAP EE |
+| `roles/openshift_idm_oidc_validation/` | Role that renders OpenShift OAuth/OIDC examples and validates IdM group evidence |
+| `roles/keycloak_idm_federation_validation/` | Role that validates Keycloak federation and OIDC claim evidence |
+| `roles/openshift_breakglass_validation/` | Role that validates OpenShift breakglass groups, controls, and RBAC evidence |
 | `playbooks/aap-ee-*.yml` | Wrapper playbooks for the AAP EE render, build, smoke, push, and Controller registration path |
+| `playbooks/render-openshift-oidc-config.yml` | Render-only OpenShift OAuth/OIDC validation wrapper |
+| `playbooks/validate-openshift-*.yml` | Validation-only OpenShift identity and breakglass wrappers |
+| `playbooks/validate-keycloak-idm-claims.yml` | Validation-only Keycloak federation wrapper |
 | `docs/` | Operator and maintainer documentation aligned with the collection interface |
 | `scripts/validate-collection.sh` | Lightweight repo validation for YAML, plugin syntax, and collection build hygiene |
 | `Makefile` | Wrapper for repo validation targets |

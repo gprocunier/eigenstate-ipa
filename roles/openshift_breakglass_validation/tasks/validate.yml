@@ -1,0 +1,56 @@
+---
+- name: Validate OpenShift breakglass variables
+  ansible.builtin.assert:
+    that:
+      - eigenstate_breakglass_expected_groups is sequence
+      - eigenstate_breakglass_expected_groups | length > 0
+      - eigenstate_breakglass_known_idm_groups is sequence
+      - eigenstate_breakglass_expected_principals is sequence
+      - eigenstate_breakglass_known_idm_principals is sequence
+      - eigenstate_breakglass_expected_rbac_bindings is sequence
+      - eigenstate_breakglass_required_controls is sequence
+      - eigenstate_breakglass_documented_controls is sequence
+      - eigenstate_breakglass_report_formats | difference(['json', 'md']) | length == 0
+    fail_msg: Invalid OpenShift breakglass validation role configuration.
+
+- name: Calculate OpenShift breakglass readiness gaps
+  ansible.builtin.set_fact:
+    eigenstate_breakglass_missing_groups: >-
+      {{ eigenstate_breakglass_expected_groups
+         | difference(eigenstate_breakglass_known_idm_groups) }}
+    eigenstate_breakglass_missing_principals: >-
+      {{ eigenstate_breakglass_expected_principals
+         | difference(eigenstate_breakglass_known_idm_principals) }}
+    eigenstate_breakglass_missing_controls: >-
+      {{ eigenstate_breakglass_required_controls
+         | difference(eigenstate_breakglass_documented_controls) }}
+
+- name: Fail when required breakglass evidence is missing
+  ansible.builtin.assert:
+    that:
+      - eigenstate_breakglass_missing_groups | length == 0
+      - eigenstate_breakglass_missing_principals | length == 0
+      - eigenstate_breakglass_missing_controls | length == 0
+    fail_msg: OpenShift breakglass validation is missing required evidence.
+  when: eigenstate_breakglass_fail_on_missing | bool
+
+- name: Build OpenShift breakglass readiness model
+  ansible.builtin.set_fact:
+    eigenstate_breakglass_readiness_passed: >-
+      {{ (eigenstate_breakglass_missing_groups | length == 0) and
+         (eigenstate_breakglass_missing_principals | length == 0) and
+         (eigenstate_breakglass_missing_controls | length == 0) }}
+
+- name: Build OpenShift breakglass readiness report
+  ansible.builtin.set_fact:
+    eigenstate_breakglass_readiness_report:
+      role: openshift_breakglass_validation
+      generated_at_utc: "{{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}"
+      expected_groups: "{{ eigenstate_breakglass_expected_groups }}"
+      missing_groups: "{{ eigenstate_breakglass_missing_groups }}"
+      expected_principals: "{{ eigenstate_breakglass_expected_principals }}"
+      missing_principals: "{{ eigenstate_breakglass_missing_principals }}"
+      expected_rbac_bindings: "{{ eigenstate_breakglass_expected_rbac_bindings }}"
+      required_controls: "{{ eigenstate_breakglass_required_controls }}"
+      missing_controls: "{{ eigenstate_breakglass_missing_controls }}"
+      passed: "{{ eigenstate_breakglass_readiness_passed }}"
