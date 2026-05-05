@@ -14,7 +14,7 @@ Related docs:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-disconnected-build.html"><kbd>&nbsp;&nbsp;DISCONNECTED BUILD&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-troubleshooting.html"><kbd>&nbsp;&nbsp;TROUBLESHOOTING&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-seller-demo.html"><kbd>&nbsp;&nbsp;SELLER DEMO&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-validation-walkthrough.html"><kbd>&nbsp;&nbsp;VALIDATION WALKTHROUGH&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
 
 ## What This EE Solves
@@ -36,7 +36,7 @@ that path repeatable.
 - Podman or Docker
 - `ansible-builder`
 - access to `registry.redhat.io`
-- optional private automation hub or registry for customer environments
+- optional private automation hub or registry for target environments
 
 ## Render Build Context
 

@@ -55,6 +55,7 @@ The collection treats IdM as both:
 - [docs/documentation-map.md](docs/documentation-map.md)
 - [docs/vault-cyberark-primer.md](docs/vault-cyberark-primer.md)
 - [docs/aap-ee-quickstart.md](docs/aap-ee-quickstart.md)
+- [docs/aap-ee-validation-walkthrough.md](docs/aap-ee-validation-walkthrough.md)
 - [docs/aap-integration.md](docs/aap-integration.md)
 - [docs/openshift-primer.md](docs/openshift-primer.md)
 - [docs/ephemeral-access-capabilities.md](docs/ephemeral-access-capabilities.md)

@@ -31,7 +31,7 @@ acquisition.
 
 Mount the IdM CA certificate into the job runtime or bake the trusted CA into a
 site-specific image. The default scaffold creates `/etc/ipa` with group-writable
-permissions for AAP runtime mounts; it does not include customer CA material.
+permissions for AAP runtime mounts; it does not include site CA material.
 
 ## `KRB5CCNAME` Or Credential Cache Issues
 

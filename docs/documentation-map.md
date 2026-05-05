@@ -69,7 +69,7 @@ These are the collection combinations worth learning as flows.
 | Service onboarding and key material | [Principal Use Cases](https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html) | principal pre-flight is the gate before keytab and cert work |
 | TLS bootstrap and renewal | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) | cert issuance, retrieval, renewal, and vault-backed private-key handling |
 | Static secret lifecycle in Controller | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) | `vault_write`, `vault`, `keytab`, and `cert` in scheduled jobs |
-| AAP execution environment adoption | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) | render, build, smoke-test, push, and register the IdM runtime image |
+| AAP execution environment validation | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) | render, build, smoke-test, push, and register the IdM runtime image |
 | Lease-like temporary access in IdM | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) | `user_lease` for delegated temporary users plus Kerberos key retirement patterns without pretending they are dynamic secret leases |
 | Host enrollment | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) | OTP bootstrap plus official IdM enrollment modules and post-checks |
 | Policy validation before privileged change | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) | `hbacrule`, `selinuxmap`, `sudo`, `principal`, and `dns` as controller-side gates |
@@ -123,11 +123,11 @@ workflow guides above.
 - [OpenShift Quay Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html)
 - [OpenShift Developer Use Cases](https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html)
 
-## Demo And Validation
+## Validation Walkthroughs
 
-- [AAP EE Seller Demo](https://gprocunier.github.io/eigenstate-ipa/aap-ee-seller-demo.html)
-  gives a short field path for showing the EE, Controller registration, smoke job,
-  IdM inventory, vault metadata, HBAC checks, and `user_lease` check mode
+- [AAP EE Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/aap-ee-validation-walkthrough.html)
+  validates the EE, Controller registration, smoke job, IdM inventory, vault
+  metadata, HBAC checks, and `user_lease` check mode
 - [User Lease Demo](https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html)
   shows the exact boundary the demo proves: fresh `kinit` and SSH succeed during the lease,
   then a fresh `kinit` fails after expiry

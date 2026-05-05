@@ -6,8 +6,8 @@
   and optionally register an AAP execution environment for `eigenstate.ipa`
 - added a static `execution-environment/eigenstate-idm/` scaffold for manual
   Ansible Builder workflows
-- added AAP EE quickstart, disconnected build, troubleshooting, and seller demo
-  documentation
+- added AAP EE quickstart, disconnected build, troubleshooting, and validation
+  walkthrough documentation
 - added render-only validation for the EE scaffold and unit coverage for the
   role render path
 - hardened RHOSO `user_lease` examples so admin keytab examples use the
