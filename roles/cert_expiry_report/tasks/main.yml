@@ -1,0 +1,10 @@
+---
+- name: Validate certificate expiry report inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Find certificate records
+  ansible.builtin.import_tasks: find.yml
+
+- name: Render certificate expiry report
+  ansible.builtin.import_tasks: render.yml
+  when: eigenstate_cert_report_formats | length > 0

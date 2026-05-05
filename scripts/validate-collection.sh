@@ -8,6 +8,10 @@ cleanup() {
 }
 trap cleanup EXIT
 
+COLLECTIONS_ROOT="${TEMP_BUILD_DIR}/collections"
+mkdir -p "${COLLECTIONS_ROOT}/ansible_collections/eigenstate"
+ln -s "${PROJECT_ROOT}" "${COLLECTIONS_ROOT}/ansible_collections/eigenstate/ipa"
+
 echo "==> Parsing YAML sources"
 python3 - "${PROJECT_ROOT}" <<'PY2'
 import sys
@@ -94,6 +98,19 @@ if command -v ansible-playbook >/dev/null 2>&1; then
   test -f "${TEMP_BUILD_DIR}/eigenstate-idm-ee/execution-environment.yml"
   test -f "${TEMP_BUILD_DIR}/eigenstate-idm-ee/requirements.yml"
   test -f "${TEMP_BUILD_DIR}/eigenstate-idm-ee/bindep.txt"
+
+  echo "==> Checking Phase 2 role playbook syntax"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/sealed-artifact-delivery.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/temporary-access-window.yml"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/cert-expiry-report.yml"
+
+  echo "==> Running Phase 2 static validation playbook"
+  ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
+    ANSIBLE_LOCALHOST_WARNING=false \
+    ansible-playbook "${PROJECT_ROOT}/playbooks/phase2-static-validation.yml"
 else
   echo "==> ansible-playbook not installed; skipping AAP EE role checks"
 fi

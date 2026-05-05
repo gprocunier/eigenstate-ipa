@@ -1,0 +1,18 @@
+---
+- name: Validate temporary access window variables
+  ansible.builtin.assert:
+    that:
+      - eigenstate_taw_username | length > 0
+      - eigenstate_taw_server | length > 0
+      - eigenstate_taw_state in ['preflight', 'open', 'expire', 'clear']
+      - not (eigenstate_taw_state == 'open' and
+             (eigenstate_taw_principal_expiration | string | length == 0) and
+             (eigenstate_taw_password_expiration | string | length == 0))
+      - not ((eigenstate_taw_hbac_preflight_enabled | bool) and
+             (eigenstate_taw_hbac_targethost | length == 0))
+      - not ((eigenstate_taw_password_expiration | string | length > 0) and
+             (eigenstate_taw_password_expiration_matches_principal | bool))
+      - not (eigenstate_taw_state == 'clear' and
+             (eigenstate_taw_password_expiration_matches_principal | bool))
+      - eigenstate_taw_report_formats | difference(['json', 'md']) | length == 0
+    fail_msg: Invalid temporary access window role configuration.

@@ -1,0 +1,26 @@
+---
+name: Eigenstate - Phase 2 Golden Path
+description: >-
+  Reference workflow shape combining certificate reporting, temporary access
+  policy control, and sealed artifact delivery.
+workflow_nodes:
+  - identifier: cert-expiry-report
+    unified_job_template: Eigenstate - Certificate Expiry Report
+    success_nodes:
+      - temporary-access-approval
+  - identifier: temporary-access-approval
+    type: approval
+    name: Approve temporary access open
+    timeout: 3600
+    success_nodes:
+      - temporary-access-window
+  - identifier: temporary-access-window
+    unified_job_template: Eigenstate - Temporary Access Window
+    success_nodes:
+      - sealed-artifact-delivery
+  - identifier: sealed-artifact-delivery
+    unified_job_template: Eigenstate - Sealed Artifact Delivery
+notes:
+  - This file is a reference shape, not a complete Controller import payload.
+  - Keep credentials in Controller credential types, not in this file.
+  - Use approval nodes and scoped credentials before mutating temporary access.

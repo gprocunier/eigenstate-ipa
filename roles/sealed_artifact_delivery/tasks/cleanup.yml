@@ -1,0 +1,13 @@
+---
+- name: Remove staged sealed artifact path
+  ansible.builtin.file:
+    path: "{{ eigenstate_sealed_output_path }}"
+    state: absent
+  delegate_to: >-
+    {{ eigenstate_sealed_target_host
+       if (eigenstate_sealed_target_host | length > 0)
+       else inventory_hostname }}
+  register: eigenstate_sealed_cleanup_result
+  no_log: "{{ eigenstate_sealed_no_log }}"
+  when:
+    - eigenstate_sealed_output_path | length > 0

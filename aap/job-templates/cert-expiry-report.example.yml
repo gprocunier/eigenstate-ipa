@@ -1,0 +1,30 @@
+---
+name: Eigenstate - Certificate Expiry Report
+description: >-
+  Find IdM certificates matching expiry or identity filters and render JSON,
+  Markdown, and CSV artifacts.
+inventory: Localhost
+project: eigenstate-ipa
+playbook: playbooks/cert-expiry-report.yml
+execution_environment: "{{ eigenstate_idm_ee_image }}"
+credentials:
+  - IdM read-only keytab credential mounted at /runner/env/ipa/report.keytab
+survey:
+  eigenstate_cert_report_server:
+    type: text
+    required: true
+  eigenstate_cert_report_kerberos_keytab:
+    type: text
+    default: /runner/env/ipa/report.keytab
+  eigenstate_cert_report_valid_not_after_to:
+    type: text
+    required: true
+  eigenstate_cert_report_principal:
+    type: text
+    required: false
+  eigenstate_cert_report_subject:
+    type: text
+    required: false
+notes:
+  - At least one filter is required by the role.
+  - Enable failure-gate variables for scheduled compliance jobs.

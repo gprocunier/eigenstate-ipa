@@ -1,0 +1,58 @@
+---
+- name: Create certificate expiry report output directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_cert_report_output_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Normalize certificate report records
+  ansible.builtin.set_fact:
+    eigenstate_cert_report_list: >-
+      {{ (eigenstate_cert_report_records.values() | list)
+         if eigenstate_cert_report_records is mapping
+         else (eigenstate_cert_report_records | default([])) }}
+
+- name: Build certificate expiry report data
+  ansible.builtin.set_fact:
+    eigenstate_cert_report:
+      role: cert_expiry_report
+      generated_at_utc: "{{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}"
+      filters:
+        valid_not_after_from: "{{ eigenstate_cert_report_valid_not_after_from }}"
+        valid_not_after_to: "{{ eigenstate_cert_report_valid_not_after_to }}"
+        principal: "{{ eigenstate_cert_report_principal }}"
+        subject: "{{ eigenstate_cert_report_subject }}"
+        revocation_reason: "{{ eigenstate_cert_report_revocation_reason }}"
+        exactly: "{{ eigenstate_cert_report_exactly | bool }}"
+      count: "{{ eigenstate_cert_report_list | length }}"
+      certificates: "{{ eigenstate_cert_report_list }}"
+
+- name: Render certificate expiry JSON report
+  ansible.builtin.template:
+    src: cert-expiry-report.json.j2
+    dest: "{{ eigenstate_cert_report_output_dir }}/{{ eigenstate_cert_report_basename }}.json"
+    mode: "0640"
+  when: "'json' in eigenstate_cert_report_formats"
+
+- name: Render certificate expiry Markdown report
+  ansible.builtin.template:
+    src: cert-expiry-report.md.j2
+    dest: "{{ eigenstate_cert_report_output_dir }}/{{ eigenstate_cert_report_basename }}.md"
+    mode: "0640"
+  when: "'md' in eigenstate_cert_report_formats"
+
+- name: Render certificate expiry CSV report
+  ansible.builtin.template:
+    src: cert-expiry-report.csv.j2
+    dest: "{{ eigenstate_cert_report_output_dir }}/{{ eigenstate_cert_report_basename }}.csv"
+    mode: "0640"
+  when: "'csv' in eigenstate_cert_report_formats"
+
+- name: Fail when certificate count exceeds threshold
+  ansible.builtin.fail:
+    msg: >-
+      Certificate expiry report found {{ eigenstate_cert_report_list | length }}
+      certificate(s), meeting threshold {{ eigenstate_cert_report_fail_threshold_count }}.
+  when:
+    - eigenstate_cert_report_fail_on_expiring | bool
+    - eigenstate_cert_report_list | length >= eigenstate_cert_report_fail_threshold_count | int

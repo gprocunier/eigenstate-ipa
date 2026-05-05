@@ -1,0 +1,86 @@
+---
+- name: Set sealed artifact metadata placeholder for static validation
+  ansible.builtin.set_fact:
+    eigenstate_sealed_metadata: {}
+  when:
+    - ansible_check_mode or not (eigenstate_sealed_live_lookup_enabled | bool)
+    - not (eigenstate_sealed_check_mode_retrieve | bool)
+
+- name: Inspect shared sealed artifact vault metadata
+  ansible.builtin.set_fact:
+    eigenstate_sealed_metadata: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_sealed_vault_name,
+                operation='show',
+                server=eigenstate_sealed_server,
+                kerberos_keytab=(eigenstate_sealed_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_sealed_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_sealed_ipaadmin_password or none),
+                shared=true,
+                verify=(eigenstate_sealed_verify or none)) }}
+  delegate_to: "{{ eigenstate_sealed_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_sealed_no_log }}"
+  when:
+    - eigenstate_sealed_scope == 'shared'
+    - eigenstate_sealed_live_lookup_enabled | bool
+    - not ansible_check_mode or (eigenstate_sealed_check_mode_retrieve | bool)
+
+- name: Inspect user sealed artifact vault metadata
+  ansible.builtin.set_fact:
+    eigenstate_sealed_metadata: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_sealed_vault_name,
+                operation='show',
+                server=eigenstate_sealed_server,
+                kerberos_keytab=(eigenstate_sealed_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_sealed_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_sealed_ipaadmin_password or none),
+                username=eigenstate_sealed_username,
+                verify=(eigenstate_sealed_verify or none)) }}
+  delegate_to: "{{ eigenstate_sealed_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_sealed_no_log }}"
+  when:
+    - eigenstate_sealed_scope == 'user'
+    - eigenstate_sealed_live_lookup_enabled | bool
+    - not ansible_check_mode or (eigenstate_sealed_check_mode_retrieve | bool)
+
+- name: Inspect service sealed artifact vault metadata
+  ansible.builtin.set_fact:
+    eigenstate_sealed_metadata: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_sealed_vault_name,
+                operation='show',
+                server=eigenstate_sealed_server,
+                kerberos_keytab=(eigenstate_sealed_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_sealed_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_sealed_ipaadmin_password or none),
+                service=eigenstate_sealed_service,
+                verify=(eigenstate_sealed_verify or none)) }}
+  delegate_to: "{{ eigenstate_sealed_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_sealed_no_log }}"
+  when:
+    - eigenstate_sealed_scope == 'service'
+    - eigenstate_sealed_live_lookup_enabled | bool
+    - not ansible_check_mode or (eigenstate_sealed_check_mode_retrieve | bool)
+
+- name: Inspect default-scope sealed artifact vault metadata
+  ansible.builtin.set_fact:
+    eigenstate_sealed_metadata: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_sealed_vault_name,
+                operation='show',
+                server=eigenstate_sealed_server,
+                kerberos_keytab=(eigenstate_sealed_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_sealed_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_sealed_ipaadmin_password or none),
+                verify=(eigenstate_sealed_verify or none)) }}
+  delegate_to: "{{ eigenstate_sealed_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_sealed_no_log }}"
+  when:
+    - eigenstate_sealed_scope == 'default'
+    - eigenstate_sealed_live_lookup_enabled | bool
+    - not ansible_check_mode or (eigenstate_sealed_check_mode_retrieve | bool)

@@ -1,0 +1,45 @@
+---
+- name: Create temporary access report directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_taw_report_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Build temporary access report data
+  ansible.builtin.set_fact:
+    eigenstate_taw_report:
+      role: temporary_access_window
+      username: "{{ eigenstate_taw_username }}"
+      state: "{{ eigenstate_taw_state }}"
+      changed: "{{ eigenstate_taw_lease_result.changed | default(false) }}"
+      lease_end: "{{ eigenstate_taw_lease_result.lease_end | default(none) }}"
+      principal_expiration_before: >-
+        {{ eigenstate_taw_lease_result.principal_expiration_before | default(none) }}
+      principal_expiration_after: >-
+        {{ eigenstate_taw_lease_result.principal_expiration_after | default(none) }}
+      password_expiration_before: >-
+        {{ eigenstate_taw_lease_result.password_expiration_before | default(none) }}
+      password_expiration_after: >-
+        {{ eigenstate_taw_lease_result.password_expiration_after | default(none) }}
+      require_groups: "{{ eigenstate_taw_require_groups }}"
+      hbac_preflight_enabled: "{{ eigenstate_taw_hbac_preflight_enabled | bool }}"
+      hbac_denied: "{{ eigenstate_taw_hbac_result.denied | default(none) }}"
+      hbac_matched: "{{ eigenstate_taw_hbac_result.matched | default([]) }}"
+      hbac_notmatched: "{{ eigenstate_taw_hbac_result.notmatched | default([]) }}"
+      sudo_preflight_enabled: "{{ eigenstate_taw_sudo_preflight_enabled | bool }}"
+      selinuxmap_preflight_enabled: "{{ eigenstate_taw_selinuxmap_preflight_enabled | bool }}"
+      timestamp_utc: "{{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}"
+
+- name: Render temporary access JSON report
+  ansible.builtin.template:
+    src: access-window-report.json.j2
+    dest: "{{ eigenstate_taw_report_dir }}/temporary-access-window.json"
+    mode: "0640"
+  when: "'json' in eigenstate_taw_report_formats"
+
+- name: Render temporary access Markdown report
+  ansible.builtin.template:
+    src: access-window-report.md.j2
+    dest: "{{ eigenstate_taw_report_dir }}/temporary-access-window.md"
+    mode: "0640"
+  when: "'md' in eigenstate_taw_report_formats"

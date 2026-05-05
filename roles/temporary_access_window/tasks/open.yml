@@ -1,0 +1,16 @@
+---
+- name: Open temporary access window in IdM
+  eigenstate.ipa.user_lease:
+    username: "{{ eigenstate_taw_username }}"
+    state: present
+    principal_expiration: "{{ eigenstate_taw_principal_expiration | default(omit, true) }}"
+    password_expiration: "{{ eigenstate_taw_password_expiration | default(omit, true) }}"
+    password_expiration_matches_principal: "{{ eigenstate_taw_password_expiration_matches_principal }}"
+    require_groups: "{{ eigenstate_taw_require_groups }}"
+    server: "{{ eigenstate_taw_server }}"
+    ipaadmin_principal: "{{ eigenstate_taw_ipaadmin_principal }}"
+    ipaadmin_password: "{{ eigenstate_taw_ipaadmin_password | default(omit, true) }}"
+    kerberos_keytab: "{{ eigenstate_taw_kerberos_keytab | default(omit, true) }}"
+    verify: "{{ eigenstate_taw_verify | default(omit, true) }}"
+  register: eigenstate_taw_lease_result
+  no_log: "{{ eigenstate_taw_no_log }}"

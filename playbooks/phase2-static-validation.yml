@@ -1,0 +1,38 @@
+---
+- name: Validate Phase 2 role wiring without IdM
+  hosts: localhost
+  gather_facts: false
+  check_mode: true
+  tasks:
+    - name: Validate sealed artifact role argument spec loads
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.sealed_artifact_delivery
+      vars:
+        eigenstate_sealed_state: preflight
+        eigenstate_sealed_vault_name: placeholder
+        eigenstate_sealed_server: idm.example.com
+        eigenstate_sealed_check_mode_retrieve: false
+        eigenstate_sealed_live_lookup_enabled: false
+        eigenstate_sealed_report_enabled: false
+      tags: sealed
+
+    - name: Validate temporary access role argument spec loads
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.temporary_access_window
+      vars:
+        eigenstate_taw_state: preflight
+        eigenstate_taw_username: placeholder
+        eigenstate_taw_server: idm.example.com
+        eigenstate_taw_hbac_preflight_enabled: false
+        eigenstate_taw_report_enabled: false
+      tags: taw
+
+    - name: Validate cert report role argument spec loads
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.cert_expiry_report
+      vars:
+        eigenstate_cert_report_server: idm.example.com
+        eigenstate_cert_report_valid_not_after_to: "2099-12-31"
+        eigenstate_cert_report_live_lookup_enabled: false
+        eigenstate_cert_report_formats: []
+      tags: cert

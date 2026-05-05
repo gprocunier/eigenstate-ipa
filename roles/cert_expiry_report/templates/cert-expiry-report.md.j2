@@ -1,0 +1,23 @@
+# Certificate Expiry Report
+
+Generated: `{{ eigenstate_cert_report.generated_at_utc }}`
+
+## Filters
+
+| Filter | Value |
+| --- | --- |
+| Valid not after from | `{{ eigenstate_cert_report.filters.valid_not_after_from }}` |
+| Valid not after to | `{{ eigenstate_cert_report.filters.valid_not_after_to }}` |
+| Principal | `{{ eigenstate_cert_report.filters.principal }}` |
+| Subject | `{{ eigenstate_cert_report.filters.subject }}` |
+| Revocation reason | `{{ eigenstate_cert_report.filters.revocation_reason | default("", true) }}` |
+| Exactly | `{{ eigenstate_cert_report.filters.exactly }}` |
+
+Count: `{{ eigenstate_cert_report.count }}`
+
+| Serial | Subject | Issuer | Valid not before | Valid not after | Revoked |
+| --- | --- | --- | --- | --- | --- |
+{% for cert in eigenstate_cert_report.certificates %}
+{% set metadata = cert.metadata | default(cert) %}
+| `{{ metadata.serial_number | default("") }}` | {{ metadata.subject | default("") }} | {{ metadata.issuer | default("") }} | `{{ metadata.valid_not_before | default("") }}` | `{{ metadata.valid_not_after | default("") }}` | `{{ metadata.revoked | default(false) }}` |
+{% endfor %}

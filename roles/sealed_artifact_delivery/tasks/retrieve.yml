@@ -1,0 +1,83 @@
+---
+- name: Retrieve sealed artifact from shared IdM vault
+  ansible.builtin.set_fact:
+    eigenstate_sealed_record: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_sealed_vault_name,
+                server=eigenstate_sealed_server,
+                kerberos_keytab=(eigenstate_sealed_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_sealed_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_sealed_ipaadmin_password or none),
+                shared=true,
+                encoding=eigenstate_sealed_encoding,
+                result_format='record',
+                include_metadata=true,
+                verify=(eigenstate_sealed_verify or none)) }}
+  delegate_to: "{{ eigenstate_sealed_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_sealed_no_log }}"
+  when:
+    - eigenstate_sealed_live_lookup_enabled | bool
+    - eigenstate_sealed_scope == 'shared'
+
+- name: Retrieve sealed artifact from user IdM vault
+  ansible.builtin.set_fact:
+    eigenstate_sealed_record: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_sealed_vault_name,
+                server=eigenstate_sealed_server,
+                kerberos_keytab=(eigenstate_sealed_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_sealed_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_sealed_ipaadmin_password or none),
+                username=eigenstate_sealed_username,
+                encoding=eigenstate_sealed_encoding,
+                result_format='record',
+                include_metadata=true,
+                verify=(eigenstate_sealed_verify or none)) }}
+  delegate_to: "{{ eigenstate_sealed_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_sealed_no_log }}"
+  when:
+    - eigenstate_sealed_live_lookup_enabled | bool
+    - eigenstate_sealed_scope == 'user'
+
+- name: Retrieve sealed artifact from service IdM vault
+  ansible.builtin.set_fact:
+    eigenstate_sealed_record: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_sealed_vault_name,
+                server=eigenstate_sealed_server,
+                kerberos_keytab=(eigenstate_sealed_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_sealed_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_sealed_ipaadmin_password or none),
+                service=eigenstate_sealed_service,
+                encoding=eigenstate_sealed_encoding,
+                result_format='record',
+                include_metadata=true,
+                verify=(eigenstate_sealed_verify or none)) }}
+  delegate_to: "{{ eigenstate_sealed_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_sealed_no_log }}"
+  when:
+    - eigenstate_sealed_live_lookup_enabled | bool
+    - eigenstate_sealed_scope == 'service'
+
+- name: Retrieve sealed artifact from default IdM vault scope
+  ansible.builtin.set_fact:
+    eigenstate_sealed_record: >-
+      {{ lookup('eigenstate.ipa.vault',
+                eigenstate_sealed_vault_name,
+                server=eigenstate_sealed_server,
+                kerberos_keytab=(eigenstate_sealed_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_sealed_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_sealed_ipaadmin_password or none),
+                encoding=eigenstate_sealed_encoding,
+                result_format='record',
+                include_metadata=true,
+                verify=(eigenstate_sealed_verify or none)) }}
+  delegate_to: "{{ eigenstate_sealed_delegate_to }}"
+  run_once: true
+  no_log: "{{ eigenstate_sealed_no_log }}"
+  when:
+    - eigenstate_sealed_live_lookup_enabled | bool
+    - eigenstate_sealed_scope == 'default'

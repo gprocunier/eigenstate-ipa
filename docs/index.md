@@ -51,6 +51,11 @@ Pick the lane that matches the problem first, then branch into the deeper docs:
       <td>Starts with the ready-to-build runtime before the broader Controller model.</td>
     </tr>
     <tr>
+      <td>Using packaged AAP workflow roles</td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html"><kbd>AAP GOLDEN PATH ROLES</kbd></a></td>
+      <td>Routes into the sealed artifact, temporary access, and cert reporting roles.</td>
+    </tr>
+    <tr>
       <td>Managing static secrets or scheduled rotation</td>
       <td><a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a></td>
       <td>Separates scheduled lifecycle work from one-off lookups.</td>
@@ -87,6 +92,7 @@ as workflows rather than as isolated plugins.
 | TLS bootstrap and renewal | `cert` + `vault_write` for private key archival + `vault` retrieval | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) |
 | Static secret lifecycle | `vault_write` mutation + `vault` retrieval + AAP scheduling | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) |
 | AAP runtime validation | EE scaffold + `aap_execution_environment` role + smoke checks | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) |
+| AAP packaged workflows | `sealed_artifact_delivery` + `temporary_access_window` + `cert_expiry_report` | [AAP Golden Path Roles](https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html) |
 | Lease-like temporary access | `user_lease` for delegated temporary users or `principal` + `keytab` retirement for machine identity | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) |
 | Host enrollment | `otp` bootstrap + official IdM enrollment modules + `principal` verification | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) |
 | Policy validation before change | `hbacrule` + `selinuxmap` + `sudo` + optional `dns`/`principal` checks | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) |

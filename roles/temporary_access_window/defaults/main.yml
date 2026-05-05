@@ -1,0 +1,34 @@
+---
+eigenstate_taw_state: preflight
+
+eigenstate_taw_username: ""
+eigenstate_taw_principal_expiration: "01:00"
+eigenstate_taw_password_expiration: ""
+eigenstate_taw_password_expiration_matches_principal: true
+eigenstate_taw_clear_password_expiration: false
+eigenstate_taw_require_groups: []
+
+eigenstate_taw_server: ""
+eigenstate_taw_verify: ""
+eigenstate_taw_ipaadmin_principal: lease-operator
+eigenstate_taw_ipaadmin_password: ""
+eigenstate_taw_kerberos_keytab: ""
+
+eigenstate_taw_hbac_preflight_enabled: true
+eigenstate_taw_hbac_targethost: ""
+eigenstate_taw_hbac_service: sshd
+
+eigenstate_taw_sudo_preflight_enabled: false
+eigenstate_taw_sudo_rules: []
+
+eigenstate_taw_selinuxmap_preflight_enabled: false
+eigenstate_taw_selinux_maps: []
+
+eigenstate_taw_fail_on_preflight_denied: true
+eigenstate_taw_report_enabled: true
+eigenstate_taw_report_dir: "./artifacts"
+eigenstate_taw_report_formats:
+  - json
+  - md
+
+eigenstate_taw_no_log: false

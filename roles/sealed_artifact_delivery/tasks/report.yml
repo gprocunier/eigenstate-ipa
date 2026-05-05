@@ -1,0 +1,46 @@
+---
+- name: Create sealed artifact report directory
+  ansible.builtin.file:
+    path: "{{ eigenstate_sealed_report_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Build sealed artifact report data
+  ansible.builtin.set_fact:
+    eigenstate_sealed_report:
+      role: sealed_artifact_delivery
+      vault_name: "{{ eigenstate_sealed_vault_name }}"
+      scope: "{{ eigenstate_sealed_scope }}"
+      state: "{{ eigenstate_sealed_state }}"
+      output_path: "{{ eigenstate_sealed_output_path }}"
+      handoff_enabled: "{{ eigenstate_sealed_handoff_enabled | bool }}"
+      cleanup_after_handoff: "{{ eigenstate_sealed_cleanup_after_handoff | bool }}"
+      changed: >-
+        {{ (eigenstate_sealed_stage_result.changed | default(false)) or
+           (eigenstate_sealed_handoff_result.changed | default(false)) or
+           (eigenstate_sealed_cleanup_result.changed | default(false)) }}
+      timestamp_utc: "{{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}"
+      vault_type: >-
+        {{ (eigenstate_sealed_normalized_record.type
+            | default(eigenstate_sealed_metadata.type | default(none))) }}
+      vault_description: >-
+        {{ (eigenstate_sealed_normalized_record.description
+            | default(eigenstate_sealed_metadata.description | default(none))) }}
+      vault_id: >-
+        {{ (eigenstate_sealed_normalized_record.vault_id
+            | default(eigenstate_sealed_metadata.vault_id | default(none))) }}
+  no_log: "{{ eigenstate_sealed_no_log }}"
+
+- name: Render sealed artifact JSON report
+  ansible.builtin.template:
+    src: handoff-report.json.j2
+    dest: "{{ eigenstate_sealed_report_dir }}/sealed-artifact-delivery.json"
+    mode: "0640"
+  when: "'json' in eigenstate_sealed_report_formats"
+
+- name: Render sealed artifact Markdown report
+  ansible.builtin.template:
+    src: handoff-report.md.j2
+    dest: "{{ eigenstate_sealed_report_dir }}/sealed-artifact-delivery.md"
+    mode: "0640"
+  when: "'md' in eigenstate_sealed_report_formats"

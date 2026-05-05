@@ -1,0 +1,14 @@
+---
+- name: Validate certificate expiry report variables
+  ansible.builtin.assert:
+    that:
+      - eigenstate_cert_report_state == 'present'
+      - eigenstate_cert_report_server | length > 0
+      - (eigenstate_cert_report_valid_not_after_from | length > 0) or
+        (eigenstate_cert_report_valid_not_after_to | length > 0) or
+        (eigenstate_cert_report_principal | length > 0) or
+        (eigenstate_cert_report_subject | length > 0) or
+        (eigenstate_cert_report_revocation_reason is not none)
+      - eigenstate_cert_report_formats | difference(['json', 'md', 'csv']) | length == 0
+      - eigenstate_cert_report_fail_threshold_count | int >= 1
+    fail_msg: Invalid certificate expiry report role configuration.

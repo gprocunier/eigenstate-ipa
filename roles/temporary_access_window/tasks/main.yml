@@ -1,0 +1,31 @@
+---
+- name: Validate temporary access window inputs
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Run HBAC preflight
+  ansible.builtin.import_tasks: preflight_hbac.yml
+  when: eigenstate_taw_hbac_preflight_enabled | bool
+
+- name: Run sudo preflight
+  ansible.builtin.import_tasks: preflight_sudo.yml
+  when: eigenstate_taw_sudo_preflight_enabled | bool
+
+- name: Run SELinux map preflight
+  ansible.builtin.import_tasks: preflight_selinuxmap.yml
+  when: eigenstate_taw_selinuxmap_preflight_enabled | bool
+
+- name: Open temporary access window
+  ansible.builtin.import_tasks: open.yml
+  when: eigenstate_taw_state == 'open'
+
+- name: Expire temporary access window
+  ansible.builtin.import_tasks: expire.yml
+  when: eigenstate_taw_state == 'expire'
+
+- name: Clear temporary access window
+  ansible.builtin.import_tasks: clear.yml
+  when: eigenstate_taw_state == 'clear'
+
+- name: Render temporary access report
+  ansible.builtin.import_tasks: report.yml
+  when: eigenstate_taw_report_enabled | bool

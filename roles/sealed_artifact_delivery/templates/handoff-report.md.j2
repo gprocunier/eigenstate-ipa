@@ -1,0 +1,23 @@
+# Sealed Artifact Delivery
+
+| Field | Value |
+| --- | --- |
+| Role | `{{ eigenstate_sealed_report.role }}` |
+| Vault | `{{ eigenstate_sealed_report.vault_name }}` |
+| Scope | `{{ eigenstate_sealed_report.scope }}` |
+| State | `{{ eigenstate_sealed_report.state }}` |
+| Output path | `{{ eigenstate_sealed_report.output_path }}` |
+| Handoff enabled | `{{ eigenstate_sealed_report.handoff_enabled }}` |
+| Cleanup after handoff | `{{ eigenstate_sealed_report.cleanup_after_handoff }}` |
+| Changed | `{{ eigenstate_sealed_report.changed }}` |
+| Generated | `{{ eigenstate_sealed_report.timestamp_utc }}` |
+
+{% if eigenstate_sealed_report.vault_type %}
+## Vault Metadata
+
+| Field | Value |
+| --- | --- |
+| Type | `{{ eigenstate_sealed_report.vault_type }}` |
+| Description | {{ eigenstate_sealed_report.vault_description | default("", true) }} |
+| Vault ID | `{{ eigenstate_sealed_report.vault_id | default("", true) }}` |
+{% endif %}

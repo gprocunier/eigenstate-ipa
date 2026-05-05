@@ -1,0 +1,29 @@
+---
+- name: Set certificate report placeholder during static validation
+  ansible.builtin.set_fact:
+    eigenstate_cert_report_records: {}
+  when: ansible_check_mode
+    or not (eigenstate_cert_report_live_lookup_enabled | bool)
+
+- name: Find IdM certificates with expiry filters
+  ansible.builtin.set_fact:
+    eigenstate_cert_report_records: >-
+      {{ lookup('eigenstate.ipa.cert',
+                operation='find',
+                server=eigenstate_cert_report_server,
+                kerberos_keytab=(eigenstate_cert_report_kerberos_keytab or none),
+                ipaadmin_principal=eigenstate_cert_report_ipaadmin_principal,
+                ipaadmin_password=(eigenstate_cert_report_ipaadmin_password or none),
+                valid_not_after_from=(eigenstate_cert_report_valid_not_after_from or none),
+                valid_not_after_to=(eigenstate_cert_report_valid_not_after_to or none),
+                principal=(eigenstate_cert_report_principal or none),
+                subject=(eigenstate_cert_report_subject or none),
+                revocation_reason=eigenstate_cert_report_revocation_reason,
+                exactly=eigenstate_cert_report_exactly,
+                result_format='map_record',
+                verify=(eigenstate_cert_report_verify or none)) }}
+  delegate_to: localhost
+  run_once: true
+  when:
+    - not ansible_check_mode
+    - eigenstate_cert_report_live_lookup_enabled | bool

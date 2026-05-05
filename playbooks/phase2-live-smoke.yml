@@ -1,0 +1,53 @@
+---
+# Opt-in live smoke test. Do not run this playbook in default CI.
+#
+# Required variables:
+#   ipa_server: idm-01.example.com
+#   ipa_ca: /etc/ipa/ca.crt
+#   ipa_keytab: /runner/env/ipa/admin.keytab
+#   sealed_vault_name: app-bootstrap-bundle
+#   temporary_user: temp-maintenance
+#   target_host: host01.example.com
+#
+# Optional:
+#   artifacts_dir: ./artifacts
+
+- name: Run Phase 2 live IdM smoke path
+  hosts: localhost
+  gather_facts: false
+  vars:
+    artifacts_dir: ./artifacts
+  tasks:
+    - name: Generate live certificate expiry report
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.cert_expiry_report
+      vars:
+        eigenstate_cert_report_server: "{{ ipa_server }}"
+        eigenstate_cert_report_verify: "{{ ipa_ca }}"
+        eigenstate_cert_report_kerberos_keytab: "{{ ipa_keytab }}"
+        eigenstate_cert_report_valid_not_after_to: "2099-12-31"
+        eigenstate_cert_report_output_dir: "{{ artifacts_dir }}"
+
+    - name: Preflight temporary access path
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.temporary_access_window
+      vars:
+        eigenstate_taw_state: preflight
+        eigenstate_taw_username: "{{ temporary_user }}"
+        eigenstate_taw_server: "{{ ipa_server }}"
+        eigenstate_taw_verify: "{{ ipa_ca }}"
+        eigenstate_taw_kerberos_keytab: "{{ ipa_keytab }}"
+        eigenstate_taw_ipaadmin_principal: admin
+        eigenstate_taw_hbac_targethost: "{{ target_host }}"
+        eigenstate_taw_report_dir: "{{ artifacts_dir }}"
+
+    - name: Preflight sealed artifact vault metadata
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.sealed_artifact_delivery
+      vars:
+        eigenstate_sealed_state: preflight
+        eigenstate_sealed_vault_name: "{{ sealed_vault_name }}"
+        eigenstate_sealed_server: "{{ ipa_server }}"
+        eigenstate_sealed_verify: "{{ ipa_ca }}"
+        eigenstate_sealed_kerberos_keytab: "{{ ipa_keytab }}"
+        eigenstate_sealed_report_dir: "{{ artifacts_dir }}"

@@ -1,0 +1,31 @@
+---
+name: Eigenstate - Sealed Artifact Delivery
+description: >-
+  Retrieve an opaque sealed artifact from an IdM vault, stage it with
+  restrictive permissions, and optionally hand it to a downstream consumer.
+inventory: Localhost
+project: eigenstate-ipa
+playbook: playbooks/sealed-artifact-delivery.yml
+execution_environment: "{{ eigenstate_idm_ee_image }}"
+credentials:
+  - IdM Kerberos keytab credential mounted at /runner/env/ipa/admin.keytab
+survey:
+  eigenstate_sealed_state:
+    type: multiplechoice
+    choices: [preflight, staged, handed_off, absent]
+    default: preflight
+  eigenstate_sealed_vault_name:
+    type: text
+    required: true
+  eigenstate_sealed_server:
+    type: text
+    required: true
+  eigenstate_sealed_kerberos_keytab:
+    type: text
+    default: /runner/env/ipa/admin.keytab
+  eigenstate_sealed_output_path:
+    type: text
+    default: /runner/artifacts/sealed-artifact.bundle
+notes:
+  - Do not place vault passwords, private keys, or payload bytes in surveys.
+  - Keep sealed artifact retrieval and handoff tasks under no_log.

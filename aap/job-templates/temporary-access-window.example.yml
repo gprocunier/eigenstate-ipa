@@ -1,0 +1,34 @@
+---
+name: Eigenstate - Temporary Access Window
+description: >-
+  Preflight IdM access policy and open, expire, or clear an IdM-enforced
+  temporary user access window.
+inventory: Localhost
+project: eigenstate-ipa
+playbook: playbooks/temporary-access-window.yml
+execution_environment: "{{ eigenstate_idm_ee_image }}"
+credentials:
+  - IdM lease operator keytab credential mounted at /runner/env/ipa/lease-operator.keytab
+survey:
+  eigenstate_taw_state:
+    type: multiplechoice
+    choices: [preflight, open, expire, clear]
+    default: preflight
+  eigenstate_taw_username:
+    type: text
+    required: true
+  eigenstate_taw_server:
+    type: text
+    required: true
+  eigenstate_taw_kerberos_keytab:
+    type: text
+    default: /runner/env/ipa/lease-operator.keytab
+  eigenstate_taw_hbac_targethost:
+    type: text
+    required: true
+  eigenstate_taw_principal_expiration:
+    type: text
+    default: "01:00"
+notes:
+  - This workflow does not retrieve or display passwords.
+  - Use approval nodes around open state in production workflows.
