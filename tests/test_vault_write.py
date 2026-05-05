@@ -372,6 +372,19 @@ class TestStatePresent(VaultWriteTestBase):
         self.assertIn('msg', result)
         self.assertIn('mutually exclusive', result['msg'])
 
+    def test_existing_vault_type_mismatch_fails(self):
+        """Existing vault type must match requested vault_type."""
+        entry = _make_vault_entry(vault_type='symmetric')
+
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                return_value={'result': [entry]})
+
+        result = self._run(
+            _module_params(state='present', vault_type='standard'), setup)
+        self.assertIn('has type', result.get('msg', ''))
+        self.assertIn("vault_type='standard'", result.get('msg', ''))
+
 
 # ---------------------------------------------------------------------------
 # state: absent
@@ -502,6 +515,7 @@ class TestStateArchived(VaultWriteTestBase):
         result = self._run(
             _module_params(
                 state='archived',
+                vault_type='symmetric',
                 data='same-secret',
                 vault_password='vault-pw'),
             setup)
@@ -529,9 +543,28 @@ class TestStateArchived(VaultWriteTestBase):
                 return_value={'result': [entry]})
 
         result = self._run(
-            _module_params(state='archived', data='secret'),
+            _module_params(
+                state='archived',
+                vault_type='symmetric',
+                data='secret'),
             setup)
         self.assertIn('msg', result)
+
+    def test_standard_compare_failure_fails_closed(self):
+        """state=archived refuses to write through unexpected compare errors."""
+        entry = _make_vault_entry()
+
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                return_value={'result': [entry]})
+            api.Command.vault_retrieve = mock.MagicMock(
+                side_effect=RuntimeError('transport interrupted'))
+            api.Command.vault_archive = mock.MagicMock()
+
+        result = self._run(
+            _module_params(state='archived', data='new-secret'), setup)
+        self.assertIn('refusing to archive', result.get('msg', ''))
+        self.fake_api.Command.vault_archive.assert_not_called()
 
     def test_check_mode_skips_vault_archive(self):
         """check_mode=True reports changed=True but skips vault_archive."""
@@ -798,6 +831,26 @@ class TestMemberManagement(VaultWriteTestBase):
         self.assertEqual(result.get('changed'), True)
         remove_kwargs = self.fake_api.Command.vault_remove_member.call_args.kwargs
         self.assertEqual(remove_kwargs['services'], [service_principal])
+
+    def test_rejects_conflicting_members_after_canonicalization(self):
+        """members and members_absent cannot target the same canonical member."""
+        service_input = 'HTTP/web.example.com'
+        service_principal = 'HTTP/web.example.com@EXAMPLE.COM'
+        entry = _make_vault_entry()
+
+        def setup(api):
+            api.Command.vault_find = mock.MagicMock(
+                return_value={'result': [entry]})
+            api.Command.service_show = mock.MagicMock(
+                return_value={'result': {'krbcanonicalname': [service_principal]}})
+
+        result = self._run(
+            _module_params(
+                state='present',
+                members=[service_input],
+                members_absent=[service_principal]),
+            setup)
+        self.assertIn('conflict after canonicalization', result.get('msg', ''))
 
 
 # ---------------------------------------------------------------------------

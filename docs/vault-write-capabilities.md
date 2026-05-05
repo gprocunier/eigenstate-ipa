@@ -47,8 +47,9 @@ and how the module behaves differently across vault types.
 | symmetric | create/update | create if absent → always archive | delete |
 | asymmetric | create (public key required) | create if absent → always archive | delete |
 
-Changing the vault type of an existing vault is not supported. Delete and
-recreate the vault to change its type.
+Changing the vault type of an existing vault is not supported. Existing vaults
+fail closed when the requested `vault_type` does not match the IdM record.
+Delete and recreate the vault to change its type.
 
 ## Check Mode Behavior
 
@@ -94,6 +95,8 @@ pre-flight pattern.
 - if the vault already existed: retrieves the current payload via
   `vault_retrieve` and compares bytes to the incoming payload
 - skips `vault_archive` if the payloads are identical
+- fails closed if the current payload cannot be retrieved for comparison for
+  an unexpected reason
 - reports `changed: false` when no archive was needed
 
 ### `state: archived` (symmetric or asymmetric vault)
@@ -230,10 +233,9 @@ to the matching IPA member argument set before calling `vault_add_member` or
 `services`.
 
 > [!NOTE]
-> The `members` and `members_absent` lists are not mutually exclusive at the
-> parameter level, but a name that appears in both will be added and then
-> immediately removed (or vice versa depending on current state). Avoid
-> listing the same principal in both.
+> The `members` and `members_absent` lists must not contain the same
+> principal after canonicalization. The module rejects conflicting intent
+> before making member changes.
 
 ## Rotation Automation Pattern
 

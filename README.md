@@ -51,7 +51,7 @@ Without those two paths, operators usually end up with:
 - certificate requests handled in separate CA workflows outside the automation lifecycle
 
 This collection closes that gap with one inventory plugin, nine lookup plugins,
-and two write modules.
+and four write modules.
 
 ## What The Collection Contains
 
@@ -59,7 +59,8 @@ The collection has three practical layers:
 
 - live inventory from IdM host and policy data
 - controller-side lookup plugins for Kerberos, vaults, certificates, OTP, DNS, and policy state
-- narrow write modules for vault lifecycle and delegated temporary-user expiry
+- narrow write modules for vault lifecycle, keytab management, certificate
+  issuance, and delegated temporary-user expiry
 
 The table below is the authoritative surface summary.
 
@@ -70,8 +71,10 @@ The table below is the authoritative surface summary.
 | IdM vault lifecycle | module | `eigenstate.ipa.vault_write` | Creates, archives, updates, and deletes IdM vaults with check-mode and member-management support |
 | Kerberos principal state | lookup | `eigenstate.ipa.principal` | Reads user, host, and service principal existence, key, lock, and last-auth state from IdM |
 | Kerberos keytab | lookup | `eigenstate.ipa.keytab` | Retrieves Kerberos keytab files for service and host principals via `ipa-getkeytab` |
+| Kerberos keytab management | module | `eigenstate.ipa.keytab_manage` | Retrieves existing keytabs to disk or rotates keys with explicit confirmation |
 | User lease boundary | module | `eigenstate.ipa.user_lease` | Sets, expires, or clears user expiry attributes for delegated temporary-access workflows |
 | IdM certificates | lookup | `eigenstate.ipa.cert` | Requests, retrieves, and searches IdM CA certificates for host and service principals |
+| IdM certificate request | module | `eigenstate.ipa.cert_request` | Requests IdM CA certificates from CSRs with metadata-first returns and optional file deployment |
 | OTP and enrollment credentials | lookup | `eigenstate.ipa.otp` | Issues user OTP tokens and one-time host enrollment passwords through IdM |
 | DNS record state | lookup | `eigenstate.ipa.dns` | Reads forward, reverse, zone-apex, and broad-search DNS records from IdM |
 | SELinux user map state | lookup | `eigenstate.ipa.selinuxmap` | Reads SELinux user map configuration and HBAC-linked scope from IdM |
@@ -150,8 +153,10 @@ If the comparison translates into an IdM-native workflow for you, these are the 
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html"><kbd>&nbsp;&nbsp;IDM VAULT PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/vault-write-plugin.html"><kbd>&nbsp;&nbsp;VAULT WRITE MODULE&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html"><kbd>&nbsp;&nbsp;KEYTAB PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/keytab-manage-module.html"><kbd>&nbsp;&nbsp;KEYTAB MANAGE MODULE&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-plugin.html"><kbd>&nbsp;&nbsp;USER LEASE MODULE&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html"><kbd>&nbsp;&nbsp;IDM CERT PLUGIN&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/cert-request-module.html"><kbd>&nbsp;&nbsp;CERT REQUEST MODULE&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html"><kbd>&nbsp;&nbsp;HBAC RULE PLUGIN&nbsp;&nbsp;</kbd></a>
 
 ## Quick Install
@@ -166,7 +171,9 @@ Verify the main surfaces you plan to use. For example:
 ansible-doc -t inventory eigenstate.ipa.idm
 ansible-doc -t lookup eigenstate.ipa.vault
 ansible-doc -t lookup eigenstate.ipa.keytab
+ansible-doc -t module eigenstate.ipa.keytab_manage
 ansible-doc -t module eigenstate.ipa.vault_write
+ansible-doc -t module eigenstate.ipa.cert_request
 ansible-doc -t module eigenstate.ipa.user_lease
 ```
 
@@ -196,8 +203,10 @@ For the full plugin index, use <a href="https://gprocunier.github.io/eigenstate-
 | `plugins/module_utils/ipa_client.py` | Shared Kerberos auth and `ipalib` connection utilities for IPA write operations |
 | `plugins/lookup/principal.py` | Lookup plugin for Kerberos principal state queries |
 | `plugins/lookup/keytab.py` | Lookup plugin for Kerberos keytab retrieval via `ipa-getkeytab` |
+| `plugins/modules/keytab_manage.py` | Module for guarded keytab retrieval, deployment, and rotation |
 | `plugins/modules/user_lease.py` | Module for delegated temporary-user expiry and lease boundaries in IdM |
 | `plugins/lookup/cert.py` | Lookup plugin for IdM CA certificate request, retrieval, and search |
+| `plugins/modules/cert_request.py` | Module for IdM CA certificate requests from CSRs |
 | `plugins/lookup/otp.py` | Lookup plugin for OTP token issuance and host enrollment password generation |
 | `plugins/lookup/selinuxmap.py` | Lookup plugin for SELinux user map state inspection |
 | `plugins/lookup/sudo.py` | Lookup plugin for sudo rules, commands, and command groups |

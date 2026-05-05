@@ -114,7 +114,8 @@ In practice:
 ### `state: present` (default)
 
 Ensures the vault exists. Creates it if absent. Updates `description` if
-changed. Does not change the vault type of an existing vault.
+changed. Does not change the vault type of an existing vault. If the existing
+vault type differs from `vault_type`, the module fails closed.
 
 ### `state: absent`
 
@@ -127,6 +128,7 @@ stores the supplied payload in it.
 
 For **standard vaults**: retrieves the current payload and compares it to the
 incoming payload. Skips the archive step if the payloads are identical.
+Unexpected comparison failures stop the task instead of writing through.
 
 For **symmetric and asymmetric vaults**: always archives. The current
 ciphertext cannot be safely compared without decryption, so the module
@@ -228,7 +230,7 @@ operation, not the actual current state.
 | `username` | no | — | User vault scope; mutually exclusive with `service` and `shared` |
 | `service` | no | — | Service vault scope; mutually exclusive with `username` and `shared` |
 | `shared` | no | `false` | Shared vault scope; mutually exclusive with `username` and `service` |
-| `vault_type` | no | `standard` | `standard`, `symmetric`, or `asymmetric`; only applies at creation |
+| `vault_type` | no | `standard` | `standard`, `symmetric`, or `asymmetric`; used at creation and validated against existing vaults |
 | `description` | no | — | Human-readable vault description |
 | `vault_public_key` | no | — | RSA public key PEM string; for asymmetric vaults; mutually exclusive with `vault_public_key_file` |
 | `vault_public_key_file` | no | — | Path to RSA public key PEM file; mutually exclusive with `vault_public_key` |
