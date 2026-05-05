@@ -24,7 +24,7 @@ eigenstate_ee_tag: latest
 eigenstate_ee_output_dir: "{{ playbook_dir }}/../build/{{ eigenstate_ee_name }}"
 eigenstate_ee_image: "localhost/{{ eigenstate_ee_name }}:{{ eigenstate_ee_tag }}"
 eigenstate_ee_base_image: "registry.redhat.io/ansible-automation-platform-26/ee-minimal-rhel9:latest"
-eigenstate_ee_collection_version: ">=1.12.0"
+eigenstate_ee_collection_version: ">=1.13.0"
 ```
 
 Optional collection toggles:

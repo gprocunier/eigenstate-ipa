@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.13.0 - 2026-05-05
+
+- added OpenShift OIDC validation workflows for rendering OAuth/OIDC examples
+  and checking IdM group evidence before platform integration
+- added Keycloak-to-IdM federation validation workflows for local federation
+  metadata and OIDC claim evidence
+- added OpenShift breakglass validation workflows for emergency group,
+  control, and RBAC evidence review
+- added OpenShift, Keycloak, IdM federation, breakglass, and LDAP fallback
+  documentation for evidence-driven identity integration reviews
+- wired the Phase 4 validation roles, wrapper playbooks, static validation, and
+  regression tests into the standard collection validation path
+
 ## 1.12.0 - 2026-05-05
 
 - added `keytab_manage` for explicit keytab generation, retrieval, and
