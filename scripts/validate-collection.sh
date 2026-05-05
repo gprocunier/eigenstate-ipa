@@ -94,6 +94,24 @@ if command -v ansible-test >/dev/null 2>&1; then
   echo "==> Running ansible-test sanity"
   test_python="${EIGENSTATE_ANSIBLE_TEST_PYTHON:-3.11}"
   require_ansible_test="${EIGENSTATE_REQUIRE_ANSIBLE_TEST:-0}"
+  if ! command -v "python${test_python}" >/dev/null 2>&1; then
+    for candidate in python3 python; do
+      if command -v "${candidate}" >/dev/null 2>&1 \
+        && "${candidate}" - "${test_python}" <<'PY2'
+import sys
+
+expected = tuple(int(part) for part in sys.argv[1].split("."))
+actual = sys.version_info[: len(expected)]
+raise SystemExit(0 if actual == expected else 1)
+PY2
+      then
+        mkdir -p "${TEMP_BUILD_DIR}/bin"
+        ln -sf "$(command -v "${candidate}")" "${TEMP_BUILD_DIR}/bin/python${test_python}"
+        export PATH="${TEMP_BUILD_DIR}/bin:${PATH}"
+        break
+      fi
+    done
+  fi
   if command -v "python${test_python}" >/dev/null 2>&1 || [[ "${require_ansible_test}" == "1" ]]; then
     (
       cd "${COLLECTIONS_ROOT}/ansible_collections/eigenstate/ipa"
