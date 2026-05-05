@@ -4,9 +4,9 @@
 
 - added release engineering maturity gates with an ansible-core 2.15 through
   2.18 CI matrix aligned to `meta/runtime.yml`
-- added blocking collection metadata lint, `ansible-test sanity`, public
-  documentation language validation, Markdown example checks, and AAP EE
-  scaffold validation to the standard validation path
+- added blocking collection metadata lint, a release-gated `ansible-test`
+  sanity subset, public documentation language validation, Markdown example
+  checks, and AAP EE scaffold validation to the standard validation path
 - added release workflow version/tag checks, artifact checksum generation,
   manifest inspection, and clean-install documentation smoke tests before
   GitHub release publication

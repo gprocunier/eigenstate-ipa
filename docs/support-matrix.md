@@ -19,7 +19,7 @@ lines listed below.
 | Component | Release-gated coverage | Notes |
 | --- | --- | --- |
 | ansible-core | `2.15`, `2.16`, `2.17`, `2.18` | Fast CI and release validation run on every listed minor line. |
-| Python | `3.11` | CI uses Python 3.11 so `ansible-test sanity --python 3.11` is available. |
+| Python | `3.11` | CI uses Python 3.11 so the release-gated `ansible-test` sanity subset can run with `--python 3.11`. |
 | IdM / FreeIPA | FreeIPA-compatible JSON-RPC and platform client tools | Live behavior depends on the server features enabled in the target realm. |
 | Controller / AAP | Rendered EE scaffold and playbook syntax | Image build, push, and Controller registration remain environment-specific. |
 | Kubernetes / OpenShift | Render-first manifests and local validation artifacts | Applying rendered manifests is outside default CI and requires site controls. |

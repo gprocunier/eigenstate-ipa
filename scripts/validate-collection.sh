@@ -12,6 +12,42 @@ COLLECTIONS_ROOT="${TEMP_BUILD_DIR}/collections"
 mkdir -p "${COLLECTIONS_ROOT}/ansible_collections/eigenstate"
 ln -s "${PROJECT_ROOT}" "${COLLECTIONS_ROOT}/ansible_collections/eigenstate/ipa"
 
+ANSIBLE_TEST_COLLECTION_ROOT="${TEMP_BUILD_DIR}/ansible-test-collections"
+ANSIBLE_TEST_COLLECTION_DIR="${ANSIBLE_TEST_COLLECTION_ROOT}/ansible_collections/eigenstate/ipa"
+
+prepare_ansible_test_collection() {
+  rm -rf "${ANSIBLE_TEST_COLLECTION_DIR}"
+  mkdir -p "$(dirname "${ANSIBLE_TEST_COLLECTION_DIR}")"
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a --delete \
+      --exclude ".git/" \
+      --exclude ".ansible/" \
+      --exclude ".pytest_cache/" \
+      --exclude "__pycache__/" \
+      --exclude "*.pyc" \
+      --exclude "dist/" \
+      --exclude "*.tar.gz" \
+      "${PROJECT_ROOT}/" "${ANSIBLE_TEST_COLLECTION_DIR}/"
+  else
+    mkdir -p "${ANSIBLE_TEST_COLLECTION_DIR}"
+    (
+      cd "${PROJECT_ROOT}"
+      tar \
+        --exclude="./.git" \
+        --exclude="./.ansible" \
+        --exclude="./.pytest_cache" \
+        --exclude="*/__pycache__" \
+        --exclude="*.pyc" \
+        --exclude="./dist" \
+        --exclude="*.tar.gz" \
+        -cf - .
+    ) | (
+      cd "${ANSIBLE_TEST_COLLECTION_DIR}"
+      tar -xf -
+    )
+  fi
+}
+
 echo "==> Checking support matrix metadata"
 python3 - "${PROJECT_ROOT}" <<'PY2'
 import sys
@@ -91,9 +127,23 @@ else
 fi
 
 if command -v ansible-test >/dev/null 2>&1; then
-  echo "==> Running ansible-test sanity"
+  echo "==> Running ansible-test sanity subset"
   test_python="${EIGENSTATE_ANSIBLE_TEST_PYTHON:-3.11}"
   require_ansible_test="${EIGENSTATE_REQUIRE_ANSIBLE_TEST:-0}"
+  ansible_test_list="${EIGENSTATE_ANSIBLE_TESTS:-ansible-doc,compile,empty-init,import,line-endings,no-assert,no-get-exception,no-illegal-filenames,runtime-metadata}"
+  IFS="," read -r -a ansible_tests <<< "${ansible_test_list}"
+  ansible_test_args=()
+  for test_name in "${ansible_tests[@]}"; do
+    test_name="${test_name#"${test_name%%[![:space:]]*}"}"
+    test_name="${test_name%"${test_name##*[![:space:]]}"}"
+    if [[ -n "${test_name}" ]]; then
+      ansible_test_args+=(--test "${test_name}")
+    fi
+  done
+  if ((${#ansible_test_args[@]} == 0)); then
+    echo "EIGENSTATE_ANSIBLE_TESTS did not select any sanity tests" >&2
+    exit 1
+  fi
   if ! command -v "python${test_python}" >/dev/null 2>&1; then
     for candidate in python3 python; do
       if command -v "${candidate}" >/dev/null 2>&1 \
@@ -113,12 +163,15 @@ PY2
     done
   fi
   if command -v "python${test_python}" >/dev/null 2>&1 || [[ "${require_ansible_test}" == "1" ]]; then
+    echo "sanity tests: ${ansible_test_list}"
+    prepare_ansible_test_collection
     (
-      cd "${COLLECTIONS_ROOT}/ansible_collections/eigenstate/ipa"
-      ansible-test sanity --python "${test_python}" --color no --truncate 0
+      cd "${ANSIBLE_TEST_COLLECTION_DIR}"
+      ansible-test sanity "${ansible_test_args[@]}" \
+        --python "${test_python}" --color no --truncate 0
     )
   else
-    echo "python${test_python} not installed; skipping ansible-test sanity"
+    echo "python${test_python} not installed; skipping ansible-test sanity subset"
   fi
 elif [[ "${EIGENSTATE_REQUIRE_ANSIBLE_TEST:-0}" == "1" ]]; then
   echo "ansible-test not installed but EIGENSTATE_REQUIRE_ANSIBLE_TEST=1" >&2

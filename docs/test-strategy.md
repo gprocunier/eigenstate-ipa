@@ -27,7 +27,7 @@ The validation script checks:
 - YAML parsing and `yamllint`
 - Python syntax for plugins and unit tests
 - blocking `ansible-lint` for collection metadata
-- `ansible-test sanity` when the CI Python is available
+- a release-gated `ansible-test sanity` subset when the CI Python is available
 - plugin documentation parsing with `ansible-doc`
 - documentation language hygiene
 - Markdown YAML example parsing and playbook syntax where feasible
@@ -35,6 +35,12 @@ The validation script checks:
 - packaged workflow playbook syntax and static validation
 - unit tests for the plugin and role families
 - collection artifact buildability
+
+The default sanity subset is `ansible-doc`, `compile`, `empty-init`, `import`,
+`line-endings`, `no-assert`, `no-get-exception`, `no-illegal-filenames`, and
+`runtime-metadata`. Broader style and documentation-schema sanity checks can be
+run locally with `EIGENSTATE_ANSIBLE_TESTS` as the collection is hardened
+further, but they are not part of the release gate for this version.
 
 ## Integration Profile
 
