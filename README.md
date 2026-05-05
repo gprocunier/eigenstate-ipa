@@ -9,6 +9,7 @@
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;DOCS HOME&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/support-matrix.html"><kbd>&nbsp;&nbsp;SUPPORT MATRIX&nbsp;&nbsp;</kbd></a>
 
 If you are mapping the collection into OpenShift ecosystem workflows:
 
@@ -104,6 +105,9 @@ Use these first if you want the project map before you dive into individual surf
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/"><kbd>&nbsp;&nbsp;DOCS HOME&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/support-matrix.html"><kbd>&nbsp;&nbsp;SUPPORT MATRIX&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/test-strategy.html"><kbd>&nbsp;&nbsp;TEST STRATEGY&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/release-process.html"><kbd>&nbsp;&nbsp;RELEASE PROCESS&nbsp;&nbsp;</kbd></a>
 
 ### Core Capabilities
 
@@ -179,7 +183,7 @@ If the comparison translates into an IdM-native workflow for you, these are the 
 ## Quick Install
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.15.0.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.16.0.tar.gz
 ```
 
 Verify the main surfaces you plan to use. For example:

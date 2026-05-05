@@ -15,7 +15,7 @@ material, certificates, DNS, and access policy instead of forcing those
 surfaces into separate inventory files, ad hoc shell scripts, or external
 stores.
 
-Current release: `1.15.0`
+Current release: `1.16.0`
 
 ## Start Here
 
@@ -175,6 +175,12 @@ as workflows rather than as isolated plugins.
   focuses on app-team onboarding and developer-facing platform workflows
 - <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
   explains execution-environment dependencies, non-interactive auth, and controller-side patterns
+- <a href="https://gprocunier.github.io/eigenstate-ipa/support-matrix.html"><kbd>SUPPORT MATRIX</kbd></a>
+  lists the ansible-core, Python, IdM, and execution-environment boundaries validated for release
+- <a href="https://gprocunier.github.io/eigenstate-ipa/test-strategy.html"><kbd>TEST STRATEGY</kbd></a>
+  explains fast CI, optional integration tests, documentation checks, and lab validation
+- <a href="https://gprocunier.github.io/eigenstate-ipa/release-process.html"><kbd>RELEASE PROCESS</kbd></a>
+  documents version hygiene, release gates, artifact checks, and Galaxy publication
 - <a href="https://gprocunier.github.io/eigenstate-ipa/compatibility-policy.html"><kbd>COMPATIBILITY POLICY</kbd></a>
   explains the v1 overlap boundary between lookup surfaces and explicit mutation modules
 - <a href="https://gprocunier.github.io/eigenstate-ipa/mutation-surface-migration.html"><kbd>MUTATION SURFACE MIGRATION</kbd></a>

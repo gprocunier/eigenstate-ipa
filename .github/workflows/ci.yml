@@ -19,8 +19,17 @@ concurrency:
 
 jobs:
   validate:
+    name: validate ansible-core ${{ matrix.ansible-core }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        ansible-core:
+          - '2.15'
+          - '2.16'
+          - '2.17'
+          - '2.18'
 
     steps:
       - name: Check out repository
@@ -34,7 +43,12 @@ jobs:
       - name: Install validation dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "ansible-core~=2.18.0" PyYAML==6.0.2 yamllint ansible-lint
+          python -m pip install \
+            "ansible-core~=${{ matrix.ansible-core }}.0" \
+            PyYAML==6.0.2 yamllint ansible-lint
 
       - name: Run collection validation
+        env:
+          EIGENSTATE_REQUIRE_ANSIBLE_TEST: '1'
+          EIGENSTATE_ANSIBLE_TEST_PYTHON: '3.11'
         run: ./scripts/validate-collection.sh
