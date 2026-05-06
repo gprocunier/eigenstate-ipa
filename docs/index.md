@@ -41,7 +41,7 @@ Pick the lane that matches the problem first, then branch into the deeper docs:
       <td>Explains the IdM-native boundary before you pick a workflow.</td>
     </tr>
     <tr>
-      <td>Working around OpenShift, RHOSO, RHACM, RHACS, or Quay</td>
+      <td>Mapping IdM workflows to OpenShift, RHOSO, RHACM, RHACS, or Quay</td>
       <td><a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a></td>
       <td>Gives the platform-wide framing before the branch-specific pages.</td>
     </tr>
@@ -139,62 +139,16 @@ as workflows rather than as isolated plugins.
 
 ## Collection-Wide Guides
 
-- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a>
-  explains where the collection overlaps with Vault or CyberArk and where it does not
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a>
-  frames the collection for OpenShift-adjacent estates using Keycloak and IdM-backed trust
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-keycloak-idm-reference.html"><kbd>OPENSHIFT IDENTITY REFERENCE</kbd></a>
-  defines the IdM, Keycloak, OIDC, RBAC, and breakglass validation boundary
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html"><kbd>OPENSHIFT IDENTITY VALIDATION</kbd></a>
-  walks through render-only and validation-only identity readiness reports
-- <a href="https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html"><kbd>WORKLOAD SECRET DELIVERY CONTROLS</kbd></a>
-  defines the etcd, RBAC, namespace, audit, and rotation controls needed before applying payload-bearing workload Secret manifests
-- <a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-from-idm-vault.html"><kbd>KUBERNETES SECRET FROM IDM VAULT</kbd></a>
-  renders review-first Kubernetes Secret manifests from IdM vault material
-- <a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-tls-from-idm-cert.html"><kbd>KUBERNETES TLS FROM IDM CERT</kbd></a>
-  renders review-first Kubernetes TLS Secret manifests from certificate material
-- <a href="https://gprocunier.github.io/eigenstate-ipa/keytab-delivery-to-workloads.html"><kbd>KEYTAB DELIVERY TO WORKLOADS</kbd></a>
-  renders review-first Kubernetes Secret manifests for Kerberos keytab delivery
-- <a href="https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html"><kbd>REPORTING OVERVIEW</kbd></a>
-  explains read-only reporting roles for readiness, inventory, rotation candidates, temporary access, and policy drift
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-operator-use-cases.html"><kbd>OPENSHIFT OPERATOR USE CASES</kbd></a>
-  focuses on cluster-admin and OpenShift Virtualization workflows
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-use-cases.html"><kbd>OPENSHIFT RHOSO USE CASES</kbd></a>
-  frames the RHOSO branch around cloud-operator and tenant identity boundaries
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-operator-use-cases.html"><kbd>RHOSO OPERATOR USE CASES</kbd></a>
-  focuses on operator maintenance windows, data-plane host access, and supporting cloud services
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhoso-tenant-use-cases.html"><kbd>RHOSO TENANT USE CASES</kbd></a>
-  focuses on tenant identity separation, delegated interventions, and tenant-facing service onboarding
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacm-use-cases.html"><kbd>OPENSHIFT RHACM USE CASES</kbd></a>
-  focuses on RHACM policy events and cluster lifecycle hooks
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-rhacs-use-cases.html"><kbd>OPENSHIFT RHACS USE CASES</kbd></a>
-  focuses on RHACS findings, enforcement, and identity-aware response workflows
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-quay-use-cases.html"><kbd>OPENSHIFT QUAY USE CASES</kbd></a>
-  focuses on Quay identity, mirroring, repository notifications, and registry onboarding workflows
-- <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-developer-use-cases.html"><kbd>OPENSHIFT DEVELOPER USE CASES</kbd></a>
-  focuses on app-team onboarding and developer-facing platform workflows
-- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>AAP INTEGRATION</kbd></a>
-  explains execution-environment dependencies, non-interactive auth, and controller-side patterns
-- <a href="https://gprocunier.github.io/eigenstate-ipa/support-matrix.html"><kbd>SUPPORT MATRIX</kbd></a>
-  lists the ansible-core, Python, IdM, and execution-environment boundaries validated for release
-- <a href="https://gprocunier.github.io/eigenstate-ipa/test-strategy.html"><kbd>TEST STRATEGY</kbd></a>
-  explains fast CI, optional integration tests, documentation checks, and lab validation
-- <a href="https://gprocunier.github.io/eigenstate-ipa/release-process.html"><kbd>RELEASE PROCESS</kbd></a>
-  documents version hygiene, release gates, artifact checks, and Galaxy publication
-- <a href="https://gprocunier.github.io/eigenstate-ipa/compatibility-policy.html"><kbd>COMPATIBILITY POLICY</kbd></a>
-  explains the v1 overlap boundary between lookup surfaces and explicit mutation modules
-- <a href="https://gprocunier.github.io/eigenstate-ipa/mutation-surface-migration.html"><kbd>MUTATION SURFACE MIGRATION</kbd></a>
-  shows migration examples for side-effecting keytab and certificate workflows
-- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>AAP EE QUICKSTART</kbd></a>
-  gives the render, build, smoke, push, and Controller registration path for the IdM EE
-- <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a>
-  explains the collection-wide rotation model for static assets
-- <a href="https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html"><kbd>ROTATION USE CASES</kbd></a>
-  shows scheduled workflows built from the collection primitives
-- <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
-  explains IdM-native lease-like temporary access patterns for users and Kerberos principals
-- <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html"><kbd>USER LEASE DEMO</kbd></a>
-  shows the recorded manual `user_lease` behavior with a vaulted password, a real SSH login during the lease, and a post-expiry `kinit` failure
+| Topic | Start here | Boundary |
+| --- | --- | --- |
+| Vault and CyberArk comparison | [IdM Vault Boundary](https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html) | where IdM vault workflows fit and where broader secret-manager semantics still belong elsewhere |
+| Ansible Automation Platform | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) | execution-environment dependencies, Controller registration, and job evidence |
+| Packaged AAP workflows | [AAP IdM Workflow Roles](https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-roles.html) | sealed artifacts, temporary access windows, and certificate-expiry reporting |
+| OpenShift identity | [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html) | IdM, Keycloak, OAuth, RBAC, and breakglass evidence before live enforcement |
+| Workload Secret delivery | [Workload Secret Delivery Controls](https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html) | cluster controls required before applying payload-bearing manifests |
+| Operational reports | [Reporting Overview](https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html) | read-only evidence artifacts for readiness, inventory, rotation, access, and drift |
+| Temporary access | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) | IdM expiry attributes, delegated operators, and post-expiry validation |
+| Release engineering | [Support Matrix](https://gprocunier.github.io/eigenstate-ipa/support-matrix.html) | supported ansible-core, Python, IdM, execution-environment, test, and release boundaries |
 
 ## Best Fit
 

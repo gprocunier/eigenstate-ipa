@@ -20,9 +20,9 @@
   {% assign page_kind = "Use Cases" %}
   {% assign page_kind_summary = "Worked playbook patterns and cross-plugin workflow examples." %}
   {% assign family_slug = page.path | remove: '-use-cases.md' %}
-{% elsif page.path contains '-demo.md' %}
-  {% assign page_kind = "Demo" %}
-  {% assign page_kind_summary = "Recorded or operator-visible proof of a workflow boundary." %}
+{% elsif page.path contains '-validation-walkthrough.md' %}
+  {% assign page_kind = "Validation" %}
+  {% assign page_kind_summary = "Recorded or operator-visible evidence for a workflow boundary." %}
 {% elsif page.path contains '-rbac-setup.md' %}
   {% assign page_kind = "Setup Guide" %}
   {% assign page_kind_summary = "Bootstrap and delegation steps required before the workflow is usable." %}

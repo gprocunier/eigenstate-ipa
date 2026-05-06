@@ -1,11 +1,11 @@
 ---
 layout: default
-title: User Lease Demo
+title: User Lease Validation Walkthrough
 ---
 
 {% raw %}
 
-# User Lease Demo
+# User Lease Validation Walkthrough
 
 Related docs:
 
@@ -44,7 +44,7 @@ The observable flow is:
   - leased user: `jdoe-autobot@WORKSHOP.LAN`
 - target host used during the lease: `mirror-registry.workshop.lan`
 
-## Embedded Demo
+## Embedded Recording
 
 <div
   data-asciinema-src="/eigenstate-ipa/user-lease.cast"
@@ -57,7 +57,7 @@ The observable flow is:
   data-asciinema-rows="40"
 ></div>
 
-## What The Demo Proves
+## Evidence Boundary
 
 The recording demonstrates five operational points:
 
@@ -73,7 +73,7 @@ The recording demonstrates five operational points:
    error.
 
 The key point is that the access boundary is enforced by IdM. The recording
-does not rely on cleanup alone, and it proves both interactive and automation
+does not rely on cleanup alone, and it shows both interactive and automation
 use before showing the post-expiry failure.
 
 ## Sequence In The Recording
@@ -84,9 +84,9 @@ The recording starts by creating a temporary workspace, clearing the dedicated
 leased-user cache path, and exporting the cache location used later:
 
 ```bash
-mkdir -p /tmp/demo
-rm -f /tmp/krb5cc_jdoe-autobot_demo
-export LEASE_CCACHE=FILE:/tmp/krb5cc_jdoe-autobot_demo
+mkdir -p /tmp/user-lease-validation
+rm -f /tmp/krb5cc_jdoe-autobot_validation
+export LEASE_CCACHE=FILE:/tmp/krb5cc_jdoe-autobot_validation
 ```
 
 It then authenticates as the delegated operator:
@@ -116,8 +116,8 @@ The delegated operator retrieves the vaulted credential into a temporary file:
 
 ```bash
 ipa vault-retrieve jdoe-autobot-cred --user=jdoe \
-  --out=/tmp/demo/jdoe-autobot.pass
-chmod 600 /tmp/demo/jdoe-autobot.pass
+  --out=/tmp/user-lease-validation/jdoe-autobot.pass
+chmod 600 /tmp/user-lease-validation/jdoe-autobot.pass
 ```
 
 The recording shows the vault retrieval banner, confirming that the leased
@@ -136,7 +136,7 @@ KRB5CCNAME=$LEASE_CCACHE klist
 The visible `klist` output shows:
 
 ```text
-Ticket cache: FILE:/tmp/krb5cc_jdoe-autobot_demo
+Ticket cache: FILE:/tmp/krb5cc_jdoe-autobot_validation
 Default principal: jdoe-autobot@WORKSHOP.LAN
 ```
 
@@ -223,10 +223,10 @@ The observed result is:
 kinit: Client's entry in database has expired while getting initial credentials
 ```
 
-That is the actual proof point. A fresh Kerberos login fails because IdM has
+That is the observed cutoff. A fresh Kerberos login fails because IdM has
 already expired the principal.
 
-## What The Demo Does Not Claim
+## What The Recording Does Not Claim
 
 The recording does not claim any of these:
 
@@ -236,13 +236,13 @@ The recording does not claim any of these:
   keytab lifecycle patterns
 - that this exact recorded flow is the only supported validation path
 
-The demo is narrower and more practical:
+The validation boundary is narrower and more practical:
 
 - while the lease is open, the leased user can get a fresh TGT, SSH in, and run
   a simple ad hoc Ansible action
 - after the lease expires, a fresh `kinit` fails with an IdM expiry error
 
-## Why This Demo Exists
+## Why This Walkthrough Exists
 
 This recording addresses two common practical questions about `user_lease`:
 
@@ -262,7 +262,7 @@ Ansible check:
 ```yaml
 #!/usr/bin/ansible-playbook
 ---
-- name: Open the demo lease
+- name: Open the validation lease
   hosts: localhost
   connection: local
   gather_facts: false

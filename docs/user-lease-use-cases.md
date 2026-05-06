@@ -11,7 +11,7 @@ Related docs:
 
 <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-plugin.html"><kbd>&nbsp;&nbsp;USER LEASE PLUGIN&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html"><kbd>&nbsp;&nbsp;USER LEASE CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html"><kbd>&nbsp;&nbsp;USER LEASE DEMO&nbsp;&nbsp;</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-validation-walkthrough.html"><kbd>&nbsp;&nbsp;USER LEASE VALIDATION&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-rbac-setup.html"><kbd>&nbsp;&nbsp;USER LEASE RBAC SETUP&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>&nbsp;&nbsp;EPHEMERAL ACCESS CAPABILITIES&nbsp;&nbsp;</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/aap-integration.html"><kbd>&nbsp;&nbsp;AAP INTEGRATION&nbsp;&nbsp;</kbd></a>
@@ -40,7 +40,7 @@ permission, privilege, role, and operator user, start with
 ## 1. Give a Temporary User a Two-Hour Lease
 
 Footnote: if you want the corresponding manual operator flow, see
-<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html"><kbd>USER LEASE DEMO</kbd></a>.
+<a href="https://gprocunier.github.io/eigenstate-ipa/user-lease-validation-walkthrough.html"><kbd>USER LEASE VALIDATION</kbd></a>.
 
 ```yaml
 - name: Open a two-hour access window for a temporary user

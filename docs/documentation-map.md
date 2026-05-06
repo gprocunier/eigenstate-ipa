@@ -170,8 +170,8 @@ workflow guides above.
 - [OpenShift Identity Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html)
   validates render-only OpenShift OIDC, Keycloak federation, IdM group, and
   breakglass readiness evidence
-- [User Lease Demo](https://gprocunier.github.io/eigenstate-ipa/user-lease-demo.html)
-  shows the exact boundary the demo proves: fresh `kinit` and SSH succeed during the lease,
+- [User Lease Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/user-lease-validation-walkthrough.html)
+  shows the exact boundary the recording demonstrates: fresh `kinit` and SSH succeed during the lease,
   then a fresh `kinit` fails after expiry
 
 ## Release Engineering

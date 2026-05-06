@@ -23,6 +23,7 @@ patterns = [
     re.compile(r"\bpre[- ]?sales\b", re.IGNORECASE),
     re.compile(r"\bsales motion(s)?\b", re.IGNORECASE),
     re.compile(r"\bseller demo\b", re.IGNORECASE),
+    re.compile(r"\bdemo(s)?\b", re.IGNORECASE),
     re.compile(r"\bphase\s*\d+\b", re.IGNORECASE),
     re.compile(r"\bphase[-_]?\d+\b", re.IGNORECASE),
     re.compile(r"\bgolden[- ]path\b", re.IGNORECASE),
@@ -38,6 +39,7 @@ public_name_roots = [
 public_name_patterns = [
     re.compile(r"phase[-_]?\d+", re.IGNORECASE),
     re.compile(r"golden[-_]path", re.IGNORECASE),
+    re.compile(r"(^|[-_/])demo(s)?($|[-_/.])", re.IGNORECASE),
 ]
 
 failures = []
