@@ -50,7 +50,7 @@ class WorkloadSecretDeliveryRoleStructureTests(unittest.TestCase):
             "playbooks/render-kubernetes-tls-secret-from-idm-cert.yml",
             "playbooks/render-keytab-secret.yml",
             "playbooks/workload-secret-delivery-static-validation.yml",
-            "docs/kubernetes-secret-delivery-threat-model.md",
+            "docs/workload-secret-delivery-controls.md",
             "docs/kubernetes-secret-from-idm-vault.md",
             "docs/kubernetes-tls-from-idm-cert.md",
             "docs/keytab-delivery-to-workloads.md",

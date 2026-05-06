@@ -14,7 +14,7 @@ description: >-
 manifests from certificate material that has been issued, reviewed, or tracked
 through an IdM-centered process.
 
-Read the [Kubernetes Secret Delivery Threat Model](https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html)
+Read the [Workload Secret Delivery Controls](https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html)
 before applying payload-bearing manifests to a cluster.
 
 ## Render A Review Manifest

@@ -40,7 +40,7 @@
   from certificate material governed by an IdM-centered process
 - added `keytab_secret_render` for review-first Kerberos keytab Secret
   delivery to Kubernetes and OpenShift workloads
-- documented the Kubernetes Secret delivery threat model, including etcd
+- documented the Kubernetes Secret delivery control checklist, including etcd
   encryption, RBAC, namespace scope, audit, and rotation limitations
 - wired workload Secret delivery playbook syntax checks, static validation,
   rendered-output

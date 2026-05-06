@@ -79,7 +79,7 @@ The collection treats IdM as both:
 - [docs/openshift-identity-validation-walkthrough.md](docs/openshift-identity-validation-walkthrough.md)
 - [docs/openshift-breakglass-validation.md](docs/openshift-breakglass-validation.md)
 - [docs/openshift-ldap-fallback.md](docs/openshift-ldap-fallback.md)
-- [docs/kubernetes-secret-delivery-threat-model.md](docs/kubernetes-secret-delivery-threat-model.md)
+- [docs/workload-secret-delivery-controls.md](docs/workload-secret-delivery-controls.md)
 - [docs/kubernetes-secret-from-idm-vault.md](docs/kubernetes-secret-from-idm-vault.md)
 - [docs/kubernetes-tls-from-idm-cert.md](docs/kubernetes-tls-from-idm-cert.md)
 - [docs/keytab-delivery-to-workloads.md](docs/keytab-delivery-to-workloads.md)

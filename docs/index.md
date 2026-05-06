@@ -52,7 +52,7 @@ Pick the lane that matches the problem first, then branch into the deeper docs:
     </tr>
     <tr>
       <td>Delivering IdM-backed workload secrets to Kubernetes or OpenShift</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html"><kbd>KUBERNETES SECRET THREAT MODEL</kbd></a></td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html"><kbd>WORKLOAD SECRET DELIVERY CONTROLS</kbd></a></td>
       <td>Starts with the cluster control boundary before rendering or applying payload manifests.</td>
     </tr>
     <tr>
@@ -110,7 +110,7 @@ as workflows rather than as isolated plugins.
 | AAP runtime validation | EE scaffold + `aap_execution_environment` role + smoke checks | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) |
 | AAP packaged workflows | `sealed_artifact_delivery` + `temporary_access_window` + `cert_expiry_report` | [AAP IdM Workflow Roles](https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-roles.html) |
 | OpenShift identity validation | `openshift_idm_oidc_validation` + `keycloak_idm_federation_validation` + `openshift_breakglass_validation` | [OpenShift Identity Validation](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html) |
-| Workload Secret delivery | `kubernetes_secret_from_idm_vault` + `kubernetes_tls_from_idm_cert` + `keytab_secret_render` | [Kubernetes Secret Threat Model](https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html) |
+| Workload Secret delivery | `kubernetes_secret_from_idm_vault` + `kubernetes_tls_from_idm_cert` + `keytab_secret_render` | [Workload Secret Delivery Controls](https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html) |
 | Operational evidence reporting | `idm_readiness_report` + `certificate_inventory_report` + `keytab_rotation_candidates` + `temporary_access_report` + `policy_drift_report` | [Reporting Overview](https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html) |
 | Lease-like temporary access | `user_lease` for delegated temporary users or `principal` + `keytab` retirement for machine identity | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) |
 | Host enrollment | `otp` bootstrap + official IdM enrollment modules + `principal` verification | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) |
@@ -147,7 +147,7 @@ as workflows rather than as isolated plugins.
   defines the IdM, Keycloak, OIDC, RBAC, and breakglass validation boundary
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html"><kbd>OPENSHIFT IDENTITY VALIDATION</kbd></a>
   walks through render-only and validation-only identity readiness reports
-- <a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html"><kbd>KUBERNETES SECRET THREAT MODEL</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html"><kbd>WORKLOAD SECRET DELIVERY CONTROLS</kbd></a>
   defines the etcd, RBAC, namespace, audit, and rotation controls needed before applying payload-bearing workload Secret manifests
 - <a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-from-idm-vault.html"><kbd>KUBERNETES SECRET FROM IDM VAULT</kbd></a>
   renders review-first Kubernetes Secret manifests from IdM vault material

@@ -6,7 +6,7 @@ PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 WORKLOAD_SECRET_DELIVERY_DOCS = [
-    PROJECT_ROOT / "docs" / "kubernetes-secret-delivery-threat-model.md",
+    PROJECT_ROOT / "docs" / "workload-secret-delivery-controls.md",
     PROJECT_ROOT / "docs" / "kubernetes-secret-from-idm-vault.md",
     PROJECT_ROOT / "docs" / "kubernetes-tls-from-idm-cert.md",
     PROJECT_ROOT / "docs" / "keytab-delivery-to-workloads.md",

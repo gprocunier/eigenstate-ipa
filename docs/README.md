@@ -36,7 +36,7 @@ Use these entry points instead of reading the files as a flat list:
   if emergency access evidence and RBAC bindings are the review target
 - <a href="https://gprocunier.github.io/eigenstate-ipa/openshift-ldap-fallback.html"><kbd>OPENSHIFT LDAP FALLBACK</kbd></a>
   if direct LDAP is required as a documented exception
-- <a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html"><kbd>KUBERNETES SECRET THREAT MODEL</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html"><kbd>WORKLOAD SECRET DELIVERY CONTROLS</kbd></a>
   if IdM-backed material will be rendered into Kubernetes or OpenShift Secret manifests
 - <a href="https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-from-idm-vault.html"><kbd>KUBERNETES SECRET FROM IDM VAULT</kbd></a>
   if vault material needs a review-first workload Secret delivery path

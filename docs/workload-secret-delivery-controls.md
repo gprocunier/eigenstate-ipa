@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Kubernetes Secret Delivery Threat Model
+title: Workload Secret Delivery Controls
 description: >-
-  Threat model and control checklist for delivering IdM-backed secrets,
+  Controls and review checklist for delivering IdM-backed secrets,
   certificates, and keytabs into Kubernetes and OpenShift workloads.
 ---
 
 {% raw %}
 
-# Kubernetes Secret Delivery Threat Model
+# Workload Secret Delivery Controls
 
 Kubernetes Secrets are a workload delivery mechanism, not a complete secret
 management system. They can be the right boundary when the cluster is already
@@ -16,10 +16,10 @@ the runtime authority for a workload, but they need explicit controls around
 storage, access, rotation, and review.
 
 The workload Secret delivery roles default to render-only behavior. They
-produce review
-manifests with payload values redacted. A payload-bearing manifest is written
-only when an operator explicitly requests it, and cluster apply is disabled
-unless the role is configured with explicit kubeconfig and context inputs.
+produce review manifests with payload values redacted. A payload-bearing
+manifest is written only when an operator explicitly requests it, and cluster
+apply is disabled unless the role is configured with explicit kubeconfig and
+context inputs.
 
 ## Required Cluster Controls
 
