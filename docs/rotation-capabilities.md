@@ -151,7 +151,7 @@ Keytab rotation is the sharp edge.
 
 - `retrieve_mode='generate'` is an immediate principal key change
 - all consumers of the old keytab become stale at once
-- the deploy and restart phase must be in the same workflow
+- the deploy and restart steps must be in the same workflow
 
 This is why the collection documents keytab rotation as an explicit playbook
 pattern rather than hiding it behind a generic orchestration module.

@@ -30,7 +30,7 @@ def _task_documents(path):
     return [data]
 
 
-class Phase2SecretSafetyTests(unittest.TestCase):
+class AapIdmWorkflowSecretSafetyTests(unittest.TestCase):
     def test_secret_bearing_role_tasks_use_no_log(self):
         task_paths = []
         for role in (
@@ -60,13 +60,13 @@ class Phase2SecretSafetyTests(unittest.TestCase):
 
         self.assertEqual([], failures)
 
-    def test_neutral_phase2_docs_do_not_use_sales_framing(self):
+    def test_neutral_aap_idm_workflow_docs_do_not_use_sales_framing(self):
         docs = [
-            PROJECT_ROOT / "docs" / "aap-golden-path-roles.md",
+            PROJECT_ROOT / "docs" / "aap-idm-workflow-roles.md",
             PROJECT_ROOT / "docs" / "sealed-artifact-delivery-role.md",
             PROJECT_ROOT / "docs" / "temporary-access-window-role.md",
             PROJECT_ROOT / "docs" / "cert-expiry-report-role.md",
-            PROJECT_ROOT / "docs" / "phase2-validation-walkthrough.md",
+            PROJECT_ROOT / "docs" / "aap-idm-workflow-validation-walkthrough.md",
         ]
         forbidden = ["seller", "sales", "presales", "sales motion"]
         failures = []

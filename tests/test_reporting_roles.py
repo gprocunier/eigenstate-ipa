@@ -26,7 +26,7 @@ def _collection_env(collections_root):
     }
 
 
-class Phase6ReportingRoleTests(unittest.TestCase):
+class ReportingRoleTests(unittest.TestCase):
     def _run_playbook(self, playbook, output_dir):
         extra_vars = {
             "eigenstate_idm_readiness_report_output_dir": str(output_dir),
@@ -60,7 +60,7 @@ class Phase6ReportingRoleTests(unittest.TestCase):
     def test_static_validation_renders_all_report_formats(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             output_dir = pathlib.Path(tmpdir)
-            self._run_playbook("playbooks/phase6-static-validation.yml", output_dir)
+            self._run_playbook("playbooks/reporting-static-validation.yml", output_dir)
 
             expected = [
                 "idm-readiness-report",
@@ -78,7 +78,7 @@ class Phase6ReportingRoleTests(unittest.TestCase):
     def test_json_reports_have_stable_schemas_and_read_only_boundary(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             output_dir = pathlib.Path(tmpdir)
-            self._run_playbook("playbooks/phase6-static-validation.yml", output_dir)
+            self._run_playbook("playbooks/reporting-static-validation.yml", output_dir)
 
             expected_schemas = {
                 "idm-readiness-report.json": "eigenstate.ipa/idm_readiness_report/v1",
@@ -98,7 +98,7 @@ class Phase6ReportingRoleTests(unittest.TestCase):
     def test_yaml_reports_match_json_schema(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             output_dir = pathlib.Path(tmpdir)
-            self._run_playbook("playbooks/phase6-static-validation.yml", output_dir)
+            self._run_playbook("playbooks/reporting-static-validation.yml", output_dir)
 
             for json_path in output_dir.glob("*.json"):
                 yaml_path = output_dir / f"{json_path.stem}.yaml"

@@ -7,7 +7,7 @@ import yaml
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-class Phase6ArgumentSpecTests(unittest.TestCase):
+class ReportingArgumentSpecTests(unittest.TestCase):
     def _load_spec(self, role):
         path = PROJECT_ROOT / "roles" / role / "meta" / "argument_specs.yml"
         return yaml.safe_load(path.read_text())
@@ -50,7 +50,7 @@ class Phase6ArgumentSpecTests(unittest.TestCase):
                 for name in option_names:
                     self.assertIn(name, options)
 
-    def test_all_phase6_roles_support_json_yaml_markdown_by_default(self):
+    def test_all_reporting_roles_support_json_yaml_markdown_by_default(self):
         format_options = {
             "idm_readiness_report": "eigenstate_idm_readiness_report_formats",
             "certificate_inventory_report": "eigenstate_certificate_inventory_report_formats",

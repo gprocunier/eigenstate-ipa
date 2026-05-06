@@ -19,7 +19,7 @@ def _load_otp_module():
     fake_auth_error = type("AuthorizationError", (Exception,), {})
 
     fake_api = types.SimpleNamespace(
-        isdone=lambda phase: True,
+        isdone=lambda _state: True,
         bootstrap=lambda **kwargs: None,
         finalize=lambda: None,
         Backend=types.SimpleNamespace(

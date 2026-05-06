@@ -5,8 +5,8 @@ import unittest
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-class Phase6SecretSafetyTests(unittest.TestCase):
-    def test_phase6_public_content_is_neutral(self):
+class ReportingSecretSafetyTests(unittest.TestCase):
+    def test_reporting_public_content_is_neutral(self):
         paths = [
             PROJECT_ROOT / "docs" / "reporting-overview.md",
             PROJECT_ROOT / "docs" / "readiness-report-schema.md",
@@ -24,7 +24,7 @@ class Phase6SecretSafetyTests(unittest.TestCase):
                     failures.append(f"{path}: {marker}")
         self.assertEqual([], failures)
 
-    def test_phase6_files_do_not_embed_secret_payloads(self):
+    def test_reporting_files_do_not_embed_secret_payloads(self):
         paths = [
             *(PROJECT_ROOT / "roles" / "idm_readiness_report").rglob("*"),
             *(PROJECT_ROOT / "roles" / "certificate_inventory_report").rglob("*"),
@@ -36,7 +36,7 @@ class Phase6SecretSafetyTests(unittest.TestCase):
             PROJECT_ROOT / "playbooks" / "report-keytab-rotation-candidates.yml",
             PROJECT_ROOT / "playbooks" / "report-temporary-access.yml",
             PROJECT_ROOT / "playbooks" / "report-policy-drift.yml",
-            PROJECT_ROOT / "playbooks" / "phase6-static-validation.yml",
+            PROJECT_ROOT / "playbooks" / "reporting-static-validation.yml",
         ]
         forbidden = [
             "adminpass",

@@ -566,7 +566,7 @@
     ca_cert: "{{ ipa_ca_cert }}"
   tasks:
 
-    - name: "cert: read CSR from seed phase"
+    - name: "cert: read CSR from seed step"
       ansible.builtin.slurp:
         src: /tmp/integ-test-csr.pem
       register: csr_content

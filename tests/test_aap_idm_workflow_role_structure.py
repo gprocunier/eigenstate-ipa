@@ -5,7 +5,7 @@ import unittest
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-class Phase2RoleStructureTests(unittest.TestCase):
+class AapIdmWorkflowRoleStructureTests(unittest.TestCase):
     def test_required_role_files_exist(self):
         roles = {
             "sealed_artifact_delivery": [
@@ -53,22 +53,22 @@ class Phase2RoleStructureTests(unittest.TestCase):
                 with self.subTest(role=role, relpath=relpath):
                     self.assertTrue((role_dir / relpath).is_file())
 
-    def test_required_phase2_playbooks_and_docs_exist(self):
+    def test_required_aap_idm_workflow_playbooks_and_docs_exist(self):
         required = [
             "playbooks/sealed-artifact-delivery.yml",
             "playbooks/temporary-access-window.yml",
             "playbooks/cert-expiry-report.yml",
-            "playbooks/phase2-static-validation.yml",
-            "playbooks/phase2-live-smoke.yml",
-            "docs/aap-golden-path-roles.md",
+            "playbooks/aap-idm-workflow-static-validation.yml",
+            "playbooks/aap-idm-workflow-live-smoke.yml",
+            "docs/aap-idm-workflow-roles.md",
             "docs/sealed-artifact-delivery-role.md",
             "docs/temporary-access-window-role.md",
             "docs/cert-expiry-report-role.md",
-            "docs/phase2-validation-walkthrough.md",
+            "docs/aap-idm-workflow-validation-walkthrough.md",
             "aap/job-templates/sealed-artifact-delivery.example.yml",
             "aap/job-templates/temporary-access-window.example.yml",
             "aap/job-templates/cert-expiry-report.example.yml",
-            "aap/workflow-templates/eigenstate-phase2-golden-path.example.yml",
+            "aap/workflow-templates/eigenstate-idm-operations-workflow.example.yml",
         ]
         for relpath in required:
             with self.subTest(relpath=relpath):

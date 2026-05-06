@@ -67,7 +67,7 @@ Pick the lane that matches the problem first, then branch into the deeper docs:
     </tr>
     <tr>
       <td>Using packaged AAP workflow roles</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html"><kbd>AAP GOLDEN PATH ROLES</kbd></a></td>
+      <td><a href="https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-roles.html"><kbd>AAP IDM WORKFLOW ROLES</kbd></a></td>
       <td>Routes into the sealed artifact, temporary access, and cert reporting roles.</td>
     </tr>
     <tr>
@@ -108,7 +108,7 @@ as workflows rather than as isolated plugins.
 | TLS bootstrap and renewal | `cert` + `vault_write` for private key archival + `vault` retrieval | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) |
 | Static secret lifecycle | `vault_write` mutation + `vault` retrieval + AAP scheduling | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) |
 | AAP runtime validation | EE scaffold + `aap_execution_environment` role + smoke checks | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) |
-| AAP packaged workflows | `sealed_artifact_delivery` + `temporary_access_window` + `cert_expiry_report` | [AAP Golden Path Roles](https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html) |
+| AAP packaged workflows | `sealed_artifact_delivery` + `temporary_access_window` + `cert_expiry_report` | [AAP IdM Workflow Roles](https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-roles.html) |
 | OpenShift identity validation | `openshift_idm_oidc_validation` + `keycloak_idm_federation_validation` + `openshift_breakglass_validation` | [OpenShift Identity Validation](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html) |
 | Workload Secret delivery | `kubernetes_secret_from_idm_vault` + `kubernetes_tls_from_idm_cert` + `keytab_secret_render` | [Kubernetes Secret Threat Model](https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html) |
 | Operational evidence reporting | `idm_readiness_report` + `certificate_inventory_report` + `keytab_rotation_candidates` + `temporary_access_report` + `policy_drift_report` | [Reporting Overview](https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html) |

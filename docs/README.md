@@ -68,7 +68,7 @@ Use these entry points instead of reading the files as a flat list:
   if the workflow runs in Controller or an execution environment
 - <a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>AAP EE QUICKSTART</kbd></a>
   if you need the ready-to-build execution environment path first
-- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html"><kbd>AAP GOLDEN PATH ROLES</kbd></a>
+- <a href="https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-roles.html"><kbd>AAP IDM WORKFLOW ROLES</kbd></a>
   if you want packaged AAP workflow roles after the EE is available
 - <a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a>
   if the question is temporary access or lease-like behavior inside IdM

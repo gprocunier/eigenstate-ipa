@@ -5,44 +5,44 @@ import unittest
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-PHASE5_DOCS = [
+WORKLOAD_SECRET_DELIVERY_DOCS = [
     PROJECT_ROOT / "docs" / "kubernetes-secret-delivery-threat-model.md",
     PROJECT_ROOT / "docs" / "kubernetes-secret-from-idm-vault.md",
     PROJECT_ROOT / "docs" / "kubernetes-tls-from-idm-cert.md",
     PROJECT_ROOT / "docs" / "keytab-delivery-to-workloads.md",
 ]
 
-PHASE5_ROLES = [
+WORKLOAD_SECRET_DELIVERY_ROLES = [
     PROJECT_ROOT / "roles" / "kubernetes_secret_from_idm_vault",
     PROJECT_ROOT / "roles" / "kubernetes_tls_from_idm_cert",
     PROJECT_ROOT / "roles" / "keytab_secret_render",
 ]
 
-PHASE5_PLAYBOOKS = [
+WORKLOAD_SECRET_DELIVERY_PLAYBOOKS = [
     PROJECT_ROOT / "playbooks" / "render-kubernetes-secret-from-idm-vault.yml",
     PROJECT_ROOT / "playbooks" / "render-kubernetes-tls-secret-from-idm-cert.yml",
     PROJECT_ROOT / "playbooks" / "render-keytab-secret.yml",
-    PROJECT_ROOT / "playbooks" / "phase5-static-validation.yml",
+    PROJECT_ROOT / "playbooks" / "workload-secret-delivery-static-validation.yml",
 ]
 
 
-class Phase5SecretSafetyTests(unittest.TestCase):
-    def test_phase5_public_content_is_neutral(self):
+class WorkloadSecretDeliverySecretSafetyTests(unittest.TestCase):
+    def test_workload_secret_delivery_public_content_is_neutral(self):
         forbidden = ["seller", "sales", "presales", "sales motion"]
         failures = []
-        for path in PHASE5_DOCS:
+        for path in WORKLOAD_SECRET_DELIVERY_DOCS:
             text = path.read_text().lower()
             for marker in forbidden:
                 if marker in text:
                     failures.append(f"{path}: {marker}")
         self.assertEqual([], failures)
 
-    def test_phase5_examples_do_not_embed_real_secret_markers(self):
+    def test_workload_secret_delivery_examples_do_not_embed_real_secret_markers(self):
         paths = [
-            *PHASE5_DOCS,
-            *PHASE5_PLAYBOOKS,
+            *WORKLOAD_SECRET_DELIVERY_DOCS,
+            *WORKLOAD_SECRET_DELIVERY_PLAYBOOKS,
         ]
-        for role_dir in PHASE5_ROLES:
+        for role_dir in WORKLOAD_SECRET_DELIVERY_ROLES:
             paths.extend(path for path in role_dir.rglob("*") if path.is_file())
 
         forbidden = [
@@ -72,7 +72,7 @@ class Phase5SecretSafetyTests(unittest.TestCase):
             "kubeconfig",
         ]
         failures = []
-        for role_dir in PHASE5_ROLES:
+        for role_dir in WORKLOAD_SECRET_DELIVERY_ROLES:
             for path in (role_dir / "tasks").glob("*.yml"):
                 text = path.read_text()
                 if any(marker in text for marker in secret_markers):

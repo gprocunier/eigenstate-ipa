@@ -120,7 +120,7 @@ Typical cases:
 
 - deploy only to web servers
 - restart only database hosts
-- run phased maintenance across a nested application tier
+- run coordinated maintenance across a nested application tier
 
 ```mermaid
 flowchart LR

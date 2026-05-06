@@ -662,7 +662,7 @@ Example:
   gather_facts: false
 
   tasks:
-    # Phase 1 — generate key and CSR on the controller
+    # Step 1 - generate key and CSR on the controller
     - name: Generate private key and CSR for target host
       ansible.builtin.command:
         cmd: >-
@@ -673,7 +673,7 @@ Example:
         creates: /runner/env/pki/{{ inventory_hostname }}.csr
       delegate_to: localhost
 
-    # Phase 2 — sign the CSR via IdM CA
+    # Step 2 - sign the CSR via IdM CA
     - name: Request host certificate from IdM CA
       ansible.builtin.set_fact:
         host_cert: "{{ lookup('eigenstate.ipa.cert',
@@ -692,7 +692,7 @@ Example:
         mode: "0600"
       delegate_to: localhost
 
-    # Phase 3 — seal the bootstrap artifact using the host cert
+    # Step 3 - seal the bootstrap artifact using the host cert
     - name: Seal bootstrap artifact for this host
       ansible.builtin.command:
         cmd: >-
@@ -703,7 +703,7 @@ Example:
           -aes256 -binary -outform DER
       delegate_to: localhost
 
-    # Phase 4 — archive key and sealed blob to IdM vaults
+    # Step 4 - archive key and sealed blob to IdM vaults
     - name: Archive private key to IdM vault
       ansible.builtin.command:
         cmd: >-
@@ -721,7 +721,7 @@ Example:
           --shared
       delegate_to: localhost
 
-    # Phase 5 — deliver to target via vault lookups
+    # Step 5 - deliver to target via vault lookups
     - name: Retrieve sealed artifact from IdM vault
       ansible.builtin.set_fact:
         sealed_blob: "{{ lookup('eigenstate.ipa.vault',
@@ -769,7 +769,7 @@ Example:
         owner: root
         group: root
 
-    # Phase 6 — unseal on target
+    # Step 6 - unseal on target
     - name: Unseal bootstrap artifact on target
       ansible.builtin.command:
         cmd: >-

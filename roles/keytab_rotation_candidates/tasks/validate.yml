@@ -14,8 +14,8 @@
     that:
       - item.principal is defined
       - item.candidate is defined
-      - item.remediation_phase | default('') | length > 0
-    fail_msg: "Keytab candidate records require principal, candidate, and remediation_phase."
+      - item.remediation_workflow | default('') | length > 0
+    fail_msg: "Keytab candidate records require principal, candidate, and remediation_workflow."
   loop: "{{ eigenstate_keytab_rotation_candidates_records }}"
   loop_control:
     label: "{{ item.principal | default('unnamed-principal') }}"

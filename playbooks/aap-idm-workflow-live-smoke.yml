@@ -12,7 +12,7 @@
 # Optional:
 #   artifacts_dir: ./artifacts
 
-- name: Run Phase 2 live IdM smoke path
+- name: Run AAP IdM workflow live IdM smoke path
   hosts: localhost
   gather_facts: false
   vars:

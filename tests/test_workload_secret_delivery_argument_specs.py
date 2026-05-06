@@ -7,7 +7,7 @@ import yaml
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-class Phase5ArgumentSpecTests(unittest.TestCase):
+class WorkloadSecretDeliveryArgumentSpecTests(unittest.TestCase):
     def _spec_options(self, role):
         spec_path = PROJECT_ROOT / "roles" / role / "meta" / "argument_specs.yml"
         spec = yaml.safe_load(spec_path.read_text())

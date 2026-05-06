@@ -35,7 +35,7 @@ artifacts.
 | `eigenstate.ipa.vault_write` module | supported | remains the module surface for vault mutation |
 | read-only lookups such as `principal`, `dns`, `sudo`, `hbacrule` | supported | no migration needed |
 
-The project does not remove an established lookup mode in this phase.
+The project does not remove an established lookup mode in this release.
 
 ## Why Add Modules
 

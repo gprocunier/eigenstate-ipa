@@ -33,7 +33,7 @@ Use direct LDAP only when the site has a clear operational reason:
 
 ## What This Collection Provides
 
-The Phase 4 roles can still validate local evidence for group names, expected
+The OpenShift identity roles can still validate local evidence for group names, expected
 RBAC bindings, and breakglass controls. They do not render an LDAP OAuth
 provider by default because the reference path is OIDC through Keycloak.
 

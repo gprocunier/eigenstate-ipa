@@ -43,4 +43,4 @@ argument_specs:
       eigenstate_policy_drift_report_findings:
         type: list
         elements: dict
-        description: Drift findings with remediation separated from this report phase.
+        description: Drift findings with remediation separated from this report workflow.

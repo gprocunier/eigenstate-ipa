@@ -16,14 +16,14 @@ evidence and renders reviewable artifacts.
 
 ## Static Validation
 
-Run the full Phase 4 static validation path:
+Run the full OpenShift identity static validation path:
 
 ```bash
-ansible-playbook playbooks/phase4-static-validation.yml
+ansible-playbook playbooks/openshift-identity-static-validation.yml
 ```
 
 The playbook imports all three validation roles and renders local reports under
-`build/phase4-static` by default.
+`build/openshift-identity-static` by default.
 
 ## Render OpenShift OIDC Config
 

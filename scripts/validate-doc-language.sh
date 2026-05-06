@@ -23,6 +23,21 @@ patterns = [
     re.compile(r"\bpre[- ]?sales\b", re.IGNORECASE),
     re.compile(r"\bsales motion(s)?\b", re.IGNORECASE),
     re.compile(r"\bseller demo\b", re.IGNORECASE),
+    re.compile(r"\bphase\s*\d+\b", re.IGNORECASE),
+    re.compile(r"\bphase[-_]?\d+\b", re.IGNORECASE),
+    re.compile(r"\bgolden[- ]path\b", re.IGNORECASE),
+    re.compile(r"\bmutation_phase\b", re.IGNORECASE),
+    re.compile(r"\bremediation_phase\b", re.IGNORECASE),
+]
+
+public_name_roots = [
+    project_root / "docs",
+    project_root / "playbooks",
+    project_root / "aap",
+]
+public_name_patterns = [
+    re.compile(r"phase[-_]?\d+", re.IGNORECASE),
+    re.compile(r"golden[-_]path", re.IGNORECASE),
 ]
 
 failures = []
@@ -34,6 +49,20 @@ for path in paths:
             if pattern.search(line):
                 rel = path.relative_to(project_root)
                 failures.append(f"{rel}:{lineno}: {pattern.pattern}: {line.strip()}")
+
+for root in public_name_roots:
+    if not root.exists():
+        continue
+    for path in root.rglob("*"):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(project_root)
+        rel_text = str(rel)
+        if rel_text.startswith("docs/assets/vendor/"):
+            continue
+        for pattern in public_name_patterns:
+            if pattern.search(rel_text):
+                failures.append(f"{rel}: public filename matches {pattern.pattern}")
 
 if failures:
     print("Public documentation language validation failed:")

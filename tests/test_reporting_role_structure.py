@@ -5,7 +5,7 @@ import unittest
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-class Phase6RoleStructureTests(unittest.TestCase):
+class ReportingRoleStructureTests(unittest.TestCase):
     def test_required_role_files_exist(self):
         roles = [
             "idm_readiness_report",
@@ -32,14 +32,14 @@ class Phase6RoleStructureTests(unittest.TestCase):
                 with self.subTest(role=role, relpath=relpath):
                     self.assertTrue((role_dir / relpath).is_file())
 
-    def test_required_phase6_playbooks_and_docs_exist(self):
+    def test_required_reporting_playbooks_and_docs_exist(self):
         required = [
             "playbooks/report-idm-readiness.yml",
             "playbooks/report-certificate-inventory.yml",
             "playbooks/report-keytab-rotation-candidates.yml",
             "playbooks/report-temporary-access.yml",
             "playbooks/report-policy-drift.yml",
-            "playbooks/phase6-static-validation.yml",
+            "playbooks/reporting-static-validation.yml",
             "docs/reporting-overview.md",
             "docs/readiness-report-schema.md",
             "docs/certificate-inventory-report.md",

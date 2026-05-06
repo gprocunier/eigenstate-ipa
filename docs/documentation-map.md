@@ -77,7 +77,7 @@ These are the collection combinations worth learning as flows.
 | TLS bootstrap and renewal | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) | cert issuance, retrieval, renewal, and vault-backed private-key handling |
 | Static secret lifecycle in Controller | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) | `vault_write`, `vault`, `keytab`, and `cert` in scheduled jobs |
 | AAP execution environment validation | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) | render, build, smoke-test, push, and register the IdM runtime image |
-| AAP packaged workflow roles | [AAP Golden Path Roles](https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html) | run sealed artifact delivery, temporary access windows, and cert expiry reporting as AAP jobs |
+| AAP packaged workflow roles | [AAP IdM Workflow Roles](https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-roles.html) | run sealed artifact delivery, temporary access windows, and cert expiry reporting as AAP jobs |
 | OpenShift identity validation | [OpenShift Identity Validation](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html) | render OpenShift OIDC configuration examples and validate IdM, Keycloak, RBAC, and breakglass evidence |
 | Workload Secret delivery | [Kubernetes Secret Threat Model](https://gprocunier.github.io/eigenstate-ipa/kubernetes-secret-delivery-threat-model.html) | review cluster controls before rendering IdM-backed secrets, TLS material, or keytabs into Kubernetes Secret manifests |
 | Operational evidence reporting | [Reporting Overview](https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html) | render deterministic JSON, YAML, and Markdown evidence for readiness, inventory, keytab rotation candidates, temporary access, and policy drift |
@@ -123,7 +123,7 @@ workflow guides above.
 | Which mutation surface should I use? | [Compatibility Policy](https://gprocunier.github.io/eigenstate-ipa/compatibility-policy.html) |
 | How do I migrate side-effecting lookups? | [Mutation Surface Migration](https://gprocunier.github.io/eigenstate-ipa/mutation-surface-migration.html) |
 | How do I build the AAP EE? | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) |
-| Which packaged AAP workflow role should I use? | [AAP Golden Path Roles](https://gprocunier.github.io/eigenstate-ipa/aap-golden-path-roles.html) |
+| Which packaged AAP workflow role should I use? | [AAP IdM Workflow Roles](https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-roles.html) |
 | How should I think about rotation workflows? | [Rotation Capabilities](https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html) |
 | What is the temporary-access / lease boundary? | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) |
 | Where do the OpenShift and RHOSO branches begin? | [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html) |
@@ -164,8 +164,8 @@ workflow guides above.
 - [AAP EE Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/aap-ee-validation-walkthrough.html)
   validates the EE, Controller registration, smoke job, IdM inventory, vault
   metadata, HBAC checks, and `user_lease` check mode
-- [Phase 2 Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/phase2-validation-walkthrough.html)
-  validates the golden-path AAP roles for certificate reporting, temporary
+- [AAP IdM Workflow Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-validation-walkthrough.html)
+  validates the AAP IdM workflow roles for certificate reporting, temporary
   access windows, and sealed artifact delivery
 - [OpenShift Identity Validation Walkthrough](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html)
   validates render-only OpenShift OIDC, Keycloak federation, IdM group, and

@@ -26,7 +26,7 @@ def _collection_env(collections_root):
     }
 
 
-class Phase4ValidationRoleTests(unittest.TestCase):
+class OpenShiftIdentityValidationRoleTests(unittest.TestCase):
     def _run_playbook(self, playbook, output_dir):
         with tempfile.TemporaryDirectory() as collections_root:
             result = subprocess.run(

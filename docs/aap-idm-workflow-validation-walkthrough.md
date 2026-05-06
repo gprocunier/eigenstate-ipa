@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Phase 2 Validation Walkthrough
+title: AAP IdM Workflow Validation Walkthrough
 description: >-
-  Concise validation path for the AAP golden-path workflow roles.
+  Concise validation path for the AAP IdM workflow roles.
 ---
 
 {% raw %}
 
-# Phase 2 Validation Walkthrough
+# AAP IdM Workflow Validation Walkthrough
 
 This path validates the three AAP-ready roles after the Eigenstate execution
 environment is available.

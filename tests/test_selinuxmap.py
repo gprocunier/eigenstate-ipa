@@ -42,7 +42,7 @@ def _load_selinuxmap_module():
         }
 
     fake_api = types.SimpleNamespace(
-        isdone=lambda phase: True,
+        isdone=lambda _state: True,
         bootstrap=lambda **kwargs: None,
         finalize=lambda: None,
         Backend=types.SimpleNamespace(

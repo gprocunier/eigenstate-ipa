@@ -1,5 +1,5 @@
 ---
-name: Eigenstate - Phase 2 Golden Path
+name: Eigenstate - AAP IdM Operations Workflow
 description: >-
   Reference workflow shape combining certificate reporting, temporary access
   policy control, and sealed artifact delivery.

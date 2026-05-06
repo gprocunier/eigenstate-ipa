@@ -5,7 +5,7 @@
 - site: `{{ eigenstate_keytab_rotation_candidates_report.site }}`
 - context: {{ eigenstate_keytab_rotation_candidates_report.context }}
 - read_only: `{{ eigenstate_keytab_rotation_candidates_report.read_only }}`
-- mutation_phase: {{ eigenstate_keytab_rotation_candidates_report.mutation_phase }}
+- mutation_boundary: {{ eigenstate_keytab_rotation_candidates_report.mutation_boundary }}
 
 ## Summary
 
@@ -17,8 +17,8 @@
 
 ## Candidates
 
-| Principal | Candidate | Last Rotated | Owner | Remediation Phase |
+| Principal | Candidate | Last Rotated | Owner | Remediation Workflow |
 | --- | --- | --- | --- | --- |
 {% for candidate in eigenstate_keytab_rotation_candidates_report.candidates %}
-| `{{ candidate.principal }}` | `{{ candidate.candidate }}` | `{{ candidate.last_rotated_at | default('unknown') }}` | {{ candidate.owner | default('unknown') }} | {{ candidate.remediation_phase }} |
+| `{{ candidate.principal }}` | `{{ candidate.candidate }}` | `{{ candidate.last_rotated_at | default('unknown') }}` | {{ candidate.owner | default('unknown') }} | {{ candidate.remediation_workflow }} |
 {% endfor %}

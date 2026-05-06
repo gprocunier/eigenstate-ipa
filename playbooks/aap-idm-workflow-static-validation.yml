@@ -1,5 +1,5 @@
 ---
-- name: Validate Phase 2 role wiring without IdM
+- name: Validate AAP IdM workflow role wiring without IdM
   hosts: localhost
   gather_facts: false
   check_mode: true

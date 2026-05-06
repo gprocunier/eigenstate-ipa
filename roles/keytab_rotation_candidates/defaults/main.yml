@@ -17,4 +17,4 @@ eigenstate_keytab_rotation_candidates_records:
     max_age_days: 90
     candidate: true
     reason: Rotation review window has been reached.
-    remediation_phase: separate opt-in rotation workflow
+    remediation_workflow: separate opt-in rotation workflow

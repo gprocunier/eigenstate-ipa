@@ -5,7 +5,7 @@ import unittest
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-class Phase4RoleStructureTests(unittest.TestCase):
+class OpenShiftIdentityRoleStructureTests(unittest.TestCase):
     def test_required_role_files_exist(self):
         roles = {
             "openshift_idm_oidc_validation": [
@@ -42,13 +42,13 @@ class Phase4RoleStructureTests(unittest.TestCase):
                 with self.subTest(role=role, relpath=relpath):
                     self.assertTrue((role_dir / relpath).is_file())
 
-    def test_required_phase4_playbooks_and_docs_exist(self):
+    def test_required_openshift_identity_playbooks_and_docs_exist(self):
         required = [
             "playbooks/render-openshift-oidc-config.yml",
             "playbooks/validate-openshift-idm-groups.yml",
             "playbooks/validate-keycloak-idm-claims.yml",
             "playbooks/validate-openshift-breakglass-path.yml",
-            "playbooks/phase4-static-validation.yml",
+            "playbooks/openshift-identity-static-validation.yml",
             "docs/openshift-keycloak-idm-reference.md",
             "docs/openshift-identity-validation-walkthrough.md",
             "docs/openshift-breakglass-validation.md",

@@ -201,7 +201,7 @@ Example:
 ```
 
 This pattern is intentionally explicit because keytab rotation is destructive.
-If the rotation and deploy phases are separated, the collection cannot save the
+If the rotation and deploy steps are separated, the collection cannot save the
 service from holding an invalidated keytab.
 
 ## 4. Certificate Renewal From Expiry Discovery

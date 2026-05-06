@@ -26,9 +26,9 @@
   without exposing keytab bytes
 - added `temporary_access_report` and `policy_drift_report` for access-window
   review and expected-versus-observed policy drift evidence
-- documented the Phase 6 report schemas and validated the feature set in an
+- documented the reporting schemas and validated the feature set in an
   on-prem lab from the bastion execution boundary before publication
-- wired Phase 6 playbook syntax checks, static validation, rendered-output
+- wired reporting playbook syntax checks, static validation, rendered-output
   tests, argument spec checks, and secret-safety tests into the standard
   validation path
 
@@ -42,7 +42,8 @@
   delivery to Kubernetes and OpenShift workloads
 - documented the Kubernetes Secret delivery threat model, including etcd
   encryption, RBAC, namespace scope, audit, and rotation limitations
-- wired Phase 5 playbook syntax checks, static validation, rendered-output
+- wired workload Secret delivery playbook syntax checks, static validation,
+  rendered-output
   tests, argument spec checks, and secret-safety tests into the standard
   validation path
 
@@ -56,7 +57,8 @@
   control, and RBAC evidence review
 - added OpenShift, Keycloak, IdM federation, breakglass, and LDAP fallback
   documentation for evidence-driven identity integration reviews
-- wired the Phase 4 validation roles, wrapper playbooks, static validation, and
+- wired the OpenShift identity validation roles, wrapper playbooks, static
+  validation, and
   regression tests into the standard collection validation path
 
 ## 1.12.0 - 2026-05-05

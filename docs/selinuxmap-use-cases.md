@@ -199,7 +199,7 @@ elevated access.
 
   vars:
     maintenance_map: "ops-patch-map"
-    maintenance_phase: "{{ maintenance_state | default('open') }}"
+    maintenance_state: "{{ maintenance_state | default('open') }}"
     # Set maintenance_state=open before maintenance, closed after.
 
   tasks:
@@ -219,7 +219,7 @@ elevated access.
         fail_msg: >-
           Map '{{ maintenance_map }}' must be disabled before maintenance
           can proceed. Disable the map in IdM before opening the window.
-      when: maintenance_phase == 'open'
+      when: maintenance_state == 'open'
 
     - name: Assert map is re-enabled after window closes
       ansible.builtin.assert:
@@ -229,7 +229,7 @@ elevated access.
         fail_msg: >-
           Map '{{ maintenance_map }}' was not re-enabled after the
           maintenance window closed. Re-enable it in IdM now.
-      when: maintenance_phase == 'closed'
+      when: maintenance_state == 'closed'
 ```
 
 ## 5. Bulk Audit — Find All Maps Assigning unconfined_u

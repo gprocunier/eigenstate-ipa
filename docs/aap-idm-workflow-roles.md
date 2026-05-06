@@ -1,6 +1,6 @@
 ---
 layout: default
-title: AAP Golden Path Roles
+title: AAP IdM Workflow Roles
 description: >-
   AAP-ready workflow roles that package high-value eigenstate.ipa IdM
   automation paths after the execution environment is built.
@@ -8,11 +8,11 @@ description: >-
 
 {% raw %}
 
-# AAP Golden Path Roles
+# AAP IdM Workflow Roles
 
-Phase 1 provides the execution environment. These roles provide repeatable AAP
-jobs that use the collection without requiring every operator to assemble the
-same workflow glue by hand.
+The execution environment provides the runtime. These roles provide repeatable
+AAP jobs that use the collection without requiring every operator to assemble
+the same workflow glue by hand.
 
 | Role | Primary job | Safe default |
 | --- | --- | --- |
@@ -37,6 +37,6 @@ environment from the AAP EE quickstart.
 <a href="https://gprocunier.github.io/eigenstate-ipa/sealed-artifact-delivery-role.html"><kbd>SEALED ARTIFACT DELIVERY</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/temporary-access-window-role.html"><kbd>TEMPORARY ACCESS WINDOW</kbd></a>
 <a href="https://gprocunier.github.io/eigenstate-ipa/cert-expiry-report-role.html"><kbd>CERT EXPIRY REPORT</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/phase2-validation-walkthrough.html"><kbd>VALIDATION WALKTHROUGH</kbd></a>
+<a href="https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-validation-walkthrough.html"><kbd>VALIDATION WALKTHROUGH</kbd></a>
 
 {% endraw %}

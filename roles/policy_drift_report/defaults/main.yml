@@ -26,4 +26,4 @@ eigenstate_policy_drift_report_findings:
     severity: low
     expected: enabled
     observed: enabled
-    remediation_phase: none
+    remediation_workflow: none

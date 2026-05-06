@@ -22,7 +22,7 @@ OpenShift-adjacent contexts. It reports drift without changing policy.
 | `id` | string | Stable policy identifier. |
 | `kind` | string | Policy type, such as `hbacrule`, `sudo`, or `rbac`. |
 | `status` | string | `in_sync`, `drifted`, `missing`, `extra`, or `unknown`. |
-| `remediation_phase` | string | Separate opt-in phase that would make changes. |
+| `remediation_workflow` | string | Separate opt-in workflow that would make changes. |
 
 Useful optional fields include `severity`, `expected`, `observed`, and
 `recommendation`.

@@ -15,7 +15,7 @@
       site: "{{ eigenstate_keytab_rotation_candidates_site }}"
       context: "{{ eigenstate_keytab_rotation_candidates_context }}"
       read_only: true
-      mutation_phase: "not included"
+      mutation_boundary: "not included"
       summary:
         total_principals: "{{ eigenstate_keytab_rotation_candidates_records | length }}"
         rotation_candidates: "{{ eigenstate_keytab_rotation_candidates_records | selectattr('candidate', 'equalto', true) | list | length }}"

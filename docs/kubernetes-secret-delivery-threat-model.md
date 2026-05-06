@@ -15,7 +15,8 @@ management system. They can be the right boundary when the cluster is already
 the runtime authority for a workload, but they need explicit controls around
 storage, access, rotation, and review.
 
-The Phase 5 roles default to render-only behavior. They produce review
+The workload Secret delivery roles default to render-only behavior. They
+produce review
 manifests with payload values redacted. A payload-bearing manifest is written
 only when an operator explicitly requests it, and cluster apply is disabled
 unless the role is configured with explicit kubeconfig and context inputs.

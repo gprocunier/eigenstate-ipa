@@ -5,7 +5,7 @@ import unittest
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-class Phase5RoleStructureTests(unittest.TestCase):
+class WorkloadSecretDeliveryRoleStructureTests(unittest.TestCase):
     def test_required_role_files_exist(self):
         roles = {
             "kubernetes_secret_from_idm_vault": [
@@ -44,12 +44,12 @@ class Phase5RoleStructureTests(unittest.TestCase):
                 with self.subTest(role=role, relpath=relpath):
                     self.assertTrue((role_dir / relpath).is_file())
 
-    def test_required_phase5_playbooks_and_docs_exist(self):
+    def test_required_workload_secret_delivery_playbooks_and_docs_exist(self):
         required = [
             "playbooks/render-kubernetes-secret-from-idm-vault.yml",
             "playbooks/render-kubernetes-tls-secret-from-idm-cert.yml",
             "playbooks/render-keytab-secret.yml",
-            "playbooks/phase5-static-validation.yml",
+            "playbooks/workload-secret-delivery-static-validation.yml",
             "docs/kubernetes-secret-delivery-threat-model.md",
             "docs/kubernetes-secret-from-idm-vault.md",
             "docs/kubernetes-tls-from-idm-cert.md",

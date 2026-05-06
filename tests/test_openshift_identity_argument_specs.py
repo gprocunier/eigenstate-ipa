@@ -7,7 +7,7 @@ import yaml
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-class Phase4ArgumentSpecTests(unittest.TestCase):
+class OpenShiftIdentityArgumentSpecTests(unittest.TestCase):
     def _load_spec(self, role):
         path = PROJECT_ROOT / "roles" / role / "meta" / "argument_specs.yml"
         return yaml.safe_load(path.read_text())

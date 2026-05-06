@@ -10,10 +10,9 @@ description: >-
 
 # Reporting Overview
 
-Phase 6 adds read-only reporting roles for operational evidence. The roles
-consume explicit records from inventory, Controller surveys, fixture files, or
-prior discovery jobs and render deterministic artifacts that are safe to
-archive.
+The reporting roles produce read-only operational evidence from explicit
+records in inventory, Controller surveys, fixture files, or prior discovery
+jobs. They render deterministic artifacts that are safe to archive.
 
 The reporting roles do not mutate IdM, AAP, OpenShift, Kubernetes, or adjacent
 systems. Any remediation belongs in a separate opt-in workflow.

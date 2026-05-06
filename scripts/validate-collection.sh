@@ -211,7 +211,7 @@ if command -v ansible-playbook >/dev/null 2>&1; then
   EIGENSTATE_EE_VALIDATE_OUTPUT_DIR="${TEMP_BUILD_DIR}/eigenstate-idm-ee" \
     "${PROJECT_ROOT}/scripts/validate-ee-scaffold.sh"
 
-  echo "==> Checking Phase 2 role playbook syntax"
+  echo "==> Checking AAP IdM workflow role playbook syntax"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/sealed-artifact-delivery.yml"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
@@ -219,12 +219,12 @@ if command -v ansible-playbook >/dev/null 2>&1; then
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/cert-expiry-report.yml"
 
-  echo "==> Running Phase 2 static validation playbook"
+  echo "==> Running AAP IdM workflow static validation playbook"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ANSIBLE_LOCALHOST_WARNING=false \
-    ansible-playbook "${PROJECT_ROOT}/playbooks/phase2-static-validation.yml"
+    ansible-playbook "${PROJECT_ROOT}/playbooks/aap-idm-workflow-static-validation.yml"
 
-  echo "==> Checking Phase 4 role playbook syntax"
+  echo "==> Checking OpenShift identity role playbook syntax"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/render-openshift-oidc-config.yml"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
@@ -234,12 +234,12 @@ if command -v ansible-playbook >/dev/null 2>&1; then
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/validate-openshift-breakglass-path.yml"
 
-  echo "==> Running Phase 4 static validation playbook"
+  echo "==> Running OpenShift identity static validation playbook"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ANSIBLE_LOCALHOST_WARNING=false \
-    ansible-playbook "${PROJECT_ROOT}/playbooks/phase4-static-validation.yml"
+    ansible-playbook "${PROJECT_ROOT}/playbooks/openshift-identity-static-validation.yml"
 
-  echo "==> Checking Phase 5 workload delivery playbook syntax"
+  echo "==> Checking workload Secret delivery playbook syntax"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/render-kubernetes-secret-from-idm-vault.yml"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
@@ -247,12 +247,12 @@ if command -v ansible-playbook >/dev/null 2>&1; then
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/render-keytab-secret.yml"
 
-  echo "==> Running Phase 5 static validation playbook"
+  echo "==> Running workload Secret delivery static validation playbook"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ANSIBLE_LOCALHOST_WARNING=false \
-    ansible-playbook "${PROJECT_ROOT}/playbooks/phase5-static-validation.yml"
+    ansible-playbook "${PROJECT_ROOT}/playbooks/workload-secret-delivery-static-validation.yml"
 
-  echo "==> Checking Phase 6 reporting playbook syntax"
+  echo "==> Checking reporting playbook syntax"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/report-idm-readiness.yml"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
@@ -264,10 +264,10 @@ if command -v ansible-playbook >/dev/null 2>&1; then
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ansible-playbook --syntax-check "${PROJECT_ROOT}/playbooks/report-policy-drift.yml"
 
-  echo "==> Running Phase 6 static validation playbook"
+  echo "==> Running reporting static validation playbook"
   ANSIBLE_COLLECTIONS_PATH="${COLLECTIONS_ROOT}" \
     ANSIBLE_LOCALHOST_WARNING=false \
-    ansible-playbook "${PROJECT_ROOT}/playbooks/phase6-static-validation.yml"
+    ansible-playbook "${PROJECT_ROOT}/playbooks/reporting-static-validation.yml"
 else
   echo "==> ansible-playbook not installed; skipping AAP EE role checks"
 fi

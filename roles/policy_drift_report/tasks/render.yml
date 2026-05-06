@@ -15,7 +15,7 @@
       site: "{{ eigenstate_policy_drift_report_site }}"
       context: "{{ eigenstate_policy_drift_report_context }}"
       read_only: true
-      mutation_phase: "separate opt-in remediation"
+      mutation_boundary: "separate opt-in remediation"
       summary:
         expected_policies: "{{ eigenstate_policy_drift_report_expected_policies | length }}"
         observed_policies: "{{ eigenstate_policy_drift_report_observed_policies | length }}"

@@ -22,7 +22,7 @@ opt-in remediation workflow.
 | --- | --- | --- |
 | `principal` | string | Host or service principal. |
 | `candidate` | boolean | Whether the principal is a rotation candidate. |
-| `remediation_phase` | string | The separate workflow phase that would rotate keys. |
+| `remediation_workflow` | string | The separate workflow that would rotate keys. |
 
 Useful optional fields include `owner`, `location_hint`, `last_rotated_at`,
 `max_age_days`, and `reason`.

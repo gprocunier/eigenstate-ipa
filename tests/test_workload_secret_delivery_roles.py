@@ -27,7 +27,7 @@ def _collection_env(collections_root):
     }
 
 
-class Phase5DeliveryRoleTests(unittest.TestCase):
+class WorkloadSecretDeliveryRoleTests(unittest.TestCase):
     def _run_playbook(self, playbook, output_dir, extra_vars=None):
         merged_vars = {
             "eigenstate_k8s_secret_output_dir": str(output_dir),
@@ -62,7 +62,7 @@ class Phase5DeliveryRoleTests(unittest.TestCase):
     def test_review_manifests_redact_payloads_by_default(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             output_dir = pathlib.Path(tmpdir)
-            sensitive_value = "phase5-sensitive-material"
+            sensitive_value = "workload-secret-sensitive-material"
             result = self._run_playbook(
                 "playbooks/render-kubernetes-secret-from-idm-vault.yml",
                 output_dir,

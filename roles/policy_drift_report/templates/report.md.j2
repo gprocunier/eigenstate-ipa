@@ -5,7 +5,7 @@
 - site: `{{ eigenstate_policy_drift_report.site }}`
 - context: {{ eigenstate_policy_drift_report.context }}
 - read_only: `{{ eigenstate_policy_drift_report.read_only }}`
-- mutation_phase: {{ eigenstate_policy_drift_report.mutation_phase }}
+- mutation_boundary: {{ eigenstate_policy_drift_report.mutation_boundary }}
 
 ## Summary
 
@@ -21,8 +21,8 @@
 
 ## Findings
 
-| ID | Kind | Status | Expected | Observed | Remediation Phase |
+| ID | Kind | Status | Expected | Observed | Remediation Workflow |
 | --- | --- | --- | --- | --- | --- |
 {% for finding in eigenstate_policy_drift_report.findings %}
-| `{{ finding.id }}` | `{{ finding.kind }}` | `{{ finding.status }}` | `{{ finding.expected | default('not set') }}` | `{{ finding.observed | default('not seen') }}` | {{ finding.remediation_phase }} |
+| `{{ finding.id }}` | `{{ finding.kind }}` | `{{ finding.status }}` | `{{ finding.expected | default('not set') }}` | `{{ finding.observed | default('not seen') }}` | {{ finding.remediation_workflow }} |
 {% endfor %}

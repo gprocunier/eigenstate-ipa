@@ -17,8 +17,8 @@
       - item.id is defined
       - item.kind is defined
       - item.status | default('unknown') in ['in_sync', 'drifted', 'missing', 'extra', 'unknown']
-      - item.remediation_phase | default('') | length > 0
-    fail_msg: "Policy drift findings require id, kind, status, and remediation_phase."
+      - item.remediation_workflow | default('') | length > 0
+    fail_msg: "Policy drift findings require id, kind, status, and remediation_workflow."
   loop: "{{ eigenstate_policy_drift_report_findings }}"
   loop_control:
     label: "{{ item.id | default('unnamed-policy') }}"
