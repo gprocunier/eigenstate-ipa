@@ -52,6 +52,10 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
 ansible-playbook playbooks/render-keytab-secret.yml
 ```
 
+{% endraw %}
+{% include task_example.html id="render-keytab-secret" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow produces the expected evidence or artifact for review.

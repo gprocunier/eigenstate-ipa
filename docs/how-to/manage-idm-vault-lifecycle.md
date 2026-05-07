@@ -58,6 +58,10 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
   check_mode: true
 ```
 
+{% endraw %}
+{% include task_example.html id="manage-idm-vault-lifecycle" %}
+{% raw %}
+
 ## Expected Result
 
 The module reports whether IdM vault state would change, then can apply the explicit lifecycle action.

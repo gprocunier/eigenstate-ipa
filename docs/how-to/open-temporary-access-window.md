@@ -49,6 +49,10 @@ eigenstate.ipa.user_lease:
     lease_seconds: 3600
 ```
 
+{% endraw %}
+{% include task_example.html id="open-temporary-access-window" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow produces the expected evidence or artifact for review.

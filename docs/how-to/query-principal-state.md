@@ -48,6 +48,10 @@ This workflow is `read-only`. Confirm that this is the intended boundary before 
     var: lookup('eigenstate.ipa.principal', 'HTTP/app.example.com', principal_type='service', result_format='record')
 ```
 
+{% endraw %}
+{% include task_example.html id="query-principal-state" %}
+{% raw %}
+
 ## Expected Result
 
 The play receives structured principal records for preflight decisions.

@@ -45,6 +45,10 @@ A redacted review manifest from IdM-sourced material.
 ansible-playbook playbooks/render-kubernetes-secret-from-idm-vault.yml
 ```
 
+{% endraw %}
+{% include task_example.html id="render-workload-secret" %}
+{% raw %}
+
 ## Expected Output
 
 ```text

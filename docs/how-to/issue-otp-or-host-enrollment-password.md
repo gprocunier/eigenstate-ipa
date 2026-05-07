@@ -53,6 +53,10 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
   no_log: true
 ```
 
+{% endraw %}
+{% include task_example.html id="issue-otp-or-host-enrollment-password" %}
+{% raw %}
+
 ## Expected Result
 
 IdM issues the requested one-time credential and the play does not print it.

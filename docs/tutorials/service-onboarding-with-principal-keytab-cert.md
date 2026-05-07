@@ -52,6 +52,10 @@ A safe service onboarding sequence that checks principal state before handling k
   no_log: true
 ```
 
+{% endraw %}
+{% include task_example.html id="service-onboarding-with-principal-keytab-cert" %}
+{% raw %}
+
 ## Expected Output
 
 ```text

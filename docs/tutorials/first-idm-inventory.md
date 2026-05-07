@@ -46,6 +46,10 @@ ansible-inventory -i inventory.eigenstate_ipa.yml --graph
 ansible-inventory -i inventory.eigenstate_ipa.yml --host client01.example.com
 ```
 
+{% endraw %}
+{% include task_example.html id="first-idm-inventory" %}
+{% raw %}
+
 ## Expected Output
 
 ```text

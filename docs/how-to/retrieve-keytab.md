@@ -54,6 +54,10 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
   no_log: true
 ```
 
+{% endraw %}
+{% include task_example.html id="retrieve-keytab" %}
+{% raw %}
+
 ## Expected Result
 
 The play receives base64 keytab content without rotating principal keys or printing the payload.

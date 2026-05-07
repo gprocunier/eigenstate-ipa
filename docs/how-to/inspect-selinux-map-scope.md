@@ -46,6 +46,10 @@ This workflow is `read-only`. Confirm that this is the intended boundary before 
 lookup('eigenstate.ipa.selinuxmap', 'staff_u_map', result_format='record')
 ```
 
+{% endraw %}
+{% include task_example.html id="inspect-selinux-map-scope" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow produces the expected evidence or artifact for review.

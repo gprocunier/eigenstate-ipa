@@ -54,6 +54,10 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
   no_log: true
 ```
 
+{% endraw %}
+{% include task_example.html id="retrieve-idm-vault-secret" %}
+{% raw %}
+
 ## Expected Result
 
 The play has the payload in memory for downstream use, and task output does not expose the value.

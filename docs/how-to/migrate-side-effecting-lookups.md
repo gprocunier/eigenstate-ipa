@@ -46,6 +46,10 @@ This workflow is `preflight`. Confirm that this is the intended boundary before 
 ansible-playbook --syntax-check playbooks/service-onboarding.yml
 ```
 
+{% endraw %}
+{% include task_example.html id="migrate-side-effecting-lookups" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow produces the expected evidence or artifact for review.

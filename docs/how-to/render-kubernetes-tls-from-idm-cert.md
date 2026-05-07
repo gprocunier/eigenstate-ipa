@@ -48,6 +48,10 @@ This workflow is `render-only`. Confirm that this is the intended boundary befor
 ansible-playbook playbooks/render-kubernetes-tls-secret-from-idm-cert.yml
 ```
 
+{% endraw %}
+{% include task_example.html id="render-kubernetes-tls-from-idm-cert" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow produces the expected evidence or artifact for review.

@@ -51,6 +51,10 @@ A task that retrieves one lab vault value without printing it.
     msg: "sample-api-token retrieved and redacted"
 ```
 
+{% endraw %}
+{% include task_example.html id="first-vault-retrieval" %}
+{% raw %}
+
 ## Expected Output
 
 ```text

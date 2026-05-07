@@ -47,6 +47,10 @@ This workflow is `read-only`. Confirm that this is the intended boundary before 
 ansible-playbook playbooks/report-idm-readiness.yml
 ```
 
+{% endraw %}
+{% include task_example.html id="generate-operational-evidence" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow produces the expected evidence or artifact for review.

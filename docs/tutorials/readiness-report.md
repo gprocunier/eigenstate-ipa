@@ -45,6 +45,10 @@ JSON, YAML, or Markdown readiness evidence from explicit inputs.
 ansible-playbook playbooks/report-idm-readiness.yml
 ```
 
+{% endraw %}
+{% include task_example.html id="readiness-report" %}
+{% raw %}
+
 ## Expected Output
 
 ```text

@@ -48,6 +48,10 @@ ansible-inventory -i inventory.eigenstate_ipa.yml --graph
 ansible-inventory -i inventory.eigenstate_ipa.yml --host idm-client01.example.com
 ```
 
+{% endraw %}
+{% include task_example.html id="use-idm-as-live-inventory" %}
+{% raw %}
+
 ## Expected Result
 
 Inventory output contains IdM-backed hosts, groups, and selected hostvars without a static inventory copy.

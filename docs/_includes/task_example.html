@@ -1,0 +1,20 @@
+{% assign example = site.data.task_examples[include.id] %}
+{% if example %}
+<section class="task-example">
+  <h2>{{ example.heading | default: "Example" }}</h2>
+  {% if example.intro %}
+    <p>{{ example.intro }}</p>
+  {% endif %}
+  {% for file in example.files %}
+    <h3>{{ file.name }}</h3>
+    {% if file.description %}
+      <p>{{ file.description }}</p>
+    {% endif %}
+    <pre><code class="language-{{ file.language | default: 'yaml' }}">{{ file.code | escape }}</code></pre>
+  {% endfor %}
+  {% if example.run %}
+    <h3>Run It</h3>
+    <pre><code class="language-bash">{{ example.run | escape }}</code></pre>
+  {% endif %}
+</section>
+{% endif %}

@@ -46,6 +46,10 @@ This workflow is `preflight`. Confirm that this is the intended boundary before 
 lookup('eigenstate.ipa.hbacrule', 'allow_web', operation='test', user='alice', host='client01.example.com', service='sshd')
 ```
 
+{% endraw %}
+{% include task_example.html id="test-hbac-access" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow produces the expected evidence or artifact for review.

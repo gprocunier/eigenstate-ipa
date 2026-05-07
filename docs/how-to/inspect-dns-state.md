@@ -46,6 +46,10 @@ This workflow is `read-only`. Confirm that this is the intended boundary before 
 ansible localhost -m ansible.builtin.debug -a "msg={{ lookup('eigenstate.ipa.dns', 'app', zone='example.com', result_format='record') }}"
 ```
 
+{% endraw %}
+{% include task_example.html id="inspect-dns-state" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow receives structured DNS record state from IdM.

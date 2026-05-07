@@ -47,6 +47,10 @@ This workflow is `mutating`. Confirm that this is the intended boundary before p
 ansible-playbook playbooks/aap-ee-build.yml
 ```
 
+{% endraw %}
+{% include task_example.html id="build-disconnected-aap-ee" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow produces the expected evidence or artifact for review.

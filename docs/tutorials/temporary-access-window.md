@@ -46,6 +46,10 @@ ansible-playbook playbooks/temporary-access-window.yml -e user=lab-temp-user -e 
 ansible-playbook playbooks/report-temporary-access.yml
 ```
 
+{% endraw %}
+{% include task_example.html id="temporary-access-window" %}
+{% raw %}
+
 ## Expected Output
 
 ```text

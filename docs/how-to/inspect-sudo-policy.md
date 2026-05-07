@@ -46,6 +46,10 @@ This workflow is `read-only`. Confirm that this is the intended boundary before 
 lookup('eigenstate.ipa.sudo', 'deploy-web', object_type='rule', result_format='record')
 ```
 
+{% endraw %}
+{% include task_example.html id="inspect-sudo-policy" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow produces the expected evidence or artifact for review.

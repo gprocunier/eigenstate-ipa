@@ -47,6 +47,10 @@ This workflow is `render-only`. Confirm that this is the intended boundary befor
 ansible-playbook playbooks/render-openshift-oidc-config.yml
 ```
 
+{% endraw %}
+{% include task_example.html id="render-openshift-identity-evidence" %}
+{% raw %}
+
 ## Expected Result
 
 The workflow produces the expected evidence or artifact for review.

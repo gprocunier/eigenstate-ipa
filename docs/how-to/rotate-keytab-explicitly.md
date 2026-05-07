@@ -58,6 +58,10 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
   no_log: true
 ```
 
+{% endraw %}
+{% include task_example.html id="rotate-keytab-explicitly" %}
+{% raw %}
+
 ## Expected Result
 
 IdM rotates the principal keys and writes or returns the new keytab according to module options.

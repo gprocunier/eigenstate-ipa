@@ -47,6 +47,10 @@ ansible-playbook playbooks/aap-ee-build.yml
 ansible-playbook playbooks/aap-ee-smoke.yml
 ```
 
+{% endraw %}
+{% include task_example.html id="build-aap-execution-environment" %}
+{% raw %}
+
 ## Expected Output
 
 ```text

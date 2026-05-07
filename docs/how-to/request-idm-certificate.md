@@ -52,6 +52,10 @@ This workflow is `mutating`. Confirm that this is the intended boundary before p
     mode: "0644"
 ```
 
+{% endraw %}
+{% include task_example.html id="request-idm-certificate" %}
+{% raw %}
+
 ## Expected Result
 
 The module returns certificate metadata and optionally writes the issued certificate. It does not handle private-key material.
