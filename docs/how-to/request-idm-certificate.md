@@ -13,8 +13,6 @@ workflow_boundary: mutating
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -66,7 +64,7 @@ The module returns certificate metadata and optionally writes the issued certifi
 
 ## Related Reference
 
-- [/reference/modules/cert_request.html](/reference/modules/cert_request.html)
-- [/explanation/certificate-boundary.html](/explanation/certificate-boundary.html)
+- [/reference/modules/cert_request.html](../reference/modules/cert_request.html)
+- [/explanation/certificate-boundary.html](../explanation/certificate-boundary.html)
 
 {% endraw %}

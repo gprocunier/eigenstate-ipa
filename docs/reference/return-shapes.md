@@ -30,5 +30,5 @@ Common lookup return shapes used across the collection.
 
 ## Related Pages
 
-- [Reference index](/reference/)
-- [Authority boundaries](/explanation/authority-boundaries.html)
+- [Reference index](./)
+- [Authority boundaries](../explanation/authority-boundaries.html)

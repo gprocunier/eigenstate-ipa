@@ -17,7 +17,6 @@ public_status: rewritten
 source_material:
   - ../README.md
   - ../llms.txt
-  - rewrite-audit.md
 last_verified: 2026-05-07
 ---
 
@@ -39,17 +38,16 @@ reviewable surfaces.
 | What problem does this solve? | IdM-managed hosts, policy, vaults, principals, keytabs, certificates, and access checks can become live Ansible inputs instead of duplicated static files. |
 | What makes it credible? | The repository contains one inventory plugin, nine lookup plugins, four modules, execution-environment assets, roles, wrapper playbooks, and tests. |
 | What should change by default? | Read-only lookups and render-first roles should produce evidence before any workflow mutates IdM, writes key material, or applies cluster configuration. |
-| Where should I start? | Use [Start Here](/start.html) if you have a job to do, or [Reference](/reference/) if you already know the exact surface. |
+| Where should I start? | Use [Start Here](start.html) if you have a job to do, or [Reference](reference/) if you already know the exact surface. |
 
 ## Start Here
 
 | Need | First page |
 | --- | --- |
-| Learn the shape of the collection | [Tutorials](/tutorials/) |
-| Complete a production task | [How-to guides](/how-to/) |
-| Look up exact syntax or return data | [Reference](/reference/) |
-| Understand authority and safety boundaries | [Explanation](/explanation/) |
-| Find an old page during migration | [Legacy documentation map](/documentation-map.html) |
+| Learn the shape of the collection | [Tutorials](tutorials/) |
+| Complete a production task | [How-to guides](how-to/) |
+| Look up exact syntax or return data | [Reference](reference/) |
+| Understand authority and safety boundaries | [Explanation](explanation/) |
 
 ## Problem
 

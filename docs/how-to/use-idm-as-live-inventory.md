@@ -13,8 +13,6 @@ workflow_boundary: read-only
 evidence_shape:
   - inventory-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -62,7 +60,7 @@ Inventory output contains IdM-backed hosts, groups, and selected hostvars withou
 
 ## Related Reference
 
-- [/reference/inventory/idm.html](/reference/inventory/idm.html)
-- [/explanation/idm-as-automation-state-plane.html](/explanation/idm-as-automation-state-plane.html)
+- [/reference/inventory/idm.html](../reference/inventory/idm.html)
+- [/explanation/idm-as-automation-state-plane.html](../explanation/idm-as-automation-state-plane.html)
 
 {% endraw %}

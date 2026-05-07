@@ -12,8 +12,6 @@ workflow_boundary: read-only
 evidence_shape:
   - architecture-boundary
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 

@@ -12,8 +12,6 @@ workflow_boundary: mutating
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -67,7 +65,7 @@ IdM issues the requested one-time credential and the play does not print it.
 
 ## Related Reference
 
-- [/reference/lookups/otp.html](/reference/lookups/otp.html)
-- [/how-to/query-principal-state.html](/how-to/query-principal-state.html)
+- [/reference/lookups/otp.html](../reference/lookups/otp.html)
+- [/how-to/query-principal-state.html](query-principal-state.html)
 
 {% endraw %}

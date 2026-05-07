@@ -8,12 +8,11 @@ PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 class ReportingSecretSafetyTests(unittest.TestCase):
     def test_reporting_public_content_is_neutral(self):
         paths = [
-            PROJECT_ROOT / "docs" / "reporting-overview.md",
-            PROJECT_ROOT / "docs" / "readiness-report-schema.md",
-            PROJECT_ROOT / "docs" / "certificate-inventory-report.md",
-            PROJECT_ROOT / "docs" / "keytab-rotation-candidate-report.md",
-            PROJECT_ROOT / "docs" / "temporary-access-report.md",
-            PROJECT_ROOT / "docs" / "policy-drift-report.md",
+            PROJECT_ROOT / "docs" / "explanation" / "evidence-and-reporting-model.md",
+            PROJECT_ROOT / "docs" / "reference" / "report-schemas.md",
+            PROJECT_ROOT / "docs" / "reference" / "roles" / "reports.md",
+            PROJECT_ROOT / "docs" / "how-to" / "generate-operational-evidence.md",
+            PROJECT_ROOT / "docs" / "tutorials" / "readiness-report.md",
         ]
         forbidden = ["seller", "sales", "presales", "sales motion"]
         failures = []

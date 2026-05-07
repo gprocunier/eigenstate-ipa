@@ -40,12 +40,11 @@ class ReportingRoleStructureTests(unittest.TestCase):
             "playbooks/report-temporary-access.yml",
             "playbooks/report-policy-drift.yml",
             "playbooks/reporting-static-validation.yml",
-            "docs/reporting-overview.md",
-            "docs/readiness-report-schema.md",
-            "docs/certificate-inventory-report.md",
-            "docs/keytab-rotation-candidate-report.md",
-            "docs/temporary-access-report.md",
-            "docs/policy-drift-report.md",
+            "docs/explanation/evidence-and-reporting-model.md",
+            "docs/reference/report-schemas.md",
+            "docs/reference/roles/reports.md",
+            "docs/how-to/generate-operational-evidence.md",
+            "docs/tutorials/readiness-report.md",
         ]
         for relpath in required:
             with self.subTest(relpath=relpath):

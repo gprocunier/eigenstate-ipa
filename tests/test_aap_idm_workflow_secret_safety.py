@@ -62,11 +62,12 @@ class AapIdmWorkflowSecretSafetyTests(unittest.TestCase):
 
     def test_neutral_aap_idm_workflow_docs_do_not_use_sales_framing(self):
         docs = [
-            PROJECT_ROOT / "docs" / "aap-idm-workflow-roles.md",
-            PROJECT_ROOT / "docs" / "sealed-artifact-delivery-role.md",
-            PROJECT_ROOT / "docs" / "temporary-access-window-role.md",
-            PROJECT_ROOT / "docs" / "cert-expiry-report-role.md",
-            PROJECT_ROOT / "docs" / "aap-idm-workflow-validation-walkthrough.md",
+            PROJECT_ROOT / "docs" / "explanation" / "aap-execution-model.md",
+            PROJECT_ROOT / "docs" / "reference" / "playbooks.md",
+            PROJECT_ROOT / "docs" / "reference" / "roles" / "temporary_access.md",
+            PROJECT_ROOT / "docs" / "reference" / "roles" / "reports.md",
+            PROJECT_ROOT / "docs" / "how-to" / "open-temporary-access-window.md",
+            PROJECT_ROOT / "docs" / "how-to" / "generate-operational-evidence.md",
         ]
         forbidden = ["seller", "sales", "presales", "sales motion"]
         failures = []

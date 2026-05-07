@@ -12,8 +12,6 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -67,6 +65,6 @@ ok: [localhost] => {
 
 ## Next Page
 
-Continue with [/how-to/build-disconnected-aap-ee.html](/how-to/build-disconnected-aap-ee.html).
+Continue with [/how-to/build-disconnected-aap-ee.html](../how-to/build-disconnected-aap-ee.html).
 
 {% endraw %}

@@ -104,5 +104,5 @@ last_verified: 2026-05-07
 
 ## Related Pages
 
-- [Playbook reference](/reference/playbooks.html)
-- [Authority boundaries](/explanation/authority-boundaries.html)
+- [Playbook reference](../playbooks.html)
+- [Authority boundaries](../../explanation/authority-boundaries.html)

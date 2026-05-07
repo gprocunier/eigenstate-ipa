@@ -20,7 +20,6 @@ source_material:
   - ../../README.md
   - ../../roles
   - ../../playbooks
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 

@@ -13,8 +13,6 @@ workflow_boundary: render-only
 evidence_shape:
   - review-manifest
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -65,7 +63,7 @@ The workflow produces the expected evidence or artifact for review.
 
 ## Related Reference
 
-- [/reference/roles/workload_secret_delivery.html](/reference/roles/workload_secret_delivery.html)
-- [/explanation/authority-boundaries.html](/explanation/authority-boundaries.html)
+- [/reference/roles/workload_secret_delivery.html](../reference/roles/workload_secret_delivery.html)
+- [/explanation/authority-boundaries.html](../explanation/authority-boundaries.html)
 
 {% endraw %}

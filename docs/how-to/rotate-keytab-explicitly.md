@@ -13,8 +13,6 @@ workflow_boundary: mutating
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -72,7 +70,7 @@ IdM rotates the principal keys and writes or returns the new keytab according to
 
 ## Related Reference
 
-- [/reference/modules/keytab_manage.html](/reference/modules/keytab_manage.html)
-- [/explanation/kerberos-keytab-boundary.html](/explanation/kerberos-keytab-boundary.html)
+- [/reference/modules/keytab_manage.html](../reference/modules/keytab_manage.html)
+- [/explanation/kerberos-keytab-boundary.html](../explanation/kerberos-keytab-boundary.html)
 
 {% endraw %}

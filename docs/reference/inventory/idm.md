@@ -177,8 +177,8 @@ Inventory failures prevent inventory construction. Validate IdM connectivity and
 
 ## Related Pages
 
-- [Authentication reference](/reference/authentication.html)
-- [Return shapes](/reference/return-shapes.html)
-- [Authority boundaries](/explanation/authority-boundaries.html)
+- [Authentication reference](../authentication.html)
+- [Return shapes](../return-shapes.html)
+- [Authority boundaries](../../explanation/authority-boundaries.html)
 
 {% endraw %}

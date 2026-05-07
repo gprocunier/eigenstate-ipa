@@ -8,10 +8,10 @@ PROJECT_ROOT = pathlib.Path(__file__).resolve().parents[1]
 class OpenShiftIdentitySecretSafetyTests(unittest.TestCase):
     def test_openshift_identity_public_content_is_neutral(self):
         paths = [
-            PROJECT_ROOT / "docs" / "openshift-keycloak-idm-reference.md",
-            PROJECT_ROOT / "docs" / "openshift-identity-validation-walkthrough.md",
-            PROJECT_ROOT / "docs" / "openshift-breakglass-validation.md",
-            PROJECT_ROOT / "docs" / "openshift-ldap-fallback.md",
+            PROJECT_ROOT / "docs" / "reference" / "roles" / "openshift_identity.md",
+            PROJECT_ROOT / "docs" / "how-to" / "render-openshift-identity-evidence.md",
+            PROJECT_ROOT / "docs" / "explanation" / "openshift-identity-and-workload-model.md",
+            PROJECT_ROOT / "docs" / "explanation" / "security-threat-model.md",
         ]
         forbidden = ["seller", "sales", "presales", "sales motion"]
         failures = []

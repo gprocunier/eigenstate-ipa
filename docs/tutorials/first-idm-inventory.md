@@ -12,8 +12,6 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -69,6 +67,6 @@ ansible-inventory -i inventory.eigenstate_ipa.yml --host client01.example.com
 
 ## Next Page
 
-Continue with [/how-to/use-idm-as-live-inventory.html](/how-to/use-idm-as-live-inventory.html).
+Continue with [/how-to/use-idm-as-live-inventory.html](../how-to/use-idm-as-live-inventory.html).
 
 {% endraw %}

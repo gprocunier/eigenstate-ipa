@@ -12,8 +12,6 @@ workflow_boundary: mutating
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -63,7 +61,7 @@ The workflow produces the expected evidence or artifact for review.
 
 ## Related Reference
 
-- [/reference/modules/user_lease.html](/reference/modules/user_lease.html)
-- [/explanation/authority-boundaries.html](/explanation/authority-boundaries.html)
+- [/reference/modules/user_lease.html](../reference/modules/user_lease.html)
+- [/explanation/authority-boundaries.html](../explanation/authority-boundaries.html)
 
 {% endraw %}

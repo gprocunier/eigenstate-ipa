@@ -12,8 +12,6 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -60,6 +58,6 @@ The workflow receives structured DNS record state from IdM.
 
 ## Related Reference
 
-- [/reference/lookups/dns.html](/reference/lookups/dns.html)
+- [/reference/lookups/dns.html](../reference/lookups/dns.html)
 
 {% endraw %}

@@ -13,8 +13,6 @@ workflow_boundary: mutating
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -72,7 +70,7 @@ The module reports whether IdM vault state would change, then can apply the expl
 
 ## Related Reference
 
-- [/reference/modules/vault_write.html](/reference/modules/vault_write.html)
-- [/how-to/retrieve-idm-vault-secret.html](/how-to/retrieve-idm-vault-secret.html)
+- [/reference/modules/vault_write.html](../reference/modules/vault_write.html)
+- [/how-to/retrieve-idm-vault-secret.html](retrieve-idm-vault-secret.html)
 
 {% endraw %}

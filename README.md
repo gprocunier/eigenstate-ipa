@@ -48,8 +48,6 @@ The public docs now use Diataxis:
 - [Explanation](https://gprocunier.github.io/eigenstate-ipa/explanation/)
   describes architecture, authority boundaries, non-goals, and risks.
 
-Legacy documentation URLs remain available as moved-page stubs.
-
 ## Install
 
 Install a built collection artifact:

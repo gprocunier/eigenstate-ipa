@@ -12,8 +12,6 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -64,6 +62,6 @@ post_expiry_fresh_auth: denied
 
 ## Next Page
 
-Continue with [/how-to/open-temporary-access-window.html](/how-to/open-temporary-access-window.html).
+Continue with [/how-to/open-temporary-access-window.html](../how-to/open-temporary-access-window.html).
 
 {% endraw %}

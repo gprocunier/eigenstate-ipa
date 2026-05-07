@@ -28,5 +28,5 @@ Report artifact formats and schema expectations.
 
 ## Related Pages
 
-- [Reference index](/reference/)
-- [Authority boundaries](/explanation/authority-boundaries.html)
+- [Reference index](./)
+- [Authority boundaries](../explanation/authority-boundaries.html)

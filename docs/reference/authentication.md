@@ -29,5 +29,5 @@ Kerberos, password, keytab, ipalib, ipa-getkeytab, and execution-environment dep
 
 ## Related Pages
 
-- [Reference index](/reference/)
-- [Authority boundaries](/explanation/authority-boundaries.html)
+- [Reference index](./)
+- [Authority boundaries](../explanation/authority-boundaries.html)

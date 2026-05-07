@@ -13,8 +13,6 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -62,7 +60,7 @@ The play receives structured principal records for preflight decisions.
 
 ## Related Reference
 
-- [/reference/lookups/principal.html](/reference/lookups/principal.html)
-- [/tutorials/service-onboarding-with-principal-keytab-cert.html](/tutorials/service-onboarding-with-principal-keytab-cert.html)
+- [/reference/lookups/principal.html](../reference/lookups/principal.html)
+- [/tutorials/service-onboarding-with-principal-keytab-cert.html](../tutorials/service-onboarding-with-principal-keytab-cert.html)
 
 {% endraw %}

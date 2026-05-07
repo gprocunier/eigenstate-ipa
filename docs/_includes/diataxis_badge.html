@@ -34,16 +34,4 @@
       </dl>
     {% endif %}
   </div>
-{% else %}
-  {% assign legacy_kind = "Guide" %}
-  {% if page.path contains 'index.md' %}{% assign legacy_kind = "Overview" %}{% endif %}
-  {% if page.path contains '-plugin.md' or page.path contains '-module.md' %}{% assign legacy_kind = "Reference" %}{% endif %}
-  {% if page.path contains '-capabilities.md' %}{% assign legacy_kind = "Capabilities" %}{% endif %}
-  {% if page.path contains '-use-cases.md' %}{% assign legacy_kind = "Use Cases" %}{% endif %}
-  {% unless page.path == 'index.md' %}
-    <div class="page-meta">
-      <p class="page-kind">{{ legacy_kind }}</p>
-      <p class="page-summary">Legacy page retained while the Diataxis rewrite is in progress.</p>
-    </div>
-  {% endunless %}
 {% endif %}

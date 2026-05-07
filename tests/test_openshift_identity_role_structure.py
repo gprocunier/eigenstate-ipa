@@ -49,10 +49,10 @@ class OpenShiftIdentityRoleStructureTests(unittest.TestCase):
             "playbooks/validate-keycloak-idm-claims.yml",
             "playbooks/validate-openshift-breakglass-path.yml",
             "playbooks/openshift-identity-static-validation.yml",
-            "docs/openshift-keycloak-idm-reference.md",
-            "docs/openshift-identity-validation-walkthrough.md",
-            "docs/openshift-breakglass-validation.md",
-            "docs/openshift-ldap-fallback.md",
+            "docs/reference/roles/openshift_identity.md",
+            "docs/how-to/render-openshift-identity-evidence.md",
+            "docs/explanation/openshift-identity-and-workload-model.md",
+            "docs/explanation/security-threat-model.md",
         ]
         for relpath in required:
             with self.subTest(relpath=relpath):

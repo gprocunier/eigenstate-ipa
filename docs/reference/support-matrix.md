@@ -25,9 +25,8 @@ Version and platform support boundaries.
 - The collection metadata declares `requires_ansible: >=2.15.0`.
 - RHEL 9 compatibility is intentional in repository validation.
 - IdM and FreeIPA support depends on available IdM client libraries and APIs.
-- See legacy `docs/support-matrix.md` until this reference is expanded from release metadata.
 
 ## Related Pages
 
-- [Reference index](/reference/)
-- [Authority boundaries](/explanation/authority-boundaries.html)
+- [Reference index](./)
+- [Authority boundaries](../explanation/authority-boundaries.html)

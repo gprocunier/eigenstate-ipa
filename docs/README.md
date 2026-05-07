@@ -11,8 +11,6 @@ workflow_boundary: read-only
 evidence_shape:
   - architecture-boundary
 public_status: rewritten
-source_material:
-  - rewrite-audit.md
 last_verified: 2026-05-07
 ---
 
@@ -31,9 +29,6 @@ Current documentation structure:
 - `_data/`: controlled vocabularies and navigation
 - `_templates/`: page templates for future docs
 - `_includes/` and `_layouts/`: site shell
-
-Legacy top-level pages remain as compatibility stubs so old external links do
-not break.
 
 Every rewritten page should declare `diataxis_type`, `authority_boundary`,
 `workflow_boundary`, `evidence_shape`, and `public_status`.

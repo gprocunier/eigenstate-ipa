@@ -12,8 +12,6 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -66,6 +64,6 @@ data:
 
 ## Next Page
 
-Continue with [/how-to/render-kubernetes-secret-from-idm-vault.html](/how-to/render-kubernetes-secret-from-idm-vault.html).
+Continue with [/how-to/render-kubernetes-secret-from-idm-vault.html](../how-to/render-kubernetes-secret-from-idm-vault.html).
 
 {% endraw %}

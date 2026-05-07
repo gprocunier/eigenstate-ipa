@@ -11,12 +11,10 @@ class CompatibilityWarningsTests(unittest.TestCase):
         self.assertIn("retrieve_mode='generate' will", text)
         self.assertIn("immediately invalidated", text)
 
-    def test_migration_docs_cover_lookup_overlap(self):
-        path = PROJECT_ROOT / "docs" / "mutation-surface-migration.md"
-        if not path.exists():
-            self.skipTest("migration docs not added yet")
+    def test_side_effecting_lookup_docs_cover_overlap(self):
+        path = PROJECT_ROOT / "docs" / "how-to" / "migrate-side-effecting-lookups.md"
         text = path.read_text().lower()
-        self.assertIn("existing lookups remain supported", text)
+        self.assertIn("lookups should be read-focused", text)
         self.assertIn("keytab_manage", text)
         self.assertIn("cert_request", text)
 

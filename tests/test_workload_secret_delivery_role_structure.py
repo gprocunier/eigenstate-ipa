@@ -50,10 +50,10 @@ class WorkloadSecretDeliveryRoleStructureTests(unittest.TestCase):
             "playbooks/render-kubernetes-tls-secret-from-idm-cert.yml",
             "playbooks/render-keytab-secret.yml",
             "playbooks/workload-secret-delivery-static-validation.yml",
-            "docs/workload-secret-delivery-controls.md",
-            "docs/kubernetes-secret-from-idm-vault.md",
-            "docs/kubernetes-tls-from-idm-cert.md",
-            "docs/keytab-delivery-to-workloads.md",
+            "docs/reference/roles/workload_secret_delivery.md",
+            "docs/how-to/render-kubernetes-secret-from-idm-vault.md",
+            "docs/how-to/render-kubernetes-tls-from-idm-cert.md",
+            "docs/how-to/render-keytab-secret.md",
         ]
         for relpath in required:
             with self.subTest(relpath=relpath):

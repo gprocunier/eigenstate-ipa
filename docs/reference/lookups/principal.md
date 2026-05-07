@@ -150,8 +150,8 @@ Lookup failures are task failures unless the caller handles them with Ansible er
 
 ## Related Pages
 
-- [Authentication reference](/reference/authentication.html)
-- [Return shapes](/reference/return-shapes.html)
-- [Authority boundaries](/explanation/authority-boundaries.html)
+- [Authentication reference](../authentication.html)
+- [Return shapes](../return-shapes.html)
+- [Authority boundaries](../../explanation/authority-boundaries.html)
 
 {% endraw %}

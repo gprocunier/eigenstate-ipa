@@ -12,8 +12,6 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -66,6 +64,6 @@ ansible-playbook playbooks/report-idm-readiness.yml
 
 ## Next Page
 
-Continue with [/how-to/generate-operational-evidence.html](/how-to/generate-operational-evidence.html).
+Continue with [/how-to/generate-operational-evidence.html](../how-to/generate-operational-evidence.html).
 
 {% endraw %}

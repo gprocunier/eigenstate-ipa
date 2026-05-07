@@ -13,8 +13,6 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -68,7 +66,7 @@ The play has the payload in memory for downstream use, and task output does not 
 
 ## Related Reference
 
-- [/reference/lookups/vault.html](/reference/lookups/vault.html)
-- [/explanation/secret-boundary.html](/explanation/secret-boundary.html)
+- [/reference/lookups/vault.html](../reference/lookups/vault.html)
+- [/explanation/secret-boundary.html](../explanation/secret-boundary.html)
 
 {% endraw %}

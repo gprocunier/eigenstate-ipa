@@ -12,8 +12,6 @@ workflow_boundary: preflight
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -60,7 +58,8 @@ The workflow produces the expected evidence or artifact for review.
 
 ## Related Reference
 
-- [/reference/modules/keytab_manage.html](/reference/modules/keytab_manage.html)
-- [/explanation/authority-boundaries.html](/explanation/authority-boundaries.html)
+- [/reference/modules/keytab_manage.html](../reference/modules/keytab_manage.html)
+- [/reference/modules/cert_request.html](../reference/modules/cert_request.html)
+- [/explanation/authority-boundaries.html](../explanation/authority-boundaries.html)
 
 {% endraw %}

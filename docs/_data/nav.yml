@@ -8,27 +8,17 @@ groups:
       - title: Start Here
         url: /start.html
         summary: Choose the right learning, task, reference, or explanation path.
-      - title: Documentation Map
-        url: /documentation-map.html
-        summary: Map legacy URLs into the current documentation structure.
-      - title: How-To Guides
-        url: /how-to/
-        summary: Production task guides.
-      - title: Capabilities
-        url: /capabilities.html
-        summary: Legacy capability overview.
 
-  - title: Learn And Prove
+  - title: Tutorials
     summary: Guided first runs and safe learning paths.
     items:
-      - title: Tutorials
+      - title: Tutorial Index
         url: /tutorials/
-        summary: All guided learning paths.
 
   - title: IdM State And Inventory
     summary: Live IdM state, inventory, principals, and authentication.
     sections:
-      - title: Operating Model
+      - title: Learn And Operate
         items:
           - title: IdM State Plane
             url: /explanation/idm-as-automation-state-plane.html
@@ -38,26 +28,14 @@ groups:
             url: /tutorials/first-idm-inventory.html
           - title: Query Principal State
             url: /how-to/query-principal-state.html
+      - title: Reference
+        items:
           - title: Authentication Reference
             url: /reference/authentication.html
-      - title: Inventory And Principals
-        items:
           - title: Inventory Reference
             url: /reference/inventory/idm.html
           - title: Principal Lookup Reference
             url: /reference/lookups/principal.html
-          - title: Inventory Capabilities
-            url: /inventory-capabilities.html
-          - title: Inventory Plugin
-            url: /inventory-plugin.html
-          - title: Inventory Use Cases
-            url: /inventory-use-cases.html
-          - title: Principal Capabilities
-            url: /principal-capabilities.html
-          - title: Principal Plugin
-            url: /principal-plugin.html
-          - title: Principal Use Cases
-            url: /principal-use-cases.html
 
   - title: Vaults And Secret Material
     summary: Vault lookup, lifecycle mutation, and workload secret rendering.
@@ -72,40 +50,18 @@ groups:
             url: /how-to/manage-idm-vault-lifecycle.html
           - title: Secret Boundary
             url: /explanation/secret-boundary.html
-          - title: Vault Lookup Reference
-            url: /reference/lookups/vault.html
-          - title: Vault Write Module Reference
-            url: /reference/modules/vault_write.html
-      - title: Kubernetes Secret Delivery
+      - title: Workload Rendering
         items:
           - title: Render Kubernetes Secret
             url: /how-to/render-kubernetes-secret-from-idm-vault.html
           - title: Render Workload Secret Tutorial
             url: /tutorials/render-workload-secret.html
-          - title: Workload Secret Role Reference
-            url: /reference/roles/workload_secret_delivery.html
-          - title: Workload Secret Delivery Controls
-            url: /workload-secret-delivery-controls.html
-          - title: Sealed Artifact Delivery Role
-            url: /sealed-artifact-delivery-role.html
-          - title: Kubernetes Secret From IdM Vault
-            url: /kubernetes-secret-from-idm-vault.html
-      - title: Legacy Vault Pages
+      - title: Reference
         items:
-          - title: Vault Capabilities
-            url: /vault-capabilities.html
-          - title: Vault Plugin
-            url: /vault-plugin.html
-          - title: Vault Use Cases
-            url: /vault-use-cases.html
-          - title: Vault Write Capabilities
-            url: /vault-write-capabilities.html
-          - title: Vault Write Plugin
-            url: /vault-write-plugin.html
-          - title: Vault Write Use Cases
-            url: /vault-write-use-cases.html
-          - title: Vault And CyberArk Primer
-            url: /vault-cyberark-primer.html
+          - title: Vault Lookup Reference
+            url: /reference/lookups/vault.html
+          - title: Vault Write Module Reference
+            url: /reference/modules/vault_write.html
 
   - title: Kerberos And Certificates
     summary: Keytabs, rotation, certificates, and TLS secret rendering.
@@ -122,10 +78,6 @@ groups:
             url: /tutorials/service-onboarding-with-principal-keytab-cert.html
           - title: Kerberos Keytab Boundary
             url: /explanation/kerberos-keytab-boundary.html
-          - title: Keytab Lookup Reference
-            url: /reference/lookups/keytab.html
-          - title: Keytab Manage Module Reference
-            url: /reference/modules/keytab_manage.html
       - title: Certificates
         items:
           - title: Request An IdM Certificate
@@ -134,43 +86,21 @@ groups:
             url: /how-to/render-kubernetes-tls-from-idm-cert.html
           - title: Certificate Boundary
             url: /explanation/certificate-boundary.html
+      - title: Reference
+        items:
+          - title: Keytab Lookup Reference
+            url: /reference/lookups/keytab.html
+          - title: Keytab Manage Module Reference
+            url: /reference/modules/keytab_manage.html
           - title: Certificate Lookup Reference
             url: /reference/lookups/cert.html
           - title: Certificate Request Module Reference
             url: /reference/modules/cert_request.html
-      - title: Legacy Keytab And Certificate Pages
-        items:
-          - title: Keytab Capabilities
-            url: /keytab-capabilities.html
-          - title: Keytab Delivery To Workloads
-            url: /keytab-delivery-to-workloads.html
-          - title: Keytab Manage Module
-            url: /keytab-manage-module.html
-          - title: Keytab Plugin
-            url: /keytab-plugin.html
-          - title: Keytab Rotation Candidate Report
-            url: /keytab-rotation-candidate-report.html
-          - title: Rotation Capabilities
-            url: /rotation-capabilities.html
-          - title: Rotation Use Cases
-            url: /rotation-use-cases.html
-          - title: Keytab Use Cases
-            url: /keytab-use-cases.html
-          - title: Kubernetes TLS From IdM Cert
-            url: /kubernetes-tls-from-idm-cert.html
-          - title: Certificate Capabilities
-            url: /cert-capabilities.html
-          - title: Certificate Plugin
-            url: /cert-plugin.html
-          - title: Certificate Request Module
-            url: /cert-request-module.html
-          - title: Certificate Use Cases
-            url: /cert-use-cases.html
 
   - title: Access Policy
     summary: HBAC, sudo, SELinux maps, OTP, and temporary access.
     sections:
-      - title: Policy Inspection
+      - title: Inspect And Gate
         items:
           - title: Test HBAC Access
             url: /how-to/test-hbac-access.html
@@ -178,8 +108,6 @@ groups:
             url: /how-to/inspect-sudo-policy.html
           - title: Inspect SELinux Map Scope
             url: /how-to/inspect-selinux-map-scope.html
-          - title: Issue OTP Or Host Enrollment Password
-            url: /how-to/issue-otp-or-host-enrollment-password.html
       - title: Temporary Access
         items:
           - title: Open Temporary Access Window
@@ -188,13 +116,7 @@ groups:
             url: /tutorials/temporary-access-window.html
           - title: Temporary Access Boundary
             url: /explanation/temporary-access-boundary.html
-          - title: User Lease Module Reference
-            url: /reference/modules/user_lease.html
-          - title: Temporary Access Role Reference
-            url: /reference/roles/temporary_access.html
-          - title: Temporary Access Window Role
-            url: /temporary-access-window-role.html
-      - title: Lookup References
+      - title: Reference
         items:
           - title: HBAC Rule Lookup
             url: /reference/lookups/hbacrule.html
@@ -204,176 +126,70 @@ groups:
             url: /reference/lookups/selinuxmap.html
           - title: OTP Lookup
             url: /reference/lookups/otp.html
-      - title: Legacy Access Pages
-        items:
-          - title: Ephemeral Access Capabilities
-            url: /ephemeral-access-capabilities.html
-          - title: HBAC Rule Capabilities
-            url: /hbacrule-capabilities.html
-          - title: HBAC Rule Plugin
-            url: /hbacrule-plugin.html
-          - title: HBAC Rule Use Cases
-            url: /hbacrule-use-cases.html
-          - title: OTP Capabilities
-            url: /otp-capabilities.html
-          - title: OTP Plugin
-            url: /otp-plugin.html
-          - title: OTP Use Cases
-            url: /otp-use-cases.html
-          - title: SELinux Map Capabilities
-            url: /selinuxmap-capabilities.html
-          - title: SELinux Map Plugin
-            url: /selinuxmap-plugin.html
-          - title: SELinux Map Use Cases
-            url: /selinuxmap-use-cases.html
-          - title: Sudo Capabilities
-            url: /sudo-capabilities.html
-          - title: Sudo Plugin
-            url: /sudo-plugin.html
-          - title: Sudo Use Cases
-            url: /sudo-use-cases.html
-          - title: User Lease Capabilities
-            url: /user-lease-capabilities.html
-          - title: User Lease Plugin
-            url: /user-lease-plugin.html
-          - title: User Lease RBAC Setup
-            url: /user-lease-rbac-setup.html
-          - title: User Lease Use Cases
-            url: /user-lease-use-cases.html
-          - title: User Lease Validation Walkthrough
-            url: /user-lease-validation-walkthrough.html
+          - title: User Lease Module Reference
+            url: /reference/modules/user_lease.html
+          - title: Temporary Access Role Reference
+            url: /reference/roles/temporary_access.html
 
   - title: DNS And Enrollment
-    summary: DNS state, host enrollment, and IdM lookup surfaces.
+    summary: DNS state and host enrollment.
     items:
       - title: Inspect DNS State
         url: /how-to/inspect-dns-state.html
       - title: DNS Lookup Reference
         url: /reference/lookups/dns.html
-      - title: DNS Capabilities
-        url: /dns-capabilities.html
-      - title: DNS Plugin
-        url: /dns-plugin.html
-      - title: DNS Use Cases
-        url: /dns-use-cases.html
+      - title: Issue OTP Or Enrollment Password
+        url: /how-to/issue-otp-or-host-enrollment-password.html
 
   - title: OpenShift And Workloads
-    summary: OpenShift identity evidence, workload secrets, and adjacent platforms.
-    sections:
-      - title: Identity And Workloads
-        items:
-          - title: Render OpenShift Identity Evidence
-            url: /how-to/render-openshift-identity-evidence.html
-          - title: OpenShift Identity And Workload Model
-            url: /explanation/openshift-identity-and-workload-model.html
-          - title: OpenShift Identity Role Reference
-            url: /reference/roles/openshift_identity.html
-      - title: Legacy OpenShift Pages
-        items:
-          - title: OpenShift Breakglass Validation
-            url: /openshift-breakglass-validation.html
-          - title: OpenShift Developer Use Cases
-            url: /openshift-developer-use-cases.html
-          - title: OpenShift Identity Validation Walkthrough
-            url: /openshift-identity-validation-walkthrough.html
-          - title: OpenShift Keycloak IdM Reference
-            url: /openshift-keycloak-idm-reference.html
-          - title: OpenShift LDAP Fallback
-            url: /openshift-ldap-fallback.html
-          - title: OpenShift Operator Use Cases
-            url: /openshift-operator-use-cases.html
-          - title: OpenShift Primer
-            url: /openshift-primer.html
-          - title: OpenShift Quay Use Cases
-            url: /openshift-quay-use-cases.html
-          - title: OpenShift RHACM Use Cases
-            url: /openshift-rhacm-use-cases.html
-          - title: OpenShift RHACS Use Cases
-            url: /openshift-rhacs-use-cases.html
-          - title: OpenShift RHOSO Use Cases
-            url: /openshift-rhoso-use-cases.html
-          - title: OpenShift RHOSO Operator Use Cases
-            url: /openshift-rhoso-operator-use-cases.html
-          - title: OpenShift RHOSO Tenant Use Cases
-            url: /openshift-rhoso-tenant-use-cases.html
+    summary: OpenShift identity evidence and workload material.
+    items:
+      - title: Render OpenShift Identity Evidence
+        url: /how-to/render-openshift-identity-evidence.html
+      - title: OpenShift Identity And Workload Model
+        url: /explanation/openshift-identity-and-workload-model.html
+      - title: OpenShift Identity Role Reference
+        url: /reference/roles/openshift_identity.html
+      - title: Workload Secret Role Reference
+        url: /reference/roles/workload_secret_delivery.html
 
   - title: AAP And Execution
     summary: Execution environments, Controller workflows, and AAP evidence.
-    sections:
-      - title: Build And Operate
-        items:
-          - title: Build Disconnected AAP EE
-            url: /how-to/build-disconnected-aap-ee.html
-          - title: AAP Execution Environment Tutorial
-            url: /tutorials/build-aap-execution-environment.html
-          - title: AAP Execution Model
-            url: /explanation/aap-execution-model.html
-          - title: Execution Environment Reference
-            url: /reference/execution-environment/eigenstate-idm.html
-          - title: AAP Execution Environment Role Reference
-            url: /reference/roles/aap_execution_environment.html
-      - title: Legacy AAP Pages
-        items:
-          - title: AAP EE Disconnected Build
-            url: /aap-ee-disconnected-build.html
-          - title: AAP EE Quickstart
-            url: /aap-ee-quickstart.html
-          - title: AAP EE Troubleshooting
-            url: /aap-ee-troubleshooting.html
-          - title: AAP EE Validation Walkthrough
-            url: /aap-ee-validation-walkthrough.html
-          - title: AAP IdM Workflow Roles
-            url: /aap-idm-workflow-roles.html
-          - title: AAP IdM Workflow Validation Walkthrough
-            url: /aap-idm-workflow-validation-walkthrough.html
-          - title: AAP Integration
-            url: /aap-integration.html
+    items:
+      - title: Build Disconnected AAP EE
+        url: /how-to/build-disconnected-aap-ee.html
+      - title: AAP Execution Environment Tutorial
+        url: /tutorials/build-aap-execution-environment.html
+      - title: AAP Execution Model
+        url: /explanation/aap-execution-model.html
+      - title: Execution Environment Reference
+        url: /reference/execution-environment/eigenstate-idm.html
+      - title: AAP Execution Environment Role Reference
+        url: /reference/roles/aap_execution_environment.html
 
   - title: Evidence And Reports
     summary: Read-only reporting, schemas, and operational evidence.
-    sections:
-      - title: Generate Evidence
-        items:
-          - title: Generate Operational Evidence
-            url: /how-to/generate-operational-evidence.html
-          - title: Readiness Report Tutorial
-            url: /tutorials/readiness-report.html
-          - title: Evidence And Reporting Model
-            url: /explanation/evidence-and-reporting-model.html
-      - title: Reference And Legacy Reports
-        items:
-          - title: Reports Role Reference
-            url: /reference/roles/reports.html
-          - title: Report Schemas Reference
-            url: /reference/report-schemas.html
-          - title: Readiness Report Schema
-            url: /readiness-report-schema.html
-          - title: Certificate Inventory Report
-            url: /certificate-inventory-report.html
-          - title: Certificate Expiry Report Role
-            url: /cert-expiry-report-role.html
-          - title: Policy Drift Report
-            url: /policy-drift-report.html
-          - title: Reporting Overview
-            url: /reporting-overview.html
-          - title: Temporary Access Report
-            url: /temporary-access-report.html
+    items:
+      - title: Generate Operational Evidence
+        url: /how-to/generate-operational-evidence.html
+      - title: Readiness Report Tutorial
+        url: /tutorials/readiness-report.html
+      - title: Evidence And Reporting Model
+        url: /explanation/evidence-and-reporting-model.html
+      - title: Reports Role Reference
+        url: /reference/roles/reports.html
+      - title: Report Schemas Reference
+        url: /reference/report-schemas.html
 
   - title: Reference Library
     summary: Exact plugin, module, role, playbook, schema, and platform facts.
-    sections:
-      - title: Indexes
-        items:
-          - title: Reference Index
-            url: /reference/
-          - title: Return Shapes
-            url: /reference/return-shapes.html
-          - title: Playbook Reference
-            url: /reference/playbooks.html
-          - title: Support Matrix
-            url: /reference/support-matrix.html
-          - title: Release Process
-            url: /reference/release-process.html
+    items:
+      - title: Reference Index
+        url: /reference/
+      - title: Return Shapes
+        url: /reference/return-shapes.html
+      - title: Playbook Reference
+        url: /reference/playbooks.html
 
   - title: Concepts And Boundaries
     summary: The why behind authority, workflow, evidence, and risk.
@@ -389,31 +205,21 @@ groups:
       - title: Security Threat Model
         url: /explanation/security-threat-model.html
 
-  - title: Release And Validation
-    summary: Compatibility, release gates, migration, and validation records.
+  - title: Release And Maintenance
+    summary: Support facts, release gates, and maintenance guidance.
     items:
-      - title: Support Matrix
-        url: /support-matrix.html
-      - title: Compatibility Policy
-        url: /compatibility-policy.html
-      - title: Release Process
-        url: /release-process.html
-      - title: Test Strategy
-        url: /test-strategy.html
-      - title: Mutation Surface Migration
-        url: /mutation-surface-migration.html
       - title: Migrate Side-Effecting Lookups
         url: /how-to/migrate-side-effecting-lookups.html
-      - title: Rewrite Audit
-        url: /rewrite-audit.html
-      - title: Rewrite Validation
-        url: /rewrite-validation.html
+      - title: Test Strategy
+        url: /reference/test-strategy.html
+      - title: Support Matrix
+        url: /reference/support-matrix.html
+      - title: Release Process
+        url: /reference/release-process.html
 
   - title: Project
     summary: Source and package destinations.
     items:
-      - title: Docs README
-        url: /README.html
       - title: GitHub
         url: https://github.com/gprocunier/eigenstate-ipa
       - title: Ansible Galaxy

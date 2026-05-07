@@ -13,8 +13,6 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -68,7 +66,7 @@ The play receives base64 keytab content without rotating principal keys or print
 
 ## Related Reference
 
-- [/reference/lookups/keytab.html](/reference/lookups/keytab.html)
-- [/explanation/kerberos-keytab-boundary.html](/explanation/kerberos-keytab-boundary.html)
+- [/reference/lookups/keytab.html](../reference/lookups/keytab.html)
+- [/explanation/kerberos-keytab-boundary.html](../explanation/kerberos-keytab-boundary.html)
 
 {% endraw %}

@@ -65,9 +65,9 @@ if requires_ansible != ">=2.15.0":
     )
 
 docs = {
-    "docs/support-matrix.md",
-    "docs/test-strategy.md",
-    "docs/release-process.md",
+    "docs/reference/support-matrix.md",
+    "docs/reference/test-strategy.md",
+    "docs/reference/release-process.md",
 }
 missing = [path for path in docs if not (project_root / path).is_file()]
 if missing:

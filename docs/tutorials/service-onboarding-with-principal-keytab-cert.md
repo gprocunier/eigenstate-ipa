@@ -12,8 +12,6 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-source_material:
-  - ../rewrite-audit.md
 last_verified: 2026-05-07
 ---
 {% raw %}
@@ -70,6 +68,6 @@ service_keytab_b64: redacted
 
 ## Next Page
 
-Continue with [/how-to/request-idm-certificate.html](/how-to/request-idm-certificate.html).
+Continue with [/how-to/request-idm-certificate.html](../how-to/request-idm-certificate.html).
 
 {% endraw %}
