@@ -1,7 +1,10 @@
 ---
 use-idm-as-live-inventory:
   heading: Example Inventory Source
-  intro: This inventory source reads host and policy state from IdM, composes the Ansible connection address from the IdM FQDN, and creates reviewable groups from IdM attributes.
+  intro: >-
+    This inventory source reads host and policy state from IdM, composes the
+    Ansible connection address from the IdM FQDN, and creates reviewable groups
+    from IdM attributes.
   files:
     - name: inventory.eigenstate_ipa.yml
       code: |
@@ -46,7 +49,9 @@ use-idm-as-live-inventory:
 
 query-principal-state:
   heading: Example Principal Preflight
-  intro: This playbook checks that the service principal exists and already has key material before a workflow retrieves a keytab or requests a certificate.
+  intro: >-
+    This playbook checks that the service principal exists and already has key
+    material before a workflow retrieves a keytab or requests a certificate.
   files:
     - name: preflight-principal.yml
       code: |
@@ -81,7 +86,9 @@ query-principal-state:
 
 retrieve-idm-vault-secret:
   heading: Example Secret Retrieval
-  intro: This playbook retrieves a shared IdM vault value into memory, keeps task output redacted, and uses the value without writing it to disk.
+  intro: >-
+    This playbook retrieves a shared IdM vault value into memory, keeps task
+    output redacted, and uses the value without writing it to disk.
   files:
     - name: retrieve-vault-secret.yml
       code: |
@@ -112,7 +119,9 @@ retrieve-idm-vault-secret:
 
 manage-idm-vault-lifecycle:
   heading: Example Vault Lifecycle Playbook
-  intro: This playbook creates a shared vault if needed, archives a new value, and keeps secret-bearing tasks redacted.
+  intro: >-
+    This playbook creates a shared vault if needed, archives a new value, and
+    keeps secret-bearing tasks redacted.
   files:
     - name: manage-vault.yml
       code: |
@@ -149,7 +158,9 @@ manage-idm-vault-lifecycle:
 
 retrieve-keytab:
   heading: Example Keytab Retrieval
-  intro: This playbook retrieves an existing keytab without rotating the principal and writes it with restrictive file permissions.
+  intro: >-
+    This playbook retrieves an existing keytab without rotating the principal
+    and writes it with restrictive file permissions.
   files:
     - name: retrieve-keytab.yml
       code: |
@@ -176,7 +187,9 @@ retrieve-keytab:
 
 rotate-keytab-explicitly:
   heading: Example Explicit Rotation
-  intro: This playbook rotates a keytab only after both the module state and the confirmation guard make the destructive operation explicit.
+  intro: >-
+    This playbook rotates a keytab only after both the module state and the
+    confirmation guard make the destructive operation explicit.
   files:
     - name: rotate-keytab.yml
       code: |
@@ -210,7 +223,9 @@ rotate-keytab-explicitly:
 
 request-idm-certificate:
   heading: Example Certificate Request
-  intro: This playbook sends an existing CSR to IdM and writes only the issued certificate; private key generation stays outside the module.
+  intro: >-
+    This playbook sends an existing CSR to IdM and writes only the issued
+    certificate; private key generation stays outside the module.
   files:
     - name: request-certificate.yml
       code: |
@@ -234,7 +249,9 @@ request-idm-certificate:
 
 issue-otp-or-host-enrollment-password:
   heading: Example Host Enrollment Password
-  intro: This playbook generates a host enrollment password, redacts it, and passes it directly to the enrollment role.
+  intro: >-
+    This playbook generates a host enrollment password, redacts it, and passes
+    it directly to the enrollment role.
   files:
     - name: enroll-host.yml
       code: |
@@ -266,7 +283,9 @@ issue-otp-or-host-enrollment-password:
 
 inspect-dns-state:
   heading: Example DNS Inspection
-  intro: This playbook reads IdM DNS records and fails early when the expected address is not present.
+  intro: >-
+    This playbook reads IdM DNS records and fails early when the expected
+    address is not present.
   files:
     - name: inspect-dns.yml
       code: |
@@ -327,7 +346,9 @@ test-hbac-access:
 
 inspect-sudo-policy:
   heading: Example Sudo Policy Check
-  intro: This playbook reads a sudo rule and asserts that the command expected by the deployment is represented in IdM.
+  intro: >-
+    This playbook reads a sudo rule and asserts that the command expected by the
+    deployment is represented in IdM.
   files:
     - name: inspect-sudo.yml
       code: |
@@ -355,7 +376,9 @@ inspect-sudo-policy:
 
 inspect-selinux-map-scope:
   heading: Example SELinux Map Check
-  intro: This playbook confirms that a named SELinux user map exists, is enabled, and is scoped through the expected HBAC rule.
+  intro: >-
+    This playbook confirms that a named SELinux user map exists, is enabled, and
+    is scoped through the expected HBAC rule.
   files:
     - name: inspect-selinux-map.yml
       code: |
@@ -384,7 +407,9 @@ inspect-selinux-map-scope:
 
 open-temporary-access-window:
   heading: Example Temporary Access Window
-  intro: This playbook opens a two-hour access window only after HBAC preflight checks pass, then renders a metadata-only report.
+  intro: >-
+    This playbook opens a two-hour access window only after HBAC preflight
+    checks pass, then renders a metadata-only report.
   files:
     - name: temporary-access-window.yml
       code: |
@@ -411,7 +436,9 @@ open-temporary-access-window:
 
 render-kubernetes-secret-from-idm-vault:
   heading: Example Review Manifest
-  intro: This playbook retrieves vault material and renders a redacted Kubernetes Secret review manifest by default.
+  intro: >-
+    This playbook retrieves vault material and renders a redacted Kubernetes
+    Secret review manifest by default.
   files:
     - name: render-vault-secret.yml
       code: |
@@ -438,7 +465,9 @@ render-kubernetes-secret-from-idm-vault:
 
 render-kubernetes-tls-from-idm-cert:
   heading: Example TLS Secret Rendering
-  intro: This playbook renders a redacted TLS Secret manifest from certificate material that was already issued and reviewed.
+  intro: >-
+    This playbook renders a redacted TLS Secret manifest from certificate
+    material that was already issued and reviewed.
   files:
     - name: render-tls-secret.yml
       code: |
@@ -463,7 +492,9 @@ render-kubernetes-tls-from-idm-cert:
 
 render-keytab-secret:
   heading: Example Keytab Secret Rendering
-  intro: This playbook renders a redacted Kubernetes Secret manifest for an already retrieved keytab.
+  intro: >-
+    This playbook renders a redacted Kubernetes Secret manifest for an already
+    retrieved keytab.
   files:
     - name: render-keytab-secret.yml
       code: |
@@ -477,7 +508,8 @@ render-keytab-secret:
                 eigenstate_keytab_secret_name: app-http-keytab
                 eigenstate_keytab_secret_namespace: payments
                 eigenstate_keytab_secret_principal: HTTP/app01.example.com@EXAMPLE.COM
-                eigenstate_keytab_secret_keytab_b64: "{{ lookup('file', 'artifacts/http.keytab.b64') }}"
+                eigenstate_keytab_secret_keytab_b64: >-
+                  {{ lookup('file', 'artifacts/http.keytab.b64') }}
                 eigenstate_keytab_secret_output_dir: ./artifacts
                 eigenstate_keytab_secret_render_only: true
                 eigenstate_keytab_secret_apply: false
@@ -488,7 +520,9 @@ render-keytab-secret:
 
 render-openshift-identity-evidence:
   heading: Example OpenShift Identity Evidence
-  intro: This playbook renders OAuth/OIDC configuration and a readiness report from local evidence; it does not contact the cluster.
+  intro: >-
+    This playbook renders OAuth/OIDC configuration and a readiness report from
+    local evidence; it does not contact the cluster.
   files:
     - name: render-openshift-identity.yml
       code: |
@@ -516,7 +550,9 @@ render-openshift-identity-evidence:
 
 build-disconnected-aap-ee:
   heading: Example Execution Environment Build
-  intro: This playbook renders and builds an execution environment that contains the collection and the IdM client dependencies needed by AAP jobs.
+  intro: >-
+    This playbook renders and builds an execution environment that contains the
+    collection and the IdM client dependencies needed by AAP jobs.
   files:
     - name: build-eigenstate-idm-ee.yml
       code: |
@@ -534,14 +570,16 @@ build-disconnected-aap-ee:
                 eigenstate_ee_register_controller: false
                 eigenstate_ee_output_dir: ./build/eigenstate-idm-ee
                 eigenstate_ee_image: localhost/eigenstate-idm-ee:dev
-                eigenstate_ee_base_image: registry.redhat.io/ansible-automation-platform-26/ee-minimal-rhel9:latest
+                eigenstate_ee_base_image: registry.example.com/aap/ee-minimal-rhel9:latest
                 eigenstate_ee_collection_version: ">=1.16.0"
   run: |
     ansible-playbook build-eigenstate-idm-ee.yml
 
 generate-operational-evidence:
   heading: Example Evidence Report
-  intro: This playbook renders a deterministic readiness report from explicit check records supplied by inventory, surveys, or an earlier discovery job.
+  intro: >-
+    This playbook renders a deterministic readiness report from explicit check
+    records supplied by inventory, surveys, or an earlier discovery job.
   files:
     - name: readiness-report.yml
       code: |
@@ -572,14 +610,19 @@ generate-operational-evidence:
 
 migrate-side-effecting-lookups:
   heading: Example Migration
-  intro: This example moves a keytab rotation out of a lookup and into an explicit module task with a visible rotation guard.
+  intro: >-
+    This example moves a keytab rotation out of a lookup and into an explicit
+    module task with a visible rotation guard.
   files:
     - name: before.yml
       code: |
         ---
         - name: Old pattern hides rotation inside a lookup expression
           ansible.builtin.copy:
-            content: "{{ lookup('eigenstate.ipa.keytab', principal, retrieve_mode='generate') | b64decode }}"
+            content: >-
+              {{ lookup('eigenstate.ipa.keytab',
+                        principal,
+                        retrieve_mode='generate') | b64decode }}
             dest: /etc/httpd/conf/httpd.keytab
           no_log: true
     - name: after.yml
@@ -598,7 +641,9 @@ migrate-side-effecting-lookups:
 
 first-idm-inventory:
   heading: Example Tutorial Files
-  intro: Start with a narrow inventory source, inspect the graph, then use the generated group in a simple playbook.
+  intro: >-
+    Start with a narrow inventory source, inspect the graph, then use the
+    generated group in a simple playbook.
   files:
     - name: inventory.eigenstate_ipa.yml
       code: |
@@ -632,7 +677,9 @@ first-idm-inventory:
 
 first-vault-retrieval:
   heading: Example Tutorial Playbook
-  intro: Retrieve one shared vault value, keep it redacted, and prove the workflow without printing the secret.
+  intro: >-
+    Retrieve one shared vault value, keep it redacted, and prove the workflow
+    without printing the secret.
   files:
     - name: first-vault-retrieval.yml
       code: |
@@ -659,7 +706,9 @@ first-vault-retrieval:
 
 build-aap-execution-environment:
   heading: Example Tutorial Playbook
-  intro: Render the execution environment context first, then build and smoke-test it when the rendered files look correct.
+  intro: >-
+    Render the execution environment context first, then build and smoke-test it
+    when the rendered files look correct.
   files:
     - name: build-ee.yml
       code: |
@@ -681,7 +730,9 @@ build-aap-execution-environment:
 
 service-onboarding-with-principal-keytab-cert:
   heading: Example Onboarding Playbook
-  intro: This sequence preflights the principal, retrieves the keytab, and requests the certificate without mixing the private key into IdM.
+  intro: >-
+    This sequence preflights the principal, retrieves the keytab, and requests
+    the certificate without mixing the private key into IdM.
   files:
     - name: onboard-service.yml
       code: |
@@ -728,7 +779,9 @@ service-onboarding-with-principal-keytab-cert:
 
 render-workload-secret:
   heading: Example Tutorial Playbook
-  intro: Render a review manifest first, inspect it, and only enable payload or apply behavior in a separate approved step.
+  intro: >-
+    Render a review manifest first, inspect it, and only enable payload or apply
+    behavior in a separate approved step.
   files:
     - name: render-workload-secret.yml
       code: |
@@ -754,7 +807,9 @@ render-workload-secret:
 
 temporary-access-window:
   heading: Example Tutorial Playbook
-  intro: Open a short access window, then run the same playbook with `expire` to close it immediately when work is done.
+  intro: >-
+    Open a short access window, then run the same playbook with `expire` to
+    close it immediately when work is done.
   files:
     - name: temporary-access.yml
       code: |
@@ -782,7 +837,9 @@ temporary-access-window:
 
 readiness-report:
   heading: Example Tutorial Playbook
-  intro: Build a small readiness report from explicit facts so the output is deterministic and reviewable.
+  intro: >-
+    Build a small readiness report from explicit facts so the output is
+    deterministic and reviewable.
   files:
     - name: readiness-report.yml
       code: |
