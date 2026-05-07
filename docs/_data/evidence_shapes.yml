@@ -1,3 +1,4 @@
+---
 ansible-doc:
   label: ansible-doc output
   statement: Plugin or module documentation generated from source documentation blocks.
@@ -12,7 +13,9 @@ review-manifest:
   statement: A rendered Kubernetes or OpenShift manifest with payload values omitted or redacted.
 payload-manifest:
   label: Payload manifest
-  statement: An opt-in payload-bearing artifact that must use restrictive handling and must not be copied into docs.
+  statement: >-
+    An opt-in payload-bearing artifact that must use restrictive handling and
+    must not be copied into docs.
 json-report:
   label: JSON report
   statement: Machine-readable evidence emitted by a report role or playbook.
@@ -24,4 +27,6 @@ markdown-report:
   statement: Human-readable evidence emitted by a report role or playbook.
 architecture-boundary:
   label: Architecture boundary
-  statement: A documented responsibility split between IdM, Ansible, AAP, cluster runtimes, certificate authorities, Kerberos tooling, and reports.
+  statement: >-
+    A documented responsibility split between IdM, Ansible, AAP, cluster
+    runtimes, certificate authorities, Kerberos tooling, and reports.

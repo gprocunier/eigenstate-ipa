@@ -1,3 +1,4 @@
+---
 read-only:
   label: Read-only
   statement: Reads authoritative state and does not write remote state or payload artifacts.

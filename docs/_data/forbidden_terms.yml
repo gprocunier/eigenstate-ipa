@@ -1,3 +1,4 @@
+---
 # Public documentation language controls.
 #
 # The checker treats block terms as failures in public docs. Review terms are
