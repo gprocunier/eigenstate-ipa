@@ -41,28 +41,19 @@ A safe service onboarding sequence that checks principal state before handling k
 3. Submit a CSR for certificate issuance.
 4. Record safe metadata from the result.
 
-```yaml
-- name: Check service principal
-  ansible.builtin.set_fact:
-    service_principal: "{{ lookup('eigenstate.ipa.principal', 'HTTP/app.example.com', principal_type='service', result_format='record') }}"
-
-- name: Retrieve existing keytab
-  ansible.builtin.set_fact:
-    service_keytab_b64: "{{ lookup('eigenstate.ipa.keytab', 'HTTP/app.example.com', operation='retrieve') }}"
-  no_log: true
-```
+Create `onboard-service.yml` from the example below. Keep the keytab task
+redacted and use a CSR generated outside the playbook.
 
 {% endraw %}
 {% include task_example.html id="service-onboarding-with-principal-keytab-cert" %}
 {% raw %}
 
-## Expected Output
+## Expected Result
 
-```text
-service_principal.exists: true
-service_principal.principal_type: service
-service_keytab_b64: redacted
-```
+The play should stop at the principal preflight if IdM is missing the service
+principal. When the preflight passes, the keytab retrieval task remains redacted
+and the certificate task writes only the issued certificate, not private-key
+material.
 
 ## What You Learned
 

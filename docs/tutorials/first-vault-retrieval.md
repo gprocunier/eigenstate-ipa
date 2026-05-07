@@ -30,7 +30,7 @@ A task that retrieves one lab vault value without printing it.
 
 ## Lab Assumptions
 
-- The vault is named `sample-api-token`.
+- The vault is named `app-bootstrap`.
 - The value is fake lab data.
 - Every payload-bearing task uses `no_log: true`.
 
@@ -40,29 +40,18 @@ A task that retrieves one lab vault value without printing it.
 2. Retrieve the value into a fact with `no_log: true`.
 3. Use only a redacted confirmation in output.
 
-```yaml
-- name: Retrieve sample vault value
-  ansible.builtin.set_fact:
-    sample_token: "{{ lookup('eigenstate.ipa.vault', 'sample-api-token', scope='shared') }}"
-  no_log: true
-
-- name: Confirm retrieval without printing payload
-  ansible.builtin.debug:
-    msg: "sample-api-token retrieved and redacted"
-```
+Create `first-vault-retrieval.yml` from the example below and keep the
+payload-bearing retrieval task redacted.
 
 {% endraw %}
 {% include task_example.html id="first-vault-retrieval" %}
 {% raw %}
 
-## Expected Output
+## Expected Result
 
-```text
-TASK [Confirm retrieval without printing payload]
-ok: [localhost] => {
-  "msg": "sample-api-token retrieved and redacted"
-}
-```
+The visible output should confirm that the play reached the final reporting task
+without printing the vault payload. Secret-bearing retrieval remains hidden by
+`no_log: true`, so do not expect the vault value to appear in stdout.
 
 ## What You Learned
 

@@ -42,23 +42,19 @@ A redacted review manifest from IdM-sourced material.
 4. Defer payload rendering and cluster apply until controls are reviewed.
 
 ```bash
-ansible-playbook playbooks/render-kubernetes-secret-from-idm-vault.yml
+ansible-playbook render-workload-secret.yml
 ```
 
 {% endraw %}
 {% include task_example.html id="render-workload-secret" %}
 {% raw %}
 
-## Expected Output
+## Expected Result
 
-```text
-apiVersion: v1
-kind: Secret
-metadata:
-  name: app-secret
-data:
-  password: REDACTED
-```
+The role should write a review manifest under `./artifacts` and omit or redact
+payload values. Keep `eigenstate_k8s_secret_write_payload_manifest: false`
+while learning the workflow so the tutorial does not create a secret-bearing
+artifact.
 
 ## What You Learned
 

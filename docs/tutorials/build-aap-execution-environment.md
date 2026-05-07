@@ -42,24 +42,19 @@ A rendered EE build context and a smoke-tested image tag for IdM-backed automati
 4. Register in Controller only after the smoke output is acceptable.
 
 ```bash
-ansible-playbook playbooks/aap-ee-render.yml
-ansible-playbook playbooks/aap-ee-build.yml
-ansible-playbook playbooks/aap-ee-smoke.yml
+ansible-playbook build-ee.yml
 ```
 
 {% endraw %}
 {% include task_example.html id="build-aap-execution-environment" %}
 {% raw %}
 
-## Expected Output
+## Expected Result
 
-```text
-TASK [Smoke test IdM client tools]
-ok: [localhost] => {
-  "changed": false,
-  "eigenstate_ipa_runtime": "available"
-}
-```
+The run should render the execution-environment build context, build the image,
+and complete the smoke step for `localhost`. Capture the output from your own
+`ansible-playbook build-ee.yml` run because builder and container-runtime
+messages vary by platform and registry configuration.
 
 ## What You Learned
 

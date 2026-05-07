@@ -20,7 +20,7 @@ last_verified: 2026-05-07
 
 ## What You Will Build
 
-A minimal inventory source and two inspection commands that show IdM-backed hosts and hostvars.
+A minimal inventory source and a playbook that targets hosts selected from live IdM policy state.
 
 ## What You Need Before Starting
 
@@ -31,19 +31,22 @@ A minimal inventory source and two inspection commands that show IdM-backed host
 ## Lab Assumptions
 
 - Use a lab IdM realm, not production first.
-- The example host `client01.example.com` is enrolled in IdM.
+- The example hosts `app01.example.com` and `app02.example.com` are enrolled in IdM.
+- The HBAC rule `allow-ssh-app` contains the hosts you want to target.
 - The inventory source does not store a credential value in Git.
 
 ## Step-By-Step Path
 
-1. Create `inventory.eigenstate_ipa.yml` with the IdM inventory plugin and lab connection values.
-2. Run `ansible-inventory --graph` to see IdM-backed groups.
-3. Run `ansible-inventory --host client01.example.com` to inspect hostvars.
-4. Compare the output to the host record in IdM.
+1. Run `kinit automation` or use an equivalent Kerberos credential for the IdM account.
+2. Create `inventory.eigenstate_ipa.yml` with the IdM inventory plugin and lab connection values.
+3. Run `ansible-inventory --graph` to see the IdM-backed group.
+4. Run `list-hosts.yml` against that generated group.
+5. Compare the output to the host records and HBAC rule in IdM.
 
 ```bash
+kinit automation
 ansible-inventory -i inventory.eigenstate_ipa.yml --graph
-ansible-inventory -i inventory.eigenstate_ipa.yml --host client01.example.com
+ansible-playbook -i inventory.eigenstate_ipa.yml list-hosts.yml
 ```
 
 {% endraw %}
@@ -52,15 +55,30 @@ ansible-inventory -i inventory.eigenstate_ipa.yml --host client01.example.com
 
 ## Expected Output
 
+This output shape was captured from a live IdM inventory run and sanitized.
+Hostnames and the policy name are examples, but the group structure and debug
+messages match the playbook above.
+
 ```text
 @all:
-  |--@idm_hosts:
-  |  |--client01.example.com
+  |--@ungrouped:
+  |--@allow_ssh_app:
+  |  |--app01.example.com
+  |  |--app02.example.com
 
-{
-  "ipa_host_fqdn": "client01.example.com",
-  "ipa_host_exists": true
+PLAY [Show hosts discovered from live IdM inventory] ***************************
+
+TASK [Confirm the host came from live IdM inventory] ***************************
+ok: [app01.example.com] => {
+    "msg": "app01.example.com resolves to app01.example.com"
 }
+ok: [app02.example.com] => {
+    "msg": "app02.example.com resolves to app02.example.com"
+}
+
+PLAY RECAP *********************************************************************
+app01.example.com : ok=1    changed=0    unreachable=0    failed=0    skipped=0
+app02.example.com : ok=1    changed=0    unreachable=0    failed=0    skipped=0
 ```
 
 ## What You Learned

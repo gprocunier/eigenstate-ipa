@@ -42,23 +42,19 @@ JSON, YAML, or Markdown readiness evidence from explicit inputs.
 4. Use findings to decide a separate remediation workflow.
 
 ```bash
-ansible-playbook playbooks/report-idm-readiness.yml
+ansible-playbook readiness-report.yml
 ```
 
 {% endraw %}
 {% include task_example.html id="readiness-report" %}
 {% raw %}
 
-## Expected Output
+## Expected Result
 
-```text
-{
-  "status": "review",
-  "idm_reachable": true,
-  "inventory_records": 3,
-  "remediation_applied": false
-}
-```
+The role should write the readiness report artifacts under the configured output
+directory. Review the generated report files from your run rather than
+comparing against a static JSON fixture, because the check records are supplied
+by your inventory, surveys, or earlier discovery jobs.
 
 ## What You Learned
 

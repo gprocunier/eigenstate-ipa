@@ -42,21 +42,19 @@ A lab-only temporary access window and a report showing the boundary.
 4. Run a fresh authentication check after expiry.
 
 ```bash
-ansible-playbook playbooks/temporary-access-window.yml -e user=lab-temp-user -e lease_seconds=900
-ansible-playbook playbooks/report-temporary-access.yml
+ansible-playbook temporary-access.yml
 ```
 
 {% endraw %}
 {% include task_example.html id="temporary-access-window" %}
 {% raw %}
 
-## Expected Output
+## Expected Result
 
-```text
-temporary_access_state: open
-principal_expiration_after: 2026-05-07T15:15:00Z
-post_expiry_fresh_auth: denied
-```
+The role should open the temporary access window and write metadata-only report
+artifacts under `./artifacts`. Expiration timestamps depend on when the play
+runs, so verify the generated report from your own run instead of comparing
+against a fixed timestamp.
 
 ## What You Learned
 

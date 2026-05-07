@@ -642,30 +642,47 @@ migrate-side-effecting-lookups:
 first-idm-inventory:
   heading: Example Tutorial Files
   intro: >-
-    Start with a narrow inventory source, inspect the graph, then use the
+    Start with a narrow inventory source, inspect the graph, then target the
     generated group in a simple playbook.
   files:
     - name: inventory.eigenstate_ipa.yml
       code: |
         ---
         plugin: eigenstate.ipa.idm
+
+        # This must be the IdM API endpoint reachable from the control node or
+        # execution environment.
         server: idm-01.example.com
+
+        # Kerberos keeps the inventory file free of password material. Run
+        # kinit before using this tutorial, or provide kerberos_keytab for a
+        # non-interactive execution environment.
+        ipaadmin_principal: automation
         use_kerberos: true
-        kerberos_keytab: /runner/env/ipa/automation.keytab
         verify: /etc/ipa/ca.crt
+
+        # Keep the first inventory sync narrow. This example uses an HBAC rule
+        # as the source of target scope because the same policy can govern SSH
+        # access and automation placement.
         sources:
           - hosts
-          - hostgroups
-        hostgroup_filter:
-          - linux-app
+          - hbacrules
+        hbacrule_filter:
+          - allow-ssh-app
+
+        # Dropping the prefix makes the generated group name match the policy
+        # name after Ansible-safe normalization: allow-ssh-app -> allow_ssh_app.
+        hbacrule_prefix: ""
         host_filter_from_groups: true
+
+        # The playbook below connects to the FQDN returned by IdM.
         compose:
           ansible_host: idm_fqdn
     - name: list-hosts.yml
       code: |
         ---
-        - name: Show hosts discovered from IdM
-          hosts: linux_app
+        - name: Show hosts discovered from live IdM inventory
+          hosts: allow_ssh_app
           gather_facts: false
           tasks:
             - name: Confirm the host came from live IdM inventory
