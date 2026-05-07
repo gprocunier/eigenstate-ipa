@@ -7,22 +7,62 @@
     <p class="context-copy">Learn, do, look up exact facts, or understand boundaries without mixing those jobs on one page.</p>
   </section>
 
-  {% for group in site.data.nav.groups %}
-    <section class="context-block">
-      <h2>{{ group.title }}</h2>
-      <ul class="path-list">
+  <section class="docs-map">
+    <h2>Documentation</h2>
+    <nav aria-label="Documentation sections">
+      {% for group in site.data.nav.groups %}
+        {% assign group_current = false %}
         {% for item in group.items %}
-          {% assign item_url = item.url | relative_url %}
-          <li>
-            <a href="{{ item_url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>
-              <strong>{{ item.title }}</strong>
-              {% if item.summary %}<span>{{ item.summary }}</span>{% endif %}
-            </a>
-          </li>
+          {% if page.url == item.url %}
+            {% assign group_current = true %}
+          {% endif %}
         {% endfor %}
-      </ul>
-    </section>
-  {% endfor %}
+        {% for section in group.sections %}
+          {% for item in section.items %}
+            {% if page.url == item.url %}
+              {% assign group_current = true %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+
+        <details class="docs-map__group"{% if group_current %} open{% endif %}>
+          <summary>
+            <span>{{ group.title }}</span>
+            {% if group.summary %}<small>{{ group.summary }}</small>{% endif %}
+          </summary>
+
+          {% if group.items %}
+            <ol class="docs-map__links">
+              {% for item in group.items %}
+                <li>
+                  <a href="{% if item.url contains '://' %}{{ item.url }}{% else %}{{ item.url | relative_url }}{% endif %}"{% if page.url == item.url %} class="is-current" aria-current="page"{% endif %}>
+                    <strong>{{ item.title }}</strong>
+                    {% if item.summary %}<span>{{ item.summary }}</span>{% endif %}
+                  </a>
+                </li>
+              {% endfor %}
+            </ol>
+          {% endif %}
+
+          {% for section in group.sections %}
+            <section class="docs-map__section" aria-label="{{ section.title }}">
+              <h3>{{ section.title }}</h3>
+              <ol class="docs-map__links">
+                {% for item in section.items %}
+                  <li>
+                    <a href="{% if item.url contains '://' %}{{ item.url }}{% else %}{{ item.url | relative_url }}{% endif %}"{% if page.url == item.url %} class="is-current" aria-current="page"{% endif %}>
+                      <strong>{{ item.title }}</strong>
+                      {% if item.summary %}<span>{{ item.summary }}</span>{% endif %}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ol>
+            </section>
+          {% endfor %}
+        </details>
+      {% endfor %}
+    </nav>
+  </section>
 
   <section class="toc-block" data-toc-root=".markdown-body" data-toc-levels="h2,h3">
     <h2>On This Page</h2>
