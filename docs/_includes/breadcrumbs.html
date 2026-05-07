@@ -1,0 +1,22 @@
+{% assign path_parts = page.path | split: '/' %}
+<nav class="page-breadcrumbs" aria-label="Breadcrumb">
+  <a href="{{ '/' | relative_url }}">Docs</a>
+  {% if page.path == 'index.md' %}
+    <span>/</span>
+    <span aria-current="page">Home</span>
+  {% elsif page.path == 'start.md' %}
+    <span>/</span>
+    <span aria-current="page">Start Here</span>
+  {% else %}
+    {% assign top_level = path_parts[0] %}
+    {% if top_level == 'tutorials' or top_level == 'how-to' or top_level == 'reference' or top_level == 'explanation' %}
+      <span>/</span>
+      <a href="{{ '/' | append: top_level | append: '/' | relative_url }}">{{ top_level | replace: '-', ' ' | capitalize }}</a>
+    {% else %}
+      <span>/</span>
+      <a href="{{ '/documentation-map.html' | relative_url }}">Legacy Docs</a>
+    {% endif %}
+    <span>/</span>
+    <span aria-current="page">{{ page.title | default: page.name }}</span>
+  {% endif %}
+</nav>

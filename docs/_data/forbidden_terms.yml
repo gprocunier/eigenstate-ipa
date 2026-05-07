@@ -1,0 +1,28 @@
+# Public documentation language controls.
+#
+# The checker treats block terms as failures in public docs. Review terms are
+# advisory prompts for human review when they appear outside precise technical
+# context.
+block:
+  - seller
+  - sellers
+  - presales
+  - pre-sales
+  - sales motion
+  - sales motions
+  - seller demo
+  - real password
+  - real token
+review:
+  - golden path
+  - secure by default
+  - prove
+  - enforce
+  - compliance
+  - control
+  - safe
+filename_block:
+  - phase
+  - golden_path
+  - golden-path
+  - demo

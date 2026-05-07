@@ -1,62 +1,27 @@
 ---
 layout: default
 title: Release Process
-description: >-
-  Release engineering process for version hygiene, CI gates, artifact checks,
-  GitHub releases, and Ansible Galaxy publication.
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Release Process
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-Current release: `1.16.0`
+<a href="/reference/release-process.html"><kbd>Open the new page</kbd></a>
 
-The release process is designed around a clean deployment path. Temporary
-migration helpers, lab-only assumptions, or rerun-only fixes should be removed
-or clearly documented before a tag is cut.
+Canonical target: [/reference/release-process.html](/reference/release-process.html)
 
-## Version Hygiene
-
-Update all public version references before tagging:
-
-- `galaxy.yml`
-- `CITATION.cff`
-- `CHANGELOG.md`
-- `README.md`
-- `docs/index.md`
-- `docs/documentation-map.md`
-- `docs/support-matrix.md`
-- `docs/test-strategy.md`
-- `docs/release-process.md`
-- `llms.txt`
-- `roles/aap_execution_environment/defaults/main.yml`
-- `roles/aap_execution_environment/README.md`
-
-## Required Checks
-
-Before pushing a release tag:
-
-1. Run the standard validation script.
-2. Confirm documentation language hygiene passes.
-3. Confirm the execution-environment scaffold renders.
-4. Build the collection artifact locally.
-5. Install the built artifact into a clean collection path and run `ansible-doc`
-   against representative plugin families.
-6. Validate the feature set in the on-prem lab when the release changes live
-   IdM behavior or operational workflows.
-
-## Tag And Release
-
-Tags use the form `vX.Y.Z`. The GitHub release workflow blocks if the tag does
-not match the collection version in `galaxy.yml`. The workflow publishes the
-collection tarball and a `SHA256SUMS` file to the GitHub release.
-
-## Galaxy Publication
-
-After the release artifact has passed the local and CI gates, publish the same
-version to Ansible Galaxy. Then verify a clean install by installing
-`eigenstate.ipa:<version>` into a temporary collection path and running
-`ansible-doc` against representative inventory, lookup, and module plugins.
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

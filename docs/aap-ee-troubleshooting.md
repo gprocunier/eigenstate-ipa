@@ -1,87 +1,27 @@
 ---
 layout: default
-title: AAP EE Troubleshooting
-description: >-
-  Troubleshooting notes for the eigenstate.ipa IdM execution environment.
+title: Aap Ee Troubleshooting
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# AAP EE Troubleshooting
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-## `ipa-getkeytab` Missing
+<a href="/how-to/build-disconnected-aap-ee.html"><kbd>Open the new page</kbd></a>
 
-Install the package that provides `ipa-getkeytab`. On RHEL-based EEs, start
-with `ipa-client` in `bindep.txt`, rebuild the image, and rerun the smoke
-playbook.
+Canonical target: [/how-to/build-disconnected-aap-ee.html](/how-to/build-disconnected-aap-ee.html)
 
-## `ipalib` Import Fails
-
-Make sure `python3-ipalib` and `python3-ipaclient` are available from the RPM
-repositories used during the build. Prefer RPMs over PyPI packages for the
-default AAP-supported image path.
-
-## `kinit` Missing
-
-Add `krb5-workstation` to `bindep.txt` and rebuild. The collection expects
-Kerberos tooling in the EE for keytab-backed and password-backed ticket
-acquisition.
-
-## CA File Missing In `/etc/ipa/ca.crt`
-
-Mount the IdM CA certificate into the job runtime or bake the trusted CA into a
-site-specific image. The default scaffold creates `/etc/ipa` with group-writable
-permissions for AAP runtime mounts; it does not include site CA material.
-
-## `KRB5CCNAME` Or Credential Cache Issues
-
-Only set `KRB5CCNAME` when the workflow intentionally manages a custom cache.
-If jobs reuse a cache path, clear it at job start or use a job-unique location.
-Prefer keytab-backed authentication for repeatable Controller runs.
-
-## Clock Skew
-
-Kerberos is sensitive to time. Verify that Controller nodes, execution nodes,
-IdM servers, and managed hosts use reliable time synchronization.
-
-## DNS Or Realm Discovery Failure
-
-Check that the EE can resolve IdM hosts and realm discovery records from the
-execution node network. A working image cannot compensate for missing DNS,
-blocked IdM APIs, or incorrect realm names.
-
-## Registry Pull Denied
-
-Confirm the image was pushed to the registry used by Controller and that the
-execution node has a valid pull credential. The role does not manage registry
-login by design.
-
-## Collection Not Found In EE
-
-Run:
-
-```bash
-ansible-playbook playbooks/aap-ee-smoke.yml \
-  -e eigenstate_ee_image=registry.example.com/automation/eigenstate-idm-ee:dev
-```
-
-If `ansible-doc` cannot find `eigenstate.ipa`, inspect the rendered
-`requirements.yml`, the automation hub source, and any private hub token
-configuration used at build time.
-
-## `ansible-doc eigenstate.ipa.*` Fails
-
-Use the exact plugin type:
-
-```bash
-ansible-doc -t inventory eigenstate.ipa.idm
-ansible-doc -t lookup eigenstate.ipa.vault
-ansible-doc -t lookup eigenstate.ipa.keytab
-ansible-doc -t module eigenstate.ipa.vault_write
-ansible-doc -t module eigenstate.ipa.user_lease
-```
-
-If type-specific lookup fails, rebuild the image and verify the collection
-version in the rendered `requirements.yml`.
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

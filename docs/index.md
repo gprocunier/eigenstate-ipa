@@ -1,165 +1,152 @@
 ---
 layout: default
 title: eigenstate.ipa
-description: >-
-  Ansible collection for Red Hat IdM / FreeIPA covering inventory, vault
-  retrieval and lifecycle, Kerberos principal and keytab workflows,
-  certificates, OTP, delegated user-lease control, DNS, sudo, SELinux maps, and HBAC policy validation.
+diataxis: orientation
+diataxis_type: orientation
+audience: IdM, Ansible, AAP, OpenShift, and platform operators
+outcome: Understand what the collection does, where to start, and which boundary each workflow uses.
+authority_boundary:
+  - idm
+  - collection
+  - ansible
+  - aap
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: rewritten
+source_material:
+  - ../README.md
+  - ../llms.txt
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# eigenstate.ipa
 
-`eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It treats
-IdM as a live automation system of record for inventory, secrets, Kerberos
-material, certificates, DNS, and access policy instead of forcing those
-surfaces into separate inventory files, ad hoc shell scripts, or external
-stores.
+`eigenstate.ipa` is an Ansible collection for Red Hat IdM / FreeIPA. It lets
+automation consume live identity, host, vault, Kerberos, certificate, DNS,
+sudo, SELinux map, and HBAC state without copying that state into a parallel
+inventory or side-channel secret workflow.
 
-Current release: `1.16.0`
+The collection's center of gravity is simple: IdM already records useful
+automation state, and Ansible should read or change that state through explicit,
+reviewable surfaces.
+
+## The 2-Minute Version
+
+| Question | Answer |
+| --- | --- |
+| What problem does this solve? | IdM-managed hosts, policy, vaults, principals, keytabs, certificates, and access checks can become live Ansible inputs instead of duplicated static files. |
+| What makes it credible? | The repository contains one inventory plugin, nine lookup plugins, four modules, execution-environment assets, roles, wrapper playbooks, and tests. |
+| What should change by default? | Read-only lookups and render-first roles should produce evidence before any workflow mutates IdM, writes key material, or applies cluster configuration. |
+| Where should I start? | Use [Start Here](/start.html) if you have a job to do, or [Reference](/reference/) if you already know the exact surface. |
 
 ## Start Here
 
-Pick the lane that matches the problem first, then branch into the deeper docs:
+| Need | First page |
+| --- | --- |
+| Learn the shape of the collection | [Tutorials](/tutorials/) |
+| Complete a production task | [How-to guides](/how-to/) |
+| Look up exact syntax or return data | [Reference](/reference/) |
+| Understand authority and safety boundaries | [Explanation](/explanation/) |
+| Find an old page during migration | [Legacy documentation map](/documentation-map.html) |
 
-<table>
-  <thead>
-    <tr>
-      <th>Problem</th>
-      <th>Start here</th>
-      <th>Why this page first</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Need reading order or the full doc map</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>DOCUMENTATION MAP</kbd></a></td>
-      <td>Routes by intent and keeps the three-page model visible.</td>
-    </tr>
-    <tr>
-      <td>Translating Vault or CyberArk expectations</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html"><kbd>VAULT/CYBERARK PRIMER</kbd></a></td>
-      <td>Explains the IdM-native boundary before you pick a workflow.</td>
-    </tr>
-    <tr>
-      <td>Mapping IdM workflows to OpenShift, RHOSO, RHACM, RHACS, or Quay</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html"><kbd>OPENSHIFT ECOSYSTEM PRIMER</kbd></a></td>
-      <td>Gives the platform-wide framing before the branch-specific pages.</td>
-    </tr>
-    <tr>
-      <td>Validating OpenShift identity through Keycloak and IdM</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html"><kbd>OPENSHIFT IDENTITY VALIDATION</kbd></a></td>
-      <td>Renders OIDC config examples and readiness reports without mutating a cluster.</td>
-    </tr>
-    <tr>
-      <td>Delivering IdM-backed workload secrets to Kubernetes or OpenShift</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html"><kbd>WORKLOAD SECRET DELIVERY CONTROLS</kbd></a></td>
-      <td>Starts with the cluster control boundary before rendering or applying payload manifests.</td>
-    </tr>
-    <tr>
-      <td>Producing safe operational evidence and drift reports</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html"><kbd>REPORTING OVERVIEW</kbd></a></td>
-      <td>Routes into read-only JSON, YAML, and Markdown reports for readiness, inventory, access, and drift.</td>
-    </tr>
-    <tr>
-      <td>Running Controller or execution-environment jobs</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html"><kbd>AAP EE QUICKSTART</kbd></a></td>
-      <td>Starts with the ready-to-build runtime before the broader Controller model.</td>
-    </tr>
-    <tr>
-      <td>Using packaged AAP workflow roles</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-roles.html"><kbd>AAP IDM WORKFLOW ROLES</kbd></a></td>
-      <td>Routes into the sealed artifact, temporary access, and cert reporting roles.</td>
-    </tr>
-    <tr>
-      <td>Managing static secrets or scheduled rotation</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/rotation-capabilities.html"><kbd>ROTATION CAPABILITIES</kbd></a></td>
-      <td>Separates scheduled lifecycle work from one-off lookups.</td>
-    </tr>
-    <tr>
-      <td>Opening or closing temporary access windows</td>
-      <td><a href="https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html"><kbd>EPHEMERAL ACCESS CAPABILITIES</kbd></a></td>
-      <td>Explains the lease-like boundary before you read the workflow pages.</td>
-    </tr>
-  </tbody>
-</table>
+## Problem
 
-## How The Docs Work
+Without a live IdM-backed path, operators usually end up with duplicated
+inventory, policy facts copied into variables, secret values moved through
+other stores, keytabs staged by hand, and certificate workflows split away from
+the automation job that needs the result.
 
-Every plugin area uses the same three-page shape:
+`eigenstate.ipa` does not make IdM a universal vault or PAM platform. It makes
+IdM state usable where IdM is already the right authority: enrolled hosts,
+groups, vaults, Kerberos principals, certificate requests, DNS, sudo, HBAC,
+SELinux maps, and temporary account expiry.
 
-- `plugin` pages for exact syntax, auth behavior, return data, and option details
-- `capabilities` pages for decision boundaries and operational fit
-- `use cases` pages for worked playbook patterns and cross-plugin flow
+## Architecture Mini-Map
 
-That split is intentional. The reference pages should stay precise. The
-capability pages should answer "is this the right boundary?" The use-case pages
-should show how the pieces combine without restating the full reference.
+<figure class="diagram-card diagram-card--focus">
+  <figcaption>
+    <strong>Authority Flow</strong>
+    <span>IdM owns identity and policy state. The collection reads, renders, validates, or mutates through explicit Ansible interfaces. AAP records job evidence. Runtime systems enforce only after their own controls apply.</span>
+  </figcaption>
+  <div class="stage-flow" role="img" aria-label="Authority flow from IdM to Ansible collection to AAP and runtime systems">
+    <ol class="stage-flow__stages">
+      <li class="stage-flow__stage">
+        <span class="stage-flow__number">1</span>
+        <h3>Authoritative state</h3>
+        <ol class="stage-flow__steps">
+          <li>IdM hosts, groups, vaults, principals, certificates, DNS, sudo, HBAC, and SELinux maps</li>
+          <li>Kerberos and IdM client tools provide authenticated access</li>
+        </ol>
+      </li>
+      <li class="stage-flow__stage">
+        <span class="stage-flow__number">2</span>
+        <h3>Collection surfaces</h3>
+        <ol class="stage-flow__steps">
+          <li>Inventory and lookups read state</li>
+          <li>Modules mutate only when called explicitly</li>
+          <li>Roles render or report reviewable artifacts</li>
+        </ol>
+      </li>
+      <li class="stage-flow__stage">
+        <span class="stage-flow__number">3</span>
+        <h3>Automation evidence</h3>
+        <ol class="stage-flow__steps">
+          <li>Ansible and AAP run jobs from the declared inputs</li>
+          <li>Reports, manifests, and job output show what was checked or produced</li>
+        </ol>
+      </li>
+      <li class="stage-flow__stage">
+        <span class="stage-flow__number">4</span>
+        <h3>Runtime enforcement</h3>
+        <ol class="stage-flow__steps">
+          <li>OpenShift, Kubernetes, Kerberos, CA, and IdM enforce through their own control planes</li>
+          <li>Reports remain evidence, not remediation</li>
+        </ol>
+      </li>
+    </ol>
+  </div>
+</figure>
 
-## High-Value Workflows
+## Proof Paths
 
-These are the combinations that matter most in practice and are worth reading
-as workflows rather than as isolated plugins.
-
-| Workflow | Main combination | Start here |
+| Proof path | Surfaces | Evidence |
 | --- | --- | --- |
-| Identity-driven targeting | `idm` inventory + host metadata + HBAC-backed grouping | [Inventory Use Cases](https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html) |
-| Service onboarding | `principal` pre-flight + `keytab` retrieval + optional `cert` issuance | [Principal Use Cases](https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html) |
-| Side-effecting keytab and cert operations | `keytab_manage` + `cert_request` | [Mutation Surface Migration](https://gprocunier.github.io/eigenstate-ipa/mutation-surface-migration.html) |
-| TLS bootstrap and renewal | `cert` + `vault_write` for private key archival + `vault` retrieval | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) |
-| Static secret lifecycle | `vault_write` mutation + `vault` retrieval + AAP scheduling | [Rotation Use Cases](https://gprocunier.github.io/eigenstate-ipa/rotation-use-cases.html) |
-| AAP runtime validation | EE scaffold + `aap_execution_environment` role + smoke checks | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) |
-| AAP packaged workflows | `sealed_artifact_delivery` + `temporary_access_window` + `cert_expiry_report` | [AAP IdM Workflow Roles](https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-roles.html) |
-| OpenShift identity validation | `openshift_idm_oidc_validation` + `keycloak_idm_federation_validation` + `openshift_breakglass_validation` | [OpenShift Identity Validation](https://gprocunier.github.io/eigenstate-ipa/openshift-identity-validation-walkthrough.html) |
-| Workload Secret delivery | `kubernetes_secret_from_idm_vault` + `kubernetes_tls_from_idm_cert` + `keytab_secret_render` | [Workload Secret Delivery Controls](https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html) |
-| Operational evidence reporting | `idm_readiness_report` + `certificate_inventory_report` + `keytab_rotation_candidates` + `temporary_access_report` + `policy_drift_report` | [Reporting Overview](https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html) |
-| Lease-like temporary access | `user_lease` for delegated temporary users or `principal` + `keytab` retirement for machine identity | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) |
-| Host enrollment | `otp` bootstrap + official IdM enrollment modules + `principal` verification | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) |
-| Policy validation before change | `hbacrule` + `selinuxmap` + `sudo` + optional `dns`/`principal` checks | [AAP Integration](https://gprocunier.github.io/eigenstate-ipa/aap-integration.html) |
-| Sealed artifact delivery | `cert` recipient + `vault_write` archive + `vault` retrieval | [Vault Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html) |
-| OpenShift platform workflows | Keycloak + IdM trust + AAP workflows for break-glass, guest enrollment, RHOSO operator paths, RHOSO tenant onboarding, RHACM remediation, RHACS response paths, Quay automation, and service onboarding | [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html) |
+| Live IdM inventory | `eigenstate.ipa.idm` | Inventory graph and hostvars derived from IdM. |
+| Vault retrieval | `eigenstate.ipa.vault` | Redacted task output or structured record returns. |
+| Explicit mutation | `vault_write`, `keytab_manage`, `cert_request`, `user_lease` | Changed state, check-mode predictions, or guarded module returns. |
+| AAP execution environment | `aap_execution_environment` role and `aap-ee-*` playbooks | Rendered EE context, build result, smoke output, optional Controller registration. |
+| OpenShift and workload delivery | OpenShift validation and workload Secret roles | Review manifests and readiness reports before cluster mutation. |
+| Operational reporting | Read-only report roles | JSON, YAML, and Markdown evidence artifacts. |
 
-## Plugin Families
+## What This Does Not Claim
 
-| Area | Reference | Capabilities | Use cases |
-| --- | --- | --- | --- |
-| Inventory | [Inventory Plugin](https://gprocunier.github.io/eigenstate-ipa/inventory-plugin.html) | [Inventory Capabilities](https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html) | [Inventory Use Cases](https://gprocunier.github.io/eigenstate-ipa/inventory-use-cases.html) |
-| Vault retrieval | [Vault Plugin](https://gprocunier.github.io/eigenstate-ipa/vault-plugin.html) | [Vault Capabilities](https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html) | [Vault Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-use-cases.html) |
-| Vault lifecycle | [Vault Write Module](https://gprocunier.github.io/eigenstate-ipa/vault-write-plugin.html) | [Vault Write Capabilities](https://gprocunier.github.io/eigenstate-ipa/vault-write-capabilities.html) | [Vault Write Use Cases](https://gprocunier.github.io/eigenstate-ipa/vault-write-use-cases.html) |
-| Principal state | [Principal Plugin](https://gprocunier.github.io/eigenstate-ipa/principal-plugin.html) | [Principal Capabilities](https://gprocunier.github.io/eigenstate-ipa/principal-capabilities.html) | [Principal Use Cases](https://gprocunier.github.io/eigenstate-ipa/principal-use-cases.html) |
-| Keytabs | [Keytab Plugin](https://gprocunier.github.io/eigenstate-ipa/keytab-plugin.html) | [Keytab Capabilities](https://gprocunier.github.io/eigenstate-ipa/keytab-capabilities.html) | [Keytab Use Cases](https://gprocunier.github.io/eigenstate-ipa/keytab-use-cases.html) |
-| Keytab management | [Keytab Manage Module](https://gprocunier.github.io/eigenstate-ipa/keytab-manage-module.html) | [Compatibility Policy](https://gprocunier.github.io/eigenstate-ipa/compatibility-policy.html) | [Mutation Surface Migration](https://gprocunier.github.io/eigenstate-ipa/mutation-surface-migration.html) |
-| User lease | [User Lease Module](https://gprocunier.github.io/eigenstate-ipa/user-lease-plugin.html) | [User Lease Capabilities](https://gprocunier.github.io/eigenstate-ipa/user-lease-capabilities.html) | [User Lease Use Cases](https://gprocunier.github.io/eigenstate-ipa/user-lease-use-cases.html) |
-| Certificates | [Cert Plugin](https://gprocunier.github.io/eigenstate-ipa/cert-plugin.html) | [Cert Capabilities](https://gprocunier.github.io/eigenstate-ipa/cert-capabilities.html) | [Cert Use Cases](https://gprocunier.github.io/eigenstate-ipa/cert-use-cases.html) |
-| Certificate request | [Cert Request Module](https://gprocunier.github.io/eigenstate-ipa/cert-request-module.html) | [Compatibility Policy](https://gprocunier.github.io/eigenstate-ipa/compatibility-policy.html) | [Mutation Surface Migration](https://gprocunier.github.io/eigenstate-ipa/mutation-surface-migration.html) |
-| OTP and enrollment | [OTP Plugin](https://gprocunier.github.io/eigenstate-ipa/otp-plugin.html) | [OTP Capabilities](https://gprocunier.github.io/eigenstate-ipa/otp-capabilities.html) | [OTP Use Cases](https://gprocunier.github.io/eigenstate-ipa/otp-use-cases.html) |
-| DNS state | [DNS Plugin](https://gprocunier.github.io/eigenstate-ipa/dns-plugin.html) | [DNS Capabilities](https://gprocunier.github.io/eigenstate-ipa/dns-capabilities.html) | [DNS Use Cases](https://gprocunier.github.io/eigenstate-ipa/dns-use-cases.html) |
-| SELinux maps | [SELinux Map Plugin](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-plugin.html) | [SELinux Map Capabilities](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-capabilities.html) | [SELinux Map Use Cases](https://gprocunier.github.io/eigenstate-ipa/selinuxmap-use-cases.html) |
-| Sudo policy | [Sudo Plugin](https://gprocunier.github.io/eigenstate-ipa/sudo-plugin.html) | [Sudo Capabilities](https://gprocunier.github.io/eigenstate-ipa/sudo-capabilities.html) | [Sudo Use Cases](https://gprocunier.github.io/eigenstate-ipa/sudo-use-cases.html) |
-| HBAC rules | [HBAC Rule Plugin](https://gprocunier.github.io/eigenstate-ipa/hbacrule-plugin.html) | [HBAC Rule Capabilities](https://gprocunier.github.io/eigenstate-ipa/hbacrule-capabilities.html) | [HBAC Rule Use Cases](https://gprocunier.github.io/eigenstate-ipa/hbacrule-use-cases.html) |
+- It is not a general-purpose enterprise vault, PAM suite, or dynamic secret
+  lease engine.
+- It does not make AAP the identity authority.
+- It does not make reports enforce remediation.
+- It does not apply Kubernetes or OpenShift configuration unless a role or
+  playbook is explicitly configured to do so.
+- It does not own private-key generation for certificate requests.
 
-## Collection-Wide Guides
+## How It Scales
 
-| Topic | Start here | Boundary |
-| --- | --- | --- |
-| Vault and CyberArk comparison | [IdM Vault Boundary](https://gprocunier.github.io/eigenstate-ipa/vault-cyberark-primer.html) | where IdM vault workflows fit and where broader secret-manager semantics still belong elsewhere |
-| Ansible Automation Platform | [AAP EE Quickstart](https://gprocunier.github.io/eigenstate-ipa/aap-ee-quickstart.html) | execution-environment dependencies, Controller registration, and job evidence |
-| Packaged AAP workflows | [AAP IdM Workflow Roles](https://gprocunier.github.io/eigenstate-ipa/aap-idm-workflow-roles.html) | sealed artifacts, temporary access windows, and certificate-expiry reporting |
-| OpenShift identity | [OpenShift Ecosystem Primer](https://gprocunier.github.io/eigenstate-ipa/openshift-primer.html) | IdM, Keycloak, OAuth, RBAC, and breakglass evidence before live enforcement |
-| Workload Secret delivery | [Workload Secret Delivery Controls](https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html) | cluster controls required before applying payload-bearing manifests |
-| Operational reports | [Reporting Overview](https://gprocunier.github.io/eigenstate-ipa/reporting-overview.html) | read-only evidence artifacts for readiness, inventory, rotation, access, and drift |
-| Temporary access | [Ephemeral Access Capabilities](https://gprocunier.github.io/eigenstate-ipa/ephemeral-access-capabilities.html) | IdM expiry attributes, delegated operators, and post-expiry validation |
-| Release engineering | [Support Matrix](https://gprocunier.github.io/eigenstate-ipa/support-matrix.html) | supported ansible-core, Python, IdM, execution-environment, test, and release boundaries |
+The collection scales by keeping authority boundaries narrow. Inventory stays
+live. Lookup plugins stay read-focused. Modules carry explicit mutation
+semantics. Roles render artifacts and reports with controlled inputs. AAP can
+schedule and record these workflows without becoming the source of identity
+truth.
 
-## Best Fit
+## Repository Layout
 
-This collection fits best when:
-
-- IdM or FreeIPA already exists and should remain the source of truth
-- Kerberos-authenticated controller-side automation is preferable to external token systems
-- the workflow is static-secret retrieval, keytabs, certs, DNS, identity-aware inventory, or access-policy validation
-- AAP is available for scheduling, approvals, credential injection, and repeatable execution environments
-
-For the repository overview and install path, return to
-<a href="https://github.com/gprocunier/eigenstate-ipa"><kbd>TOP README</kbd></a>.
-
-{% endraw %}
+| Path | Purpose |
+| --- | --- |
+| `plugins/inventory/idm.py` | Dynamic inventory from IdM host and policy state. |
+| `plugins/lookup/` | Read-oriented lookups for vaults, principals, keytabs, certificates, OTP, DNS, sudo, SELinux maps, and HBAC. |
+| `plugins/modules/` | Explicit write modules for vault lifecycle, keytab management, certificate requests, and user lease boundaries. |
+| `roles/` | AAP execution environment, OpenShift identity validation, workload Secret rendering, temporary access, and reports. |
+| `playbooks/` | Wrapper playbooks for common role workflows. |
+| `execution-environment/eigenstate-idm/` | Ready-to-build AAP execution environment scaffold. |
+| `tests/` | Unit, structure, argument-spec, secret-safety, and integration fixtures. |
+| `docs/` | Public documentation and rewrite governance. |

@@ -1,252 +1,36 @@
 # eigenstate.ipa
 
 `eigenstate.ipa` is an Ansible collection for Red Hat Identity Management
-(IdM / FreeIPA). It exposes one inventory plugin, nine lookup plugins,
-four modules, and AAP/OpenShift/Kubernetes validation and reporting roles for live inventory,
-vault-backed secret retrieval and storage,
-Kerberos principal state, Kerberos keytab delivery, IdM CA certificate
-automation, OTP workflows, SELinux user map inspection, HBAC rule inspection
-and access testing, DNS inspection, sudo object inspection, and delegated
-temporary user access leasing:
+(IdM / FreeIPA). It exposes live IdM-backed inventory, lookup, module, role,
+playbook, execution-environment, and reporting surfaces.
 
-- `eigenstate.ipa.idm`
-- `eigenstate.ipa.vault`
-- `eigenstate.ipa.vault_write`
-- `eigenstate.ipa.keytab_manage`
-- `eigenstate.ipa.cert_request`
-- `eigenstate.ipa.principal`
-- `eigenstate.ipa.keytab`
-- `eigenstate.ipa.cert`
-- `eigenstate.ipa.otp`
-- `eigenstate.ipa.selinuxmap`
-- `eigenstate.ipa.hbacrule`
-- `eigenstate.ipa.dns`
-- `eigenstate.ipa.sudo`
-- `eigenstate.ipa.user_lease`
+Use the public docs by documentation form:
 
-The collection treats IdM as both:
+- Home: [docs/index.md](docs/index.md)
+- Start routing: [docs/start.md](docs/start.md)
+- Tutorials: [docs/tutorials/index.md](docs/tutorials/index.md)
+- How-to guides: [docs/how-to/index.md](docs/how-to/index.md)
+- Reference: [docs/reference/index.md](docs/reference/index.md)
+- Explanation: [docs/explanation/index.md](docs/explanation/index.md)
 
-- a source of live infrastructure inventory
-- a source of identity, policy, and supporting automation state
+Best reference entry points:
 
-## What It Does
+- Inventory: [docs/reference/inventory/idm.md](docs/reference/inventory/idm.md)
+- Lookups: [docs/reference/lookups/vault.md](docs/reference/lookups/vault.md)
+- Modules: [docs/reference/modules/vault_write.md](docs/reference/modules/vault_write.md)
+- Roles: [docs/reference/roles/reports.md](docs/reference/roles/reports.md)
+- Playbooks: [docs/reference/playbooks.md](docs/reference/playbooks.md)
+- Authentication: [docs/reference/authentication.md](docs/reference/authentication.md)
+- Authority boundaries: [docs/explanation/authority-boundaries.md](docs/explanation/authority-boundaries.md)
 
-- builds dynamic inventory from IdM-managed hosts, hostgroups, netgroups, and
-  HBAC policy
-- retrieves secrets from IdM vaults through Kerberos-authenticated lookups
-- manages vault lifecycle with create, archive, modify, and delete operations
-- queries user, host, and service principal state before enrollment or secret issuance steps
-- retrieves Kerberos keytab files for service and host principals
-- requests, retrieves, and searches IdM CA certificates for host and service principals
-- issues OTP tokens for users and one-time enrollment passwords for IdM hosts
-- inspects SELinux user map state including linked HBAC rule names and direct member lists
-- inspects HBAC rule state and runs live access tests via the FreeIPA hbactest engine
-- inspects DNS zones and records through IdM DNS APIs
-- inspects sudo rules, commands, and command groups through IdM sudo APIs
-- manages temporary user access windows by setting or clearing IdM principal and password expiration attributes
-- supports user, service, and shared vault scopes
-- supports standard, symmetric, and asymmetric vault retrieval
-- supports metadata inspection, scoped search, and structured return shapes
-- supports text and binary payload handling for Ansible and AAP workflows
-- renders and validates OpenShift OIDC, Keycloak federation, and breakglass
-  readiness artifacts without mutating live clusters by default
-- renders review-first Kubernetes Secret manifests for IdM vault material,
-  certificate material, and keytab delivery without applying to clusters by default
-- renders read-only JSON, YAML, and Markdown evidence reports for readiness,
-  certificate inventory, keytab rotation candidates, temporary access, and
-  policy drift
+Public framing rules:
 
-## Best Entry Points
-
-- orientation: [README.md](README.md), [docs/index.md](docs/index.md), [docs/documentation-map.md](docs/documentation-map.md)
-- IdM vault boundary: [docs/vault-cyberark-primer.md](docs/vault-cyberark-primer.md), [docs/vault-plugin.md](docs/vault-plugin.md), [docs/vault-write-plugin.md](docs/vault-write-plugin.md)
-- AAP workflows: [docs/aap-ee-quickstart.md](docs/aap-ee-quickstart.md), [docs/aap-integration.md](docs/aap-integration.md), [docs/aap-idm-workflow-roles.md](docs/aap-idm-workflow-roles.md)
-- OpenShift and workload delivery: [docs/openshift-primer.md](docs/openshift-primer.md), [docs/openshift-identity-validation-walkthrough.md](docs/openshift-identity-validation-walkthrough.md), [docs/workload-secret-delivery-controls.md](docs/workload-secret-delivery-controls.md)
-- reporting and evidence: [docs/reporting-overview.md](docs/reporting-overview.md), [docs/readiness-report-schema.md](docs/readiness-report-schema.md), [docs/policy-drift-report.md](docs/policy-drift-report.md)
-- temporary access: [docs/ephemeral-access-capabilities.md](docs/ephemeral-access-capabilities.md), [docs/user-lease-plugin.md](docs/user-lease-plugin.md), [docs/user-lease-validation-walkthrough.md](docs/user-lease-validation-walkthrough.md)
-- compatibility and release gates: [docs/compatibility-policy.md](docs/compatibility-policy.md), [docs/support-matrix.md](docs/support-matrix.md), [docs/test-strategy.md](docs/test-strategy.md), [docs/release-process.md](docs/release-process.md)
-- plugin reference starts from [docs/documentation-map.md](docs/documentation-map.md) when an exact lookup, module, or inventory surface is needed.
-
-## Plugin Summary
-
-### `eigenstate.ipa.idm`
-
-- inventory plugin
-- queries IdM JSON-RPC APIs
-- builds live inventory for enrolled infrastructure
-- supports password auth and Kerberos keytab auth
-- can export curated IdM host attributes into hostvars
-
-### `eigenstate.ipa.vault`
-
-- lookup plugin
-- uses `ipalib` for vault transport and retrieval
-- supports `retrieve`, `show`, and `find`
-- supports `value`, `record`, `map`, and `map_record`
-- supports `encoding='utf-8'` and `encoding='base64'`
-- supports `decode_json` and `strip_trailing_newline` for retrieved UTF-8 text
-
-### `eigenstate.ipa.vault_write`
-
-- module
-- uses `ipalib` for vault lifecycle management
-- supports `state: present`, `state: absent`, and `state: archived`
-- creates standard, symmetric, and asymmetric vaults
-- standard vault archives are idempotent; symmetric and asymmetric archives are write-always
-- supports delta-only member management via `members` and `members_absent`
-- supports Ansible check mode
-
-### `eigenstate.ipa.keytab_manage`
-
-- module
-- retrieves existing Kerberos keytabs or rotates principal keys through `ipa-getkeytab`
-- requires `confirm_rotation: true` before key rotation
-- writes keytabs to an optional destination with mode, owner, and group controls
-- returns metadata by default and returns base64 keytab content only with `return_content: true`
-- supports Ansible check mode
-
-### `eigenstate.ipa.cert_request`
-
-- module
-- requests IdM CA certificates from inline CSR content or a CSR file
-- writes issued certificates to an optional destination with mode, owner, and group controls
-- returns safe certificate metadata by default
-- returns certificate content only with `return_content: true`
-- keeps private key handling outside the module
-
-### `eigenstate.ipa.principal`
-
-- lookup plugin
-- uses `ipalib` for Kerberos principal state queries
-- supports `show` and `find`
-- returns existence, key, lock, and last-auth state for user, host, and service principals
-- supports `record` and `map_record` result shaping
-
-### `eigenstate.ipa.keytab`
-
-- lookup plugin
-- uses `ipa-getkeytab` from the platform IPA client tooling for keytab retrieval
-- no `ipalib` dependency at retrieval time
-- supports `retrieve` mode (safe default, existing keys only) and `generate` mode (rotates principal keys; invalidates all existing keytabs)
-- supports per-principal encryption-type selection via `enctypes`
-- returns base64-encoded keytab content in `value`, `record`, or `map` format
-
-### `eigenstate.ipa.cert`
-
-- lookup plugin
-- uses `ipalib` for IdM CA request, retrieval, and search operations
-- supports `request`, `retrieve`, and `find`
-- accepts inline CSRs or controller-local CSR files
-- supports PEM and base64-encoded DER output
-- supports `value`, `record`, `map`, and `map_record` result shaping
-
-### `eigenstate.ipa.otp`
-
-- lookup plugin
-- uses `ipalib` for OTP token issue, lookup, and revoke operations
-- supports `totp`, `hotp`, and one-time host enrollment password generation
-- supports `add`, `find`, `show`, and `revoke`
-- returns OTP URIs, host enrollment passwords, or structured token metadata
-
-### `eigenstate.ipa.selinuxmap`
-
-- lookup plugin
-- uses `ipalib` for read-only SELinux user map state queries
-- supports `show` and `find`
-- returns map configuration, linked HBAC rule names, and direct member lists
-- supports `record` and `map_record` result shaping
-
-### `eigenstate.ipa.hbacrule`
-
-- lookup plugin
-- uses `ipalib` for read-only HBAC rule state queries and live access testing
-- supports `show`, `find`, and `test`
-- returns rule structure plus `hbactest` results for access verification
-- supports `record` and `map_record` result shaping for `show` and `find`
-
-### `eigenstate.ipa.dns`
-
-- lookup plugin
-- uses `ipalib` for read-only DNS zone and record inspection
-- supports `show` and `find`
-- covers forward records, reverse records, zone-apex entry checks, and zone searches
-- supports `record` and `map_record` result shaping
-
-### `eigenstate.ipa.sudo`
-
-- lookup plugin
-- uses `ipalib` for read-only sudo rule, command, and command group inspection
-- supports `show` and `find`
-- returns structured sudo objects for compliance, review, and automation pre-flight checks
-- supports `record` and `map_record` result shaping
-
-### `eigenstate.ipa.user_lease`
-
-- module
-- uses `ipalib` to set, clear, or immediately expire temporary user access windows
-- manages `krbPrincipalExpiration` and optional password-expiry controls for existing users
-- supports relative and absolute lease windows
-- supports delegated-RBAC use cases where non-admin automation is allowed to manage expiry attributes
-- supports Ansible check mode
-
-## Runtime Notes
-
-- target Ansible floor: `2.15.0`
-- RHEL 9 compatibility is intentional
-- vault lookup and vault write operations require `python3-ipalib` and `python3-ipaclient`
-- principal, cert, otp, selinuxmap, hbacrule, dns, and sudo lookups require `python3-ipalib` and `python3-ipaclient`
-- user_lease requires `python3-ipalib` and `python3-ipaclient`
-- keytab lookups require the platform package that provides `ipa-getkeytab` on the control node or execution environment
-- controller or execution-environment usage may also require Kerberos client tooling
-
-## Repository Layout
-
-- `plugins/inventory/idm.py` - dynamic inventory plugin
-- `plugins/lookup/vault.py` - vault lookup plugin
-- `plugins/modules/vault_write.py` - vault write module
-- `plugins/modules/keytab_manage.py` - keytab retrieval, deployment, and guarded rotation module
-- `plugins/modules/cert_request.py` - certificate request module
-- `plugins/lookup/principal.py` - Kerberos principal state lookup plugin
-- `plugins/lookup/keytab.py` - keytab lookup plugin
-- `plugins/lookup/cert.py` - IdM certificate lookup plugin
-- `plugins/lookup/otp.py` - OTP and host enrollment password lookup plugin
-- `plugins/lookup/selinuxmap.py` - SELinux user map lookup plugin
-- `plugins/lookup/hbacrule.py` - HBAC rule query and hbactest lookup plugin
-- `plugins/lookup/dns.py` - DNS lookup plugin
-- `plugins/lookup/sudo.py` - sudo object lookup plugin
-- `plugins/modules/user_lease.py` - temporary user access lease module
-- `plugins/module_utils/ipa_client.py` - shared Kerberos auth and `ipalib` connection layer for IPA operations
-- `docs/` - operator-facing documentation
-- `execution-environment/eigenstate-idm/` - ready-to-build AAP execution environment scaffold
-- `roles/aap_execution_environment/` - role to render, build, smoke-test, push, and optionally register the AAP EE
-- `roles/sealed_artifact_delivery/` - role to preflight, stage, hand off, clean up, and report sealed IdM vault artifacts
-- `roles/temporary_access_window/` - role to preflight and manage IdM temporary access windows through `user_lease`
-- `roles/cert_expiry_report/` - role to find IdM certificates and render JSON, Markdown, and CSV expiry reports
-- `roles/openshift_idm_oidc_validation/` - role to render OpenShift OAuth/OIDC examples and validate local IdM group evidence
-- `roles/keycloak_idm_federation_validation/` - role to validate Keycloak federation and OIDC claim evidence
-- `roles/openshift_breakglass_validation/` - role to validate OpenShift breakglass groups, controls, and RBAC evidence
-- `roles/kubernetes_secret_from_idm_vault/` - role to render review-first Kubernetes Secret manifests from IdM vault material
-- `roles/kubernetes_tls_from_idm_cert/` - role to render review-first Kubernetes TLS Secret manifests from certificate material
-- `roles/keytab_secret_render/` - role to render review-first Kubernetes Secret manifests for Kerberos keytab delivery
-- `roles/idm_readiness_report/` - role to render read-only IdM readiness evidence
-- `roles/certificate_inventory_report/` - role to render certificate inventory evidence without private keys
-- `roles/keytab_rotation_candidates/` - role to report rotation candidates without keytab bytes
-- `roles/temporary_access_report/` - role to report temporary access windows and controls
-- `roles/policy_drift_report/` - role to report expected and observed policy drift without remediation
-- `playbooks/aap-ee-*.yml` - wrapper playbooks for the AAP EE workflow
-- `playbooks/sealed-artifact-delivery.yml`, `playbooks/temporary-access-window.yml`, and `playbooks/cert-expiry-report.yml` - wrapper playbooks for AAP IdM workflow roles
-- `playbooks/render-openshift-oidc-config.yml`, `playbooks/validate-openshift-idm-groups.yml`, `playbooks/validate-keycloak-idm-claims.yml`, and `playbooks/validate-openshift-breakglass-path.yml` - wrapper playbooks for OpenShift identity validation
-- `playbooks/render-kubernetes-secret-from-idm-vault.yml`, `playbooks/render-kubernetes-tls-secret-from-idm-cert.yml`, and `playbooks/render-keytab-secret.yml` - wrapper playbooks for workload Secret delivery review
-- `playbooks/report-idm-readiness.yml`, `playbooks/report-certificate-inventory.yml`, `playbooks/report-keytab-rotation-candidates.yml`, `playbooks/report-temporary-access.yml`, and `playbooks/report-policy-drift.yml` - wrapper playbooks for reporting
-- `tests/` - unit coverage for inventory, vault, vault_write, keytab_manage, cert_request, principal, keytab, cert, otp, selinuxmap, hbacrule, dns, sudo, and user_lease
-- `scripts/validate-collection.sh` - repo validation path
-- `Makefile` - convenience wrapper for validation
-
-## Publication Notes
-
-- collection name: `eigenstate.ipa`
-- namespace: `eigenstate`
-- current version: `1.16.0`
-- author: Greg Procunier
-- license: GPL-3.0-or-later
-- repository: https://github.com/gprocunier/eigenstate-ipa
+- Treat Red Hat IdM, FreeIPA, Ansible Automation Platform, OpenShift,
+  Kubernetes, Kerberos, certificates, DNS, sudo, HBAC, SELinux maps, and vaults
+  as technical integration surfaces.
+- Do not claim that IdM replaces general-purpose vault, PAM, or dynamic
+  secret-lease systems.
+- Keep read-only, render-only, preflight, check-mode, and mutating workflows
+  separate.
+- Do not show real secrets, tokens, keytabs, private keys, or certificate
+  private-key material.

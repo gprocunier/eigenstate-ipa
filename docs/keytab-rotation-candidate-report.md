@@ -1,36 +1,27 @@
 ---
 layout: default
 title: Keytab Rotation Candidate Report
-description: Schema and workflow notes for keytab rotation candidate reporting.
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Keytab Rotation Candidate Report
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-Role: `eigenstate.ipa.keytab_rotation_candidates`
+<a href="/how-to/generate-operational-evidence.html"><kbd>Open the new page</kbd></a>
 
-Schema: `eigenstate.ipa/keytab_rotation_candidates/v1`
+Canonical target: [/how-to/generate-operational-evidence.html](/how-to/generate-operational-evidence.html)
 
-This report identifies principals that should be reviewed for keytab rotation.
-It does not retrieve, render, or rotate keytabs. Rotation remains a separate
-opt-in remediation workflow.
-
-## Required Record Fields
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `principal` | string | Host or service principal. |
-| `candidate` | boolean | Whether the principal is a rotation candidate. |
-| `remediation_workflow` | string | The separate workflow that would rotate keys. |
-
-Useful optional fields include `owner`, `location_hint`, `last_rotated_at`,
-`max_age_days`, and `reason`.
-
-Run:
-
-```bash
-ansible-playbook playbooks/report-keytab-rotation-candidates.yml
-```
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

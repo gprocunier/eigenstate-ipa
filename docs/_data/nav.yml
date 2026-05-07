@@ -1,0 +1,67 @@
+groups:
+  - title: Start Here
+    items:
+      - title: Home
+        url: /
+        summary: Project thesis, proof paths, and repository map.
+      - title: Start Here
+        url: /start.html
+        summary: Route by job and reader need.
+  - title: Tutorials
+    items:
+      - title: Tutorial Index
+        url: /tutorials/
+        summary: Safe learning paths.
+      - title: First IdM Inventory
+        url: /tutorials/first-idm-inventory.html
+        summary: Learn live inventory from IdM state.
+      - title: First Vault Retrieval
+        url: /tutorials/first-vault-retrieval.html
+        summary: Retrieve sample vault material safely.
+  - title: How-to
+    items:
+      - title: How-to Index
+        url: /how-to/
+        summary: Production task guides.
+      - title: Live IdM Inventory
+        url: /how-to/use-idm-as-live-inventory.html
+        summary: Target automation from IdM host and policy state.
+      - title: Vault Retrieval
+        url: /how-to/retrieve-idm-vault-secret.html
+        summary: Retrieve IdM vault material safely.
+      - title: Operational Evidence
+        url: /how-to/generate-operational-evidence.html
+        summary: Generate reports without remediation.
+  - title: Reference
+    items:
+      - title: Reference Index
+        url: /reference/
+        summary: Inventory, lookups, modules, roles, playbooks, schemas.
+      - title: Inventory Plugin
+        url: /reference/inventory/idm.html
+        summary: "`eigenstate.ipa.idm`."
+      - title: Lookup Plugins
+        url: /reference/lookups/vault.html
+        summary: Vault, principal, keytab, cert, OTP, DNS, sudo, HBAC.
+      - title: Modules
+        url: /reference/modules/vault_write.html
+        summary: Vault write, keytab manage, cert request, user lease.
+  - title: Explanation
+    items:
+      - title: Explanation Index
+        url: /explanation/
+        summary: Concepts and boundaries.
+      - title: Authority Boundaries
+        url: /explanation/authority-boundaries.html
+        summary: Which system owns which responsibility.
+      - title: IdM State Plane
+        url: /explanation/idm-as-automation-state-plane.html
+        summary: Why automation reads live IdM state.
+  - title: Project
+    items:
+      - title: Legacy Docs Map
+        url: /documentation-map.html
+        summary: Existing documentation map during migration.
+      - title: GitHub
+        url: https://github.com/gprocunier/eigenstate-ipa
+        summary: Source repository.

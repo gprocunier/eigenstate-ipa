@@ -1,43 +1,27 @@
 ---
 layout: default
 title: Readiness Report Schema
-description: Stable schema for the IdM readiness report role.
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Readiness Report Schema
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-Role: `eigenstate.ipa.idm_readiness_report`
+<a href="/reference/report-schemas.html"><kbd>Open the new page</kbd></a>
 
-Schema: `eigenstate.ipa/idm_readiness_report/v1`
+Canonical target: [/reference/report-schemas.html](/reference/report-schemas.html)
 
-The readiness report records checks that indicate whether IdM-backed automation
-has the prerequisites it needs.
-
-## Top-Level Fields
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `schema` | string | Stable schema identifier. |
-| `schema_version` | string | Schema version, currently `1.0`. |
-| `role` | string | Always `idm_readiness_report`. |
-| `generated_at_utc` | string | UTC timestamp supplied by the caller. |
-| `site` | string | Site or environment label. |
-| `context` | string | Human-readable report scope. |
-| `read_only` | boolean | Always `true`. |
-| `summary` | object | Counts by check state. |
-| `checks` | array | Readiness check records. |
-
-## Check Record
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `id` | string | Stable check identifier. |
-| `title` | string | Human-readable check name. |
-| `status` | string | `pass`, `warn`, `fail`, or `info`. |
-| `severity` | string | Local severity label. |
-| `evidence` | string | Safe evidence text. |
-| `recommendation` | string | Next action or maintenance note. |
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

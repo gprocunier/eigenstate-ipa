@@ -202,6 +202,7 @@ fi
 
 echo "==> Validating public documentation language"
 "${PROJECT_ROOT}/scripts/validate-doc-language.sh"
+"${PROJECT_ROOT}/scripts/check-docs-language.py"
 
 echo "==> Validating documentation examples"
 "${PROJECT_ROOT}/scripts/validate-doc-examples.sh"

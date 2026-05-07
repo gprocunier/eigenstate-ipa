@@ -1,36 +1,27 @@
 ---
 layout: default
 title: Policy Drift Report
-description: Schema and workflow notes for read-only policy drift reporting.
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Policy Drift Report
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-Role: `eigenstate.ipa.policy_drift_report`
+<a href="/how-to/generate-operational-evidence.html"><kbd>Open the new page</kbd></a>
 
-Schema: `eigenstate.ipa/policy_drift_report/v1`
+Canonical target: [/how-to/generate-operational-evidence.html](/how-to/generate-operational-evidence.html)
 
-This report compares expected and observed policy records from IdM, AAP, and
-OpenShift-adjacent contexts. It reports drift without changing policy.
-
-## Finding Fields
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `id` | string | Stable policy identifier. |
-| `kind` | string | Policy type, such as `hbacrule`, `sudo`, or `rbac`. |
-| `status` | string | `in_sync`, `drifted`, `missing`, `extra`, or `unknown`. |
-| `remediation_workflow` | string | Separate opt-in workflow that would make changes. |
-
-Useful optional fields include `severity`, `expected`, `observed`, and
-`recommendation`.
-
-Run:
-
-```bash
-ansible-playbook playbooks/report-policy-drift.yml
-```
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

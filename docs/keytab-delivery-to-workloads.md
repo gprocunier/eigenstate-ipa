@@ -1,77 +1,27 @@
 ---
 layout: default
 title: Keytab Delivery To Workloads
-description: >-
-  Render-first workflow for delivering Kerberos keytabs to Kubernetes and
-  OpenShift workloads through protected Secret manifests.
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Keytab Delivery To Workloads
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-`keytab_secret_render` prepares Kubernetes Secret manifests for Kerberos keytab
-delivery. It is intended for workloads that already have a clear Kerberos
-service principal boundary and a site-approved rotation plan.
+<a href="/how-to/render-keytab-secret.html"><kbd>Open the new page</kbd></a>
 
-Read the [Workload Secret Delivery Controls](https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html)
-before applying payload-bearing manifests to a cluster.
+Canonical target: [/how-to/render-keytab-secret.html](/how-to/render-keytab-secret.html)
 
-## Render A Review Manifest
-
-```bash
-ansible-playbook playbooks/render-keytab-secret.yml \
-  -e eigenstate_keytab_secret_name=app-keytab \
-  -e eigenstate_keytab_secret_namespace=payments \
-  -e eigenstate_keytab_secret_principal=HTTP/app.example.com@EXAMPLE.COM \
-  -e eigenstate_keytab_secret_output_dir=./artifacts/workload-keytab
-```
-
-The review manifest includes safe metadata and the keytab data key name, but it
-does not disclose the keytab bytes.
-
-## Payload Input
-
-Provide keytab bytes as base64:
-
-```yaml
-eigenstate_keytab_secret_key: service.keytab
-eigenstate_keytab_secret_keytab_b64: "{{ keytab_bytes_b64 }}"
-```
-
-The payload input is secret-bearing and hidden from task output.
-
-## Protected Payload Manifest
-
-To write the payload-bearing manifest:
-
-```yaml
-eigenstate_keytab_secret_write_payload_manifest: true
-```
-
-The file is written with mode `0600`. Treat it like the keytab itself.
-
-## Apply Path
-
-Cluster apply requires all of the following:
-
-```yaml
-eigenstate_keytab_secret_render_only: false
-eigenstate_keytab_secret_apply: true
-eigenstate_keytab_secret_kubeconfig: /secure/path/kubeconfig
-eigenstate_keytab_secret_context: workload-admin
-```
-
-Default CI never enables this path.
-
-## Rotation Notes
-
-A keytab mounted into a pod is not automatically retired when IdM material is
-rotated. A complete workflow should include:
-
-- creating or retrieving the new keytab
-- updating the Kubernetes Secret
-- restarting or reloading consuming workloads
-- retiring old Kerberos keys when the workload no longer needs them
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

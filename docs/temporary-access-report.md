@@ -1,35 +1,27 @@
 ---
 layout: default
 title: Temporary Access Report
-description: Schema and workflow notes for temporary access evidence reporting.
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Temporary Access Report
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-Role: `eigenstate.ipa.temporary_access_report`
+<a href="/how-to/generate-operational-evidence.html"><kbd>Open the new page</kbd></a>
 
-Schema: `eigenstate.ipa/temporary_access_report/v1`
+Canonical target: [/how-to/generate-operational-evidence.html](/how-to/generate-operational-evidence.html)
 
-This report records temporary access windows and associated controls. It is a
-read-only evidence artifact for active, expired, scheduled, or revoked access.
-
-## Required Record Fields
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `principal` | string | User, host, or service principal. |
-| `target` | string | Target system, group, service, or access boundary. |
-| `status` | string | `active`, `expired`, `scheduled`, `revoked`, or `unknown`. |
-
-Useful optional fields include `access_type`, `opened_at`, `expires_at`,
-`controls`, and `evidence`.
-
-Run:
-
-```bash
-ansible-playbook playbooks/report-temporary-access.yml
-```
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

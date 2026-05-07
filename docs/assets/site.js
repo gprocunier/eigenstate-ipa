@@ -1,4 +1,13 @@
-const siteBaseUrl = document.body?.dataset.baseurl || "";
+const configuredSiteBaseUrl = document.body?.dataset.baseurl || "";
+const inferredGitHubPagesBaseUrl = (() => {
+  if (!location.hostname.endsWith("github.io")) {
+    return "";
+  }
+
+  const firstPathSegment = location.pathname.split("/").filter(Boolean)[0];
+  return firstPathSegment ? `/${firstPathSegment}` : "";
+})();
+const siteBaseUrl = configuredSiteBaseUrl || inferredGitHubPagesBaseUrl;
 
 const withBaseUrl = (path) => {
   if (!siteBaseUrl) {

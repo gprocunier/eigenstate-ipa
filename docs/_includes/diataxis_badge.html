@@ -1,0 +1,49 @@
+{% assign page_type = page.diataxis_type | default: page.diataxis | default: page.doc_type %}
+{% if page_type %}
+  {% assign type_data = site.data.diataxis[page_type] %}
+  <div class="page-meta">
+    <p class="page-kind">{{ type_data.label | default: page_type }}</p>
+    {% if page.outcome %}
+      <p class="page-summary">{{ page.outcome }}</p>
+    {% elsif page.description %}
+      <p class="page-summary">{{ page.description }}</p>
+    {% elsif type_data.statement %}
+      <p class="page-summary">{{ type_data.statement }}</p>
+    {% endif %}
+    {% if page.workflow_boundary or page.authority_boundary or page.evidence_shape %}
+      <dl class="boundary-strip">
+        {% if page.workflow_boundary %}
+          {% assign workflow = site.data.workflow_boundaries[page.workflow_boundary] %}
+          <div>
+            <dt>Boundary</dt>
+            <dd>{{ workflow.label | default: page.workflow_boundary }}</dd>
+          </div>
+        {% endif %}
+        {% if page.authority_boundary %}
+          <div>
+            <dt>Authority</dt>
+            <dd>{{ page.authority_boundary | join: ', ' }}</dd>
+          </div>
+        {% endif %}
+        {% if page.evidence_shape %}
+          <div>
+            <dt>Evidence</dt>
+            <dd>{{ page.evidence_shape | join: ', ' }}</dd>
+          </div>
+        {% endif %}
+      </dl>
+    {% endif %}
+  </div>
+{% else %}
+  {% assign legacy_kind = "Guide" %}
+  {% if page.path contains 'index.md' %}{% assign legacy_kind = "Overview" %}{% endif %}
+  {% if page.path contains '-plugin.md' or page.path contains '-module.md' %}{% assign legacy_kind = "Reference" %}{% endif %}
+  {% if page.path contains '-capabilities.md' %}{% assign legacy_kind = "Capabilities" %}{% endif %}
+  {% if page.path contains '-use-cases.md' %}{% assign legacy_kind = "Use Cases" %}{% endif %}
+  {% unless page.path == 'index.md' %}
+    <div class="page-meta">
+      <p class="page-kind">{{ legacy_kind }}</p>
+      <p class="page-summary">Legacy page retained while the Diataxis rewrite is in progress.</p>
+    </div>
+  {% endunless %}
+{% endif %}

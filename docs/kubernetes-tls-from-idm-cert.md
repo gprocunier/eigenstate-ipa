@@ -1,68 +1,27 @@
 ---
 layout: default
-title: Kubernetes TLS From IdM Certificate
-description: >-
-  Render-first workflow for preparing Kubernetes TLS Secret manifests from
-  certificate material governed by an IdM-centered process.
+title: Kubernetes Tls From Idm Cert
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Kubernetes TLS From IdM Certificate
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-`kubernetes_tls_from_idm_cert` renders Kubernetes `kubernetes.io/tls` Secret
-manifests from certificate material that has been issued, reviewed, or tracked
-through an IdM-centered process.
+<a href="/how-to/render-kubernetes-tls-from-idm-cert.html"><kbd>Open the new page</kbd></a>
 
-Read the [Workload Secret Delivery Controls](https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html)
-before applying payload-bearing manifests to a cluster.
+Canonical target: [/how-to/render-kubernetes-tls-from-idm-cert.html](/how-to/render-kubernetes-tls-from-idm-cert.html)
 
-## Render A Review Manifest
-
-```bash
-ansible-playbook playbooks/render-kubernetes-tls-secret-from-idm-cert.yml \
-  -e eigenstate_k8s_tls_secret_name=app-tls \
-  -e eigenstate_k8s_tls_namespace=payments \
-  -e eigenstate_k8s_tls_output_dir=./artifacts/workload-tls
-```
-
-The default review manifest shows the Secret name, namespace, metadata, and TLS
-keys with values redacted.
-
-## Payload Inputs
-
-Payload-bearing values are secret-bearing and hidden from task output:
-
-```yaml
-eigenstate_k8s_tls_certificate: "{{ issued_certificate_pem }}"
-eigenstate_k8s_tls_private_key: "{{ private_key_pem }}"
-eigenstate_k8s_tls_ca_certificate: "{{ issuing_ca_pem }}"
-```
-
-The CA certificate is optional. The role writes `tls.crt` and `tls.key`, and
-adds `ca.crt` when a CA certificate is supplied.
-
-## Protected Payload Manifest
-
-To write the encoded TLS Secret manifest:
-
-```yaml
-eigenstate_k8s_tls_write_payload_manifest: true
-```
-
-The file is written with mode `0600` and should be handled as sensitive.
-
-## Apply Path
-
-Cluster apply requires all of the following:
-
-```yaml
-eigenstate_k8s_tls_render_only: false
-eigenstate_k8s_tls_apply: true
-eigenstate_k8s_tls_kubeconfig: /secure/path/kubeconfig
-eigenstate_k8s_tls_context: workload-admin
-```
-
-Default CI never enables this path.
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

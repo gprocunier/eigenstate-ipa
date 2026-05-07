@@ -1,0 +1,24 @@
+idm:
+  label: Identity Management
+  statement: IdM records principals, groups, hosts, vaults, certificates, DNS, sudo, HBAC, SELinux maps, and identity policy state.
+collection:
+  label: eigenstate.ipa collection
+  statement: The collection reads, renders, validates, or mutates IdM-backed state through explicit Ansible surfaces.
+ansible:
+  label: Ansible
+  statement: Ansible executes the workflow and handles local task state, variables, check mode, and result processing.
+aap:
+  label: Ansible Automation Platform
+  statement: AAP orchestrates jobs and records job evidence; it is not the identity authority.
+kerberos:
+  label: Kerberos client tooling
+  statement: Kerberos tooling obtains tickets and keytabs under the local host and principal authority configured for the control node or execution environment.
+certificate-authority:
+  label: IdM certificate authority
+  statement: The CA issues certificates from CSRs; private key creation and storage stay outside the certificate request surface.
+kubernetes:
+  label: Kubernetes and OpenShift
+  statement: The cluster enforces runtime access only after a site applies rendered configuration and its platform controls allow it.
+reports:
+  label: Reports
+  statement: Reports record supplied evidence and computed status; they do not enforce remediation.

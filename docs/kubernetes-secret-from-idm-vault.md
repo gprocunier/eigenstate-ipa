@@ -1,85 +1,27 @@
 ---
 layout: default
-title: Kubernetes Secret From IdM Vault
-description: >-
-  Render-first workflow for preparing Kubernetes Secret manifests from
-  IdM vault material without exposing payloads in default output.
+title: Kubernetes Secret From Idm Vault
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Kubernetes Secret From IdM Vault
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-`kubernetes_secret_from_idm_vault` prepares Kubernetes Secret manifests from
-IdM vault material. It is built for review-first delivery: the default artifact
-is a Secret manifest with redacted values and safe metadata.
+<a href="/how-to/render-kubernetes-secret-from-idm-vault.html"><kbd>Open the new page</kbd></a>
 
-Read the [Workload Secret Delivery Controls](https://gprocunier.github.io/eigenstate-ipa/workload-secret-delivery-controls.html)
-before applying payload-bearing manifests to a cluster.
+Canonical target: [/how-to/render-kubernetes-secret-from-idm-vault.html](/how-to/render-kubernetes-secret-from-idm-vault.html)
 
-## Render A Review Manifest
-
-```bash
-ansible-playbook playbooks/render-kubernetes-secret-from-idm-vault.yml \
-  -e eigenstate_k8s_secret_name=app-runtime-secret \
-  -e eigenstate_k8s_secret_namespace=payments \
-  -e eigenstate_k8s_secret_output_dir=./artifacts/workload-secret
-```
-
-By default this renders:
-
-```text
-artifacts/workload-secret/kubernetes-secret-from-idm-vault.review.yaml
-```
-
-The review manifest includes key names but redacts values.
-
-## Static Input Mode
-
-When live IdM lookup is disabled, provide already retrieved material through
-`eigenstate_k8s_secret_data`. Secret-bearing tasks remain hidden with
-`no_log: true`.
-
-```yaml
-eigenstate_k8s_secret_data:
-  application.conf: "{{ application_config_material }}"
-```
-
-## Live IdM Vault Lookup
-
-Live lookup is opt-in:
-
-```yaml
-eigenstate_k8s_secret_live_lookup_enabled: true
-eigenstate_k8s_secret_vault_name: app-runtime-material
-eigenstate_k8s_secret_vault_scope: shared
-eigenstate_k8s_secret_vault_key: application.conf
-```
-
-Use the existing vault lookup authentication variables for IdM access. Password
-and keytab inputs are marked as secret-bearing.
-
-## Protected Payload Manifest
-
-To write a payload-bearing manifest:
-
-```yaml
-eigenstate_k8s_secret_write_payload_manifest: true
-```
-
-The file is written with mode `0600` and should be handled as sensitive.
-
-## Apply Path
-
-Cluster apply requires all of the following:
-
-```yaml
-eigenstate_k8s_secret_render_only: false
-eigenstate_k8s_secret_apply: true
-eigenstate_k8s_secret_kubeconfig: /secure/path/kubeconfig
-eigenstate_k8s_secret_context: workload-admin
-```
-
-Default CI never enables this path.
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

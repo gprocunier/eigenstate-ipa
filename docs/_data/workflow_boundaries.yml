@@ -1,0 +1,15 @@
+read-only:
+  label: Read-only
+  statement: Reads authoritative state and does not write remote state or payload artifacts.
+render-only:
+  label: Render-only
+  statement: Writes review artifacts locally and does not apply them to a live runtime.
+preflight:
+  label: Preflight
+  statement: Checks prerequisites or policy state before a later workflow changes anything.
+check-mode:
+  label: Check mode
+  statement: Uses Ansible check mode or equivalent dry-run behavior to predict changes.
+mutating:
+  label: Mutating
+  statement: Changes IdM, filesystem, controller, cluster, certificate, keytab, or vault state.

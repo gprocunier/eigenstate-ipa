@@ -1,93 +1,14 @@
 <!DOCTYPE html>
-{% assign page_kind = "Guide" %}
-{% assign page_kind_summary = "Collection-wide guidance and operator framing." %}
-{% assign family_slug = "" %}
-{% if page.path contains 'index.md' %}
-  {% assign page_kind = "Overview" %}
-  {% assign page_kind_summary = "Entry point for the collection, its doc model, and the main workflow branches." %}
-{% elsif page.path contains 'documentation-map.md' %}
-  {% assign page_kind = "Navigation" %}
-  {% assign page_kind_summary = "Route by intent when you know the problem but not yet the right page." %}
-{% elsif page.path contains '-plugin.md' %}
-  {% assign page_kind = "Reference" %}
-  {% assign page_kind_summary = "Exact syntax, authentication behavior, return fields, and option details." %}
-  {% assign family_slug = page.path | remove: '-plugin.md' %}
-{% elsif page.path contains '-capabilities.md' %}
-  {% assign page_kind = "Capabilities" %}
-  {% assign page_kind_summary = "Decision boundary guidance for when the plugin family fits the job." %}
-  {% assign family_slug = page.path | remove: '-capabilities.md' %}
-{% elsif page.path contains '-use-cases.md' %}
-  {% assign page_kind = "Use Cases" %}
-  {% assign page_kind_summary = "Worked playbook patterns and cross-plugin workflow examples." %}
-  {% assign family_slug = page.path | remove: '-use-cases.md' %}
-{% elsif page.path contains '-validation-walkthrough.md' %}
-  {% assign page_kind = "Validation" %}
-  {% assign page_kind_summary = "Recorded or operator-visible evidence for a workflow boundary." %}
-{% elsif page.path contains '-rbac-setup.md' %}
-  {% assign page_kind = "Setup Guide" %}
-  {% assign page_kind_summary = "Bootstrap and delegation steps required before the workflow is usable." %}
-{% elsif page.path contains 'primer.md' %}
-  {% assign page_kind = "Primer" %}
-  {% assign page_kind_summary = "Collection-wide framing for a broader platform or product space." %}
-{% elsif page.path contains 'integration.md' %}
-  {% assign page_kind = "Integration Guide" %}
-  {% assign page_kind_summary = "Controller, execution-environment, or cross-system integration guidance." %}
-{% endif %}
-{% assign family_reference_doc = family_slug | append: '-plugin.md' %}
-{% assign family_capabilities_doc = family_slug | append: '-capabilities.md' %}
-{% assign family_use_cases_doc = family_slug | append: '-use-cases.md' %}
-{% assign family_reference_exists = false %}
-{% assign family_capabilities_exists = false %}
-{% assign family_use_cases_exists = false %}
-{% assign family_doc_count = 0 %}
-{% if family_slug != "" %}
-  {% for candidate in site.pages %}
-    {% if candidate.path == family_reference_doc %}
-      {% assign family_reference_exists = true %}
-    {% endif %}
-    {% if candidate.path == family_capabilities_doc %}
-      {% assign family_capabilities_exists = true %}
-    {% endif %}
-    {% if candidate.path == family_use_cases_doc %}
-      {% assign family_use_cases_exists = true %}
-    {% endif %}
-  {% endfor %}
-  {% if family_reference_exists %}
-    {% assign family_doc_count = family_doc_count | plus: 1 %}
-  {% endif %}
-  {% if family_capabilities_exists %}
-    {% assign family_doc_count = family_doc_count | plus: 1 %}
-  {% endif %}
-  {% if family_use_cases_exists %}
-    {% assign family_doc_count = family_doc_count | plus: 1 %}
-  {% endif %}
-{% endif %}
 <html lang="{{ site.lang | default: 'en-US' }}">
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="google-site-verification" content="-cAcLaA0l0O_JyCuMrNDwKoISaFm8JtOsfjnvXLGgA4" />
+    <meta name="google-site-verification" content="-cAcLaA0l0O_JyCuMrNDwKoISaFm8JtOsfjnvXLGgA4">
     <title>{% if page.title %}{{ page.title }} | {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
     {% seo %}
     <link rel="icon" href="{{ '/favicon.ico' | relative_url }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ '/favicon.ico' | relative_url }}" type="image/x-icon">
-    <script>
-      (function() {
-        var href = "{{ '/favicon.ico' | relative_url }}";
-        var rels = ["icon", "shortcut icon"];
-        for (var i = 0; i < rels.length; i += 1) {
-          if (document.querySelector('link[rel="' + rels[i] + '"]')) {
-            continue;
-          }
-          var link = document.createElement("link");
-          link.rel = rels[i];
-          link.href = href;
-          link.type = "image/x-icon";
-          document.head.appendChild(link);
-        }
-      })();
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;700&family=Red+Hat+Mono:wght@400;500&family=Red+Hat+Text:wght@400;500;700&display=swap" rel="stylesheet">
@@ -96,147 +17,16 @@
   </head>
   <body data-baseurl="{{ site.baseurl | default: '' }}">
     <div class="site-shell">
-      <header class="site-header">
-        <div class="site-header__inner">
-          <p class="eyebrow">{{ site.eyebrow | default: "Documentation" }}</p>
-          <div class="site-brand">
-            <div>
-              <h1 class="site-brand__title"><a href="{{ '/' | relative_url }}">{{ site.brand_title | default: site.title }}</a></h1>
-              <p class="site-brand__tagline">{{ site.brand_tagline | default: site.description }}</p>
-            </div>
-          </div>
-          <div class="site-header__actions">
-            <a href="{{ '/documentation-map.html' | relative_url }}"{% if page.path contains 'documentation-map.md' %} aria-current="page"{% endif %}><kbd>DOCS MAP</kbd></a>
-            <a href="{{ site.repo_url }}"><kbd>TOP README</kbd></a>
-            <a href="{{ site.galaxy_url }}"><kbd>ANSIBLE GALAXY</kbd></a>
-          </div>
-        </div>
-      </header>
-      <main class="page-shell">
-        <div class="content-column">
-          <article class="markdown-body">
-            <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-              <a href="{{ '/' | relative_url }}">Docs</a>
-              {% unless page.path contains 'index.md' %}
-                <span>/</span>
-                <a href="{{ '/documentation-map.html' | relative_url }}">Documentation Map</a>
-                <span>/</span>
-                <span aria-current="page">{{ page_kind }}</span>
-              {% endunless %}
-            </nav>
-            {% unless page.path contains 'index.md' %}
-              <div class="page-meta">
-                <p class="page-kind">{{ page_kind }}</p>
-                <p class="page-summary">{{ page_kind_summary }}</p>
-              </div>
-            {% endunless %}
-            {{ content }}
-          </article>
-        </div>
-        <aside class="side-column">
-          <section class="context-block context-block--meta">
-            <h2>Page Type</h2>
-            <p class="context-kicker">{{ page_kind }}</p>
-            <p class="context-copy">{{ page_kind_summary }}</p>
-          </section>
-          {% if family_reference_exists and family_doc_count > 1 %}
-            <section class="context-block">
-              <h2>This Plugin Family</h2>
-              <ul class="path-list path-list--compact">
-                {% if family_reference_exists %}
-                  <li>
-                    <a href="{{ family_reference_doc | replace: '.md', '.html' | relative_url }}"{% if page.path == family_reference_doc %} aria-current="page"{% endif %}>
-                      <strong>Reference</strong>
-                      <span>Exact syntax and plugin behavior.</span>
-                    </a>
-                  </li>
-                {% endif %}
-                {% if family_capabilities_exists %}
-                  <li>
-                    <a href="{{ family_capabilities_doc | replace: '.md', '.html' | relative_url }}"{% if page.path == family_capabilities_doc %} aria-current="page"{% endif %}>
-                      <strong>Capabilities</strong>
-                      <span>Decision boundaries and fit.</span>
-                    </a>
-                  </li>
-                {% endif %}
-                {% if family_use_cases_exists %}
-                  <li>
-                    <a href="{{ family_use_cases_doc | replace: '.md', '.html' | relative_url }}"{% if page.path == family_use_cases_doc %} aria-current="page"{% endif %}>
-                      <strong>Use Cases</strong>
-                      <span>Worked operator patterns.</span>
-                    </a>
-                  </li>
-                {% endif %}
-              </ul>
-            </section>
-          {% endif %}
-          <section class="context-block">
-            <h2>Start Here</h2>
-            <ul class="path-list">
-              <li>
-                <a href="{{ '/documentation-map.html' | relative_url }}"{% if page.path contains 'documentation-map.md' %} aria-current="page"{% endif %}>
-                  <strong>Documentation Map</strong>
-                  <span>Route by intent when you know the problem but not the right page.</span>
-                </a>
-              </li>
-              <li>
-                <a href="{{ '/vault-cyberark-primer.html' | relative_url }}"{% if page.path contains 'vault-cyberark-primer.md' %} aria-current="page"{% endif %}>
-                  <strong>Vault/CyberArk Primer</strong>
-                  <span>Translate vault-manager expectations into the IdM-native model.</span>
-                </a>
-              </li>
-              <li>
-                <a href="{{ '/aap-integration.html' | relative_url }}"{% if page.path contains 'aap-integration.md' %} aria-current="page"{% endif %}>
-                  <strong>AAP Integration</strong>
-                  <span>Controller and execution-environment guidance for real automation runs.</span>
-                </a>
-              </li>
-              <li>
-                <a href="{{ '/ephemeral-access-capabilities.html' | relative_url }}"{% if page.path contains 'ephemeral-access-capabilities.md' %} aria-current="page"{% endif %}>
-                  <strong>Ephemeral Access</strong>
-                  <span>Temporary-access boundaries, leases, and cutoff behavior.</span>
-                </a>
-              </li>
-              <li>
-                <a href="{{ '/openshift-primer.html' | relative_url }}"{% if page.path contains 'openshift-primer.md' %} aria-current="page"{% endif %}>
-                  <strong>OpenShift Primer</strong>
-                  <span>Start here for OpenShift, RHOSO, RHACM, RHACS, and Quay branches.</span>
-                </a>
-              </li>
-            </ul>
-          </section>
-          <section class="context-block">
-            <h2>Project Links</h2>
-            <ul class="path-list">
-              <li>
-                <a href="{{ site.repo_url }}">
-                  <strong>Top README</strong>
-                  <span>GitHub landing page for install, release, and repository context.</span>
-                </a>
-              </li>
-              <li>
-                <a href="{{ site.galaxy_url }}">
-                  <strong>Ansible Galaxy</strong>
-                  <span>Published collection artifact and install path.</span>
-                </a>
-              </li>
-            </ul>
-          </section>
-          <section class="toc-block" data-toc-root=".markdown-body" data-toc-levels="h2,h3">
-            <h2>On This Page</h2>
-            <ul data-generated-toc></ul>
-          </section>
-          <section class="source-block">
-            <h2>Source</h2>
-            <p>
-              <a href="{{ site.repo_url }}/blob/main/docs/{{ page.path }}">View this page on GitHub</a>
-            </p>
-          </section>
-        </aside>
+      {% include header.html %}
+      <main class="page-shell{% if page.wide %} page-shell--wide{% endif %}">
+        {% include sidebar.html %}
+        <article class="content-column markdown-body">
+          {% include breadcrumbs.html %}
+          {% include diataxis_badge.html %}
+          {{ content }}
+        </article>
       </main>
-      <footer class="site-footer">
-        Published from repository docs on {{ site.time | date: "%Y-%m-%d" }}.
-      </footer>
+      {% include footer.html %}
     </div>
   </body>
 </html>

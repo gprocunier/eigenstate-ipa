@@ -1,29 +1,27 @@
 ---
 layout: default
 title: Capabilities
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Capabilities
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-Related docs:
+<a href="/reference/"><kbd>Open the new page</kbd></a>
 
-<a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>&nbsp;&nbsp;INVENTORY CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>&nbsp;&nbsp;IDM VAULT CAPABILITIES&nbsp;&nbsp;</kbd></a>
-<a href="https://gprocunier.github.io/eigenstate-ipa/documentation-map.html"><kbd>&nbsp;&nbsp;DOCS MAP&nbsp;&nbsp;</kbd></a>
+Canonical target: [/reference/](/reference/)
 
-This page is kept as a compatibility landing page for earlier references to
-`docs/capabilities.md`.
-
-The scenario content now lives in two explicit documents:
-
-- <a href="https://gprocunier.github.io/eigenstate-ipa/inventory-capabilities.html"><kbd>INVENTORY CAPABILITIES</kbd></a>
-- <a href="https://gprocunier.github.io/eigenstate-ipa/vault-capabilities.html"><kbd>IDM VAULT CAPABILITIES</kbd></a>
-
-The split is intentional:
-
-- inventory capabilities describe how IdM objects become hosts and groups
-- vault capabilities describe how IdM vaults become runtime secret inputs
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

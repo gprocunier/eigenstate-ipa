@@ -1,54 +1,27 @@
 ---
 layout: default
-title: AAP IdM Workflow Validation Walkthrough
-description: >-
-  Concise validation path for the AAP IdM workflow roles.
+title: Aap Idm Workflow Validation Walkthrough
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# AAP IdM Workflow Validation Walkthrough
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-This path validates the three AAP-ready roles after the Eigenstate execution
-environment is available.
+<a href="/tutorials/readiness-report.html"><kbd>Open the new page</kbd></a>
 
-## 1. Run Certificate Expiry Report
+Canonical target: [/tutorials/readiness-report.html](/tutorials/readiness-report.html)
 
-```bash
-ansible-playbook playbooks/cert-expiry-report.yml \
-  -e eigenstate_cert_report_server=idm-01.example.com \
-  -e eigenstate_cert_report_valid_not_after_to=2099-12-31
-```
-
-## 2. Preflight Or Open Temporary Access
-
-```bash
-ansible-playbook playbooks/temporary-access-window.yml \
-  -e eigenstate_taw_state=preflight \
-  -e eigenstate_taw_username=temp-maintenance \
-  -e eigenstate_taw_server=idm-01.example.com \
-  -e eigenstate_taw_hbac_targethost=host01.example.com
-```
-
-## 3. Preflight Sealed Artifact Delivery
-
-```bash
-ansible-playbook playbooks/sealed-artifact-delivery.yml \
-  -e eigenstate_sealed_state=preflight \
-  -e eigenstate_sealed_vault_name=app-bootstrap-bundle \
-  -e eigenstate_sealed_server=idm-01.example.com
-```
-
-## 4. Review Safe Reports
-
-Each role emits metadata-only artifacts under `./artifacts` by default. Sealed
-artifact reports do not include payload bytes.
-
-## Boundary
-
-Vault still wins for broad dynamic secret engines, lease revocation semantics,
-and multi-backend secret brokering. IdM and `eigenstate.ipa` fit when the
-automation boundary is already identity, Kerberos, certificate, DNS, sudo,
-SELinux, and HBAC policy state held in IdM.
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

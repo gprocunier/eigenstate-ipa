@@ -1,0 +1,36 @@
+<aside class="side-column" aria-label="Documentation navigation">
+  <section class="context-block context-block--meta">
+    <h2>Documentation Model</h2>
+    <p class="context-kicker">
+      {% if page.diataxis_type %}{{ site.data.diataxis[page.diataxis_type].label | default: page.diataxis_type }}{% else %}Diataxis{% endif %}
+    </p>
+    <p class="context-copy">Learn, do, look up exact facts, or understand boundaries without mixing those jobs on one page.</p>
+  </section>
+
+  {% for group in site.data.nav.groups %}
+    <section class="context-block">
+      <h2>{{ group.title }}</h2>
+      <ul class="path-list">
+        {% for item in group.items %}
+          {% assign item_url = item.url | relative_url %}
+          <li>
+            <a href="{{ item_url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>
+              <strong>{{ item.title }}</strong>
+              {% if item.summary %}<span>{{ item.summary }}</span>{% endif %}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endfor %}
+
+  <section class="toc-block" data-toc-root=".markdown-body" data-toc-levels="h2,h3">
+    <h2>On This Page</h2>
+    <ul data-generated-toc></ul>
+  </section>
+
+  <section class="source-block">
+    <h2>Source</h2>
+    <p><a href="{{ site.repo_url }}/blob/main/{{ page.path }}">View this page on GitHub</a></p>
+  </section>
+</aside>

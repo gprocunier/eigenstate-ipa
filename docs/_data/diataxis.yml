@@ -1,0 +1,15 @@
+tutorial:
+  label: Tutorial
+  statement: A learning path that teaches by doing.
+how-to:
+  label: How-to
+  statement: A task guide for completing production work.
+reference:
+  label: Reference
+  statement: Exact facts, options, return shapes, roles, playbooks, and schemas.
+explanation:
+  label: Explanation
+  statement: Architecture, authority boundaries, tradeoffs, and non-goals.
+orientation:
+  label: Orientation
+  statement: A routing page that points readers to the right documentation form.

@@ -1,37 +1,27 @@
 ---
 layout: default
 title: Certificate Inventory Report
-description: Schema and workflow notes for certificate inventory reporting.
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Certificate Inventory Report
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-Role: `eigenstate.ipa.certificate_inventory_report`
+<a href="/how-to/generate-operational-evidence.html"><kbd>Open the new page</kbd></a>
 
-Schema: `eigenstate.ipa/certificate_inventory_report/v1`
+Canonical target: [/how-to/generate-operational-evidence.html](/how-to/generate-operational-evidence.html)
 
-This report captures certificate metadata for renewal planning and audit
-handoff. It is not a certificate export mechanism and must not contain private
-keys or secret payloads.
-
-## Required Record Fields
-
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `principal` | string | Host or service principal associated with the certificate. |
-| `serial_number` | string | Certificate serial number. |
-| `not_after` | string | Expiration timestamp or date. |
-| `state` | string | `valid`, `expiring`, `expired`, `revoked`, or `unknown`. |
-
-Useful optional fields include `subject`, `issuer`, `not_before`, `profile_id`,
-`san_names`, `rotation_required`, and `evidence`.
-
-Run:
-
-```bash
-ansible-playbook playbooks/report-certificate-inventory.yml
-```
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).

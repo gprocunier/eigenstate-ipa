@@ -1,70 +1,27 @@
 ---
 layout: default
 title: Test Strategy
-description: >-
-  Release validation strategy for fast CI, optional integration tests,
-  documentation checks, and lab validation.
+diataxis: orientation
+diataxis_type: orientation
+audience: Readers following legacy links
+outcome: Follow the new Diataxis page for this moved legacy topic.
+authority_boundary:
+  - collection
+workflow_boundary: read-only
+evidence_shape:
+  - architecture-boundary
+public_status: legacy-stub
+source_material:
+  - rewrite-audit.md
+last_verified: 2026-05-07
 ---
 
-{% raw %}
+# This Page Moved
 
-# Test Strategy
+This legacy page is preserved so old links do not break. The content has moved into the Diataxis documentation structure.
 
-Current release: `1.16.0`
+<a href="/reference/release-process.html"><kbd>Open the new page</kbd></a>
 
-The project separates fast, repeatable checks from live-environment checks. Fast
-CI must pass before release publication. Integration and lab tests add evidence
-for live IdM behavior without making every pull request depend on a privileged
-service container or private lab.
+Canonical target: [/reference/release-process.html](/reference/release-process.html)
 
-## Fast CI
-
-`.github/workflows/ci.yml` runs `scripts/validate-collection.sh` across
-ansible-core `2.15`, `2.16`, `2.17`, and `2.18` on Python `3.11`.
-
-The validation script checks:
-
-- YAML parsing and `yamllint`
-- Python syntax for plugins and unit tests
-- blocking `ansible-lint` for collection metadata
-- a release-gated `ansible-test sanity` subset when the CI Python is available
-- plugin documentation parsing with `ansible-doc`
-- documentation language hygiene
-- Markdown YAML example parsing and playbook syntax where feasible
-- execution-environment scaffold rendering
-- packaged workflow playbook syntax and static validation
-- unit tests for the plugin and role families
-- collection artifact buildability
-
-The default sanity subset is `ansible-doc`, `compile`, `empty-init`, `import`,
-`line-endings`, `no-assert`, `no-get-exception`, `no-illegal-filenames`, and
-`runtime-metadata`. Broader style and documentation-schema sanity checks can be
-run locally with `EIGENSTATE_ANSIBLE_TESTS` as the collection is hardened
-further, but they are not part of the release gate for this version.
-
-## Integration Profile
-
-`.github/workflows/integration.yml` is intentionally separate. It starts a
-FreeIPA container, seeds test data, and runs the integration playbooks against
-the live service. It is path-scoped and manually dispatchable because it needs
-privileged containers and takes materially longer than fast CI.
-
-The workflow defaults to ansible-core `2.18`, with a manual dispatch input for
-testing another minor line when a compatibility question needs direct evidence.
-
-## Lab Validation
-
-Private on-prem validation should run from the documented lab execution
-boundary: the workstation stages source, the jump host reaches the bastion, and
-the bastion runs live IdM playbooks against the lab. Public release notes should
-describe the validated behavior, not the private lab names or access details.
-
-## Release Gate
-
-The release workflow repeats the fast CI matrix before building the collection
-artifact. It then checks that the Git tag matches `galaxy.yml`, builds the
-artifact, records a SHA256 checksum, inspects required files, installs the
-artifact into a clean collection path, and smoke-tests selected documentation
-with `ansible-doc`.
-
-{% endraw %}
+For the full route map, use [Start Here](/start.html) or [Reference](/reference/).
