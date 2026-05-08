@@ -159,6 +159,7 @@ hostvars_include:
   - idm_location
   - idm_os
   - idm_hostgroups
+  - idm_userclass
 
 # With caching enabled (useful for large IDM deployments)
 ---

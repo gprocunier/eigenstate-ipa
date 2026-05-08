@@ -180,13 +180,14 @@ class InventoryPluginTests(unittest.TestCase):
 
     def test_selected_host_attrs_filters_to_allowlist(self):
         inventory = self._inventory_with_options(
-            hostvars_include=["idm_location", "idm_hostgroups"],
+            hostvars_include=["idm_location", "idm_hostgroups", "idm_userclass"],
         )
         self.assertEqual(
             inventory._selected_host_attrs(),
             {
                 "nshostlocation": ("idm_location", False),
                 "memberof_hostgroup": ("idm_hostgroups", True),
+                "userclass": ("idm_userclass", True),
             },
         )
 
@@ -207,6 +208,7 @@ class InventoryPluginTests(unittest.TestCase):
                 "nshostlocation": ["DC East"],
                 "memberof_hostgroup": ["webservers", "prod"],
                 "ipasshpubkey": ["ssh-ed25519 AAAA..."],
+                "userclass": ["db", "webserver"],
             },
         )
         host = inventory.inventory.hosts["web-01.corp.example.com"]
@@ -214,6 +216,18 @@ class InventoryPluginTests(unittest.TestCase):
         self.assertEqual(host["vars"]["idm_location"], "DC East")
         self.assertEqual(host["vars"]["idm_hostgroups"], ["webservers", "prod"])
         self.assertEqual(host["vars"]["idm_ssh_public_keys"], ["ssh-ed25519 AAAA..."])
+        self.assertEqual(host["vars"]["idm_userclass"], ["db", "webserver"])
+
+    def test_add_host_renders_userclass_as_list(self):
+        inventory = self._inventory_with_options(hostvars_include=["idm_userclass"])
+        inventory._add_host(
+            "web-01.corp.example.com",
+            {"userclass": ["db", "webserver"]},
+        )
+        self.assertEqual(
+            inventory.inventory.hosts["web-01.corp.example.com"]["vars"],
+            {"idm_userclass": ["db", "webserver"]},
+        )
 
     def test_add_host_respects_hostvars_include(self):
         inventory = self._inventory_with_options(

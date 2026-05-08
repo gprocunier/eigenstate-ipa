@@ -269,6 +269,7 @@ hostvars_include:
   - idm_location
   - idm_os
   - idm_hostgroups
+  - idm_userclass
 
 # With caching enabled (useful for large IDM deployments)
 ---
@@ -365,6 +366,7 @@ _IPA_HOST_ATTRS = {
     'krbprincipalname':        ('idm_krbprincipalname', True),
     'managedby_host':          ('idm_managedby', True),
     'memberof_hostgroup':      ('idm_hostgroups', True),
+    'userclass':               ('idm_userclass', True),
 }
 
 _HOSTVAR_NAMES = {

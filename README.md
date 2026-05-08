@@ -53,7 +53,7 @@ The public docs now use Diataxis:
 Install a built collection artifact:
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.16.0.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.17.0.tar.gz
 ```
 
 Verify the main surfaces you plan to use:

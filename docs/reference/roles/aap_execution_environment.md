@@ -40,7 +40,7 @@ last_verified: 2026-05-07
 | `eigenstate_ee_build` | `false` |
 | `eigenstate_ee_build_context` | `context` |
 | `eigenstate_ee_builder_binary` | `ansible-builder` |
-| `eigenstate_ee_collection_version` | `>=1.16.0` |
+| `eigenstate_ee_collection_version` | `>=1.17.0` |
 | `eigenstate_ee_container_runtime` | `podman` |
 | `eigenstate_ee_image` | `localhost/{{ eigenstate_ee_name }}:{{ eigenstate_ee_tag }}` |
 | `eigenstate_ee_include_ansible_controller` | `false` |
