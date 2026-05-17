@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/modules/user_lease.py
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -132,6 +132,24 @@ Supports Ansible check mode.
     clear_password_expiration: true
     server: idm-01.example.com
     ipaadmin_password: "{{ ipa_password }}"
+```
+
+## Output Shape
+
+```yaml
+- changed: true
+  uid: "temp-deploy"
+  username: "temp-deploy"
+  groups_checked:
+    - "lease-targets"
+  principal_expiration_before: null
+  principal_expiration_after: "2026-05-16T20:00:00Z"
+  password_expiration_before: null
+  password_expiration_after: "2026-05-16T20:00:00Z"
+  lease_end: "2026-05-16T20:00:00Z"
+  memberof_group:
+    - "ipausers"
+    - "lease-targets"
 ```
 
 ## Error Behavior

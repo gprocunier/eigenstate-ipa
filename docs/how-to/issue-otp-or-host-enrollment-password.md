@@ -12,7 +12,7 @@ workflow_boundary: mutating
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -49,7 +49,12 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
 ```yaml
 - name: Issue host enrollment password
   ansible.builtin.set_fact:
-    enrollment_password: "{{ lookup('eigenstate.ipa.otp', 'client01.example.com', operation='host_password') }}"
+    enroll_pass: >-
+      {{ lookup('eigenstate.ipa.otp',
+                'client01.example.com',
+                token_type='host',
+                server='idm-01.example.com',
+                kerberos_keytab='/runner/env/ipa/automation.keytab') }}
   no_log: true
 ```
 
@@ -57,9 +62,18 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
 {% include task_example.html id="issue-otp-or-host-enrollment-password" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-IdM issues the requested one-time credential and the play does not print it.
+The enrollment credential task stays redacted while the protected enrollment
+step can consume the value:
+
+```text
+TASK [Generate one enrollment password for this host] **************************
+ok: [newhost01.example.com]
+
+TASK [Enroll the host with ansible-freeipa] ************************************
+changed: [newhost01.example.com]
+```
 
 ## Troubleshooting
 

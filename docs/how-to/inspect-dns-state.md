@@ -12,7 +12,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -50,9 +50,19 @@ ansible localhost -m ansible.builtin.debug -a "msg={{ lookup('eigenstate.ipa.dns
 {% include task_example.html id="inspect-dns-state" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The workflow receives structured DNS record state from IdM.
+The lookup result is a structured record that can be asserted before the
+deployment continues:
+
+```yaml
+app_dns:
+  exists: true
+  zone: example.com
+  name: app
+  arecord:
+    - 192.0.2.25
+```
 
 ## Troubleshooting
 

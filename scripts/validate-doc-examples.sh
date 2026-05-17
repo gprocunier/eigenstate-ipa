@@ -19,18 +19,62 @@ doc_paths = [
     project_root / "README.md",
     project_root / "llms.txt",
 ]
-doc_paths.extend(sorted((project_root / "docs").glob("*.md")))
+doc_paths.extend(
+    sorted(
+        path
+        for path in (project_root / "docs").rglob("*.md")
+        if "_templates" not in path.parts
+        and "_site" not in path.parts
+        and "assets" not in path.parts
+    )
+)
 doc_paths.extend(sorted((project_root / "roles").glob("*/README.md")))
 
 fence = re.compile(r"^```(?P<lang>[A-Za-z0-9_-]*)\s*$")
 yaml_langs = {"yaml", "yml"}
+ansible_playbook = re.compile(r"\bansible-playbook\s+([^\n`]+)")
 parse_failures = []
 syntax_blocks = []
+reference_failures = []
+
+
+def extract_playbook_reference(command_tail):
+    try:
+        import shlex
+
+        tokens = shlex.split(command_tail, comments=False, posix=True)
+    except ValueError:
+        tokens = command_tail.split()
+
+    skip_next = False
+    for token in tokens:
+        if skip_next:
+            skip_next = False
+            continue
+        if token in {"-i", "--inventory", "-e", "--extra-vars", "--limit", "-l"}:
+            skip_next = True
+            continue
+        if token.startswith("-"):
+            continue
+        cleaned = token.strip("'\"")
+        if cleaned.endswith((".yml", ".yaml")):
+            return cleaned
+    return None
 
 for path in doc_paths:
     if not path.is_file():
         continue
     lines = path.read_text(encoding="utf-8").splitlines()
+    rel = path.relative_to(project_root)
+    for lineno, line in enumerate(lines, 1):
+        for match in ansible_playbook.finditer(line):
+            playbook_ref = extract_playbook_reference(match.group(1))
+            if playbook_ref and playbook_ref.startswith("playbooks/"):
+                if not (project_root / playbook_ref).is_file():
+                    reference_failures.append(
+                        f"{rel}:{lineno}: referenced playbook does not exist: {playbook_ref}"
+                    )
+
     in_block = False
     lang = ""
     start = 0
@@ -68,9 +112,48 @@ for path in doc_paths:
         if in_block:
             block.append(line)
 
+task_examples_path = project_root / "docs" / "_data" / "task_examples.yml"
+if task_examples_path.is_file():
+    try:
+        task_examples = yaml.safe_load(task_examples_path.read_text(encoding="utf-8")) or {}
+    except Exception as exc:
+        parse_failures.append(f"{task_examples_path.relative_to(project_root)}:1: {exc}")
+        task_examples = {}
+
+    if isinstance(task_examples, dict):
+        for key, example in task_examples.items():
+            if not isinstance(example, dict):
+                continue
+            known_files = {
+                file_entry.get("name")
+                for file_entry in example.get("files", [])
+                if isinstance(file_entry, dict)
+            }
+            for match in ansible_playbook.finditer(str(example.get("run", ""))):
+                playbook_ref = extract_playbook_reference(match.group(1))
+                if not playbook_ref:
+                    continue
+                if playbook_ref.startswith("playbooks/"):
+                    if not (project_root / playbook_ref).is_file():
+                        reference_failures.append(
+                            f"docs/_data/task_examples.yml:{key}: referenced playbook does not exist: {playbook_ref}"
+                        )
+                elif Path(playbook_ref).name not in known_files:
+                    reference_failures.append(
+                        f"docs/_data/task_examples.yml:{key}: run command references {playbook_ref} but the example does not define that file"
+                    )
+    else:
+        parse_failures.append("docs/_data/task_examples.yml:1: expected mapping")
+
 if parse_failures:
     print("Markdown YAML example parsing failed:")
     for failure in parse_failures:
+        print(f"  - {failure}")
+    sys.exit(1)
+
+if reference_failures:
+    print("Documentation command references failed:")
+    for failure in reference_failures:
         print(f"  - {failure}")
     sys.exit(1)
 

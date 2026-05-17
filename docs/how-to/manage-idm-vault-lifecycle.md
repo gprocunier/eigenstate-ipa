@@ -13,7 +13,7 @@ workflow_boundary: mutating
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -62,9 +62,22 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
 {% include task_example.html id="manage-idm-vault-lifecycle" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The module reports whether IdM vault state would change, then can apply the explicit lifecycle action.
+A captured live validation archived a value, read it back, and classified
+negative-path failures without exposing payload material. The hash is a
+sanitized example of the evidence field shape:
+
+```json
+{
+  "vault_artifact": {
+    "read_back_verified": true,
+    "missing_failure_class": "vault_not_found",
+    "mismatch_failure_class": "digest_mismatch",
+    "sha256": "e57691568be539495e554041efba1b046effca98de5b309c275ff1f24f7e06c1"
+  }
+}
+```
 
 ## Troubleshooting
 

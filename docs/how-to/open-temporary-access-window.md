@@ -12,7 +12,7 @@ workflow_boundary: mutating
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -43,19 +43,60 @@ This workflow is `mutating`. Confirm that this is the intended boundary before p
 3. Inspect the returned evidence before continuing to any mutating step.
 
 ```yaml
-eigenstate.ipa.user_lease:
-    user: alice
-    state: present
-    lease_seconds: 3600
+---
+- name: Open a governed temporary access window
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Open access window through packaged role
+      ansible.builtin.import_role:
+        name: eigenstate.ipa.temporary_access_window
+      vars:
+        eigenstate_taw_state: open
+        eigenstate_taw_username: contractor01
+        eigenstate_taw_server: idm-01.example.com
+        eigenstate_taw_kerberos_keytab: /runner/env/ipa/automation.keytab
+        eigenstate_taw_principal_expiration: "02:00"
+        eigenstate_taw_password_expiration_matches_principal: true
+        eigenstate_taw_hbac_targethost: bastion01.example.com
 ```
 
 {% endraw %}
 {% include task_example.html id="open-temporary-access-window" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The workflow produces the expected evidence or artifact for review.
+The role opens the lease and writes temporary-access metadata as review-only
+evidence. Static report validation produces this artifact shape:
+
+```text
+TASK [eigenstate.ipa.temporary_access_report : Render temporary access report JSON] ***
+changed: [localhost]
+
+TASK [eigenstate.ipa.temporary_access_report : Render temporary access report Markdown] ***
+changed: [localhost]
+```
+
+```json
+{
+  "schema": "eigenstate.ipa/temporary_access_report/v1",
+  "read_only": true,
+  "summary": {
+    "total_windows": "1",
+    "active_windows": "0",
+    "expired_windows": "1"
+  },
+  "windows": [
+    {
+      "principal": "contractor01",
+      "target": "bastion.example.com",
+      "status": "expired",
+      "evidence": "Principal expiration is before the report timestamp."
+    }
+  ]
+}
+```
 
 ## Troubleshooting
 

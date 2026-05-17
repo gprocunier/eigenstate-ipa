@@ -13,7 +13,7 @@ workflow_boundary: read-only
 evidence_shape:
   - inventory-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -52,9 +52,31 @@ ansible-inventory -i inventory.eigenstate_ipa.yml --host idm-client01.example.co
 {% include task_example.html id="use-idm-as-live-inventory" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-Inventory output contains IdM-backed hosts, groups, and selected hostvars without a static inventory copy.
+A captured live inventory validation produced host data directly from IdM. The
+hostnames below are sanitized, but the graph shape and hostvar result are the
+captured output shape:
+
+```text
+@all:
+  |--@ungrouped:
+  |  |--apps.ocp.example.com
+  |  |--bastion-01.example.com
+  |  |--idm-01.example.com
+  |  |--mirror-registry.example.com
+  |  |--podinfo.apps.ocp.example.com
+  |  |--stale-app-01.example.com
+```
+
+```json
+{
+  "idm_schema_warnings": [],
+  "idm_userclass": [],
+  "idm_userclass_raw": null,
+  "idm_userclass_type": "missing"
+}
+```
 
 ## Troubleshooting
 

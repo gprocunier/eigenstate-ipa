@@ -12,7 +12,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -49,12 +49,44 @@ ansible-playbook build-ee.yml
 {% include task_example.html id="build-aap-execution-environment" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The run should render the execution-environment build context, build the image,
-and complete the smoke step for `localhost`. Capture the output from your own
-`ansible-playbook build-ee.yml` run because builder and container-runtime
-messages vary by platform and registry configuration.
+The first required evidence is the rendered Ansible Builder context. A captured
+render run from this checkout produced:
+
+```text
+PLAY [Render eigenstate.ipa AAP execution environment build context] ***********
+
+TASK [Create execution environment build context directory] *************
+changed: [localhost]
+
+TASK [Render execution environment build context files] ****************
+changed: [localhost] => (item=execution-environment.yml)
+changed: [localhost] => (item=requirements.yml)
+changed: [localhost] => (item=bindep.txt)
+changed: [localhost] => (item=python-requirements.txt)
+changed: [localhost] => (item=ansible.cfg.example)
+changed: [localhost] => (item=README.md)
+
+TASK [Show rendered execution environment file list] *******************
+ok: [localhost] => {
+    "eigenstate_ee_rendered_files": [
+        ".../build/eigenstate-idm-ee/execution-environment.yml",
+        ".../build/eigenstate-idm-ee/requirements.yml",
+        ".../build/eigenstate-idm-ee/bindep.txt",
+        ".../build/eigenstate-idm-ee/python-requirements.txt",
+        ".../build/eigenstate-idm-ee/ansible.cfg.example",
+        ".../build/eigenstate-idm-ee/README.md"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=4    changed=2    unreachable=0    failed=0    skipped=14   rescued=0    ignored=0
+```
+
+In a build-capable lab, the next expected tasks are `Verify ansible-builder is
+available`, `Build execution environment image`, and then the smoke command
+loop. Controller registration remains a separate, optional step.
 
 ## What You Learned
 

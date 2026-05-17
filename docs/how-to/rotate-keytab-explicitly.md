@@ -13,7 +13,7 @@ workflow_boundary: mutating
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -62,9 +62,19 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
 {% include task_example.html id="rotate-keytab-explicitly" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-IdM rotates the principal keys and writes or returns the new keytab according to module options.
+The task reports an explicit rotation and the destination written by the module;
+the keytab bytes remain hidden by `no_log: true`:
+
+```yaml
+keytab_result:
+  changed: true
+  principal: HTTP/app.example.com@EXAMPLE.COM
+  state: rotated
+  destination: /secure/keytabs/http-app.keytab
+  mode: "0600"
+```
 
 ## Troubleshooting
 

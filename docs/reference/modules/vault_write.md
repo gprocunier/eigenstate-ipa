@@ -197,6 +197,24 @@ Supports Ansible check mode.
   register: rotation_preview
 ```
 
+## Output Shape
+
+```yaml
+- changed: true
+  vault:
+    name: "rotation-target"
+    scope: "shared"
+    type: "standard"
+    description: "Credential targeted for rotation automation"
+    members:
+      - "app-reader"
+    owners:
+      - "admin@EXAMPLE.COM"
+
+# In check mode, the shape is the same with change intent only.
+- changed: true
+```
+
 ## Error Behavior
 
 Module failures return through normal Ansible module failure handling. Use check mode where supported before mutating IdM, keytab, certificate, or filesystem state.

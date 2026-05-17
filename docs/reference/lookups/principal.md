@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/lookup/principal.py
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -142,6 +142,39 @@ Intended as a pre-flight check before keytab issuance, cert requests, or enrollm
 - name: Check principal using env-backed auth
   ansible.builtin.debug:
     msg: "{{ lookup('eigenstate.ipa.principal', 'HTTP/web01.example.com') }}"
+```
+
+## Example Result Shapes
+
+```yaml
+# principal_state (single-term show)
+principal_state:
+  name: "HTTP/web01.example.com@EXAMPLE.COM"
+  canonical: "HTTP/web01.example.com@EXAMPLE.COM"
+  type: "service"
+  exists: true
+  has_keytab: true
+  disabled: null
+  last_auth: null
+
+# principal_states (map_record, multiple terms)
+principal_states:
+  - HTTP/web01.example.com:
+      name: "HTTP/web01.example.com@EXAMPLE.COM"
+      canonical: "HTTP/web01.example.com@EXAMPLE.COM"
+      type: "service"
+      exists: true
+      has_keytab: true
+      disabled: null
+      last_auth: null
+  - ldap/ldap01.example.com:
+      name: "ldap/ldap01.example.com@EXAMPLE.COM"
+      canonical: "ldap/ldap01.example.com@EXAMPLE.COM"
+      type: "service"
+      exists: true
+      has_keytab: true
+      disabled: null
+      last_auth: null
 ```
 
 ## Error Behavior

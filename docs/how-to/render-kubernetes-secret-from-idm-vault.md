@@ -13,7 +13,7 @@ workflow_boundary: render-only
 evidence_shape:
   - review-manifest
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -55,9 +55,42 @@ ansible-playbook playbooks/render-kubernetes-secret-from-idm-vault.yml
 {% include task_example.html id="render-kubernetes-secret-from-idm-vault" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The workflow produces the expected evidence or artifact for review.
+The role renders a review-only Kubernetes Secret manifest with payload fields
+redacted. A captured wrapper run with static payload inputs produced:
+
+```text
+PLAY [Render Kubernetes Secret manifest from IdM vault material] ********
+
+TASK [eigenstate.ipa.kubernetes_secret_from_idm_vault : Validate Kubernetes Secret delivery variables] ***
+ok: [localhost] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [kubernetes_secret_from_idm_vault : Render reviewable Kubernetes Secret manifest]
+changed: [localhost]
+
+PLAY RECAP ************************************************************
+localhost                  : ok=6    changed=2    unreachable=0    failed=0    skipped=10   rescued=0    ignored=0
+```
+
+The rendered review artifact contains redacted data, not the vault payload:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "idm-vault-secret"
+  namespace: "default"
+  annotations:
+    eigenstate.ipa/payload: "redacted-in-review-manifest"
+    eigenstate.ipa/source: "idm-vault"
+type: "Opaque"
+stringData:
+  artifact: "REDACTED"
+```
 
 ## Troubleshooting
 

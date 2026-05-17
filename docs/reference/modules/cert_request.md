@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/modules/cert_request.py
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -94,6 +94,44 @@ Private key generation and handling remain outside this module.
     csr: "{{ app_csr }}"
     server: idm-01.example.com
     ipaadmin_password: "{{ ipa_password }}"
+```
+
+## Output Shape
+
+```yaml
+# Default response (return_content: false)
+- changed: true
+  principal: "HTTP/web.example.com@EXAMPLE.COM"
+  destination: "/etc/pki/tls/certs/web.pem"
+  metadata:
+    serial_number: "01AB12CD34EF"
+    subject: "CN=web.example.com,O=Example"
+    issuer: "CN=Certificate Authority, O=Example"
+    valid_not_before: "2026-05-16T00:00:00Z"
+    valid_not_after: "2027-05-16T23:59:59Z"
+    san:
+      - "DNS:web.example.com"
+    revoked: false
+    revocation_reason: null
+
+# When return_content: true, same metadata plus the certificate body
+- changed: true
+  principal: "HTTP/web.example.com@EXAMPLE.COM"
+  destination: "/etc/pki/tls/certs/web.pem"
+  metadata:
+    serial_number: "01AB12CD34EF"
+    subject: "CN=web.example.com,O=Example"
+    issuer: "CN=Certificate Authority, O=Example"
+    valid_not_before: "2026-05-16T00:00:00Z"
+    valid_not_after: "2027-05-16T23:59:59Z"
+    san:
+      - "DNS:web.example.com"
+    revoked: false
+    revocation_reason: null
+  content: |
+    -----BEGIN CERTIFICATE-----
+    <REDACTED CERTIFICATE PEM>
+    -----END CERTIFICATE-----
 ```
 
 ## Error Behavior

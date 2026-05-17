@@ -12,7 +12,7 @@ workflow_boundary: preflight
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -43,16 +43,36 @@ This workflow is `preflight`. Confirm that this is the intended boundary before 
 3. Inspect the returned evidence before continuing to any mutating step.
 
 ```bash
-lookup('eigenstate.ipa.hbacrule', 'allow_web', operation='test', user='alice', host='client01.example.com', service='sshd')
+lookup('eigenstate.ipa.hbacrule',
+       'automation-svc',
+       operation='test',
+       targethost='client01.example.com',
+       service='sshd',
+       server='idm-01.example.com',
+       kerberos_keytab='/runner/env/ipa/automation.keytab')
 ```
 
 {% endraw %}
 {% include task_example.html id="test-hbac-access" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The workflow produces the expected evidence or artifact for review.
+The lookup returns an HBAC allow/deny decision object and the rule set evaluated on IdM.
+
+```text
+{
+  "targethost": "client01.example.com",
+  "service": "sshd",
+  "denied": false,
+  "matched": [
+    "ops-ssh"
+  ],
+  "notmatched": [
+    "ops-db"
+  ]
+}
+```
 
 ## Troubleshooting
 

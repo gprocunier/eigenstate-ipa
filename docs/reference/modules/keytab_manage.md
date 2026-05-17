@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/modules/keytab_manage.py
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -98,6 +98,27 @@ Supports Ansible check mode where the module can report intended changes.
     destination: /etc/httpd/conf/httpd.keytab
     server: idm-01.example.com
     ipaadmin_password: "{{ ipa_password }}"
+```
+
+## Output Shape
+
+```yaml
+# Standard retrieval
+- changed: true
+  principal: "HTTP/web.example.com@EXAMPLE.COM"
+  destination: "/etc/httpd/conf/httpd.keytab"
+  mode: "0600"
+  state: "retrieved"
+  rotation_performed: false
+
+# With return_content: true (and no_log enabled in production)
+- changed: true
+  principal: "HTTP/web.example.com@EXAMPLE.COM"
+  content: "base64:VGhpc0lzQVVubGlzdGVkQmFzZTY0"
+  destination: "/etc/httpd/conf/httpd.keytab"
+  mode: "0600"
+  state: "retrieved"
+  rotation_performed: false
 ```
 
 ## Error Behavior

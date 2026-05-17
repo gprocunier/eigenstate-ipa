@@ -12,7 +12,7 @@ workflow_boundary: preflight
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -43,16 +43,33 @@ This workflow is `preflight`. Confirm that this is the intended boundary before 
 3. Inspect the returned evidence before continuing to any mutating step.
 
 ```bash
-ansible-playbook --syntax-check playbooks/service-onboarding.yml
+ansible-playbook --syntax-check playbooks/workload-secret-delivery-static-validation.yml
 ```
 
 {% endraw %}
 {% include task_example.html id="migrate-side-effecting-lookups" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The workflow produces the expected evidence or artifact for review.
+The static validation playbook exercises the render-only roles without hidden
+lookup-side effects. A captured run from this checkout produced:
+
+```text
+PLAY [Validate workload Secret delivery roles without a live cluster] *********
+
+TASK [eigenstate.ipa.kubernetes_secret_from_idm_vault : Render reviewable Kubernetes Secret manifest] ***
+changed: [localhost]
+
+TASK [eigenstate.ipa.kubernetes_tls_from_idm_cert : Render reviewable Kubernetes TLS Secret manifest] ***
+changed: [localhost]
+
+TASK [eigenstate.ipa.keytab_secret_render : Render reviewable keytab Secret manifest] ***
+changed: [localhost]
+
+PLAY RECAP **************************************************************
+localhost                  : ok=20   changed=6    unreachable=0    failed=0    skipped=15   rescued=0    ignored=0
+```
 
 ## Troubleshooting
 

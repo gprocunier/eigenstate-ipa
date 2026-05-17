@@ -37,9 +37,11 @@ State what this workflow reads, renders, checks, or mutates.
 2. TODO
 3. TODO
 
-## Expected Result
+## Expected Evidence
 
-Describe the artifact, state, or evidence produced.
+Show the concrete command output, rendered artifact excerpt, JSON/YAML keys, or
+IdM object state that proves the workflow succeeded. Do not use generic
+success prose.
 
 ## Troubleshooting
 

@@ -437,176 +437,144 @@ open-temporary-access-window:
 render-kubernetes-secret-from-idm-vault:
   heading: Example Review Manifest
   intro: >-
-    This playbook retrieves vault material and renders a redacted Kubernetes
+    This vars file drives the packaged wrapper playbook. It retrieves vault
+    material only when live lookup is enabled and renders a redacted Kubernetes
     Secret review manifest by default.
   files:
-    - name: render-vault-secret.yml
+    - name: render-vault-secret-vars.yml
       code: |
         ---
-        - name: Render a Kubernetes Secret from IdM vault material
-          hosts: localhost
-          gather_facts: false
-          roles:
-            - role: eigenstate.ipa.kubernetes_secret_from_idm_vault
-              vars:
-                eigenstate_k8s_secret_name: app-config
-                eigenstate_k8s_secret_namespace: payments
-                eigenstate_k8s_secret_output_dir: ./artifacts
-                eigenstate_k8s_secret_render_only: true
-                eigenstate_k8s_secret_apply: false
-                eigenstate_k8s_secret_render_review_manifest: true
-                eigenstate_k8s_secret_write_payload_manifest: false
-                eigenstate_k8s_secret_vault_name: app-config
-                eigenstate_k8s_secret_vault_shared: true
-                eigenstate_k8s_secret_server: idm-01.example.com
-                eigenstate_k8s_secret_kerberos_keytab: /runner/env/ipa/automation.keytab
+        eigenstate_k8s_secret_name: app-config
+        eigenstate_k8s_secret_namespace: payments
+        eigenstate_k8s_secret_output_dir: ./artifacts
+        eigenstate_k8s_secret_render_only: true
+        eigenstate_k8s_secret_apply: false
+        eigenstate_k8s_secret_render_review_manifest: true
+        eigenstate_k8s_secret_write_payload_manifest: false
+        eigenstate_k8s_secret_live_lookup_enabled: true
+        eigenstate_k8s_secret_vault_name: app-config
+        eigenstate_k8s_secret_vault_scope: shared
+        eigenstate_k8s_secret_server: idm-01.example.com
+        eigenstate_k8s_secret_kerberos_keytab: /runner/env/ipa/automation.keytab
   run: |
-    ansible-playbook render-vault-secret.yml
+    ansible-playbook playbooks/render-kubernetes-secret-from-idm-vault.yml \
+      -e @render-vault-secret-vars.yml
 
 render-kubernetes-tls-from-idm-cert:
   heading: Example TLS Secret Rendering
   intro: >-
-    This playbook renders a redacted TLS Secret manifest from certificate
+    This vars file renders a redacted TLS Secret manifest from certificate
     material that was already issued and reviewed.
   files:
-    - name: render-tls-secret.yml
+    - name: render-tls-secret-vars.yml
       code: |
         ---
-        - name: Render a Kubernetes TLS Secret review manifest
-          hosts: localhost
-          gather_facts: false
-          roles:
-            - role: eigenstate.ipa.kubernetes_tls_from_idm_cert
-              vars:
-                eigenstate_k8s_tls_secret_name: app-tls
-                eigenstate_k8s_tls_namespace: payments
-                eigenstate_k8s_tls_certificate: "{{ lookup('file', 'artifacts/app.pem') }}"
-                eigenstate_k8s_tls_private_key: "{{ lookup('file', 'private/app.key') }}"
-                eigenstate_k8s_tls_output_dir: ./artifacts
-                eigenstate_k8s_tls_render_only: true
-                eigenstate_k8s_tls_apply: false
-                eigenstate_k8s_tls_write_payload_manifest: false
-              no_log: true
+        eigenstate_k8s_tls_secret_name: app-tls
+        eigenstate_k8s_tls_namespace: payments
+        eigenstate_k8s_tls_certificate: "{{ lookup('file', 'artifacts/app.pem') }}"
+        eigenstate_k8s_tls_private_key: "{{ lookup('file', 'private/app.key') }}"
+        eigenstate_k8s_tls_output_dir: ./artifacts
+        eigenstate_k8s_tls_render_only: true
+        eigenstate_k8s_tls_apply: false
+        eigenstate_k8s_tls_render_review_manifest: true
+        eigenstate_k8s_tls_write_payload_manifest: false
   run: |
-    ansible-playbook render-tls-secret.yml
+    ansible-playbook playbooks/render-kubernetes-tls-secret-from-idm-cert.yml \
+      -e @render-tls-secret-vars.yml
 
 render-keytab-secret:
   heading: Example Keytab Secret Rendering
   intro: >-
-    This playbook renders a redacted Kubernetes Secret manifest for an already
+    This vars file renders a redacted Kubernetes Secret manifest for an already
     retrieved keytab.
   files:
-    - name: render-keytab-secret.yml
+    - name: render-keytab-secret-vars.yml
       code: |
         ---
-        - name: Render a keytab Secret review manifest
-          hosts: localhost
-          gather_facts: false
-          roles:
-            - role: eigenstate.ipa.keytab_secret_render
-              vars:
-                eigenstate_keytab_secret_name: app-http-keytab
-                eigenstate_keytab_secret_namespace: payments
-                eigenstate_keytab_secret_principal: HTTP/app01.example.com@EXAMPLE.COM
-                eigenstate_keytab_secret_keytab_b64: >-
-                  {{ lookup('file', 'artifacts/http.keytab.b64') }}
-                eigenstate_keytab_secret_output_dir: ./artifacts
-                eigenstate_keytab_secret_render_only: true
-                eigenstate_keytab_secret_apply: false
-                eigenstate_keytab_secret_write_payload_manifest: false
-              no_log: true
+        eigenstate_keytab_secret_name: app-http-keytab
+        eigenstate_keytab_secret_namespace: payments
+        eigenstate_keytab_secret_principal: HTTP/app01.example.com@EXAMPLE.COM
+        eigenstate_keytab_secret_keytab_b64: "{{ lookup('file', 'artifacts/http.keytab.b64') }}"
+        eigenstate_keytab_secret_output_dir: ./artifacts
+        eigenstate_keytab_secret_render_only: true
+        eigenstate_keytab_secret_apply: false
+        eigenstate_keytab_secret_render_review_manifest: true
+        eigenstate_keytab_secret_write_payload_manifest: false
   run: |
-    ansible-playbook render-keytab-secret.yml
+    ansible-playbook playbooks/render-keytab-secret.yml -e @render-keytab-secret-vars.yml
 
 render-openshift-identity-evidence:
   heading: Example OpenShift Identity Evidence
   intro: >-
-    This playbook renders OAuth/OIDC configuration and a readiness report from
+    This vars file renders OAuth/OIDC configuration and a readiness report from
     local evidence; it does not contact the cluster.
   files:
-    - name: render-openshift-identity.yml
+    - name: render-openshift-identity-vars.yml
       code: |
         ---
-        - name: Render OpenShift identity evidence from reviewed inputs
-          hosts: localhost
-          gather_facts: false
-          roles:
-            - role: eigenstate.ipa.openshift_idm_oidc_validation
-              vars:
-                eigenstate_oidc_issuer_url: https://keycloak.example.com/realms/openshift
-                eigenstate_oidc_client_id: openshift
-                eigenstate_oidc_client_secret_name: openid-client-secret
-                eigenstate_oidc_expected_groups:
-                  - ocp-platform-admins
-                  - ocp-developers
-                eigenstate_oidc_idm_known_groups:
-                  - ocp-platform-admins
-                  - ocp-developers
-                eigenstate_oidc_output_dir: ./artifacts
-                eigenstate_oidc_render_config: true
-                eigenstate_oidc_render_report: true
+        eigenstate_oidc_issuer_url: https://keycloak.example.com/realms/openshift
+        eigenstate_oidc_client_id: openshift
+        eigenstate_oidc_client_secret_name: openid-client-secret
+        eigenstate_oidc_expected_groups:
+          - ocp-platform-admins
+          - ocp-developers
+        eigenstate_oidc_idm_known_groups:
+          - ocp-platform-admins
+          - ocp-developers
+        eigenstate_oidc_output_dir: ./artifacts
+        eigenstate_oidc_render_config: true
+        eigenstate_oidc_render_report: true
   run: |
-    ansible-playbook render-openshift-identity.yml
+    ansible-playbook playbooks/render-openshift-oidc-config.yml \
+      -e @render-openshift-identity-vars.yml
 
 build-disconnected-aap-ee:
   heading: Example Execution Environment Build
   intro: >-
-    This playbook renders and builds an execution environment that contains the
+    This vars file renders and builds an execution environment that contains the
     collection and the IdM client dependencies needed by AAP jobs.
   files:
-    - name: build-eigenstate-idm-ee.yml
+    - name: aap-ee-build-vars.yml
       code: |
         ---
-        - name: Render and build the IdM execution environment
-          hosts: localhost
-          gather_facts: false
-          roles:
-            - role: eigenstate.ipa.aap_execution_environment
-              vars:
-                eigenstate_ee_render: true
-                eigenstate_ee_build: true
-                eigenstate_ee_smoke: true
-                eigenstate_ee_push: false
-                eigenstate_ee_register_controller: false
-                eigenstate_ee_output_dir: ./build/eigenstate-idm-ee
-                eigenstate_ee_image: localhost/eigenstate-idm-ee:dev
-                eigenstate_ee_base_image: registry.example.com/aap/ee-minimal-rhel9:latest
-                eigenstate_ee_collection_version: ">=1.18.0"
+        eigenstate_ee_render: true
+        eigenstate_ee_build: true
+        eigenstate_ee_smoke: true
+        eigenstate_ee_push: false
+        eigenstate_ee_register_controller: false
+        eigenstate_ee_output_dir: ./build/eigenstate-idm-ee
+        eigenstate_ee_image: localhost/eigenstate-idm-ee:dev
+        eigenstate_ee_base_image: registry.example.com/aap/ee-minimal-rhel9:latest
+        eigenstate_ee_collection_version: ">=1.18.0"
   run: |
-    ansible-playbook build-eigenstate-idm-ee.yml
+    ansible-playbook playbooks/aap-ee-build.yml -e @aap-ee-build-vars.yml
 
 generate-operational-evidence:
   heading: Example Evidence Report
   intro: >-
-    This playbook renders a deterministic readiness report from explicit check
+    This vars file renders a deterministic readiness report from explicit check
     records supplied by inventory, surveys, or an earlier discovery job.
   files:
-    - name: readiness-report.yml
+    - name: readiness-report-vars.yml
       code: |
         ---
-        - name: Render IdM readiness evidence
-          hosts: localhost
-          gather_facts: false
-          roles:
-            - role: eigenstate.ipa.idm_readiness_report
-              vars:
-                eigenstate_idm_readiness_report_site: prod-idm
-                eigenstate_idm_readiness_report_output_dir: ./artifacts
-                eigenstate_idm_readiness_report_checks:
-                  - id: kerberos-auth
-                    title: Kerberos authentication path
-                    status: pass
-                    severity: high
-                    evidence: AAP has a mounted automation keytab credential.
-                    recommendation: Keep keytab rotation under normal control.
-                  - id: idm-api
-                    title: IdM API reachability
-                    status: pass
-                    severity: high
-                    evidence: Controller execution nodes can reach idm-01.example.com.
-                    recommendation: Monitor API reachability from the EE subnet.
+        eigenstate_idm_readiness_report_site: prod-idm
+        eigenstate_idm_readiness_report_output_dir: ./artifacts
+        eigenstate_idm_readiness_report_checks:
+          - id: kerberos-auth
+            title: Kerberos authentication path
+            status: pass
+            severity: high
+            evidence: AAP has a mounted automation keytab credential.
+            recommendation: Keep keytab rotation under normal control.
+          - id: idm-api
+            title: IdM API reachability
+            status: pass
+            severity: high
+            evidence: Controller execution nodes can reach idm-01.example.com.
+            recommendation: Monitor API reachability from the EE subnet.
   run: |
-    ansible-playbook readiness-report.yml
+    ansible-playbook playbooks/report-idm-readiness.yml -e @readiness-report-vars.yml
 
 migrate-side-effecting-lookups:
   heading: Example Migration

@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/lookup/selinuxmap.py
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -122,6 +122,41 @@ Uses the C(ipalib) framework for all queries. Authentication follows the same ke
              'ops-root-local-map',
              server='idm-01.example.com',
              kerberos_keytab='/etc/admin.keytab') }}"
+```
+
+## Example Result Shapes
+
+```yaml
+# map_state (single map show result)
+map_state:
+  name: "ops-deploy-map"
+  exists: true
+  selinuxuser: "staff_u:s0-s0:c0.c1023"
+  enabled: true
+  usercategory: "all"
+  hostcategory: null
+  hbacrule: null
+  users: []
+  groups: []
+  hosts: ["idm-01.example.com"]
+  hostgroups: []
+  description: "Confine ops workloads to staff_u"
+
+# map_records_map (map_record)
+map_records_map:
+  - ops-deploy-map:
+      name: "ops-deploy-map"
+      exists: true
+      selinuxuser: "staff_u:s0-s0:c0.c1023"
+      enabled: true
+      usercategory: "all"
+      hostcategory: null
+      hbacrule: null
+      users: []
+      groups: []
+      hosts: ["idm-01.example.com"]
+      hostgroups: []
+      description: "Confine ops workloads to staff_u"
 ```
 
 ## Error Behavior

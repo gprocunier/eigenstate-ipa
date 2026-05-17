@@ -157,6 +157,21 @@ Supports retrieving existing keys (safe, default) or generating new random keys 
   no_log: true
 ```
 
+## Output Shape
+
+```yaml
+# value (default)
+- "MIIEvQIBADANBgkqhk...<base64>"
+
+# result_format: record
+- principal: "HTTP/webserver.idm.corp.lan"
+  value: "MIIEvQIBADANBgkqhk...<base64>"
+  encoding: "base64"
+
+# result_format: map
+- HTTP/webserver.idm.corp.lan: "MIIEvQIBADANBgkqhk...<base64>"
+```
+
 ## Error Behavior
 
 Lookup failures are task failures unless the caller handles them with Ansible error controls. Authentication, missing objects, invalid modes, and unavailable IdM APIs should be treated as explicit workflow failures.

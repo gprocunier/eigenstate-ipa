@@ -16,5 +16,13 @@
     <h3>Run It</h3>
     <pre><code class="language-bash">{{ example.run | escape }}</code></pre>
   {% endif %}
+  {% if example.output %}
+    <h3>Expected Evidence</h3>
+    <pre><code class="language-text">{{ example.output | escape }}</code></pre>
+  {% endif %}
+  {% if example.artifacts %}
+    <h3>Expected Artifacts</h3>
+    <pre><code class="language-text">{{ example.artifacts | escape }}</code></pre>
+  {% endif %}
 </section>
 {% endif %}

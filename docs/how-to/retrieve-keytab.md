@@ -13,7 +13,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -50,7 +50,7 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
 ```yaml
 - name: Retrieve existing service keytab
   ansible.builtin.set_fact:
-    service_keytab_b64: "{{ lookup('eigenstate.ipa.keytab', 'HTTP/app.example.com', operation='retrieve') }}"
+    service_keytab_b64: "{{ lookup('eigenstate.ipa.keytab', 'HTTP/app.example.com', retrieve_mode='retrieve') }}"
   no_log: true
 ```
 
@@ -58,9 +58,14 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
 {% include task_example.html id="retrieve-keytab" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The play receives base64 keytab content without rotating principal keys or printing the payload.
+The lookup returns base64 keytab content for the requested principal with no key rotation.
+
+```text
+TASK [Retrieve existing service keytab] ********************************
+changed: [localhost] => (output redacted by no_log)
+```
 
 ## Troubleshooting
 

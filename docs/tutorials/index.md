@@ -12,7 +12,7 @@ workflow_boundary: read-only
 evidence_shape:
   - architecture-boundary
 public_status: stub
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 
 # Tutorials

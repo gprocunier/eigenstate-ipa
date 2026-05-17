@@ -161,6 +161,39 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
       ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD'))[0].exists
 ```
 
+## Example Result Shapes
+
+```yaml
+# token_uris (operation=add, result_format=value)
+token_uris:
+  - "otpauth://totp/automation:jsmith?secret=<redacted>&issuer=automation"
+
+# token_records (operation=add, result_format=record)
+token_records:
+  - owner: "jsmith"
+    token_id: "ipatoken-01AA-..."
+    type: "totp"
+    algorithm: "sha1"
+    digits: 6
+    interval: 30
+    disabled: false
+    description: "CI user automation token"
+    exists: true
+    uri: "otpauth://totp/automation:jsmith?secret=<redacted>&issuer=automation"
+
+# show_result (token missing) when exists=false
+token_state:
+  token_id: "missing-token-id"
+  owner: null
+  type: null
+  algorithm: null
+  digits: null
+  interval: null
+  disabled: null
+  description: null
+  exists: false
+```
+
 ## Error Behavior
 
 Lookup failures are task failures unless the caller handles them with Ansible error controls. Authentication, missing objects, invalid modes, and unavailable IdM APIs should be treated as explicit workflow failures.

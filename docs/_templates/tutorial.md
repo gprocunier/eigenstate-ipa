@@ -34,7 +34,9 @@ Describe the safe lab or minimal environment assumptions.
 
 ## Expected Evidence
 
-Show the shape of successful output without real secret material.
+Show the captured or reproducible output shape without real secret material.
+Include command recap, artifact paths, or JSON/YAML excerpts that teach the
+reader what success looks like.
 
 ## What Changed
 

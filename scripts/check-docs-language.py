@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import shlex
 import sys
 from pathlib import Path
 
@@ -28,8 +29,18 @@ SKIP_FILES = {
     PROJECT_ROOT / "docs" / "_data" / "forbidden_terms.yml",
 }
 TEXT_SUFFIXES = {".md", ".html", ".txt", ".yml", ".yaml"}
+GENERIC_EXPECTED_RESULT = (
+    "The workflow produces the expected evidence or artifact for review"
+)
+EXPECTED_HEADING_RE = re.compile(r"^## Expected (Result|Output|Evidence)\s*$", re.IGNORECASE)
+NEXT_H2_RE = re.compile(r"^##\s+")
+ANSIBLE_PLAYBOOK_RE = re.compile(r"\bansible-playbook\s+([^\n`]+)")
 PLACEHOLDER_RE = re.compile(
     r"^(TODO|CHANGEME|REDACTED|<[^>]+>|\{\{[^}]+\}\}|\$\{[^}]+\}|example|dummy|changeme)$",
+    re.IGNORECASE,
+)
+PLACEHOLDER_SECTION_RE = re.compile(
+    r"\b(TODO|TBD|fill this in|expected evidence goes here|expected output goes here)\b",
     re.IGNORECASE,
 )
 
@@ -99,6 +110,71 @@ def has_nearby_no_log(lines: list[str], index: int) -> bool:
     return any("no_log: true" in line for line in lines[start:end])
 
 
+def frontmatter_value(lines: list[str], key: str) -> str | None:
+    if not lines or lines[0].strip() != "---":
+        return None
+    for line in lines[1:]:
+        if line.strip() == "---":
+            return None
+        if line.startswith(f"{key}:"):
+            return line.split(":", 1)[1].strip().strip("'\"")
+    return None
+
+
+def expected_section_body(lines: list[str], heading_index: int) -> str:
+    body: list[str] = []
+    for line in lines[heading_index + 1 :]:
+        if NEXT_H2_RE.match(line):
+            break
+        body.append(line)
+    return "\n".join(body).strip()
+
+
+def has_concrete_evidence(body: str) -> bool:
+    if not body:
+        return False
+    if PLACEHOLDER_SECTION_RE.search(body):
+        return False
+    evidence_markers = [
+        "```",
+        "PLAY RECAP",
+        "TASK [",
+        "changed=",
+        "ok=",
+        "apiVersion:",
+        "kind:",
+        '"schema"',
+        "'schema'",
+    ]
+    if any(marker in body for marker in evidence_markers):
+        return True
+    if re.search(r"^\s*[-*]\s+`?[/A-Za-z0-9_.-]+`?:", body, re.MULTILINE):
+        return True
+    return False
+
+
+def extract_playbook_reference(command_tail: str) -> str | None:
+    try:
+        tokens = shlex.split(command_tail, comments=False, posix=True)
+    except ValueError:
+        tokens = command_tail.split()
+
+    skip_next = False
+    for token in tokens:
+        if skip_next:
+            skip_next = False
+            continue
+        if token in {"-i", "--inventory", "-e", "--extra-vars", "--limit", "-l"}:
+            skip_next = True
+            continue
+        if token.startswith("-"):
+            continue
+        cleaned = token.strip("'\"")
+        if cleaned.endswith((".yml", ".yaml")):
+            return cleaned
+    return None
+
+
 def main() -> int:
     block_terms, filename_terms = load_terms()
     block_patterns = [
@@ -128,11 +204,21 @@ def main() -> int:
                 failures.append(f"{rel}: filename contains blocked public term")
 
         lines = path.read_text(encoding="utf-8").splitlines()
+        public_status = frontmatter_value(lines, "public_status")
+        check_expected_sections = (
+            path.suffix == ".md"
+            and "_templates" not in path.parts
+            and public_status not in {"draft", "stub"}
+        )
+
         for index, line in enumerate(lines):
             lineno = index + 1
             for pattern in block_patterns:
                 if pattern.search(line):
                     failures.append(f"{rel}:{lineno}: blocked public term: {line.strip()}")
+
+            if GENERIC_EXPECTED_RESULT in line:
+                failures.append(f"{rel}:{lineno}: generic expected-result placeholder")
 
             assignment = secret_assignment.match(line)
             if assignment and not is_placeholder(assignment.group(2)):
@@ -148,6 +234,23 @@ def main() -> int:
                 window = "\n".join(lines[max(0, index - 4) : min(len(lines), index + 5)])
                 if re.search(r"vault|keytab|cert|otp|secret", window, re.IGNORECASE):
                     failures.append(f"{rel}:{lineno}: no_log: false near secret-bearing context")
+
+            if check_expected_sections and EXPECTED_HEADING_RE.match(line):
+                body = expected_section_body(lines, index)
+                if not has_concrete_evidence(body):
+                    failures.append(
+                        f"{rel}:{lineno}: expected section lacks concrete output or artifact evidence"
+                    )
+
+            if path.suffix == ".md":
+                for command in ANSIBLE_PLAYBOOK_RE.finditer(line):
+                    playbook_ref = extract_playbook_reference(command.group(1))
+                    if playbook_ref and playbook_ref.startswith("playbooks/"):
+                        playbook_path = PROJECT_ROOT / playbook_ref
+                        if not playbook_path.is_file():
+                            failures.append(
+                                f"{rel}:{lineno}: referenced playbook does not exist: {playbook_ref}"
+                            )
 
     if failures:
         print("Public documentation language validation failed:")

@@ -13,7 +13,7 @@ workflow_boundary: mutating
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -47,8 +47,10 @@ This workflow is `mutating`. Confirm that this is the intended boundary before p
 - name: Request certificate from IdM CA
   eigenstate.ipa.cert_request:
     principal: HTTP/app.example.com
-    csr_path: /secure/csr/http-app.csr
+    csr_file: /secure/csr/http-app.csr
     destination: /secure/certs/http-app.crt
+    server: idm-01.example.com
+    kerberos_keytab: /runner/env/ipa/automation.keytab
     mode: "0644"
 ```
 
@@ -56,9 +58,24 @@ This workflow is `mutating`. Confirm that this is the intended boundary before p
 {% include task_example.html id="request-idm-certificate" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The module returns certificate metadata and optionally writes the issued certificate. It does not handle private-key material.
+The module returns certificate metadata and writes the issued certificate when `destination` is set.
+
+```text
+TASK [Request certificate from IdM CA] *********************************
+changed: [localhost] => {
+    "changed": true,
+    "principal": "HTTP/app.example.com@EXAMPLE.COM",
+    "destination": "/secure/certs/http-app.crt",
+    "metadata": {
+        "serial_number": "01AB12CD34EF",
+        "subject": "CN=app.example.com,O=Example",
+        "issuer": "CN=Certificate Authority,O=Example",
+        "revoked": false
+    }
+}
+```
 
 ## Troubleshooting
 

@@ -12,7 +12,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -48,12 +48,41 @@ redacted and use a CSR generated outside the playbook.
 {% include task_example.html id="service-onboarding-with-principal-keytab-cert" %}
 {% raw %}
 
-## Expected Result
+```bash
+ansible-playbook -i inventory.eigenstate_ipa.yml onboard-service.yml
+```
 
-The play should stop at the principal preflight if IdM is missing the service
-principal. When the preflight passes, the keytab retrieval task remains redacted
-and the certificate task writes only the issued certificate, not private-key
-material.
+## Expected Evidence
+
+If the principal exists, the run proceeds through keytab retrieval (redacted)
+and certificate request.
+
+```text
+PLAY [Onboard an HTTP service through IdM-backed checks] ***************
+
+TASK [Confirm the service principal exists] ****************************
+ok: [app01.example.com] => {
+    "msg": "Assertion passed"
+}
+
+TASK [Retrieve the existing service keytab] ****************************
+changed: [app01.example.com] => (output redacted by no_log)
+
+TASK [Request certificate from an existing CSR] ************************
+changed: [app01.example.com]
+
+PLAY RECAP ************************************************************
+app01.example.com : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+
+When the principal is missing, the role fails at the preflight stage and does not
+retrieve keytab/certificate material:
+
+```text
+TASK [Confirm the service principal exists] *****************************
+failed: [app01.example.com] => {"msg": "Assertion failed"}
+...preflight for service principal failed; workflow stopped
+```
 
 ## What You Learned
 

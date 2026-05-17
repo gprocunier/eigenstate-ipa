@@ -14,7 +14,7 @@ workflow_boundary: render-only
 evidence_shape:
   - review-manifest
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -56,9 +56,37 @@ ansible-playbook playbooks/render-keytab-secret.yml
 {% include task_example.html id="render-keytab-secret" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The workflow produces the expected evidence or artifact for review.
+The role renders a review manifest with redacted payload fields and no secret
+material in clear text. A captured render run produced:
+
+```text
+PLAY [Render Kubernetes Secret manifest for keytab delivery] *************
+
+TASK [eigenstate.ipa.keytab_secret_render : Render reviewable keytab Secret manifest] ***
+changed: [localhost]
+
+PLAY RECAP ************************************************************
+localhost                  : ok=6    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
+```
+
+The review artifact keeps the keytab payload redacted:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "idm-keytab-secret"
+  namespace: "default"
+  annotations:
+    eigenstate.ipa/payload: "redacted-in-review-manifest"
+    eigenstate.ipa/principal: "HTTP/app.example.com@EXAMPLE.COM"
+    eigenstate.ipa/source: "idm-keytab"
+type: Opaque
+stringData:
+  service.keytab: "REDACTED"
+```
 
 ## Troubleshooting
 

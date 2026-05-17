@@ -12,7 +12,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -53,7 +53,7 @@ ansible-playbook -i inventory.eigenstate_ipa.yml list-hosts.yml
 {% include task_example.html id="first-idm-inventory" %}
 {% raw %}
 
-## Expected Output
+## Expected Evidence
 
 This output shape was captured from a live IdM inventory run and sanitized.
 Hostnames and the policy name are examples, but the group structure and debug

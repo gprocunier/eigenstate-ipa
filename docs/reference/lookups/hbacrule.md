@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/lookup/hbacrule.py
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -133,6 +133,46 @@ Uses the C(ipalib) framework for all queries. Authentication follows the same ke
                'ops-deploy',
                server='idm-01.example.com',
                kerberos_keytab='/etc/admin.keytab') }}"
+```
+
+## Example Result Shapes
+
+```yaml
+# rule_state (operation=show, record format)
+rule_state:
+  name: "ops-deploy"
+  exists: true
+  enabled: true
+  usercategory: "all"
+  hostcategory: "all"
+  servicecategory: "all"
+  users: []
+  groups: []
+  hosts: ["idm-01.example.com"]
+  hostgroups: []
+  services: ["sshd"]
+  servicegroups: []
+  description: "Allow ops SSH access"
+
+# test_result (operation=test)
+test_result:
+  - user: "automation-svc"
+    targethost: "idm-01.example.com"
+    service: "sshd"
+    matched: ["ops-deploy"]
+    notmatched: ["legacy-ops"]
+    denied: false
+
+# rule_map (map_record)
+rule_map:
+  - ops-deploy:
+      name: "ops-deploy"
+      exists: true
+      enabled: true
+    ops-patch:
+      name: "ops-patch"
+      exists: true
+      enabled: false
 ```
 
 ## Error Behavior

@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/lookup/cert.py
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -183,6 +183,41 @@ Designed as a drop-in alternative to HashiCorp Vault's PKI secrets engine when R
                        server='idm-01.example.com',
                        kerberos_keytab='/etc/krb5.keytab',
                        encoding='base64') }}"
+```
+
+## Output Shape
+
+```yaml
+# record output for request/find
+- name: "HTTP/web.example.com@EXAMPLE.COM"
+  value: "-----BEGIN CERTIFICATE-----\n<REDACTED>\n-----END CERTIFICATE-----"
+  encoding: "pem"
+  metadata:
+    serial_number: "0x1A2B3C"
+    subject: "CN=web.example.com,O=Example"
+    issuer: "CN=IPA CA,O=Example"
+    valid_not_before: "2026-01-01T00:00:00Z"
+    valid_not_after: "2026-12-31T23:59:59Z"
+    san:
+      - "DNS:web.example.com"
+    revoked: false
+    revocation_reason: null
+
+# map_record style for retrieve operation
+- "12345":
+    name: "12345"
+    value: "REDACTED_BASE64_CERT_OR_PEM"
+    encoding: "pem"
+    metadata:
+      serial_number: "0x1A2B3C"
+      subject: "CN=web.example.com,O=Example"
+      issuer: "CN=IPA CA,O=Example"
+      valid_not_before: "2026-01-01T00:00:00Z"
+      valid_not_after: "2026-12-31T23:59:59Z"
+      san:
+        - "DNS:web.example.com"
+      revoked: false
+      revocation_reason: null
 ```
 
 ## Error Behavior

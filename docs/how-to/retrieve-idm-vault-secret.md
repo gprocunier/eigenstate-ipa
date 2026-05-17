@@ -13,7 +13,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -58,9 +58,20 @@ Do not print payload material. Use `no_log: true` on payload-bearing tasks. Revi
 {% include task_example.html id="retrieve-idm-vault-secret" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The play has the payload in memory for downstream use, and task output does not expose the value.
+The live validation proves the vault payload was retrieved and verified without
+printing the payload:
+
+```json
+{
+  "vault_artifact": {
+    "read_back_verified": true,
+    "missing_failure_class": "vault_not_found",
+    "mismatch_failure_class": "digest_mismatch"
+  }
+}
+```
 
 ## Troubleshooting
 

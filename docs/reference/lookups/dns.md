@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/lookup/dns.py
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -53,7 +53,7 @@ Use this plugin when playbooks need to validate forward or reverse records, conf
 | `result_format` | str | no | record | record, map_record | How to shape the lookup result. C(record) returns a list of records, one per DNS entry. C(map_record) returns a single dictionary keyed by the record name. |
 | `server` | str | yes |  |  | FQDN or IP address of the IPA server. |
 | `verify` | str | no |  |  | Path to the IPA CA certificate for TLS verification. Set to C(false) to skip an explicit CA override and rely on the system trust behavior from C(ipalib). Falls back to C(/etc/ipa/ca.crt) when present; disables verification with a warning otherwise. |
-| `zone` | str | yes |  |  | DNS zone to query. This is required for both C(show) and C(find). Examples include C(workshop.lan) and C(0.16.172.in-addr.arpa). |
+| `zone` | str | yes |  |  | DNS zone to query. This is required for both C(show) and C(find). Examples include C(example.com) and C(2.0.192.in-addr.arpa). |
 
 ## Notes
 
@@ -78,7 +78,7 @@ Use this plugin when playbooks need to validate forward or reverse records, conf
   ansible.builtin.set_fact:
     dns_record: "{{ lookup('eigenstate.ipa.dns',
                      'idm-01',
-                     zone='workshop.lan',
+                     zone='example.com',
                      server='idm-01.example.com',
                      kerberos_keytab='/etc/admin.keytab') }}"
 
@@ -87,16 +87,16 @@ Use this plugin when playbooks need to validate forward or reverse records, conf
   ansible.builtin.debug:
     msg: "{{ lookup('eigenstate.ipa.dns',
              '@',
-             zone='workshop.lan',
+             zone='example.com',
              server='idm-01.example.com',
              kerberos_keytab='/etc/admin.keytab') }}"
 
 # Find PTR records in a reverse zone
-- name: List PTR records in 0.16.172.in-addr.arpa
+- name: List PTR records in 2.0.192.in-addr.arpa
   ansible.builtin.set_fact:
     ptr_records: "{{ lookup('eigenstate.ipa.dns',
                       operation='find',
-                      zone='0.16.172.in-addr.arpa',
+                      zone='2.0.192.in-addr.arpa',
                       record_type='ptrrecord',
                       server='idm-01.example.com',
                       kerberos_keytab='/etc/admin.keytab') }}"
@@ -106,10 +106,47 @@ Use this plugin when playbooks need to validate forward or reverse records, conf
   ansible.builtin.set_fact:
     dns_map: "{{ lookup('eigenstate.ipa.dns',
                   'idm-01', 'bastion-01', 'mirror-registry',
-                  zone='workshop.lan',
+                  zone='example.com',
                   result_format='map_record',
                   server='idm-01.example.com',
                   kerberos_keytab='/etc/admin.keytab') }}"
+```
+
+## Example Result Shapes
+
+```yaml
+# dns_record (show operation)
+dns_record:
+  name: "idm-01"
+  zone: "example.com"
+  fqdn: "idm-01.example.com"
+  exists: true
+  ttl: 3600
+  record_types: ["arecord"]
+  records:
+    arecord: ["192.0.2.10"]
+  template_record_types: []
+  template_records: {}
+  is_zone_apex: false
+  zone_active: true
+  allow_dyn_update: true
+  allow_query: "any;"
+  allow_transfer: "none;"
+
+# dns_records (find operation, multiple records)
+dns_records:
+  - name: "idm-01"
+    zone: "example.com"
+    exists: true
+    record_types: ["arecord"]
+    records:
+      arecord: ["192.0.2.10"]
+  - name: "bastion-01"
+    zone: "example.com"
+    exists: true
+    record_types: ["arecord"]
+    records:
+      arecord: ["192.0.2.11"]
 ```
 
 ## Error Behavior

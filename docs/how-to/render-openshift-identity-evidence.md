@@ -13,7 +13,7 @@ workflow_boundary: render-only
 evidence_shape:
   - review-manifest
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -51,9 +51,45 @@ ansible-playbook playbooks/render-openshift-oidc-config.yml
 {% include task_example.html id="render-openshift-identity-evidence" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The workflow produces the expected evidence or artifact for review.
+The role renders review configuration plus readiness evidence artifacts. A
+captured render run produced:
+
+```text
+PLAY [Render OpenShift OAuth OIDC configuration] ***********************
+
+TASK [openshift_idm_oidc_validation : Validate OpenShift OIDC inputs]
+ok: [localhost]
+
+TASK [openshift_idm_oidc_validation : Render OpenShift OAuth OIDC configuration example]
+changed: [localhost]
+
+TASK [openshift_idm_oidc_validation : Render OpenShift OIDC JSON report]
+changed: [localhost]
+
+PLAY RECAP ************************************************************
+localhost                  : ok=12   changed=4    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+```
+
+The OAuth review artifact has the concrete OpenShift API shape:
+
+```yaml
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - mappingMethod: claim
+    name: openshift
+    openID:
+      clientID: openshift
+      clientSecret:
+        name: openid-client-secret
+      issuer: https://keycloak.example.com/realms/openshift
+    type: OpenID
+```
 
 ## Troubleshooting
 

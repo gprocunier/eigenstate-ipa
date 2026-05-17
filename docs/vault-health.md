@@ -12,7 +12,7 @@ workflow_boundary: preflight
 evidence_shape:
   - command-output
 public_status: new
-last_verified: 2026-05-16
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -73,10 +73,49 @@ Validate in the lab against a KRA-enabled server and, when available, a server
 that cannot complete vault operations directly:
 
 ```bash
-ansible-playbook playbooks/validate-vault-health.yml -e server=idm-01.example.com
+ansible-playbook -i localhost, -c local - <<'EOF'
+- hosts: localhost
+  gather_facts: false
+  vars:
+    server: idm-01.example.com
+    ipaadmin_principal: automation@EXAMPLE.COM
+    shared: true
+    canary_vault: automation-health-canary
+    canary_max_age_seconds: 3600
+    require_direct_kra: true
+  tasks:
+    - name: Check vault health on an explicit server
+      eigenstate.ipa.vault_health:
+        server: "{{ server }}"
+        kerberos_keytab: /runner/env/ipa/automation.keytab
+        ipaadmin_principal: "{{ ipaadmin_principal }}"
+        verify: /etc/ipa/ca.crt
+        shared: "{{ shared }}"
+        canary_vault: "{{ canary_vault }}"
+        canary_max_age_seconds: "{{ canary_max_age_seconds | int }}"
+        require_direct_kra: "{{ require_direct_kra }}"
+      register: vault_health
+EOF
 ```
 
 Capture the server, principal, CA path, KRA topology, canary result, and any
 negative-test failure class.
+
+Live validation captured this evidence against a KRA-enabled IdM server. The
+server name is sanitized for publication:
+
+```json
+{
+  "kra_topology": "KRA server role present on idm-01.example.com",
+  "server": "idm-01.example.com",
+  "vault_health": {
+    "canary_present": true,
+    "failure_class": "none",
+    "idm_reachable": true,
+    "kra_available": true,
+    "vault_reachable": true
+  }
+}
+```
 
 {% endraw %}

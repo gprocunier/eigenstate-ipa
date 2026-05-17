@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/lookup/sudo.py
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -110,6 +110,43 @@ Uses the C(ipalib) framework for all queries. Authentication follows the same ke
                      result_format='map_record',
                      server='idm-01.example.com',
                      kerberos_keytab='/etc/admin.keytab') }}"
+```
+
+## Example Result Shapes
+
+```yaml
+# rule_state (operation=show, record format)
+rule_state:
+  name: "ops-maintenance"
+  object_type: "rule"
+  exists: true
+  description: "Standard ops maintenance rule"
+  enabled: true
+  users: ["automation-svc"]
+  groups: []
+  hosts: ["idm-01.example.com"]
+  hostgroups: []
+  allow_sudocmds: ["/usr/bin/systemctl", "/usr/bin/journalctl"]
+  allow_sudocmdgroups: []
+  deny_sudocmds: []
+  deny_sudocmdgroups: []
+  hostmasks: []
+  sudooptions: ["ignore_lecture=1"]
+
+# rules_by_name (map_record)
+rules_by_name:
+  - ops-maintenance:
+      name: "ops-maintenance"
+      object_type: "rule"
+      exists: true
+      description: "Standard ops maintenance rule"
+      enabled: true
+    ops-deploy:
+      name: "ops-deploy"
+      object_type: "rule"
+      exists: true
+      description: "Deployment exception rule"
+      enabled: false
 ```
 
 ## Error Behavior

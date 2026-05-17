@@ -202,6 +202,26 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
   no_log: true
 ```
 
+## Example Result Shapes
+
+```yaml
+# vault_records (explicit record format, multiple terms)
+vault_records:
+  - name: "api-key"
+    scope: "shared"
+    encoding: "utf-8"
+    value: "<redacted>"
+  - name: "db-pass"
+    scope: "shared"
+    encoding: "utf-8"
+    value: "<redacted>"
+
+# vault_map (record shape keyed by vault name)
+vault_map:
+  api-key: "<redacted>"
+  db-pass: "<redacted>"
+```
+
 ## Error Behavior
 
 Lookup failures are task failures unless the caller handles them with Ansible error controls. Authentication, missing objects, invalid modes, and unavailable IdM APIs should be treated as explicit workflow failures.

@@ -12,7 +12,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -43,16 +43,31 @@ This workflow is `read-only`. Confirm that this is the intended boundary before 
 3. Inspect the returned evidence before continuing to any mutating step.
 
 ```bash
-lookup('eigenstate.ipa.sudo', 'deploy-web', object_type='rule', result_format='record')
+lookup('eigenstate.ipa.sudo', 'deploy-web', sudo_object='rule', result_format='record')
 ```
 
 {% endraw %}
 {% include task_example.html id="inspect-sudo-policy" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The workflow produces the expected evidence or artifact for review.
+The lookup returns the rule payload so you can validate command allow-lists before privileged execution.
+
+```text
+{
+  "changed": false,
+  "exists": true,
+  "enabled": true,
+  "commands": [
+    "/usr/bin/systemctl",
+    "/usr/bin/journalctl"
+  ],
+  "usercategory": "all",
+  "hostcategory": "all",
+  "hostgroup": []
+}
+```
 
 ## Troubleshooting
 

@@ -12,7 +12,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -38,23 +38,56 @@ A redacted review manifest from IdM-sourced material.
 
 1. Select the render role for vault, TLS, or keytab material.
 2. Run the wrapper playbook with review output enabled.
-3. Inspect the redacted review manifest.
+3. Inspect the redacted review manifest in `./artifacts`.
 4. Defer payload rendering and cluster apply until controls are reviewed.
 
 ```bash
 ansible-playbook render-workload-secret.yml
+ls -l artifacts
+sed -n '1,80p' artifacts/kubernetes-secret-from-idm-vault.review.yaml
 ```
 
 {% endraw %}
 {% include task_example.html id="render-workload-secret" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The role should write a review manifest under `./artifacts` and omit or redact
-payload values. Keep `eigenstate_k8s_secret_write_payload_manifest: false`
-while learning the workflow so the tutorial does not create a secret-bearing
-artifact.
+The playbook creates a review-only manifest and keeps payload values redacted.
+A captured render run with `app-config` in the `tutorial` namespace produced:
+
+```text
+PLAY [Render Kubernetes Secret manifest from IdM vault material] ***************
+
+TASK [eigenstate.ipa.kubernetes_secret_from_idm_vault : Create Kubernetes Secret output directory] ***
+changed: [localhost]
+
+TASK [eigenstate.ipa.kubernetes_secret_from_idm_vault : Render reviewable Kubernetes Secret manifest] ***
+changed: [localhost]
+
+TASK [eigenstate.ipa.kubernetes_secret_from_idm_vault : Render protected Kubernetes Secret manifest with payload] ***
+skipping: [localhost]
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=6    changed=2    unreachable=0    failed=0    skipped=10   rescued=0    ignored=0
+```
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "app-config"
+  namespace: "tutorial"
+  labels:
+    app.kubernetes.io/managed-by: "eigenstate.ipa"
+    app.kubernetes.io/component: "workload-secret-delivery"
+  annotations:
+    eigenstate.ipa/source: "idm-vault"
+    eigenstate.ipa/payload: "redacted-in-review-manifest"
+type: "Opaque"
+stringData:
+  artifact: "REDACTED"
+```
 
 ## What You Learned
 

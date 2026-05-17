@@ -12,7 +12,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -43,15 +43,32 @@ A task that retrieves one lab vault value without printing it.
 Create `first-vault-retrieval.yml` from the example below and keep the
 payload-bearing retrieval task redacted.
 
+```bash
+ansible-playbook first-vault-retrieval.yml
+```
+
 {% endraw %}
 {% include task_example.html id="first-vault-retrieval" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The visible output should confirm that the play reached the final reporting task
-without printing the vault payload. Secret-bearing retrieval remains hidden by
-`no_log: true`, so do not expect the vault value to appear in stdout.
+The successful run confirms collection usage and stops output at shape-only proof.
+
+```text
+PLAY [Retrieve one IdM vault value safely] *****************************
+
+TASK [Read a shared vault value into memory] ***************************
+ok: [localhost] => (output suppressed by no_log)
+
+TASK [Report only that retrieval succeeded] ****************************
+ok: [localhost] => {
+    "msg": "Retrieved app-bootstrap from IdM vault for this job."
+}
+
+PLAY RECAP ************************************************************
+localhost : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
 
 ## What You Learned
 

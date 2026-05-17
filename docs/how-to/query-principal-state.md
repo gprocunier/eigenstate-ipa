@@ -13,7 +13,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -52,9 +52,18 @@ This workflow is `read-only`. Confirm that this is the intended boundary before 
 {% include task_example.html id="query-principal-state" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The play receives structured principal records for preflight decisions.
+`result_format='record'` returns principal state that can drive assertions:
+
+```yaml
+principal_state:
+  exists: true
+  principal: HTTP/app.example.com@EXAMPLE.COM
+  principal_type: service
+  has_keytab: true
+  disabled: false
+```
 
 ## Troubleshooting
 

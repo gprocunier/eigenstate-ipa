@@ -14,7 +14,7 @@ workflow_boundary: render-only
 evidence_shape:
   - review-manifest
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -52,9 +52,37 @@ ansible-playbook playbooks/render-kubernetes-tls-secret-from-idm-cert.yml
 {% include task_example.html id="render-kubernetes-tls-from-idm-cert" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The workflow produces the expected evidence or artifact for review.
+The role renders a review-only TLS Secret manifest with redacted certificate
+fields. A captured render run produced:
+
+```text
+PLAY [Render Kubernetes TLS Secret manifest from IdM certificate material]
+
+TASK [eigenstate.ipa.kubernetes_tls_from_idm_cert : Render reviewable Kubernetes TLS Secret manifest] ***
+changed: [localhost]
+
+PLAY RECAP ************************************************************
+localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
+```
+
+The review artifact redacts both TLS fields:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "idm-tls-secret"
+  namespace: "default"
+  annotations:
+    eigenstate.ipa/payload: "redacted-in-review-manifest"
+    eigenstate.ipa/source: "idm-cert"
+type: kubernetes.io/tls
+stringData:
+  tls.crt: "REDACTED"
+  tls.key: "REDACTED"
+```
 
 ## Troubleshooting
 

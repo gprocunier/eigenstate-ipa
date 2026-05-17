@@ -12,7 +12,7 @@ workflow_boundary: read-only
 evidence_shape:
   - command-output
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 {% raw %}
 
@@ -50,9 +50,22 @@ lookup('eigenstate.ipa.selinuxmap', 'staff_u_map', result_format='record')
 {% include task_example.html id="inspect-selinux-map-scope" %}
 {% raw %}
 
-## Expected Result
+## Expected Evidence
 
-The workflow produces the expected evidence or artifact for review.
+The lookup returns map state and HBAC link fields in a deterministic structure.
+
+```text
+{
+  "changed": false,
+  "exists": true,
+  "enabled": true,
+  "name": "ops-deploy-map",
+  "hbacrule": "ops-deploy",
+  "users": [
+    "staff_u"
+  ]
+}
+```
 
 ## Troubleshooting
 
