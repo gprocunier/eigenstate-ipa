@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.18.1 - 2026-05-17
+
+- hardened public documentation examples so tutorial, how-to, and reference
+  pages show concrete expected evidence and artifact shapes instead of generic
+  placeholder results
+- corrected inconsistent playbook and report names across documentation flows so
+  command examples, workflow prose, and expected outputs line up
+- added documentation language checks for weak expected-result placeholders and
+  expanded Markdown example validation coverage for code fences and task example
+  data
+- fixed the GitHub Pages desktop layout so reference pages scale with the
+  browser viewport instead of pinning content to a narrow centered column
+- fixed docs code rendering edge cases that could create page-level horizontal
+  overflow on narrow viewports
+
 ## 1.18.0 - 2026-05-17
 
 - added normalized IdM inventory host attributes with raw-value companions,

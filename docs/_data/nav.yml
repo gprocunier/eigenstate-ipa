@@ -227,6 +227,8 @@ groups:
         url: /reference/support-matrix.html
       - title: Release Process
         url: /reference/release-process.html
+      - title: Release Notes 1.18.1
+        url: /release-notes/1.18.1.html
       - title: Release Notes 1.18.0
         url: /release-notes/1.18.0.html
 
