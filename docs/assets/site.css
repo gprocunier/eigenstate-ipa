@@ -12,9 +12,8 @@
   --rh-gray-80: #4d4d4d;
   --rh-gray-90: #151515;
   --rh-link: #0066cc;
-  --rh-max-width: 1480px;
-  --rh-body-width: 860px;
-  --rh-sidebar-width: 340px;
+  --rh-page-gutter: clamp(1rem, 3vw, 4rem);
+  --rh-sidebar-width: clamp(18rem, 20vw, 23rem);
 }
 
 @font-face {
@@ -62,10 +61,11 @@ a {
 .site-header__inner,
 .site-footer,
 .page-shell {
-  max-width: var(--rh-max-width);
-  margin: 0 auto;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-left: var(--rh-page-gutter);
+  padding-right: var(--rh-page-gutter);
 }
 
 .site-header__inner {
@@ -159,7 +159,7 @@ a {
 
 .page-shell {
   display: grid;
-  grid-template-columns: minmax(220px, var(--rh-sidebar-width)) minmax(0, var(--rh-body-width));
+  grid-template-columns: minmax(240px, var(--rh-sidebar-width)) minmax(0, 1fr);
   gap: 3rem;
   padding-top: 2rem;
   padding-bottom: 4rem;
@@ -167,7 +167,7 @@ a {
 }
 
 .page-shell--wide {
-  grid-template-columns: minmax(220px, var(--rh-sidebar-width)) minmax(0, 980px);
+  grid-template-columns: minmax(240px, var(--rh-sidebar-width)) minmax(0, 1fr);
 }
 
 .content-column,
@@ -622,6 +622,12 @@ a {
   padding: 0.08rem 0.28rem;
 }
 
+.markdown-body :not(pre) > code {
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: break-word;
+}
+
 .markdown-body pre {
   padding: 1rem;
   overflow: auto;
@@ -754,7 +760,7 @@ a {
 
 .markdown-body .codebox pre.shiki {
   margin: 0;
-  overflow: visible;
+  overflow: auto;
 }
 
 .markdown-body .codebox pre.shiki code,
