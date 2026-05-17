@@ -25,6 +25,18 @@ sudo, HBAC, SELinux maps, and user expiry attributes.
 The repository name is `eigenstate-ipa`; the Ansible collection name is
 `eigenstate.ipa`.
 
+## Use With, Not Instead Of
+
+`eigenstate.ipa` is not a replacement for `redhat.rhel_idm` or
+`freeipa.ansible_freeipa`.
+
+Use `redhat.rhel_idm` or `freeipa.ansible_freeipa` for IdM server, replica,
+and client lifecycle and broad IdM object management.
+
+Use `eigenstate.ipa` when automation needs to consume live IdM state as
+inventory, policy evidence, vault/keytab/certificate input, temporary-access
+context, AAP execution material, or OpenShift/Kubernetes review artifacts.
+
 ## What The Collection Contains
 
 | Surface | FQCN or path | Purpose |

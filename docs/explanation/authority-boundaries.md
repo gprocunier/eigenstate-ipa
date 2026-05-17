@@ -20,7 +20,7 @@ source_material:
   - ../../README.md
   - ../../roles
   - ../../playbooks
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 
 # Authority boundaries
@@ -33,6 +33,7 @@ state, who runs the workflow, and who enforces the result.
 | Authority | Owns | Does not own |
 | --- | --- | --- |
 | IdM / FreeIPA | Identity, enrolled hosts, groups, vaults, Kerberos principals, IdM CA records, DNS, sudo, HBAC, SELinux maps, and user expiry attributes. | AAP job scheduling, Kubernetes runtime enforcement, private-key storage decisions, report remediation. |
+| `redhat.rhel_idm` and `freeipa.ansible_freeipa` | IdM server, replica, and client lifecycle plus broad IdM object management. | The live-inventory, evidence, render-first, AAP, OpenShift, Kubernetes, reporting, or temporary-access workflows provided by `eigenstate.ipa`. |
 | `eigenstate.ipa` | Ansible interfaces that read, render, validate, or explicitly mutate IdM-backed state. | The source truth itself, runtime cluster enforcement, or broad secret-manager semantics. |
 | Ansible | Task execution, variables, check mode, module invocation, and task result handling. | Identity authority or long-term job evidence by itself. |
 | AAP | Execution environments, job templates, scheduling, credentials, approvals, and job evidence. | IdM policy, Kerberos principal ownership, or cluster enforcement. |

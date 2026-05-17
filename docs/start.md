@@ -12,7 +12,7 @@ workflow_boundary: read-only
 evidence_shape:
   - architecture-boundary
 public_status: rewritten
-last_verified: 2026-05-07
+last_verified: 2026-05-17
 ---
 
 # Start Here
@@ -60,6 +60,7 @@ Start with [Reference](reference/). It routes to:
 | Question | Page |
 | --- | --- |
 | What is the collection? | [What is eigenstate.ipa?](explanation/what-is-eigenstate-ipa.html) |
+| Which IdM collection should own which work? | [What is eigenstate.ipa?](explanation/what-is-eigenstate-ipa.html#use-with-not-instead-of) |
 | Why read IdM as automation state? | [IdM as an automation state plane](explanation/idm-as-automation-state-plane.html) |
 | Which system owns what? | [Authority boundaries](explanation/authority-boundaries.html) |
 | Where is the secret boundary? | [Secret boundary](explanation/secret-boundary.html) |

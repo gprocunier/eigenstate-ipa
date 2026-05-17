@@ -28,6 +28,11 @@ Public framing rules:
 - Treat Red Hat IdM, FreeIPA, Ansible Automation Platform, OpenShift,
   Kubernetes, Kerberos, certificates, DNS, sudo, HBAC, SELinux maps, and vaults
   as technical integration surfaces.
+- Treat `eigenstate.ipa` as a companion collection, not a replacement for
+  `redhat.rhel_idm` or `freeipa.ansible_freeipa`. Use those collections for
+  IdM server, replica, and client lifecycle and broad IdM object management;
+  use `eigenstate.ipa` for live inventory, evidence, render-first, preflight,
+  AAP, OpenShift, Kubernetes, reporting, and temporary-access workflows.
 - Do not claim that IdM replaces general-purpose vault, PAM, or dynamic
   secret-lease systems.
 - Keep read-only, render-only, preflight, check-mode, and mutating workflows

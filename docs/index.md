@@ -17,7 +17,7 @@ public_status: rewritten
 source_material:
   - ../README.md
   - ../llms.txt
-last_verified: 2026-05-16
+last_verified: 2026-05-17
 ---
 
 # eigenstate.ipa
@@ -39,6 +39,27 @@ reviewable surfaces.
 | What makes it credible? | The repository contains one inventory plugin, nine lookup plugins, seven modules, filter utilities, execution-environment assets, roles, wrapper playbooks, and tests. |
 | What should change by default? | Read-only lookups and render-first roles should produce evidence before any workflow mutates IdM, writes key material, or applies cluster configuration. |
 | Where should I start? | Use [Start Here](start.html) if you have a job to do, or [Reference](reference/) if you already know the exact surface. |
+
+## Use With, Not Instead Of
+
+`eigenstate.ipa` is a companion automation collection for Red Hat IdM /
+FreeIPA. It does not replace `redhat.rhel_idm` or
+`freeipa.ansible_freeipa`.
+
+Use the established IdM collections for IdM server, replica, and client
+lifecycle and broad IdM object management. Use `eigenstate.ipa` when Ansible
+needs live IdM state as inventory, policy evidence, vault/keytab/certificate
+input, temporary-access context, AAP execution material, or
+OpenShift/Kubernetes review artifacts.
+
+| Need | Use |
+| --- | --- |
+| Install IdM server, replica, or client | `redhat.rhel_idm` or `freeipa.ansible_freeipa` |
+| Manage broad IdM object lifecycle | `redhat.rhel_idm` or `freeipa.ansible_freeipa` |
+| Build live Ansible inventory from IdM | `eigenstate.ipa` |
+| Use vault, keytab, or certificate state in automation workflows | `eigenstate.ipa` |
+| Preflight HBAC, sudo, SELinux, DNS, or access-path state | `eigenstate.ipa` |
+| Render AAP, OpenShift, or Kubernetes evidence before mutation | `eigenstate.ipa` |
 
 ## Start Here
 
