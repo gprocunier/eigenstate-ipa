@@ -1,9 +1,11 @@
 # eigenstate.ipa
 
 **An Ansible collection for Red Hat IdM / FreeIPA with live inventory, IdM
-vault retrieval and lifecycle automation, Kerberos principal state, keytab
+vault retrieval, KRA-aware vault diagnostics, vault artifact custody,
+Kerberos principal state, keytab
 delivery, certificate automation, OTP workflows, DNS inspection, sudo
-inspection, SELinux map inspection, HBAC inspection/testing, AAP execution
+inspection, sudo risk classification, SELinux map inspection, HBAC
+inspection/testing, access-path preflight summaries, AAP execution
 environment support, OpenShift/Kubernetes render-first workflows, temporary
 access boundaries, and read-only operational evidence.**
 
@@ -27,9 +29,10 @@ The repository name is `eigenstate-ipa`; the Ansible collection name is
 
 | Surface | FQCN or path | Purpose |
 | --- | --- | --- |
-| Inventory | `eigenstate.ipa.idm` | Build live Ansible inventory from IdM host and policy state. |
+| Inventory | `eigenstate.ipa.idm` | Build live Ansible inventory from IdM host and policy state with normalized host attribute metadata. |
 | Lookups | `eigenstate.ipa.vault`, `principal`, `keytab`, `cert`, `otp`, `dns`, `selinuxmap`, `sudo`, `hbacrule` | Read vault, Kerberos, certificate, OTP, DNS, sudo, SELinux map, and HBAC state. |
-| Modules | `eigenstate.ipa.vault_write`, `keytab_manage`, `cert_request`, `user_lease` | Mutate narrow IdM, keytab, certificate, and temporary access boundaries explicitly. |
+| Modules | `eigenstate.ipa.vault_write`, `vault_health`, `vault_artifact`, `access_path`, `keytab_manage`, `cert_request`, `user_lease` | Mutate narrow IdM boundaries explicitly, check vault/KRA health, manage generic vault artifact custody, and summarize access-path readiness. |
+| Filters | `ensure_list`, `normalize_attribute`, `attribute_type`, `sudo_risk`, `classify_sudo_rule` | Normalize IdM attribute shapes and classify sudo policy risk in playbooks. |
 | Roles | `roles/` | AAP EE, OpenShift identity validation, workload Secret rendering, temporary access, and reports. |
 | Playbooks | `playbooks/` | Wrapper playbooks for common role workflows. |
 | Execution environment | `execution-environment/eigenstate-idm/` | Ready-to-build AAP runtime scaffold for IdM-backed automation. |
@@ -53,7 +56,7 @@ The public docs now use Diataxis:
 Install a built collection artifact:
 
 ```bash
-ansible-galaxy collection install eigenstate-ipa-1.17.0.tar.gz
+ansible-galaxy collection install eigenstate-ipa-1.18.0.tar.gz
 ```
 
 Verify the main surfaces you plan to use:
@@ -64,8 +67,12 @@ ansible-doc -t lookup eigenstate.ipa.vault
 ansible-doc -t lookup eigenstate.ipa.keytab
 ansible-doc -t module eigenstate.ipa.keytab_manage
 ansible-doc -t module eigenstate.ipa.vault_write
+ansible-doc -t module eigenstate.ipa.vault_health
+ansible-doc -t module eigenstate.ipa.vault_artifact
+ansible-doc -t module eigenstate.ipa.access_path
 ansible-doc -t module eigenstate.ipa.cert_request
 ansible-doc -t module eigenstate.ipa.user_lease
+ansible-doc -t filter eigenstate.ipa.sudo_risk
 ```
 
 ## Boundaries

@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/inventory/idm.py
-last_verified: 2026-05-07
+last_verified: 2026-05-16
 ---
 {% raw %}
 
@@ -28,6 +28,10 @@ Creates Ansible inventory from Red Hat Identity Management (IDM/FreeIPA) hosts, 
 IDM hostgroups, netgroups, and HBAC rules are mapped to Ansible groups with configurable prefixes.
 
 A curated set of host attributes from IDM is exposed as host variables with a C(idm_) prefix.
+
+Exported host attributes include normalized values plus companion C(_raw) and C(_type) variables so playbooks can detect source shape drift without losing the original IdM value.
+
+C(idm_schema_warnings) reports attributes that were normalized or rejected because their source shape did not match the expected inventory shape.
 
 Nested hostgroups are fully resolved when building group membership.
 
@@ -160,6 +164,15 @@ hostvars_include:
   - idm_os
   - idm_hostgroups
   - idm_userclass
+
+# Selected host variables include normalized values and raw/type companions:
+#   idm_userclass: ["platform", "database"]
+#   idm_userclass_raw: ["platform", "database"]
+#   idm_userclass_type: list
+#   idm_location: "DC East"
+#   idm_location_raw: ["DC East"]
+#   idm_location_type: list
+#   idm_schema_warnings: []
 
 # With caching enabled (useful for large IDM deployments)
 ---

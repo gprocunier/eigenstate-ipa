@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/lookup/keytab.py
-last_verified: 2026-05-07
+last_verified: 2026-05-16
 ---
 {% raw %}
 
@@ -80,6 +80,7 @@ Supports retrieving existing keys (safe, default) or generating new random keys 
                           server='idm-01.idm.corp.lan',
                           ipaadmin_password=lookup('env', 'IPA_PASSWORD'),
                           verify='/etc/ipa/ca.crt') }}"
+  no_log: true
 
 # Retrieve using a keytab for non-interactive authentication
 - name: Retrieve NFS service keytab via admin keytab auth
@@ -90,6 +91,7 @@ Supports retrieving existing keys (safe, default) or generating new random keys 
                           ipaadmin_principal='admin',
                           kerberos_keytab='/runner/env/ipa/admin.keytab',
                           verify='/etc/ipa/ca.crt') }}"
+  no_log: true
 
 # Write the keytab to disk on the target host
 - name: Deploy HTTP keytab
@@ -103,6 +105,7 @@ Supports retrieving existing keys (safe, default) or generating new random keys 
     mode: "0600"
     owner: apache
     group: apache
+  no_log: true
 
 # Retrieve keytab as a record with principal metadata
 - name: Retrieve keytab with record format
@@ -113,6 +116,7 @@ Supports retrieving existing keys (safe, default) or generating new random keys 
                         kerberos_keytab='/runner/env/ipa/admin.keytab',
                         result_format='record',
                         verify='/etc/ipa/ca.crt') | first }}"
+  no_log: true
   # keytab_record.principal == 'HTTP/webserver.idm.corp.lan'
   # keytab_record.value     == base64-encoded keytab
 
@@ -126,6 +130,7 @@ Supports retrieving existing keys (safe, default) or generating new random keys 
                       kerberos_keytab='/runner/env/ipa/admin.keytab',
                       result_format='map',
                       verify='/etc/ipa/ca.crt') | first }}"
+  no_log: true
   # web_keytabs['HTTP/web-01.idm.corp.lan'] == base64 keytab
   # web_keytabs['HTTP/web-02.idm.corp.lan'] == base64 keytab
 
@@ -138,6 +143,7 @@ Supports retrieving existing keys (safe, default) or generating new random keys 
                       kerberos_keytab='/runner/env/ipa/admin.keytab',
                       enctypes=['aes256-cts'],
                       verify='/etc/ipa/ca.crt') }}"
+  no_log: true
 
 # Generate new keys (ROTATES - invalidates all existing keytabs)
 - name: Rotate HTTP service keytab
@@ -148,6 +154,7 @@ Supports retrieving existing keys (safe, default) or generating new random keys 
                           kerberos_keytab='/runner/env/ipa/admin.keytab',
                           retrieve_mode='generate',
                           verify='/etc/ipa/ca.crt') }}"
+  no_log: true
 ```
 
 ## Error Behavior

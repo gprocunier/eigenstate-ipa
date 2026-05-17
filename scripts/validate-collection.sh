@@ -23,10 +23,18 @@ prepare_ansible_test_collection() {
       --exclude ".git/" \
       --exclude ".ansible/" \
       --exclude ".pytest_cache/" \
+      --exclude ".ruff_cache/" \
+      --exclude ".jekyll-cache/" \
+      --exclude "*/.jekyll-cache/" \
+      --exclude "_site/" \
+      --exclude "*/_site/" \
+      --exclude ".sass-cache/" \
+      --exclude "*/.sass-cache/" \
       --exclude "__pycache__/" \
       --exclude "*.pyc" \
       --exclude "dist/" \
       --exclude "*.tar.gz" \
+      --exclude "release-ledger.md" \
       "${PROJECT_ROOT}/" "${ANSIBLE_TEST_COLLECTION_DIR}/"
   else
     mkdir -p "${ANSIBLE_TEST_COLLECTION_DIR}"
@@ -36,10 +44,18 @@ prepare_ansible_test_collection() {
         --exclude="./.git" \
         --exclude="./.ansible" \
         --exclude="./.pytest_cache" \
+        --exclude="./.ruff_cache" \
+        --exclude="./.jekyll-cache" \
+        --exclude="*/.jekyll-cache" \
+        --exclude="./_site" \
+        --exclude="*/_site" \
+        --exclude="./.sass-cache" \
+        --exclude="*/.sass-cache" \
         --exclude="*/__pycache__" \
         --exclude="*.pyc" \
         --exclude="./dist" \
         --exclude="*.tar.gz" \
+        --exclude="./release-ledger.md" \
         -cf - .
     ) | (
       cd "${ANSIBLE_TEST_COLLECTION_DIR}"

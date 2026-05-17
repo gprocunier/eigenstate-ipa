@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/modules/vault_write.py
-last_verified: 2026-05-07
+last_verified: 2026-05-16
 ---
 {% raw %}
 
@@ -114,10 +114,12 @@ Supports Ansible check mode.
                 server='idm-01.example.com',
                 shared=true,
                 ipaadmin_password=ipa_password) }}
+  no_log: true
 
 - name: Generate new secret
   ansible.builtin.set_fact:
     new_secret: "{{ lookup('community.general.random_string', length=32) }}"
+  no_log: true
 
 - name: Archive rotated secret
   eigenstate.ipa.vault_write:

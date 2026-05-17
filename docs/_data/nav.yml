@@ -25,6 +25,8 @@ groups:
             url: /explanation/idm-as-automation-state-plane.html
           - title: Use IdM As Live Inventory
             url: /how-to/use-idm-as-live-inventory.html
+          - title: Inventory Attribute Normalization
+            url: /inventory-normalization.html
           - title: First IdM Inventory Tutorial
             url: /tutorials/first-idm-inventory.html
           - title: Query Principal State
@@ -49,6 +51,10 @@ groups:
             url: /tutorials/first-vault-retrieval.html
           - title: Manage IdM Vault Lifecycle
             url: /how-to/manage-idm-vault-lifecycle.html
+          - title: KRA-Aware Vault Health
+            url: /vault-health.html
+          - title: Vault Artifact Custody
+            url: /vault-artifact.html
           - title: Secret Boundary
             url: /explanation/secret-boundary.html
       - title: Workload Rendering
@@ -107,8 +113,12 @@ groups:
             url: /how-to/test-hbac-access.html
           - title: Inspect Sudo Policy
             url: /how-to/inspect-sudo-policy.html
+          - title: Sudo Risk Classification
+            url: /sudo-risk.html
           - title: Inspect SELinux Map Scope
             url: /how-to/inspect-selinux-map-scope.html
+          - title: IdM Access-Path Summary
+            url: /access-path.html
       - title: Temporary Access
         items:
           - title: Open Temporary Access Window
@@ -217,6 +227,8 @@ groups:
         url: /reference/support-matrix.html
       - title: Release Process
         url: /reference/release-process.html
+      - title: Release Notes 1.18.0
+        url: /release-notes/1.18.0.html
 
   - title: Project
     summary: Source and package destinations.

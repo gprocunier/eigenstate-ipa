@@ -24,6 +24,7 @@ dist/
 *.tar.gz
 *.egg-info/
 *.retry
+release-ledger.md
 _site/
 .jekyll-cache/
 .sass-cache/

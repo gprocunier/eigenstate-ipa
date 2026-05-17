@@ -15,7 +15,7 @@ source_material:
   - ../../plugins
   - ../../roles
   - ../../playbooks
-last_verified: 2026-05-07
+last_verified: 2026-05-16
 ---
 
 # Reference
@@ -49,9 +49,22 @@ architecture prose.
 | Surface | Page | Boundary |
 | --- | --- | --- |
 | `eigenstate.ipa.vault_write` | [Vault write module](modules/vault_write.html) | Mutates IdM vault lifecycle. |
+| `eigenstate.ipa.vault_health` | [KRA-aware vault health](../vault-health.html) | Reads IdM and vault/KRA readiness. |
+| `eigenstate.ipa.vault_artifact` | [Vault artifact custody](../vault-artifact.html) | Writes, reads, digests, and verifies opaque vault artifacts. |
+| `eigenstate.ipa.access_path` | [Access-path summary](../access-path.html) | Reads principal, HBAC, sudo, and SELinux map readiness. |
 | `eigenstate.ipa.keytab_manage` | [Keytab manage module](modules/keytab_manage.html) | Retrieves or explicitly rotates keytabs. |
 | `eigenstate.ipa.cert_request` | [Certificate request module](modules/cert_request.html) | Requests certificates from CSRs; private keys stay outside the module. |
 | `eigenstate.ipa.user_lease` | [User lease module](modules/user_lease.html) | Sets, clears, or expires IdM user access attributes. |
+
+## Filters
+
+| Surface | Page | Boundary |
+| --- | --- | --- |
+| `eigenstate.ipa.ensure_list` | [Inventory attribute normalization](../inventory-normalization.html) | Normalizes raw values to list form. |
+| `eigenstate.ipa.normalize_attribute` | [Inventory attribute normalization](../inventory-normalization.html) | Returns normalized value, raw value, type, and warnings. |
+| `eigenstate.ipa.attribute_type` | [Inventory attribute normalization](../inventory-normalization.html) | Classifies raw attribute shape. |
+| `eigenstate.ipa.sudo_risk` | [Sudo risk classification](../sudo-risk.html) | Classifies sudo policy risk without mutation. |
+| `eigenstate.ipa.classify_sudo_rule` | [Sudo risk classification](../sudo-risk.html) | Classifies sudo policy risk with optional custom patterns. |
 
 ## Roles
 

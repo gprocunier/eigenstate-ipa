@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.18.0 - 2026-05-17
+
+- added normalized IdM inventory host attributes with raw-value companions,
+  stable type metadata, schema warnings, and reusable normalization filters
+- added `vault_health` for KRA-aware vault diagnostics that distinguish IdM
+  reachability from vault/KRA availability and canary state
+- added `vault_artifact` for generic vault artifact write, read, digest, and
+  read-back verification workflows without payload interpretation
+- added `access_path` for read-only principal, HBAC, sudo, and SELinux map
+  readiness summaries before privileged automation
+- added `sudo_risk` and `classify_sudo_rule` filters for configurable advisory
+  sudo policy risk classification
+- documented the new release gate expectations, live-lab evidence requirements,
+  and payload handling boundaries for vault artifact workflows
+
+## 1.17.0 - 2026-05-08
+
+- added `idm_userclass` inventory hostvars for IdM `userClass` values so
+  playbooks can group and target hosts by IdM-managed classification
+- updated AAP execution environment defaults and documentation to consume
+  `eigenstate.ipa` 1.17.0 or newer
+- added regression coverage for `userClass` inventory hostvar exposure
+
 ## 1.16.0 - 2026-05-05
 
 - added release engineering maturity gates with an ansible-core 2.15 through

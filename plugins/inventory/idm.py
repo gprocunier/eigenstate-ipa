@@ -41,6 +41,12 @@ description:
     groups with configurable prefixes.
   - A curated set of host attributes from IDM is exposed as host
     variables with a C(idm_) prefix.
+  - Exported host attributes include normalized values plus companion
+    C(_raw) and C(_type) variables so playbooks can detect source shape
+    drift without losing the original IdM value.
+  - C(idm_schema_warnings) reports attributes that were normalized or
+    rejected because their source shape did not match the expected
+    inventory shape.
   - Nested hostgroups are fully resolved when building group membership.
   - HBAC rules with C(hostcategory=all) automatically include all
     enrolled hosts.
@@ -271,6 +277,15 @@ hostvars_include:
   - idm_hostgroups
   - idm_userclass
 
+# Normalized host variables include raw/type companions
+# idm_userclass: ["platform", "database"]
+# idm_userclass_raw: ["platform", "database"]
+# idm_userclass_type: list
+# idm_location: "DC East"
+# idm_location_raw: ["DC East"]
+# idm_location_type: list
+# idm_schema_warnings: []
+
 # With caching enabled (useful for large IDM deployments)
 ---
 plugin: eigenstate.ipa.idm
@@ -327,6 +342,24 @@ from ansible.plugins.inventory import (
 from ansible.module_utils.six.moves.urllib.parse import quote
 from ansible.utils.display import Display
 
+try:
+    from ansible_collections.eigenstate.ipa.plugins.module_utils.attribute_normalization import (
+        normalize_attribute,
+    )
+except ImportError:
+    import importlib.util
+    import pathlib
+    _normalization_path = (
+        pathlib.Path(__file__).resolve().parents[1]
+        / 'module_utils' / 'attribute_normalization.py')
+    _normalization_spec = importlib.util.spec_from_file_location(
+        'eigenstate_ipa_inventory_attribute_normalization',
+        _normalization_path)
+    _normalization_mod = importlib.util.module_from_spec(
+        _normalization_spec)
+    _normalization_spec.loader.exec_module(_normalization_mod)
+    normalize_attribute = _normalization_mod.normalize_attribute
+
 
 display = Display()
 
@@ -349,24 +382,24 @@ def _unwrap(value):
 # IPA attribute -> host variable mapping.
 # Keys marked True are kept as lists; False are unwrapped to scalars.
 _IPA_HOST_ATTRS = {
-    'fqdn':                    ('idm_fqdn', False),
-    'description':             ('idm_description', False),
-    'l':                       ('idm_locality', False),
-    'nshostlocation':          ('idm_location', False),
-    'nshardwareplatform':      ('idm_platform', False),
-    'nsosversion':             ('idm_os', False),
-    'krbcanonicalname':        ('idm_krbcanonicalname', False),
-    'has_keytab':              ('idm_has_keytab', False),
-    'has_password':            ('idm_has_password', False),
-    'serverhostname':          ('idm_serverhostname', False),
-    'dn':                      ('idm_dn', False),
-    'ipakrbokasdelegate':      ('idm_krb_ok_as_delegate', False),
-    'ipakrbrequirespreauth':   ('idm_krb_requires_preauth', False),
-    'ipasshpubkey':            ('idm_ssh_public_keys', True),
-    'krbprincipalname':        ('idm_krbprincipalname', True),
-    'managedby_host':          ('idm_managedby', True),
-    'memberof_hostgroup':      ('idm_hostgroups', True),
-    'userclass':               ('idm_userclass', True),
+    'fqdn': ('idm_fqdn', False),
+    'description': ('idm_description', False),
+    'l': ('idm_locality', False),
+    'nshostlocation': ('idm_location', False),
+    'nshardwareplatform': ('idm_platform', False),
+    'nsosversion': ('idm_os', False),
+    'krbcanonicalname': ('idm_krbcanonicalname', False),
+    'has_keytab': ('idm_has_keytab', False),
+    'has_password': ('idm_has_password', False),
+    'serverhostname': ('idm_serverhostname', False),
+    'dn': ('idm_dn', False),
+    'ipakrbokasdelegate': ('idm_krb_ok_as_delegate', False),
+    'ipakrbrequirespreauth': ('idm_krb_requires_preauth', False),
+    'ipasshpubkey': ('idm_ssh_public_keys', True),
+    'krbprincipalname': ('idm_krbprincipalname', True),
+    'managedby_host': ('idm_managedby', True),
+    'memberof_hostgroup': ('idm_hostgroups', True),
+    'userclass': ('idm_userclass', True),
 }
 
 _HOSTVAR_NAMES = {
@@ -417,7 +450,6 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
             return resolved
 
         return preferred
-
 
     @staticmethod
     def _format_subprocess_stderr(stderr, limit=200):
@@ -769,14 +801,28 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         """Add a single host to the Ansible inventory."""
         self.inventory.add_host(fqdn)
 
-        for ipa_attr, (var_name, keep_list) in self._selected_host_attrs().items():
-            if ipa_attr in host_data:
-                value = host_data[ipa_attr]
-                if keep_list:
-                    self.inventory.set_variable(fqdn, var_name, value)
-                else:
-                    self.inventory.set_variable(fqdn, var_name,
-                                                _unwrap(value))
+        schema_warnings = []
+        selected_attrs = self._selected_host_attrs()
+        for ipa_attr, (var_name, keep_list) in selected_attrs.items():
+            missing = ipa_attr not in host_data
+            value = None if missing else host_data.get(ipa_attr)
+            expected = 'list' if keep_list else 'scalar'
+            normalized = normalize_attribute(
+                value,
+                attribute=var_name,
+                expected=expected,
+                missing=missing,
+            )
+            self.inventory.set_variable(fqdn, var_name, normalized['value'])
+            self.inventory.set_variable(
+                fqdn, '%s_raw' % var_name, normalized['raw'])
+            self.inventory.set_variable(
+                fqdn, '%s_type' % var_name, normalized['type'])
+            schema_warnings.extend(normalized['warnings'])
+
+        if selected_attrs:
+            self.inventory.set_variable(
+                fqdn, 'idm_schema_warnings', schema_warnings)
 
     def _build_hostgroup_map(self, hostgroups):
         """Build a map of hostgroup name -> resolved host FQDNs.
@@ -862,8 +908,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
             # Hosts via hostgroup membership
             for hg_name in ng.get('memberhost_hostgroup', []):
-                for host_fqdn in self._hostgroup_members.get(hg_name,
-                                                              set()):
+                host_members = self._hostgroup_members.get(hg_name, set())
+                for host_fqdn in host_members:
                     if host_fqdn in self.inventory.hosts:
                         self.inventory.add_host(host_fqdn,
                                                 group=group_name)
@@ -910,8 +956,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
 
             # Hosts via hostgroup membership
             for hg_name in rule.get('memberhost_hostgroup', []):
-                for host_fqdn in self._hostgroup_members.get(hg_name,
-                                                              set()):
+                host_members = self._hostgroup_members.get(hg_name, set())
+                for host_fqdn in host_members:
                     if host_fqdn in self.inventory.hosts:
                         self.inventory.add_host(host_fqdn,
                                                 group=group_name)
@@ -932,8 +978,8 @@ class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
         # Hostgroup data is needed whenever hostgroups, netgroups, or
         # HBAC rules are requested (netgroups/HBAC may reference
         # hostgroups for membership resolution).
-        if any(s in sources for s in ('hostgroups', 'netgroups',
-                                       'hbacrules')):
+        if any(s in sources for s in (
+                'hostgroups', 'netgroups', 'hbacrules')):
             data['hostgroups'] = self._fetch_hostgroups()
 
         if 'netgroups' in sources:

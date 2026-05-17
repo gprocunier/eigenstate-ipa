@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/lookup/vault.py
-last_verified: 2026-05-07
+last_verified: 2026-05-16
 ---
 {% raw %}
 
@@ -90,6 +90,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
              server='idm-01.example.com',
              ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD'),
              shared=true) }}"
+  no_log: true
 
 # Retrieve a symmetric vault
 - name: Get API key from symmetric vault
@@ -99,6 +100,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
              ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD'),
              shared=true,
              vault_password=lookup('env', 'IPA_VAULT_PASSWORD')) }}"
+  no_log: true
 
 # Retrieve an asymmetric vault
 - name: Get TLS private key from asymmetric vault
@@ -108,6 +110,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
              ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD'),
              shared=true,
              private_key_file='/path/to/private.pem') }}"
+  no_log: true
 
 # Retrieve a user vault with keytab auth (AAP)
 - name: Get user secret
@@ -116,6 +119,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
              server='idm-01.example.com',
              kerberos_keytab='/path/to/admin.keytab',
              username='appuser') }}"
+  no_log: true
 
 # Retrieve a binary secret as base64
 - name: Get keytab from vault
@@ -127,6 +131,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
                   encoding='base64') | b64decode }}"
     dest: /etc/krb5.keytab
     mode: "0600"
+  no_log: true
 
 # Multiple vaults in one lookup
 - name: Retrieve several secrets
@@ -135,6 +140,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
                   server='idm-01.example.com',
                   ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD'),
                   shared=true) }}"
+  no_log: true
 
 # Return a named mapping instead of a positional list
 - name: Retrieve several secrets as a dictionary
@@ -144,6 +150,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
                           ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD'),
                           shared=true,
                           result_format='map') }}"
+  no_log: true
 
 # Decode a JSON secret into structured data
 - name: Retrieve structured JSON config
@@ -153,6 +160,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
                     kerberos_keytab='/path/to/admin.keytab',
                     shared=true,
                     decode_json=true) }}"
+  no_log: true
 
 # Retrieve an encrypted artifact with metadata for brokered delivery
 - name: Get sealed artifact with routing metadata
@@ -164,6 +172,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
                          encoding='base64',
                          result_format='record',
                          include_metadata=true) }}"
+  no_log: true
 
 # Inspect one vault without retrieving the secret payload
 - name: Show vault metadata
@@ -173,6 +182,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
              kerberos_keytab='/path/to/admin.keytab',
              shared=true,
              operation='show') }}"
+  no_log: true
 
 # Find vaults in the selected scope
 - name: List shared vaults that match a string
@@ -183,11 +193,13 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
              shared=true,
              operation='find',
              criteria='database') }}"
+  no_log: true
 
 # Use with env vars (set IPA_SERVER, IPA_ADMIN_PASSWORD)
 - name: Get secret using environment
   ansible.builtin.debug:
     msg: "{{ lookup('eigenstate.ipa.vault', 'my-secret', shared=true) }}"
+  no_log: true
 ```
 
 ## Error Behavior

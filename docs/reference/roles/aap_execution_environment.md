@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Aap Execution Environment role reference
+title: AAP Execution Environment role reference
 diataxis: reference
 diataxis_type: reference
 audience: Operators and maintainers looking up exact facts
@@ -13,10 +13,10 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../roles/aap_execution_environment/README.md
-last_verified: 2026-05-07
+last_verified: 2026-05-16
 ---
 
-# Aap Execution Environment role reference
+# AAP Execution Environment role reference
 
 | Role | Purpose | Defaults | Argument spec |
 | --- | --- | --- | --- |
@@ -40,7 +40,7 @@ last_verified: 2026-05-07
 | `eigenstate_ee_build` | `false` |
 | `eigenstate_ee_build_context` | `context` |
 | `eigenstate_ee_builder_binary` | `ansible-builder` |
-| `eigenstate_ee_collection_version` | `>=1.17.0` |
+| `eigenstate_ee_collection_version` | `>=1.18.0` |
 | `eigenstate_ee_container_runtime` | `podman` |
 | `eigenstate_ee_image` | `localhost/{{ eigenstate_ee_name }}:{{ eigenstate_ee_tag }}` |
 | `eigenstate_ee_include_ansible_controller` | `false` |

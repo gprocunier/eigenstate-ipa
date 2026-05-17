@@ -213,10 +213,72 @@ class InventoryPluginTests(unittest.TestCase):
         )
         host = inventory.inventory.hosts["web-01.corp.example.com"]
         self.assertEqual(host["vars"]["idm_fqdn"], "web-01.corp.example.com")
+        self.assertEqual(host["vars"]["idm_fqdn_raw"], ["web-01.corp.example.com"])
+        self.assertEqual(host["vars"]["idm_fqdn_type"], "list")
         self.assertEqual(host["vars"]["idm_location"], "DC East")
         self.assertEqual(host["vars"]["idm_hostgroups"], ["webservers", "prod"])
+        self.assertEqual(host["vars"]["idm_hostgroups_raw"], ["webservers", "prod"])
+        self.assertEqual(host["vars"]["idm_hostgroups_type"], "list")
         self.assertEqual(host["vars"]["idm_ssh_public_keys"], ["ssh-ed25519 AAAA..."])
         self.assertEqual(host["vars"]["idm_userclass"], ["db", "webserver"])
+        self.assertEqual(host["vars"]["idm_userclass_raw"], ["db", "webserver"])
+        self.assertEqual(host["vars"]["idm_userclass_type"], "list")
+        self.assertEqual(host["vars"]["idm_schema_warnings"], [])
+
+    def test_add_host_exports_missing_list_attrs_as_empty_lists(self):
+        inventory = self._inventory_with_options(
+            hostvars_include=["idm_userclass", "idm_hostgroups"],
+        )
+        inventory._add_host(
+            "web-02.corp.example.com",
+            {"fqdn": ["web-02.corp.example.com"]},
+        )
+        host = inventory.inventory.hosts["web-02.corp.example.com"]
+        self.assertEqual(host["vars"]["idm_userclass"], [])
+        self.assertIsNone(host["vars"]["idm_userclass_raw"])
+        self.assertEqual(host["vars"]["idm_userclass_type"], "missing")
+        self.assertEqual(host["vars"]["idm_hostgroups"], [])
+        self.assertEqual(host["vars"]["idm_hostgroups_type"], "missing")
+        self.assertEqual(host["vars"]["idm_schema_warnings"], [])
+
+    def test_add_host_rejects_dict_list_attr_without_stringifying(self):
+        inventory = self._inventory_with_options(
+            hostvars_include=["idm_userclass"],
+        )
+        inventory._add_host(
+            "web-03.corp.example.com",
+            {"userclass": {"role": "web"}},
+        )
+        host = inventory.inventory.hosts["web-03.corp.example.com"]
+        self.assertEqual(host["vars"]["idm_userclass"], [])
+        self.assertEqual(host["vars"]["idm_userclass_raw"], {"role": "web"})
+        self.assertEqual(host["vars"]["idm_userclass_type"], "dict")
+        self.assertEqual(
+            host["vars"]["idm_schema_warnings"],
+            [{
+                "attribute": "idm_userclass",
+                "expected": "list[str]",
+                "actual": "dict",
+                "action": "rejected",
+                "reason": "dictionary values are not valid list elements",
+            }],
+        )
+
+    def test_add_host_normalizes_string_list_attr_with_warning(self):
+        inventory = self._inventory_with_options(
+            hostvars_include=["idm_userclass"],
+        )
+        inventory._add_host(
+            "web-04.corp.example.com",
+            {"userclass": "ops"},
+        )
+        host = inventory.inventory.hosts["web-04.corp.example.com"]
+        self.assertEqual(host["vars"]["idm_userclass"], ["ops"])
+        self.assertEqual(host["vars"]["idm_userclass_type"], "string")
+        self.assertEqual(
+            host["vars"]["idm_schema_warnings"][0]["action"],
+            "normalized",
+        )
 
     def test_add_host_renders_userclass_as_list(self):
         inventory = self._inventory_with_options(hostvars_include=["idm_userclass"])
@@ -224,10 +286,11 @@ class InventoryPluginTests(unittest.TestCase):
             "web-01.corp.example.com",
             {"userclass": ["db", "webserver"]},
         )
-        self.assertEqual(
-            inventory.inventory.hosts["web-01.corp.example.com"]["vars"],
-            {"idm_userclass": ["db", "webserver"]},
-        )
+        hostvars = inventory.inventory.hosts["web-01.corp.example.com"]["vars"]
+        self.assertEqual(hostvars["idm_userclass"], ["db", "webserver"])
+        self.assertEqual(hostvars["idm_userclass_raw"], ["db", "webserver"])
+        self.assertEqual(hostvars["idm_userclass_type"], "list")
+        self.assertEqual(hostvars["idm_schema_warnings"], [])
 
     def test_add_host_respects_hostvars_include(self):
         inventory = self._inventory_with_options(
@@ -242,13 +305,13 @@ class InventoryPluginTests(unittest.TestCase):
             },
         )
         hostvars = inventory.inventory.hosts["web-01.corp.example.com"]["vars"]
-        self.assertEqual(
-            hostvars,
-            {
-                "idm_location": "DC East",
-                "idm_hostgroups": ["webservers", "prod"],
-            },
-        )
+        self.assertEqual(hostvars["idm_location"], "DC East")
+        self.assertEqual(hostvars["idm_location_raw"], ["DC East"])
+        self.assertEqual(hostvars["idm_location_type"], "list")
+        self.assertEqual(hostvars["idm_hostgroups"], ["webservers", "prod"])
+        self.assertEqual(hostvars["idm_hostgroups_raw"], ["webservers", "prod"])
+        self.assertEqual(hostvars["idm_hostgroups_type"], "list")
+        self.assertEqual(hostvars["idm_schema_warnings"], [])
 
     def test_add_host_skips_hostvars_when_disabled(self):
         inventory = self._inventory_with_options(hostvars_enabled=False)

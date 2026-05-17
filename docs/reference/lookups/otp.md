@@ -13,7 +13,7 @@ evidence_shape:
 public_status: rewritten
 source_material:
   - ../../plugins/lookup/otp.py
-last_verified: 2026-05-07
+last_verified: 2026-05-16
 ---
 {% raw %}
 
@@ -127,14 +127,16 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
                       operation='find',
                       server='idm-01.example.com',
                       ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD')) }}"
+  no_log: true
 
-# Check whether a token exists before rotation (no_log not needed; show returns no secret)
+# Check whether a token exists before rotation
 - name: Inspect token by ID
   ansible.builtin.set_fact:
     token_state: "{{ lookup('eigenstate.ipa.otp', 'some-token-uuid',
                       operation='show',
                       server='idm-01.example.com',
                       ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD')) }}"
+  no_log: true
 
 # Revoke a specific token
 - name: Revoke token
@@ -143,6 +145,7 @@ Can be used as a credential source in AAP by referencing the lookup in a custom 
                       operation='revoke',
                       server='idm-01.example.com',
                       ipaadmin_password=lookup('env', 'IPA_ADMIN_PASSWORD')) }}"
+  no_log: true
 
 # Rotate: revoke old token, issue new one
 - name: Rotate user token

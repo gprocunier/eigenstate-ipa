@@ -571,7 +571,7 @@ build-disconnected-aap-ee:
                 eigenstate_ee_output_dir: ./build/eigenstate-idm-ee
                 eigenstate_ee_image: localhost/eigenstate-idm-ee:dev
                 eigenstate_ee_base_image: registry.example.com/aap/ee-minimal-rhel9:latest
-                eigenstate_ee_collection_version: ">=1.17.0"
+                eigenstate_ee_collection_version: ">=1.18.0"
   run: |
     ansible-playbook build-eigenstate-idm-ee.yml
 

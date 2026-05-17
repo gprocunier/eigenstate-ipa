@@ -1,15 +1,17 @@
 ---
 namespace: "eigenstate"
 name: "ipa"
-version: "1.17.0"
+version: "1.18.0"
 description: >-
   An Ansible collection for Red Hat IdM / FreeIPA with dynamic
-  inventory plus IdM vault retrieval and lifecycle automation,
+  inventory plus IdM vault retrieval, KRA-aware vault diagnostics,
+  vault artifact custody, and lifecycle automation,
   Kerberos principal state, Kerberos keytab retrieval and management,
   certificate request workflows, OTP workflows, delegated user-lease control,
   Kubernetes workload Secret delivery review, read-only operational evidence
-  reporting, DNS record inspection, sudo policy inspection, SELinux user map
-  inspection, and HBAC rule inspection and access testing for Kerberos-friendly
+  reporting, DNS record inspection, sudo policy inspection, sudo risk
+  classification, SELinux user map inspection, HBAC rule inspection,
+  access-path preflight summaries, and access testing for Kerberos-friendly
   automation, AAP, and secure secret delivery.
 
 authors:
@@ -49,8 +51,22 @@ build_ignore:
   - "*.tar.gz"
   - ".git"
   - ".github"
+  - ".gitignore"
   - ".ansible"
   - ".pytest_cache"
+  - ".ruff_cache"
+  - ".jekyll-cache"
+  - "docs/.jekyll-cache"
+  - "docs/.jekyll-cache/**"
+  - ".yamllint"
   - "__pycache__"
+  - "AGENTS.md"
+  - "build"
+  - "build/**"
+  - "dist"
+  - "dist/**"
+  - "release-ledger.md"
   - "tests"
+  - "tests/**"
   - "scripts"
+  - "scripts/**"

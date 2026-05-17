@@ -17,7 +17,7 @@ public_status: rewritten
 source_material:
   - ../README.md
   - ../llms.txt
-last_verified: 2026-05-07
+last_verified: 2026-05-16
 ---
 
 # eigenstate.ipa
@@ -36,7 +36,7 @@ reviewable surfaces.
 | Question | Answer |
 | --- | --- |
 | What problem does this solve? | IdM-managed hosts, policy, vaults, principals, keytabs, certificates, and access checks can become live Ansible inputs instead of duplicated static files. |
-| What makes it credible? | The repository contains one inventory plugin, nine lookup plugins, four modules, execution-environment assets, roles, wrapper playbooks, and tests. |
+| What makes it credible? | The repository contains one inventory plugin, nine lookup plugins, seven modules, filter utilities, execution-environment assets, roles, wrapper playbooks, and tests. |
 | What should change by default? | Read-only lookups and render-first roles should produce evidence before any workflow mutates IdM, writes key material, or applies cluster configuration. |
 | Where should I start? | Use [Start Here](start.html) if you have a job to do, or [Reference](reference/) if you already know the exact surface. |
 
@@ -112,8 +112,10 @@ SELinux maps, and temporary account expiry.
 | Proof path | Surfaces | Evidence |
 | --- | --- | --- |
 | Live IdM inventory | `eigenstate.ipa.idm` | Inventory graph and hostvars derived from IdM. |
-| Vault retrieval | `eigenstate.ipa.vault` | Redacted task output or structured record returns. |
+| Inventory normalization | `eigenstate.ipa.idm` and normalization filters | Stable hostvars, raw values, type metadata, and schema warnings. |
+| Vault diagnostics and retrieval | `eigenstate.ipa.vault`, `vault_health`, `vault_artifact` | Redacted task output, structured record returns, health status, and digest evidence. |
 | Explicit mutation | `vault_write`, `keytab_manage`, `cert_request`, `user_lease` | Changed state, check-mode predictions, or guarded module returns. |
+| Access preflight | `access_path`, `sudo_risk` | Readiness blockers and advisory sudo risk findings before privileged work. |
 | AAP execution environment | `aap_execution_environment` role and `aap-ee-*` playbooks | Rendered EE context, build result, smoke output, optional Controller registration. |
 | OpenShift and workload delivery | OpenShift validation and workload Secret roles | Review manifests and readiness reports before cluster mutation. |
 | Operational reporting | Read-only report roles | JSON, YAML, and Markdown evidence artifacts. |
